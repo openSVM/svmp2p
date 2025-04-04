@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
 import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
@@ -32,10 +32,11 @@ export const OfferCreation = () => {
   const getProgram = () => {
     if (!wallet.publicKey) return null;
     
+    // Updated for @coral-xyz/anchor 0.31.0
     const provider = new AnchorProvider(
       connection,
       wallet,
-      { preflightCommitment: 'processed' }
+      { commitment: 'processed' }
     );
     
     return new Program(idl, new PublicKey(network.programId), provider);

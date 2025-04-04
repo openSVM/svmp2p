@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
@@ -6,7 +6,6 @@ import {
   SolflareWalletAdapter,
   TorusWalletAdapter,
   LedgerWalletAdapter,
-  SolletWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import {
   WalletModalProvider,
@@ -78,14 +77,13 @@ const App = () => {
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
   
-  // Set up wallet adapters
+  // Set up wallet adapters - updated for latest wallet adapter versions
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
       new TorusWalletAdapter(),
       new LedgerWalletAdapter(),
-      new SolletWalletAdapter(),
     ],
     []
   );
