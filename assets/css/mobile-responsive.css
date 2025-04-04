@@ -1,490 +1,378 @@
-/* 
- * OpenSVM P2P Exchange - Mobile Responsive Enhancements
- * Additional styles to improve mobile experience
- */
-
-/* ===== Base Mobile Adjustments ===== */
-:root {
-  /* Mobile-specific spacing */
-  --mobile-spacing-xs: 4px;
-  --mobile-spacing-sm: 6px;
-  --mobile-spacing-md: 12px;
-  --mobile-spacing-lg: 18px;
-  --mobile-spacing-xl: 24px;
-}
-
-/* ===== Enhanced Responsive Styles ===== */
-/* Large tablets and small desktops */
+/* Mobile Responsive Styles */
 @media (max-width: 1024px) {
-  .container {
-    padding: 0 var(--spacing-lg);
-  }
-  
-  .network-stats {
-    gap: var(--spacing-md);
-  }
-  
-  .stat-item {
-    min-width: 120px;
-  }
-  
-  .wallet-options {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Tablets and large mobile */
-@media (max-width: 768px) {
-  body {
-    font-size: 13px;
-  }
-  
-  .container {
-    padding: 0 var(--spacing-md);
-  }
-  
-  /* Header adjustments */
-  .header {
-    height: auto;
-    padding: var(--spacing-sm) 0;
-  }
-  
-  .header-content {
-    padding: var(--spacing-sm) 0;
-  }
-  
-  .logo img {
-    height: 28px;
-  }
-  
-  .selected-network {
-    padding: 6px 10px;
-  }
-  
-  .network-icon {
-    width: 18px;
-    height: 18px;
-  }
-  
-  .main-nav a {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 13px;
-  }
-  
-  .main-nav a.active::after {
-    bottom: -12px;
-  }
-  
-  /* Hero section adjustments */
-  .hero-section {
-    padding: var(--spacing-lg) 0;
-  }
-  
-  .hero-section h1 {
-    font-size: 22px;
-    margin-bottom: var(--spacing-sm);
-  }
-  
-  .hero-section p {
-    font-size: 14px;
-    margin-bottom: var(--spacing-lg);
-  }
-  
-  /* Search/Filter adjustments */
-  .search-filter-section {
-    padding: var(--spacing-lg) 0;
-  }
-  
-  .selected-option {
-    padding: 10px;
-  }
-  
-  /* Listings adjustments */
-  .listings-columns {
-    display: none; /* Hide column headers on mobile */
-  }
-  
-  .listing-item {
-    padding: var(--spacing-md);
-    gap: var(--spacing-sm);
-  }
-  
-  /* Add labels for mobile */
-  .column-label {
-    display: block;
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
-  }
-  
-  .sell-btn {
-    padding: 8px 16px;
-  }
-  
-  /* Network comparison adjustments */
-  .comparison-table th,
-  .comparison-table td {
-    padding: var(--spacing-sm);
-    font-size: 12px;
-  }
-  
-  /* Modal adjustments */
-  .modal-content {
-    width: 90%;
-    max-width: 400px;
-  }
-  
-  .wallet-option {
-    padding: var(--spacing-sm);
-  }
-  
-  .wallet-option img {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-/* Mobile devices */
-@media (max-width: 576px) {
-  body {
-    font-size: 12px;
-  }
-  
-  .container {
-    padding: 0 var(--spacing-sm);
-  }
-  
-  /* Header adjustments */
-  .header-right {
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-  }
-  
-  .language-selector {
-    order: 3;
-  }
-  
-  .selected-language {
-    padding: 6px 8px;
-  }
-  
-  .connect-wallet-btn {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  
-  .user-actions a {
-    padding: 6px 10px;
-    font-size: 12px;
-  }
-  
-  /* Hero section adjustments */
-  .hero-section h1 {
-    font-size: 20px;
-  }
-  
-  .hero-section p {
-    font-size: 13px;
-  }
-  
-  .stat-value {
-    font-size: 18px;
-  }
-  
-  /* Search/Filter adjustments */
-  .filter-row {
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-  }
-  
-  /* Listings adjustments */
-  .listings-header {
+  .profile-header,
+  .profile-details {
     flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
   }
   
-  .filter-options {
-    width: 100%;
-    justify-content: space-between;
+  .disputes-section {
+    flex-direction: column;
   }
   
-  .filter-btn, .sort-btn {
-    padding: 6px 10px;
-    font-size: 12px;
+  .disputes-list {
+    max-width: 100%;
   }
   
-  .buyer-info {
-    gap: var(--spacing-sm);
-  }
-  
-  .buyer-avatar {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .buyer-stats {
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-  }
-  
-  /* Pagination adjustments */
-  .pagination {
-    gap: 4px;
-  }
-  
-  .page-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
-  }
-  
-  /* Network comparison adjustments */
-  .network-comparison-section {
-    padding: var(--spacing-lg) 0;
-  }
-  
-  .comparison-table th,
-  .comparison-table td {
-    padding: 6px 8px;
-    font-size: 11px;
-  }
-  
-  /* How-to section adjustments */
-  .how-to-section {
-    padding: var(--spacing-lg) 0;
-  }
-  
-  .how-to-item {
-    padding: var(--spacing-md);
-  }
-  
-  .how-to-item h3 {
-    font-size: 14px;
-  }
-  
-  /* Footer adjustments */
-  .footer {
-    padding: var(--spacing-lg) 0;
-  }
-  
-  .footer-content {
-    gap: var(--spacing-md);
-  }
-  
-  .social-links {
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .legal-links {
-    justify-content: center;
-    width: 100%;
-    flex-wrap: wrap;
-  }
-  
-  /* Cookie banner adjustments */
-  .cookie-banner {
-    bottom: 10px;
-    right: 10px;
-    left: 10px;
-    max-width: none;
-    font-size: 12px;
-  }
-  
-  /* Modal adjustments */
-  .wallet-options {
+  .actions-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Very small mobile devices */
-@media (max-width: 375px) {
-  .header-content {
-    justify-content: center;
+@media (max-width: 768px) {
+  .app-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px;
   }
   
-  .logo {
-    margin-right: var(--spacing-sm);
+  .logo-container {
+    margin-bottom: 10px;
   }
   
-  .network-selector {
-    margin-right: 0;
+  .wallet-container {
+    width: 100%;
+    justify-content: space-between;
   }
   
-  .main-nav ul {
-    gap: var(--spacing-sm);
+  .app-nav ul {
+    overflow-x: auto;
+    padding: 0 10px;
   }
   
-  .main-nav a {
-    padding: var(--spacing-xs) var(--spacing-xs);
-    font-size: 12px;
+  .app-nav li {
+    margin-right: 10px;
   }
   
-  .hero-section h1 {
-    font-size: 18px;
+  .app-main {
+    padding: 10px;
   }
   
-  .stat-label {
-    font-size: 10px;
+  .filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .table-header {
+    display: none;
+  }
+  
+  .table-row {
+    flex-direction: column;
+    padding: 15px;
+    position: relative;
+  }
+  
+  .col {
+    width: 100% !important;
+    padding: 5px 0;
+    position: relative;
+  }
+  
+  .col::before {
+    content: attr(data-label);
+    font-weight: 600;
+    width: 120px;
+    display: inline-block;
+  }
+  
+  .col.actions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .network-stats {
+    flex-direction: column;
+  }
+  
+  .confirmation-dialog-content {
+    width: 95%;
+  }
+  
+  .wallet-adapter-button {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container h1 {
+    font-size: 1.2rem;
+  }
+  
+  .app-nav button {
+    font-size: 0.9rem;
+    padding: 10px 5px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .wallet-address {
+    font-size: 0.8rem;
+  }
+  
+  .score-value {
+    font-size: 2rem;
+  }
+  
+  .score-label {
+    font-size: 1rem;
+  }
+  
+  .star-rating {
+    font-size: 1.2rem;
   }
   
   .stat-value {
-    font-size: 16px;
+    font-size: 1.5rem;
   }
   
-  .filter-item label {
-    font-size: 11px;
+  .transaction-status {
+    max-width: 300px;
   }
   
-  .selected-option {
-    padding: 8px;
-    font-size: 12px;
+  .action-button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
   }
   
-  .crypto-icon {
-    width: 16px;
-    height: 16px;
+  .wallet-adapter-dropdown {
+    width: 100%;
   }
   
-  .network-info {
-    flex-direction: column;
-    gap: var(--spacing-xs);
+  .wallet-adapter-button-trigger {
+    width: 100%;
   }
 }
 
-/* Mobile-specific features */
-@media (max-width: 768px) {
-  /* Add mobile-friendly touch targets */
-  .btn, 
-  .selected-option,
-  .page-btn,
-  .wallet-option {
-    min-height: 44px; /* Minimum touch target size */
-  }
-  
-  /* Improve mobile scrolling for tables */
-  .comparison-table-wrapper {
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-  
-  .comparison-table-wrapper::-webkit-scrollbar {
-    height: 4px;
-  }
-  
-  .comparison-table-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 4px;
-  }
-  
-  /* Add scroll indicators for horizontal scrolling */
-  .scroll-indicator {
-    display: none;
-  }
-  
-  @media (max-width: 768px) {
-    .scroll-indicator {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-    }
-    
-    .scroll-indicator i {
-      font-size: 14px;
-    }
-  }
-  
-  /* Mobile-friendly dropdown positioning */
-  .dropdown-options {
-    max-height: 250px;
-  }
-  
-  /* Sticky filter bar for mobile */
-  @media (max-width: 576px) {
-    .filter-options {
-      position: sticky;
-      top: 64px;
-      background-color: var(--background-color);
-      z-index: 90;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-  }
-}
-
-/* Mobile navigation menu button */
-.mobile-menu-btn {
+/* Mobile Navigation */
+.mobile-menu-button {
   display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: var(--background-secondary);
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
   cursor: pointer;
 }
 
-@media (max-width: 576px) {
-  .mobile-menu-btn {
-    display: flex;
-    order: 1;
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: block;
   }
   
-  .main-nav {
+  .app-nav {
     display: none;
   }
   
-  .main-nav.active {
+  .app-nav.mobile-open {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    background-color: var(--card-background);
+    z-index: 99;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .app-nav.mobile-open ul {
+    flex-direction: column;
+    padding: 0;
+  }
+  
+  .app-nav.mobile-open li {
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .app-nav.mobile-open li:last-child {
+    border-bottom: none;
+  }
+  
+  .app-nav.mobile-open button {
+    width: 100%;
+    text-align: left;
+    padding: 15px;
+  }
+  
+  .app-nav.mobile-open li.active {
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f5f5f5;
+  }
+  
+  .app-nav.mobile-open li.active button {
+    border-left: 3px solid var(--primary-color);
+  }
+}
+
+/* Floating Action Button for Mobile */
+.floating-action-button {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: none;
+  font-size: 24px;
+  z-index: 90;
+  transition: var(--transition);
+}
+
+.floating-action-button:hover {
+  transform: scale(1.05);
+}
+
+.floating-action-menu {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 90;
+  overflow: hidden;
+  transition: var(--transition);
+  transform-origin: bottom right;
+}
+
+.floating-action-menu.hidden {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.floating-action-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.floating-action-item:last-child {
+  border-bottom: none;
+}
+
+.floating-action-item:hover {
+  background-color: #f5f5f5;
+}
+
+.floating-action-item-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .floating-action-button {
     display: block;
   }
 }
 
-/* Mobile-optimized wallet connection modal */
-@media (max-width: 576px) {
-  .modal-body {
-    padding: var(--spacing-md);
-  }
-  
-  .wallet-info {
-    font-size: 11px;
-  }
-}
-
-/* Mobile floating action button for quick actions */
-.mobile-fab {
-  display: none;
-}
-
+/* Touch-friendly Improvements */
 @media (max-width: 768px) {
-  .mobile-fab {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 99;
-    font-size: 24px;
+  /* Larger touch targets */
+  button, 
+  .action-button,
+  .network-option,
+  .dispute-item,
+  .floating-action-item {
+    min-height: 44px;
   }
   
-  .mobile-fab:active {
-    transform: scale(0.95);
+  /* Better focus states for touch */
+  button:focus,
+  input:focus,
+  select:focus,
+  .action-button:focus {
+    outline: 2px solid var(--primary-color);
   }
   
-  /* Adjust cookie banner to not overlap with FAB */
-  .cookie-banner {
-    bottom: 86px;
+  /* Active states for touch feedback */
+  button:active,
+  .action-button:active,
+  .network-option:active,
+  .dispute-item:active {
+    opacity: 0.7;
+  }
+  
+  /* Prevent double-tap zooming */
+  .action-button,
+  .network-option,
+  .dispute-item,
+  .floating-action-item {
+    touch-action: manipulation;
+  }
+  
+  /* Fix for iOS 100vh issue */
+  .app-container {
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Improved scrolling */
+  .disputes-list,
+  .transactions-table,
+  .blockchain-error-message {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app-header {
+    position: static;
+  }
+  
+  .confirmation-dialog-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+/* High-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Dark mode support for future implementation */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* These will be activated when dark mode is implemented */
+    /*
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border-color: #333333;
+    */
   }
 }

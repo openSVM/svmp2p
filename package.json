@@ -1,0 +1,27 @@
+{
+  "name": "solana-svm-p2p-exchange",
+  "version": "1.0.0",
+  "description": "A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtual Machine networks (Solana, Sonic, Eclipse, svmBNB, and s00n).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://larp0: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@github.com/openSVM/svmp2p.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/openSVM/svmp2p/issues"
+  },
+  "homepage": "https://github.com/openSVM/svmp2p#readme",
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.0",
+    "@solana/wallet-adapter-react": "^0.15.36",
+    "@solana/wallet-adapter-react-ui": "^0.9.36",
+    "@solana/wallet-adapter-wallets": "^0.19.33",
+    "@solana/web3.js": "^1.98.0"
+  }
+}
