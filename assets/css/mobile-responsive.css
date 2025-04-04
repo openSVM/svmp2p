@@ -1,0 +1,490 @@
+/* 
+ * OpenSVM P2P Exchange - Mobile Responsive Enhancements
+ * Additional styles to improve mobile experience
+ */
+
+/* ===== Base Mobile Adjustments ===== */
+:root {
+  /* Mobile-specific spacing */
+  --mobile-spacing-xs: 4px;
+  --mobile-spacing-sm: 6px;
+  --mobile-spacing-md: 12px;
+  --mobile-spacing-lg: 18px;
+  --mobile-spacing-xl: 24px;
+}
+
+/* ===== Enhanced Responsive Styles ===== */
+/* Large tablets and small desktops */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .network-stats {
+    gap: var(--spacing-md);
+  }
+  
+  .stat-item {
+    min-width: 120px;
+  }
+  
+  .wallet-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablets and large mobile */
+@media (max-width: 768px) {
+  body {
+    font-size: 13px;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  /* Header adjustments */
+  .header {
+    height: auto;
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .header-content {
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .logo img {
+    height: 28px;
+  }
+  
+  .selected-network {
+    padding: 6px 10px;
+  }
+  
+  .network-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .main-nav a {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 13px;
+  }
+  
+  .main-nav a.active::after {
+    bottom: -12px;
+  }
+  
+  /* Hero section adjustments */
+  .hero-section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .hero-section h1 {
+    font-size: 22px;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .hero-section p {
+    font-size: 14px;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  /* Search/Filter adjustments */
+  .search-filter-section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .selected-option {
+    padding: 10px;
+  }
+  
+  /* Listings adjustments */
+  .listings-columns {
+    display: none; /* Hide column headers on mobile */
+  }
+  
+  .listing-item {
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  
+  /* Add labels for mobile */
+  .column-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+  }
+  
+  .sell-btn {
+    padding: 8px 16px;
+  }
+  
+  /* Network comparison adjustments */
+  .comparison-table th,
+  .comparison-table td {
+    padding: var(--spacing-sm);
+    font-size: 12px;
+  }
+  
+  /* Modal adjustments */
+  .modal-content {
+    width: 90%;
+    max-width: 400px;
+  }
+  
+  .wallet-option {
+    padding: var(--spacing-sm);
+  }
+  
+  .wallet-option img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 576px) {
+  body {
+    font-size: 12px;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  /* Header adjustments */
+  .header-right {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+  
+  .language-selector {
+    order: 3;
+  }
+  
+  .selected-language {
+    padding: 6px 8px;
+  }
+  
+  .connect-wallet-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .user-actions a {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  /* Hero section adjustments */
+  .hero-section h1 {
+    font-size: 20px;
+  }
+  
+  .hero-section p {
+    font-size: 13px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
+  }
+  
+  /* Search/Filter adjustments */
+  .filter-row {
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+  
+  /* Listings adjustments */
+  .listings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .filter-options {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .filter-btn, .sort-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .buyer-info {
+    gap: var(--spacing-sm);
+  }
+  
+  .buyer-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .buyer-stats {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+  }
+  
+  /* Pagination adjustments */
+  .pagination {
+    gap: 4px;
+  }
+  
+  .page-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+  
+  /* Network comparison adjustments */
+  .network-comparison-section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .comparison-table th,
+  .comparison-table td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  /* How-to section adjustments */
+  .how-to-section {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .how-to-item {
+    padding: var(--spacing-md);
+  }
+  
+  .how-to-item h3 {
+    font-size: 14px;
+  }
+  
+  /* Footer adjustments */
+  .footer {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .footer-content {
+    gap: var(--spacing-md);
+  }
+  
+  .social-links {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .legal-links {
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  /* Cookie banner adjustments */
+  .cookie-banner {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    font-size: 12px;
+  }
+  
+  /* Modal adjustments */
+  .wallet-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Very small mobile devices */
+@media (max-width: 375px) {
+  .header-content {
+    justify-content: center;
+  }
+  
+  .logo {
+    margin-right: var(--spacing-sm);
+  }
+  
+  .network-selector {
+    margin-right: 0;
+  }
+  
+  .main-nav ul {
+    gap: var(--spacing-sm);
+  }
+  
+  .main-nav a {
+    padding: var(--spacing-xs) var(--spacing-xs);
+    font-size: 12px;
+  }
+  
+  .hero-section h1 {
+    font-size: 18px;
+  }
+  
+  .stat-label {
+    font-size: 10px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+  }
+  
+  .filter-item label {
+    font-size: 11px;
+  }
+  
+  .selected-option {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  .crypto-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .network-info {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}
+
+/* Mobile-specific features */
+@media (max-width: 768px) {
+  /* Add mobile-friendly touch targets */
+  .btn, 
+  .selected-option,
+  .page-btn,
+  .wallet-option {
+    min-height: 44px; /* Minimum touch target size */
+  }
+  
+  /* Improve mobile scrolling for tables */
+  .comparison-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  .comparison-table-wrapper::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .comparison-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+  }
+  
+  /* Add scroll indicators for horizontal scrolling */
+  .scroll-indicator {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .scroll-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .scroll-indicator i {
+      font-size: 14px;
+    }
+  }
+  
+  /* Mobile-friendly dropdown positioning */
+  .dropdown-options {
+    max-height: 250px;
+  }
+  
+  /* Sticky filter bar for mobile */
+  @media (max-width: 576px) {
+    .filter-options {
+      position: sticky;
+      top: 64px;
+      background-color: var(--background-color);
+      z-index: 90;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+  }
+}
+
+/* Mobile navigation menu button */
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
+  cursor: pointer;
+}
+
+@media (max-width: 576px) {
+  .mobile-menu-btn {
+    display: flex;
+    order: 1;
+  }
+  
+  .main-nav {
+    display: none;
+  }
+  
+  .main-nav.active {
+    display: block;
+  }
+}
+
+/* Mobile-optimized wallet connection modal */
+@media (max-width: 576px) {
+  .modal-body {
+    padding: var(--spacing-md);
+  }
+  
+  .wallet-info {
+    font-size: 11px;
+  }
+}
+
+/* Mobile floating action button for quick actions */
+.mobile-fab {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-fab {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 99;
+    font-size: 24px;
+  }
+  
+  .mobile-fab:active {
+    transform: scale(0.95);
+  }
+  
+  /* Adjust cookie banner to not overlap with FAB */
+  .cookie-banner {
+    bottom: 86px;
+  }
+}

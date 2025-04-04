@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSVM P2P Exchange - Trade across Solana Virtual Machine networks</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/mobile-responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container header-content">
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="logo">
+                <a href="/">
+                    <img src="assets/images/opensvm-logo.svg" alt="OpenSVM Logo" id="logo-placeholder">
+                </a>
+            </div>
+            
+            <div class="network-selector">
+                <div class="selected-network">
+                    <img src="assets/images/solana-logo.svg" alt="Solana" class="network-icon">
+                    <span>Solana</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="network-dropdown">
+                    <ul>
+                        <li data-network="solana" class="active">
+                            <img src="assets/images/solana-logo.svg" alt="Solana" class="network-icon">
+                            <span>Solana</span>
+                        </li>
+                        <li data-network="sonic">
+                            <img src="assets/images/sonic-logo.svg" alt="Sonic" class="network-icon">
+                            <span>Sonic</span>
+                        </li>
+                        <li data-network="eclipse">
+                            <img src="assets/images/eclipse-logo.svg" alt="Eclipse" class="network-icon">
+                            <span>Eclipse</span>
+                        </li>
+                        <li data-network="svmbnb">
+                            <img src="assets/images/svmbnb-logo.svg" alt="svmBNB" class="network-icon">
+                            <span>svmBNB</span>
+                        </li>
+                        <li data-network="soon">
+                            <img src="assets/images/soon-logo.svg" alt="s00n" class="network-icon">
+                            <span>s00n</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/buy">Buy</a></li>
+                    <li><a href="/sell" class="active">Sell</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-right">
+                <div class="language-selector">
+                    <div class="selected-language">
+                        <i class="fas fa-globe"></i>
+                        <span>English</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="language-dropdown">
+                        <ul>
+                            <li><a href="#" data-lang="en">English</a></li>
+                            <li><a href="#" data-lang="es">Español</a></li>
+                            <li><a href="#" data-lang="ru">Русский</a></li>
+                            <li><a href="#" data-lang="zh">中文</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="user-actions">
+                    <button class="btn btn-secondary connect-wallet-btn">
+                        <i class="fas fa-wallet"></i>
+                        <span>Connect Wallet</span>
+                    </button>
+                    <a href="/login" class="btn btn-secondary">Log in</a>
+                    <a href="/signup" class="btn btn-primary">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Trade across Solana Virtual Machine networks</h1>
+            <p>Fast, secure P2P trading on Solana, Sonic, Eclipse, svmBNB, and s00n</p>
+            
+            <div class="network-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Current TPS</div>
+                    <div class="stat-value" id="current-tps">4,289</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Confirmation Time</div>
+                    <div class="stat-value" id="confirmation-time">0.4s</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Active Validators</div>
+                    <div class="stat-value" id="active-validators">1,785</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search/Filter Section -->
+    <section class="search-filter-section">
+        <div class="container">
+            <div class="filter-row">
+                <div class="filter-item crypto-select">
+                    <label>I want to sell</label>
+                    <div class="select-wrapper">
+                        <div class="selected-option">
+                            <img src="assets/images/sol-icon.svg" alt="SOL" class="crypto-icon">
+                            <span>SOL</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-options">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-item currency-select">
+                    <label>I want to receive</label>
+                    <div class="select-wrapper">
+                        <div class="selected-option">
+                            <span>USD - US Dollar</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-options">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-item amount-input">
+                    <label>Amount</label>
+                    <input type="text" class="form-control" placeholder="Enter amount">
+                    <div class="market-price">
+                        Current market price: <span class="price">SOL - $149.32</span>
+                    </div>
+                </div>
+                
+                <div class="filter-item payment-method-select">
+                    <label>Payment method</label>
+                    <div class="select-wrapper">
+                        <div class="selected-option">
+                            <i class="fas fa-credit-card"></i>
+                            <span>All methods</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-options">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="network-info">
+                <div class="gas-fee">
+                    <span class="label">Estimated Gas Fee:</span>
+                    <span class="value">0.000005 SOL ($0.0007)</span>
+                </div>
+                <div class="confirmation-time">
+                    <span class="label">Estimated Confirmation:</span>
+                    <span class="value">~0.4s</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offer Listings Section -->
+    <section class="offer-listings-section">
+        <div class="container">
+            <div class="listings-header">
+                <h2>Available Offers</h2>
+                <div class="filter-options">
+                    <button class="filter-btn">
+                        <i class="fas fa-filter"></i>
+                        <span>Filter</span>
+                    </button>
+                    <button class="sort-btn">
+                        <i class="fas fa-sort"></i>
+                        <span>Rate</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="listings-table">
+                <div class="listings-columns">
+                    <div class="column buyer">Buyer</div>
+                    <div class="column rate-limits">Rate/Limits</div>
+                    <div class="column payment-method">Payment method</div>
+                    <div class="column network">Network</div>
+                    <div class="column action">Action</div>
+                </div>
+                
+                <div class="listings-body">
+                    <!-- Listing 1 -->
+                    <div class="listing-item">
+                        <div class="column buyer">
+                            <div class="column-label">Buyer</div>
+                            <div class="buyer-info">
+                                <div class="buyer-avatar">
+                                    <img src="assets/images/avatar1.svg" alt="User" class="avatar-placeholder" data-initials="MW">
+                                </div>
+                                <div class="buyer-details">
+                                    <div class="buyer-name">
+                                        MarketWizard
+                                        <i class="fas fa-check-circle verified-badge"></i>
+                                    </div>
+                                    <div class="buyer-status">Online</div>
+                                    <div class="buyer-stats">
+                                        <span class="positive"><i class="fas fa-thumbs-up"></i> 5372</span>
+                                        <span class="neutral"><i class="fas fa-minus"></i> 4</span>
+                                        <span class="negative"><i class="fas fa-thumbs-down"></i> 13</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column rate-limits">
+                            <div class="column-label">Rate/Limits</div>
+                            <div class="rate">$148.90</div>
+                            <div class="rate-percentage positive">+2.5%</div>
+                            <div class="limits">$1,000 - $5,000</div>
+                        </div>
+                        
+                        <div class="column payment-method">
+                            <div class="column-label">Payment method</div>
+                            <div class="payment-methods">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-university"></i>
+                                    <span>Bank transfer</span>
+                                </div>
+                            </div>
+                            <div class="verified-status">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Verified trader</span>
+                            </div>
+                            <div class="verification-requirements">
+                                <div class="verification-badge">
+                                    <i class="fas fa-phone-slash"></i>
+                                    Phone not required
+                                </div>
+                                <div class="verification-badge">
+                                    <i class="fas fa-id-card-alt"></i>
+                                    ID not required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column network">
+                            <div class="column-label">Network</div>
+                            <div class="network-badge solana">
+                                <img src="assets/images/solana-logo.svg" alt="Solana" class="network-icon-small">
+                                <span>Solana</span>
+                            </div>
+                            <div class="network-details">
+                                <div>~0.4s confirmation</div>
+                                <div>0.000005 SOL fee</div>
+                            </div>
+                        </div>
+                        
+                        <div class="column action">
+                            <div class="column-label">Action</div>
+                            <button class="btn btn-primary sell-btn">Sell</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Listing 2 -->
+                    <div class="listing-item">
+                        <div class="column buyer">
+                            <div class="column-label">Buyer</div>
+                            <div class="buyer-info">
+                                <div class="buyer-avatar">
+                                    <img src="assets/images/avatar2.svg" alt="User" class="avatar-placeholder" data-initials="CT">
+                                </div>
+                                <div class="buyer-details">
+                                    <div class="buyer-name">
+                                        CryptoTrader
+                                        <i class="fas fa-check-circle verified-badge"></i>
+                                    </div>
+                                    <div class="buyer-status">Online</div>
+                                    <div class="buyer-stats">
+                                        <span class="positive"><i class="fas fa-thumbs-up"></i> 2578</span>
+                                        <span class="neutral"><i class="fas fa-minus"></i> 17</span>
+                                        <span class="negative"><i class="fas fa-thumbs-down"></i> 27</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column rate-limits">
+                            <div class="column-label">Rate/Limits</div>
+                            <div class="rate">$147.85</div>
+                            <div class="rate-percentage positive">+2.25%</div>
+                            <div class="limits">$10,000 - $30,000</div>
+                        </div>
+                        
+                        <div class="column payment-method">
+                            <div class="column-label">Payment method</div>
+                            <div class="payment-methods">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <span>Fast Transfer</span>
+                                </div>
+                            </div>
+                            <div class="buyer-comment">
+                                Ready for quick transactions
+                            </div>
+                            <div class="verification-requirements">
+                                <div class="verification-badge">
+                                    <i class="fas fa-phone-slash"></i>
+                                    Phone not required
+                                </div>
+                                <div class="verification-badge">
+                                    <i class="fas fa-id-card-alt"></i>
+                                    ID not required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column network">
+                            <div class="column-label">Network</div>
+                            <div class="network-badge eclipse">
+                                <img src="assets/images/eclipse-logo.svg" alt="Eclipse" class="network-icon-small">
+                                <span>Eclipse</span>
+                            </div>
+                            <div class="network-details">
+                                <div>~2.0s confirmation</div>
+                                <div>0.00001 ETH fee</div>
+                            </div>
+                        </div>
+                        
+                        <div class="column action">
+                            <div class="column-label">Action</div>
+                            <button class="btn btn-primary sell-btn">Sell</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Listing 3 -->
+                    <div class="listing-item">
+                        <div class="column buyer">
+                            <div class="column-label">Buyer</div>
+                            <div class="buyer-info">
+                                <div class="buyer-avatar">
+                                    <img src="assets/images/avatar3.svg" alt="User" class="avatar-placeholder" data-initials="BP">
+                                </div>
+                                <div class="buyer-details">
+                                    <div class="buyer-name">
+                                        BitcoinPro
+                                        <i class="fas fa-check-circle verified-badge"></i>
+                                    </div>
+                                    <div class="buyer-status">Online</div>
+                                    <div class="buyer-stats">
+                                        <span class="positive"><i class="fas fa-thumbs-up"></i> 31925</span>
+                                        <span class="neutral"><i class="fas fa-minus"></i> 173</span>
+                                        <span class="negative"><i class="fas fa-thumbs-down"></i> 173</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column rate-limits">
+                            <div class="column-label">Rate/Limits</div>
+                            <div class="rate">$149.35</div>
+                            <div class="rate-percentage positive">+0.11%</div>
+                            <div class="limits">$20,000 - $100,000</div>
+                        </div>
+                        
+                        <div class="column payment-method">
+                            <div class="column-label">Payment method</div>
+                            <div class="payment-methods">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-university"></i>
+                                    <span>Bank transfer</span>
+                                </div>
+                            </div>
+                            <div class="verified-status">
+                                <i class="fas fa-check-circle"></i>
+                                <span>confirmed</span>
+                            </div>
+                            <div class="verification-requirements">
+                                <div class="verification-badge">
+                                    <i class="fas fa-phone-slash"></i>
+                                    Phone not required
+                                </div>
+                                <div class="verification-badge">
+                                    <i class="fas fa-id-card-alt"></i>
+                                    ID not required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column network">
+                            <div class="column-label">Network</div>
+                            <div class="network-badge sonic">
+                                <img src="assets/images/sonic-logo.svg" alt="Sonic" class="network-icon-small">
+                                <span>Sonic</span>
+                            </div>
+                            <div class="network-details">
+                                <div>~0.5s confirmation</div>
+                                <div>0.000007 SOL fee</div>
+                            </div>
+                        </div>
+                        
+                        <div class="column action">
+                            <div class="column-label">Action</div>
+                            <button class="btn btn-primary sell-btn">Sell</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Listing 4 -->
+                    <div class="listing-item">
+                        <div class="column buyer">
+                            <div class="column-label">Buyer</div>
+                            <div class="buyer-info">
+                                <div class="buyer-avatar">
+                                    <img src="assets/images/avatar4.svg" alt="User" class="avatar-placeholder" data-initials="CB">
+                                </div>
+                                <div class="buyer-details">
+                                    <div class="buyer-name">
+                                        CryptoBurger
+                                        <i class="fas fa-check-circle verified-badge"></i>
+                                    </div>
+                                    <div class="buyer-status">Online</div>
+                                    <div class="buyer-stats">
+                                        <span class="positive"><i class="fas fa-thumbs-up"></i> 2255</span>
+                                        <span class="neutral"><i class="fas fa-minus"></i> 10</span>
+                                        <span class="negative"><i class="fas fa-thumbs-down"></i> 3</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column rate-limits">
+                            <div class="column-label">Rate/Limits</div>
+                            <div class="rate">$146.73</div>
+                            <div class="rate-percentage negative">-1.44%</div>
+                            <div class="limits">$50,000 - $200,000</div>
+                        </div>
+                        
+                        <div class="column payment-method">
+                            <div class="column-label">Payment method</div>
+                            <div class="payment-methods">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <span>Cash</span>
+                                </div>
+                                <div class="payment-method-item">
+                                    <i class="fas fa-university"></i>
+                                    <span>Bank transfer</span>
+                                </div>
+                            </div>
+                            <div class="buyer-comment">
+                                FAST • RELIABLE • SECURE • BEST RATES
+                            </div>
+                            <div class="verification-requirements">
+                                <div class="verification-badge">
+                                    <i class="fas fa-phone-slash"></i>
+                                    Phone not required
+                                </div>
+                                <div class="verification-badge">
+                                    <i class="fas fa-id-card-alt"></i>
+                                    ID not required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column network">
+                            <div class="column-label">Network</div>
+                            <div class="network-badge svmbnb">
+                                <img src="assets/images/svmbnb-logo.svg" alt="svmBNB" class="network-icon-small">
+                                <span>svmBNB</span>
+                            </div>
+                            <div class="network-details">
+                                <div>~3.0s confirmation</div>
+                                <div>0.0001 BNB fee</div>
+                            </div>
+                        </div>
+                        
+                        <div class="column action">
+                            <div class="column-label">Action</div>
+                            <button class="btn btn-primary sell-btn">Sell</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Listing 5 -->
+                    <div class="listing-item">
+                        <div class="column buyer">
+                            <div class="column-label">Buyer</div>
+                            <div class="buyer-info">
+                                <div class="buyer-avatar">
+                                    <img src="assets/images/avatar5.svg" alt="User" class="avatar-placeholder" data-initials="MC">
+                                </div>
+                                <div class="buyer-details">
+                                    <div class="buyer-name">
+                                        MrCrypto
+                                        <i class="fas fa-check-circle verified-badge"></i>
+                                    </div>
+                                    <div class="buyer-status">Online</div>
+                                    <div class="buyer-stats">
+                                        <span class="positive"><i class="fas fa-thumbs-up"></i> 16719</span>
+                                        <span class="neutral"><i class="fas fa-minus"></i> 44</span>
+                                        <span class="negative"><i class="fas fa-thumbs-down"></i> 5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column rate-limits">
+                            <div class="column-label">Rate/Limits</div>
+                            <div class="rate">$148.82</div>
+                            <div class="rate-percentage positive">+2.16%</div>
+                            <div class="limits">$40,000 - $100,000</div>
+                        </div>
+                        
+                        <div class="column payment-method">
+                            <div class="column-label">Payment method</div>
+                            <div class="payment-methods">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-university"></i>
+                                    <span>Bank transfer</span>
+                                </div>
+                            </div>
+                            <div class="buyer-comment">
+                                <i class="fas fa-bolt"></i> Fast payment within 15 minutes
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="verification-requirements">
+                                <div class="verification-badge">
+                                    <i class="fas fa-phone-slash"></i>
+                                    Phone not required
+                                </div>
+                                <div class="verification-badge">
+                                    <i class="fas fa-id-card-alt"></i>
+                                    ID not required
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="column network">
+                            <div class="column-label">Network</div>
+                            <div class="network-badge soon">
+                                <img src="assets/images/soon-logo.svg" alt="s00n" class="network-icon-small">
+                                <span>s00n</span>
+                            </div>
+                            <div class="network-details">
+                                <div>~0.05s confirmation</div>
+                                <div>0.000003 ETH fee</div>
+                            </div>
+                        </div>
+                        
+                        <div class="column action">
+                            <div class="column-label">Action</div>
+                            <button class="btn btn-primary sell-btn">Sell</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pagination">
+                    <a href="#" class="page-btn">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="#" class="page-btn">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                    <a href="#" class="page-btn active">1</a>
+                    <a href="#" class="page-btn">2</a>
+                    <span class="page-ellipsis">...</span>
+                    <a href="#" class="page-btn">11</a>
+                    <a href="#" class="page-btn">12</a>
+                    <a href="#" class="page-btn">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="#" class="page-btn">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Network Comparison Section -->
+    <section class="network-comparison-section">
+        <div class="container">
+            <h2>SVM Network Comparison</h2>
+            
+            <div class="scroll-indicator">
+                <i class="fas fa-arrow-left"></i>
+                <span>Scroll horizontally to see more</span>
+                <i class="fas fa-arrow-right"></i>
+            </div>
+            
+            <div class="comparison-table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Network</th>
+                            <th>TPS</th>
+                            <th>Confirmation Time</th>
+                            <th>Gas Fee</th>
+                            <th>Settlement Layer</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="network-badge solana">
+                                    <img src="assets/images/solana-logo.svg" alt="Solana" class="network-icon-small">
+                                    <span>Solana</span>
+                                </div>
+                            </td>
+                            <td>~4,000</td>
+                            <td>0.4s</td>
+                            <td>~0.000005 SOL</td>
+                            <td>Self (L1)</td>
+                            <td>High volume trading, DeFi</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="network-badge sonic">
+                                    <img src="assets/images/sonic-logo.svg" alt="Sonic" class="network-icon-small">
+                                    <span>Sonic</span>
+                                </div>
+                            </td>
+                            <td>~3,500</td>
+                            <td>0.5s</td>
+                            <td>~0.000007 SOL</td>
+                            <td>Solana</td>
+                            <td>Gaming, NFTs</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="network-badge eclipse">
+                                    <img src="assets/images/eclipse-logo.svg" alt="Eclipse" class="network-icon-small">
+                                    <span>Eclipse</span>
+                                </div>
+                            </td>
+                            <td>~2,500</td>
+                            <td>2.0s</td>
+                            <td>~0.00001 ETH</td>
+                            <td>Ethereum</td>
+                            <td>Cross-chain applications</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="network-badge svmbnb">
+                                    <img src="assets/images/svmbnb-logo.svg" alt="svmBNB" class="network-icon-small">
+                                    <span>svmBNB</span>
+                                </div>
+                            </td>
+                            <td>~2,000</td>
+                            <td>3.0s</td>
+                            <td>~0.0001 BNB</td>
+                            <td>BNB Chain</td>
+                            <td>BNB ecosystem integration</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="network-badge soon">
+                                    <img src="assets/images/soon-logo.svg" alt="s00n" class="network-icon-small">
+                                    <span>s00n</span>
+                                </div>
+                            </td>
+                            <td>~5,000</td>
+                            <td>0.05s</td>
+                            <td>~0.000003 ETH</td>
+                            <td>Optimistic Rollup</td>
+                            <td>Ultra-fast transactions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- How-to Section -->
+    <section class="how-to-section">
+        <div class="container">
+            <h2>How to sell on OpenSVM P2P Exchange</h2>
+            
+            <div class="how-to-steps">
+                <div class="how-to-item">
+                    <h3>1. Connect your wallet</h3>
+                    <p>Start by connecting your Solana wallet (Phantom, Solflare, etc.) to the OpenSVM P2P Exchange. This allows you to securely sell your crypto across any SVM network.</p>
+                </div>
+                
+                <div class="how-to-item">
+                    <h3>2. Choose your network and cryptocurrency</h3>
+                    <p>Select which SVM network you want to use (Solana, Sonic, Eclipse, svmBNB, or s00n) and which cryptocurrency you want to sell. Each network has different confirmation times and gas fees.</p>
+                </div>
+                
+                <div class="how-to-item">
+                    <h3>3. Find the best offer</h3>
+                    <p>Browse through available buyer offers, comparing rates, payment methods, and verification requirements. Choose the offer that best suits your needs.</p>
+                </div>
+                
+                <div class="how-to-item">
+                    <h3>4. Complete the secure trade</h3>
+                    <p>Once you select an offer, your crypto will be held in a secure escrow smart contract on the selected SVM network. After the buyer sends payment, you can release the crypto to complete the trade.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">How it works</a></li>
+                        <li><a href="#">Fees</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">API Documentation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Telegram</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Forum</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Networks</h3>
+                    <ul>
+                        <li><a href="#">Solana</a></li>
+                        <li><a href="#">Sonic</a></li>
+                        <li><a href="#">Eclipse</a></li>
+                        <li><a href="#">svmBNB</a></li>
+                        <li><a href="#">s00n</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>About</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Partners</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+                
+                <div class="legal-links">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Risk Disclosure</a>
+                    <a href="#">Compliance</a>
+                </div>
+                
+                <div class="copyright">
+                    &copy; 2025 OpenSVM P2P Exchange. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Banner -->
+    <div class="cookie-banner" id="cookie-banner">
+        <div>We use cookies to improve your experience</div>
+        <button class="cookie-close" id="cookie-close"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Wallet Connection Modal -->
+    <div class="modal" id="wallet-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Connect Wallet</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="wallet-options">
+                    <div class="wallet-option" data-wallet="phantom">
+                        <img src="assets/images/phantom-logo.svg" alt="Phantom">
+                        <span>Phantom</span>
+                    </div>
+                    <div class="wallet-option" data-wallet="solflare">
+                        <img src="assets/images/solflare-logo.svg" alt="Solflare">
+                        <span>Solflare</span>
+                    </div>
+                    <div class="wallet-option" data-wallet="backpack">
+                        <img src="assets/images/backpack-logo.svg" alt="Backpack">
+                        <span>Backpack</span>
+                    </div>
+                    <div class="wallet-option" data-wallet="glow">
+                        <img src="assets/images/glow-logo.svg" alt="Glow">
+                        <span>Glow</span>
+                    </div>
+                </div>
+                <div class="wallet-info">
+                    Don't have a wallet? <a href="#">Learn more</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Floating Action Button -->
+    <button class="mobile-fab">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
+<!-- Include the mobile interactions JavaScript file -->
+<script src="assets/js/mobile-interactions.js"></script>
