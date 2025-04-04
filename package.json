@@ -4,13 +4,23 @@
   "description": "A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtual Machine networks (Solana, Sonic, Eclipse, svmBNB, and s00n).",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://larp0: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@github.com/openSVM/svmp2p.git"
+    "url": "git+https://github.com/openSVM/svmp2p.git"
   },
-  "keywords": [],
+  "keywords": [
+    "solana",
+    "svm",
+    "p2p",
+    "exchange",
+    "blockchain",
+    "crypto"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -18,10 +28,42 @@
   },
   "homepage": "https://github.com/openSVM/svmp2p#readme",
   "dependencies": {
-    "@coral-xyz/anchor": "^0.31.0",
-    "@solana/wallet-adapter-react": "^0.15.36",
-    "@solana/wallet-adapter-react-ui": "^0.9.36",
-    "@solana/wallet-adapter-wallets": "^0.19.33",
-    "@solana/web3.js": "^1.98.0"
+    "@coral-xyz/anchor": "^0.28.0",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.34",
+    "@solana/wallet-adapter-wallets": "^0.19.22",
+    "@solana/web3.js": "^1.78.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.4.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "resolutions": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   }
 }
