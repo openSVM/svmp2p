@@ -1,5 +1,5 @@
 [build]
-  command = "npm install --legacy-peer-deps"
+  command = "npm install --legacy-peer-deps --force"
   publish = "build"
 
 [build.environment]
