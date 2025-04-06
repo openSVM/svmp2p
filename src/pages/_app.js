@@ -9,6 +9,9 @@ import {
 } from '@solana/wallet-adapter-wallets';
 
 // Import styles - order matters for CSS
+// IMPORTANT: In CSS files, all @import statements must be at the top of the file
+// with proper formatting and line breaks between them and the first CSS rule.
+// Next.js strictly enforces this CSS specification.
 import '@solana/wallet-adapter-react-ui/styles.css';
 import '@/styles/globals.css';
 

@@ -29,9 +29,20 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 ## Important CSS Notes
 
 - When using CSS `@import` rules, they **must** be placed at the top of the stylesheet, before any other CSS rules or declarations.
+- Each `@import` rule should be on its own line with proper formatting and semicolons.
+- Add extra line breaks between imports and the first CSS rule to ensure proper parsing.
 - Next.js enforces this CSS standard strictly, whereas some other build systems might be more forgiving.
 - Only `@charset` and `@layer` declarations can precede `@import` rules.
 - The main stylesheet is at `src/styles/globals.css` which imports styles from the public directory.
+- Example of correct formatting:
+  ```css
+  @import "/path/to/file.css";
+  
+  @import "/path/to/another.css";
+  
+  /* First CSS rule after imports */
+  :root { ... }
+  ```
 
 ## Getting Started
 

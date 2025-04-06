@@ -3,8 +3,10 @@
  * before any other rules or declarations (except @charset or @layer)
  * This is required for proper CSS processing in Next.js
  */
-@import '/assets/css/styles.css';
-@import '/assets/css/mobile-responsive.css';
+@import "/assets/css/styles.css";
+
+@import "/assets/css/mobile-responsive.css";
+
 
 /* Additional Next.js specific styles */
 :root {
