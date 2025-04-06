@@ -15,6 +15,9 @@ import '@/styles/globals.css';
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';
 
+// Import Layout
+import Layout from '@/components/Layout';
+
 export default function App({ Component, pageProps }) {
   // Set up wallet adapters
   const wallets = useMemo(
@@ -33,7 +36,9 @@ export default function App({ Component, pageProps }) {
         <ConnectionProvider endpoint={network.endpoint}>
           <WalletProvider wallets={wallets} autoConnect>
             <WalletModalProvider>
-              <Component {...pageProps} />
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
             </WalletModalProvider>
           </WalletProvider>
         </ConnectionProvider>

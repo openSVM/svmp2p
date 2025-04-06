@@ -19,6 +19,13 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 - Solana Web3.js and Wallet Adapters
 - SVG for network logos and icons
 
+## Next.js Architecture
+
+- The application uses a standard Next.js architecture with SSR (Server-Side Rendering)
+- The project structure follows Next.js conventions with `/pages`, `/components`, and `/contexts`
+- Page layouts are applied consistently using the Layout component in `_app.js`
+- Dynamic imports with `{ ssr: false }` are used for client-side only components
+
 ## Important CSS Notes
 
 - When using CSS `@import` rules, they **must** be placed at the top of the stylesheet, before any other CSS rules or declarations.

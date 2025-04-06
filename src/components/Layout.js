@@ -71,7 +71,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         </main>
         
         <footer className="app-footer">
-          <p>u00a9 2025 OpenSVM P2P Exchange. All rights reserved.</p>
+          <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
           <p>
             <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
               {network.name} Explorer
