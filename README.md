@@ -12,16 +12,23 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 
 ## Technologies Used
 
-- HTML5
+- Next.js 14 (Server-Side Rendering)
+- React 18
 - CSS3 with responsive design
 - JavaScript (ES6+)
+- Solana Web3.js and Wallet Adapters
 - SVG for network logos and icons
 
 ## Getting Started
 
 1. Clone the repository
-2. Open `index.html` in your browser
-3. Connect your wallet to start trading
+2. Install dependencies: `npm install --legacy-peer-deps`
+3. Run the development server: `npm run dev`
+4. Connect your wallet to start trading
+
+## Requirements
+
+- Node.js >= 18.17.0 (required by Next.js 14)
 
 ## Mobile Responsiveness
 

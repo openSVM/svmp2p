@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const webpack = require('webpack');
+
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -21,7 +23,7 @@ const nextConfig = {
     };
 
     config.plugins.push(
-      new config.webpack.ProvidePlugin({
+      new webpack.ProvidePlugin({
         process: 'process/browser',
         Buffer: ['buffer', 'Buffer']
       })
