@@ -1,0 +1,468 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-card-foreground font-sans;
+  }
+  
+  a {
+    @apply text-primary no-underline;
+  }
+  
+  a:hover {
+    @apply underline;
+  }
+  
+  button {
+    @apply cursor-pointer font-sans;
+  }
+}
+
+@layer components {
+  .app-container {
+    @apply flex flex-col min-h-screen;
+  }
+  
+  .app-header {
+    @apply h-header bg-card shadow flex items-center justify-between px-5 sticky top-0 z-50;
+  }
+  
+  .logo-container {
+    @apply flex items-center;
+  }
+  
+  .logo-container img {
+    @apply h-10 mr-2.5;
+  }
+  
+  .logo-container h1 {
+    @apply text-2xl font-semibold text-primary;
+  }
+  
+  .wallet-container {
+    @apply flex items-center gap-2.5;
+  }
+  
+  .app-nav {
+    @apply bg-card border-b border-border;
+  }
+  
+  .app-nav ul {
+    @apply flex list-none px-5;
+  }
+  
+  .app-nav li {
+    @apply mr-5;
+  }
+  
+  .app-nav li.active {
+    @apply border-b-2 border-primary;
+  }
+  
+  .app-nav button {
+    @apply bg-transparent border-none py-3.5 px-1.5 text-base font-medium text-card-foreground transition;
+  }
+  
+  .app-nav li.active button {
+    @apply text-primary;
+  }
+  
+  .app-nav button:hover {
+    @apply text-primary;
+  }
+  
+  .app-main {
+    @apply flex-1 p-5 max-w-7xl mx-auto w-full;
+  }
+  
+  .app-footer {
+    @apply h-footer bg-card border-t border-border flex items-center justify-between px-5 text-sm text-muted-foreground;
+  }
+  
+  .network-selector {
+    @apply relative flex items-center;
+  }
+  
+  .network-selector-button {
+    @apply flex items-center bg-background border border-border rounded-lg py-2 px-3 text-sm font-medium transition;
+  }
+  
+  .network-selector-button img {
+    @apply h-5 mr-2;
+  }
+  
+  .network-selector-button:hover {
+    @apply bg-muted;
+  }
+  
+  .network-selector-dropdown {
+    @apply absolute top-full right-0 bg-card border border-border rounded-lg shadow w-48 z-10 overflow-hidden mt-1.5;
+  }
+  
+  .network-option {
+    @apply flex items-center py-2.5 px-4 transition cursor-pointer;
+  }
+  
+  .network-option:hover {
+    @apply bg-muted;
+  }
+  
+  .network-option.active {
+    @apply bg-muted;
+  }
+  
+  .network-option img {
+    @apply h-5 mr-2.5;
+  }
+  
+  .network-option-name {
+    @apply font-medium;
+  }
+  
+  .card {
+    @apply bg-card rounded-lg shadow p-5 mb-5;
+  }
+  
+  .section-title {
+    @apply text-2xl font-semibold mb-4;
+  }
+  
+  .action-button {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+  
+  .action-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  
+  .action-button-secondary {
+    @apply bg-muted text-muted-foreground hover:bg-muted/90;
+  }
+  
+  .action-button-success {
+    @apply bg-success text-white hover:bg-success/90;
+  }
+  
+  .action-button-warning {
+    @apply bg-warning text-white hover:bg-warning/90;
+  }
+  
+  .action-button-error {
+    @apply bg-error text-white hover:bg-error/90;
+  }
+  
+  .action-button-info {
+    @apply bg-info text-white hover:bg-info/90;
+  }
+  
+  .input-field {
+    @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+  
+  .select-field {
+    @apply w-full rounded-lg border border-border bg-background px-3 py-2 text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+  
+  .table-container {
+    @apply w-full overflow-x-auto rounded-lg border border-border;
+  }
+  
+  .table-header {
+    @apply flex w-full bg-muted py-3 px-4 font-medium text-muted-foreground;
+  }
+  
+  .table-row {
+    @apply flex w-full border-t border-border py-3 px-4 hover:bg-muted/50;
+  }
+  
+  .col {
+    @apply flex items-center;
+  }
+}
+
+/* Mobile responsive styles */
+@media (max-width: 1024px) {
+  .profile-header,
+  .profile-details {
+    @apply flex-col;
+  }
+  
+  .disputes-section {
+    @apply flex-col;
+  }
+  
+  .disputes-list {
+    @apply max-w-full;
+  }
+  
+  .actions-grid {
+    @apply grid-cols-1;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    @apply flex-wrap h-auto py-2.5;
+  }
+  
+  .logo-container {
+    @apply mb-2.5;
+  }
+  
+  .wallet-container {
+    @apply w-full justify-between;
+  }
+  
+  .app-nav ul {
+    @apply overflow-x-auto px-2.5;
+  }
+  
+  .app-nav li {
+    @apply mr-2.5;
+  }
+  
+  .app-main {
+    @apply p-2.5;
+  }
+  
+  .filters {
+    @apply flex-col items-start;
+  }
+  
+  .filter-group {
+    @apply w-full;
+  }
+  
+  .table-header {
+    @apply hidden;
+  }
+  
+  .table-row {
+    @apply flex-col py-4 relative;
+  }
+  
+  .col {
+    @apply w-full py-1.5 relative;
+  }
+  
+  .col::before {
+    content: attr(data-label);
+    @apply font-semibold w-32 inline-block;
+  }
+  
+  .col.actions {
+    @apply mt-2.5 pt-2.5 border-t border-border;
+  }
+  
+  .button-group {
+    @apply flex-col;
+  }
+  
+  .network-stats {
+    @apply flex-col;
+  }
+  
+  .confirmation-dialog-content {
+    @apply w-[95%];
+  }
+  
+  .wallet-adapter-button {
+    @apply text-sm py-2 px-3;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container h1 {
+    @apply text-lg;
+  }
+  
+  .app-nav button {
+    @apply text-sm py-2.5 px-1.5;
+  }
+  
+  .section-title {
+    @apply text-xl;
+  }
+  
+  .wallet-address {
+    @apply text-xs;
+  }
+  
+  .score-value {
+    @apply text-4xl;
+  }
+  
+  .score-label {
+    @apply text-base;
+  }
+  
+  .star-rating {
+    @apply text-lg;
+  }
+  
+  .stat-value {
+    @apply text-2xl;
+  }
+  
+  .transaction-status {
+    @apply max-w-[300px];
+  }
+  
+  .action-button {
+    @apply text-sm py-2 px-3;
+  }
+  
+  .wallet-adapter-dropdown {
+    @apply w-full;
+  }
+  
+  .wallet-adapter-button-trigger {
+    @apply w-full;
+  }
+}
+
+/* Mobile Navigation */
+.mobile-menu-button {
+  @apply hidden bg-transparent border-none text-2xl text-card-foreground cursor-pointer;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    @apply block;
+  }
+  
+  .app-nav {
+    @apply hidden;
+  }
+  
+  .app-nav.mobile-open {
+    @apply block fixed top-[70px] left-0 w-full bg-card z-40 shadow-md;
+  }
+  
+  .app-nav.mobile-open ul {
+    @apply flex-col p-0;
+  }
+  
+  .app-nav.mobile-open li {
+    @apply m-0 border-b border-border;
+  }
+  
+  .app-nav.mobile-open li:last-child {
+    @apply border-b-0;
+  }
+  
+  .app-nav.mobile-open button {
+    @apply w-full text-left p-4;
+  }
+  
+  .app-nav.mobile-open li.active {
+    @apply border-b border-border bg-muted;
+  }
+  
+  .app-nav.mobile-open li.active button {
+    @apply border-l-2 border-primary;
+  }
+}
+
+/* Floating Action Button for Mobile */
+.floating-action-button {
+  @apply hidden fixed bottom-5 right-5 w-14 h-14 rounded-full bg-primary text-white shadow-lg border-none text-2xl z-30 transition;
+}
+
+.floating-action-button:hover {
+  @apply scale-105;
+}
+
+.floating-action-menu {
+  @apply fixed bottom-20 right-5 bg-card rounded-lg shadow-lg z-30 overflow-hidden transition origin-bottom-right;
+}
+
+.floating-action-menu.hidden {
+  @apply scale-0 opacity-0;
+}
+
+.floating-action-item {
+  @apply flex items-center py-3 px-4 border-b border-border cursor-pointer transition;
+}
+
+.floating-action-item:last-child {
+  @apply border-b-0;
+}
+
+.floating-action-item:hover {
+  @apply bg-muted;
+}
+
+.floating-action-item-icon {
+  @apply mr-2.5 text-lg text-primary;
+}
+
+@media (max-width: 768px) {
+  .floating-action-button {
+    @apply block;
+  }
+}
+
+/* Touch-friendly Improvements */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  button, 
+  .action-button,
+  .network-option,
+  .dispute-item,
+  .floating-action-item {
+    @apply min-h-[44px];
+  }
+  
+  /* Better focus states for touch */
+  button:focus,
+  input:focus,
+  select:focus,
+  .action-button:focus {
+    @apply outline-none ring-2 ring-primary;
+  }
+  
+  /* Active states for touch feedback */
+  button:active,
+  .action-button:active,
+  .network-option:active,
+  .dispute-item:active {
+    @apply opacity-70;
+  }
+  
+  /* Fix for iOS 100vh issue */
+  .app-container {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+  .stats-grid {
+    @apply grid-cols-2;
+  }
+  
+  .actions-grid {
+    @apply grid-cols-2;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app-header {
+    @apply static;
+  }
+  
+  .confirmation-dialog-content {
+    @apply max-h-[80vh] overflow-y-auto;
+  }
+}
+
+/* High-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    @apply antialiased;
+  }
+}

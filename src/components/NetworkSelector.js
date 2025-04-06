@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * NetworkSelector component for selecting between different SVM networks
@@ -10,37 +10,55 @@ import React from 'react';
  * @returns {JSX.Element} NetworkSelector component
  */
 export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const network = networks[selectedNetwork];
+
   return (
     <div className="network-selector">
-      <label htmlFor="network-select">Network:</label>
-      <select 
-        id="network-select"
-        value={selectedNetwork}
-        onChange={(e) => onSelectNetwork(e.target.value)}
-        className="network-select"
+      <button 
+        className="network-selector-button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
       >
-        {Object.entries(networks).map(([key, network]) => (
-          <option key={key} value={key}>
-            {network.name}
-          </option>
-        ))}
-      </select>
-      
-      {/* Display selected network info */}
-      <div className="selected-network-info">
         <div 
-          className="network-icon" 
-          style={{ 
-            backgroundColor: networks[selectedNetwork].color,
-            width: '12px',
-            height: '12px',
-            borderRadius: '50%',
-            display: 'inline-block',
-            marginRight: '5px'
-          }} 
+          className="w-3 h-3 rounded-full mr-1.5"
+          style={{ backgroundColor: network.color }}
         />
-        <span>{networks[selectedNetwork].name}</span>
-      </div>
+        <span>{network.name}</span>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          className="h-4 w-4 ml-1.5" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      {isOpen && (
+        <div className="network-selector-dropdown" role="listbox">
+          {Object.entries(networks).map(([key, network]) => (
+            <div 
+              key={key}
+              className={`network-option ${key === selectedNetwork ? 'active' : ''}`}
+              onClick={() => {
+                onSelectNetwork(key);
+                setIsOpen(false);
+              }}
+              role="option"
+              aria-selected={key === selectedNetwork}
+            >
+              <div 
+                className="w-3 h-3 rounded-full mr-1.5"
+                style={{ backgroundColor: network.color }}
+              />
+              <span className="network-option-name">{network.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
