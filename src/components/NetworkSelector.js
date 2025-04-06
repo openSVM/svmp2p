@@ -9,7 +9,7 @@ import React from 'react';
  * @param {Function} props.onSelectNetwork - Callback function when network is selected
  * @returns {JSX.Element} NetworkSelector component
  */
-export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) => {
+const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) => {
   return (
     <div className="network-selector">
       <label htmlFor="network-select">Network:</label>
@@ -44,3 +44,6 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
     </div>
   );
 };
+
+export { NetworkSelector };
+export default NetworkSelector;

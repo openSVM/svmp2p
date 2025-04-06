@@ -1,0 +1,378 @@
+/* Mobile Responsive Styles */
+@media (max-width: 1024px) {
+  .profile-header,
+  .profile-details {
+    flex-direction: column;
+  }
+  
+  .disputes-section {
+    flex-direction: column;
+  }
+  
+  .disputes-list {
+    max-width: 100%;
+  }
+  
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px;
+  }
+  
+  .logo-container {
+    margin-bottom: 10px;
+  }
+  
+  .wallet-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .app-nav ul {
+    overflow-x: auto;
+    padding: 0 10px;
+  }
+  
+  .app-nav li {
+    margin-right: 10px;
+  }
+  
+  .app-main {
+    padding: 10px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .table-header {
+    display: none;
+  }
+  
+  .table-row {
+    flex-direction: column;
+    padding: 15px;
+    position: relative;
+  }
+  
+  .col {
+    width: 100% !important;
+    padding: 5px 0;
+    position: relative;
+  }
+  
+  .col::before {
+    content: attr(data-label);
+    font-weight: 600;
+    width: 120px;
+    display: inline-block;
+  }
+  
+  .col.actions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .network-stats {
+    flex-direction: column;
+  }
+  
+  .confirmation-dialog-content {
+    width: 95%;
+  }
+  
+  .wallet-adapter-button {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container h1 {
+    font-size: 1.2rem;
+  }
+  
+  .app-nav button {
+    font-size: 0.9rem;
+    padding: 10px 5px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .wallet-address {
+    font-size: 0.8rem;
+  }
+  
+  .score-value {
+    font-size: 2rem;
+  }
+  
+  .score-label {
+    font-size: 1rem;
+  }
+  
+  .star-rating {
+    font-size: 1.2rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .transaction-status {
+    max-width: 300px;
+  }
+  
+  .action-button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+  
+  .wallet-adapter-dropdown {
+    width: 100%;
+  }
+  
+  .wallet-adapter-button-trigger {
+    width: 100%;
+  }
+}
+
+/* Mobile Navigation */
+.mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: block;
+  }
+  
+  .app-nav {
+    display: none;
+  }
+  
+  .app-nav.mobile-open {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    background-color: var(--card-background);
+    z-index: 99;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .app-nav.mobile-open ul {
+    flex-direction: column;
+    padding: 0;
+  }
+  
+  .app-nav.mobile-open li {
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .app-nav.mobile-open li:last-child {
+    border-bottom: none;
+  }
+  
+  .app-nav.mobile-open button {
+    width: 100%;
+    text-align: left;
+    padding: 15px;
+  }
+  
+  .app-nav.mobile-open li.active {
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f5f5f5;
+  }
+  
+  .app-nav.mobile-open li.active button {
+    border-left: 3px solid var(--primary-color);
+  }
+}
+
+/* Floating Action Button for Mobile */
+.floating-action-button {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: none;
+  font-size: 24px;
+  z-index: 90;
+  transition: var(--transition);
+}
+
+.floating-action-button:hover {
+  transform: scale(1.05);
+}
+
+.floating-action-menu {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 90;
+  overflow: hidden;
+  transition: var(--transition);
+  transform-origin: bottom right;
+}
+
+.floating-action-menu.hidden {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.floating-action-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.floating-action-item:last-child {
+  border-bottom: none;
+}
+
+.floating-action-item:hover {
+  background-color: #f5f5f5;
+}
+
+.floating-action-item-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .floating-action-button {
+    display: block;
+  }
+}
+
+/* Touch-friendly Improvements */
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  button, 
+  .action-button,
+  .network-option,
+  .dispute-item,
+  .floating-action-item {
+    min-height: 44px;
+  }
+  
+  /* Better focus states for touch */
+  button:focus,
+  input:focus,
+  select:focus,
+  .action-button:focus {
+    outline: 2px solid var(--primary-color);
+  }
+  
+  /* Active states for touch feedback */
+  button:active,
+  .action-button:active,
+  .network-option:active,
+  .dispute-item:active {
+    opacity: 0.7;
+  }
+  
+  /* Prevent double-tap zooming */
+  .action-button,
+  .network-option,
+  .dispute-item,
+  .floating-action-item {
+    touch-action: manipulation;
+  }
+  
+  /* Fix for iOS 100vh issue */
+  .app-container {
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Improved scrolling */
+  .disputes-list,
+  .transactions-table,
+  .blockchain-error-message {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app-header {
+    position: static;
+  }
+  
+  .confirmation-dialog-content {
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+/* High-DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Dark mode support for future implementation */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* These will be activated when dark mode is implemented */
+    /*
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border-color: #333333;
+    */
+  }
+}
