@@ -19,6 +19,13 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 - Solana Web3.js and Wallet Adapters
 - SVG for network logos and icons
 
+## Important CSS Notes
+
+- When using CSS `@import` rules, they **must** be placed at the top of the stylesheet, before any other CSS rules or declarations.
+- Next.js enforces this CSS standard strictly, whereas some other build systems might be more forgiving.
+- Only `@charset` and `@layer` declarations can precede `@import` rules.
+- The main stylesheet is at `src/styles/globals.css` which imports styles from the public directory.
+
 ## Getting Started
 
 1. Clone the repository

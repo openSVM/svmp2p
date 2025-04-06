@@ -8,7 +8,7 @@ import {
   LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 
-// Import styles
+// Import styles - order matters for CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
 import '@/styles/globals.css';
 
