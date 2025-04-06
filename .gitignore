@@ -9,6 +9,9 @@ yarn-debug.log
 dist/
 build/
 *.min.js
+.next/
+out/
+.vercel/
 
 # Environment variables
 .env
