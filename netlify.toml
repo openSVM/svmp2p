@@ -4,7 +4,7 @@
 
 [build.environment]
   CI = "false"
-  NODE_VERSION = "18"
+  NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
 
 [[plugins]]
