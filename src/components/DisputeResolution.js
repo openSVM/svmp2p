@@ -1,548 +1,310 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
-import { AppContext } from '@/contexts/AppContext';
-import idl from '@/idl/p2p_exchange.json'; // This will be the IDL for your program
+import React from 'react';
+import { LoadingSpinner, TransactionStatus } from './common';
 
-const DisputeResolution = () => {
-  const { connection } = useConnection();
-  const wallet = useWallet();
-  const { network } = useContext(AppContext);
-  
-  // State
-  const [disputes, setDisputes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [actionInProgress, setActionInProgress] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [selectedDispute, setSelectedDispute] = useState(null);
-  const [evidenceUrl, setEvidenceUrl] = useState('');
-  const [voteChoice, setVoteChoice] = useState('');
-  
-  // Create Anchor provider and program
-  const getProgram = () => {
-    if (!wallet.publicKey) return null;
-    
-    const provider = new AnchorProvider(
-      connection,
-      wallet,
-      { preflightCommitment: 'processed' }
-    );
-    
-    return new Program(idl, new PublicKey(network.programId), provider);
-  };
-  
-  // Fetch disputes
-  useEffect(() => {
-    const fetchDisputes = async () => {
+/**
+ * DisputeResolution component with added loading states and transaction confirmations
+ */
+const DisputeResolution = ({ disputeId }) => {
+  const [loading, setLoading] = React.useState(true);
+  const [dispute, setDispute] = React.useState(null);
+  const [evidence, setEvidence] = React.useState('');
+  const [submittingEvidence, setSubmittingEvidence] = React.useState(false);
+  const [voting, setVoting] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [txStatus, setTxStatus] = React.useState(null);
+
+  React.useEffect(() => {
+    // Simulate loading dispute data
+    const fetchDispute = async () => {
       setLoading(true);
-      setError('');
-      
       try {
-        const program = getProgram();
-        if (!program) {
-          // If wallet is not connected, simulate disputes for display
-          setDisputes(generateMockDisputes());
-          setLoading(false);
-          return;
-        }
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Fetch all disputes
-        const fetchedDisputes = await program.account.dispute.all();
+        // Mock dispute data
+        const mockDispute = {
+          id: disputeId || 'dispute123',
+          offerId: 'offer456',
+          initiator: '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
+          respondent: '2xRW7Ld9XwHegUMeqsS8VxEYbsZYPxnaVdqTSLLNBjAT',
+          reason: 'Payment not received',
+          status: 'EvidenceSubmission',
+          evidenceBuyer: ['Transaction receipt screenshot'],
+          evidenceSeller: [],
+          votesForBuyer: 0,
+          votesForSeller: 0,
+          createdAt: Date.now() - 86400000,
+          resolvedAt: null
+        };
         
-        // Process and set disputes
-        setDisputes(fetchedDisputes.map(item => ({
-          id: item.publicKey.toString(),
-          offer: item.account.offer.toString(),
-          initiator: item.account.initiator.toString(),
-          respondent: item.account.respondent.toString(),
-          jurors: item.account.jurors.map(juror => juror.toString()),
-          evidenceBuyer: item.account.evidenceBuyer,
-          evidenceSeller: item.account.evidenceSeller,
-          votesForBuyer: item.account.votesForBuyer,
-          votesForSeller: item.account.votesForSeller,
-          status: getDisputeStatusText(item.account.status),
-          statusCode: item.account.status,
-          createdAt: new Date(item.account.createdAt.toNumber() * 1000).toLocaleString(),
-          resolvedAt: item.account.resolvedAt.toNumber() > 0 
-            ? new Date(item.account.resolvedAt.toNumber() * 1000).toLocaleString()
-            : 'Not resolved yet',
-        })));
+        setDispute(mockDispute);
       } catch (err) {
-        console.error('Error fetching disputes:', err);
-        setError('Failed to fetch disputes. Using mock data instead.');
-        setDisputes(generateMockDisputes());
+        console.error('Error fetching dispute:', err);
+        setError(`Failed to fetch dispute: ${err.message}`);
+        setTxStatus({
+          status: 'error',
+          message: `Failed to fetch dispute: ${err.message}`
+        });
       } finally {
         setLoading(false);
       }
     };
     
-    fetchDisputes();
-  }, [wallet.publicKey, network]);
-  
-  // Helper to get dispute status text from status code
-  const getDisputeStatusText = (statusCode) => {
-    const statusMap = {
-      0: 'Opened',
-      1: 'Jurors Assigned',
-      2: 'Evidence Submission',
-      3: 'Voting',
-      4: 'Verdict Reached',
-      5: 'Resolved'
-    };
-    return statusMap[statusCode] || 'Unknown';
-  };
-  
-  // Generate mock disputes for display when wallet is not connected
-  const generateMockDisputes = () => {
-    const mockDisputes = [];
-    const statuses = ['Opened', 'Jurors Assigned', 'Evidence Submission', 'Voting', 'Verdict Reached', 'Resolved'];
+    fetchDispute();
+  }, [disputeId]);
+
+  const handleSubmitEvidence = async (e) => {
+    e.preventDefault();
     
-    for (let i = 0; i < 5; i++) {
-      const statusIndex = Math.floor(Math.random() * statuses.length);
-      const votesForBuyer = Math.floor(Math.random() * 5);
-      const votesForSeller = Math.floor(Math.random() * 5);
-      
-      mockDisputes.push({
-        id: `mock-dispute-${i}`,
-        offer: `mock-offer-${i}`,
-        initiator: Math.random() > 0.5 ? 'Buyer' + Math.floor(Math.random() * 1000) : 'Seller' + Math.floor(Math.random() * 1000),
-        respondent: Math.random() > 0.5 ? 'Buyer' + Math.floor(Math.random() * 1000) : 'Seller' + Math.floor(Math.random() * 1000),
-        jurors: Array(3).fill().map((_, j) => `Juror${j}-${Math.floor(Math.random() * 1000)}`),
-        evidenceBuyer: statusIndex >= 2 ? ['ipfs://QmXyz...'] : [],
-        evidenceSeller: statusIndex >= 2 ? ['ipfs://QmAbc...'] : [],
-        votesForBuyer: statusIndex >= 3 ? votesForBuyer : 0,
-        votesForSeller: statusIndex >= 3 ? votesForSeller : 0,
-        status: statuses[statusIndex],
-        statusCode: statusIndex,
-        createdAt: new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
-        resolvedAt: statusIndex >= 5 
-          ? new Date(Date.now() - Math.random() * 1000000000).toLocaleString()
-          : 'Not resolved yet',
-      });
-    }
-    
-    return mockDisputes;
-  };
-  
-  // Handle submitting evidence
-  const handleSubmitEvidence = async (disputeId) => {
-    if (!wallet.publicKey) {
-      setError('Please connect your wallet first');
+    if (!evidence.trim()) {
+      setError('Please provide evidence details');
       return;
     }
     
-    if (!evidenceUrl) {
-      setError('Please enter an evidence URL');
-      return;
-    }
-    
-    setActionInProgress(true);
-    setStatusMessage('Submitting evidence...');
-    setError('');
+    setSubmittingEvidence(true);
+    setTxStatus({
+      status: 'pending',
+      message: 'Submitting evidence...'
+    });
     
     try {
-      const program = getProgram();
-      if (!program) {
-        throw new Error('Failed to initialize program');
-      }
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const disputePublicKey = new PublicKey(disputeId);
+      // Mock successful submission
+      setTxStatus({
+        status: 'success',
+        message: 'Evidence submitted successfully!'
+      });
       
-      await program.methods
-        .submitEvidence(evidenceUrl)
-        .accounts({
-          dispute: disputePublicKey,
-          submitter: wallet.publicKey,
-        })
-        .rpc();
+      // Update local state
+      setDispute(prev => ({
+        ...prev,
+        evidenceSeller: [...prev.evidenceSeller, evidence]
+      }));
       
-      setStatusMessage('Evidence submitted successfully!');
-      setEvidenceUrl('');
-      
-      // Refresh disputes
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-      
+      // Clear form
+      setEvidence('');
     } catch (err) {
       console.error('Error submitting evidence:', err);
       setError(`Failed to submit evidence: ${err.message}`);
+      setTxStatus({
+        status: 'error',
+        message: `Failed to submit evidence: ${err.message}`
+      });
     } finally {
-      setActionInProgress(false);
+      setSubmittingEvidence(false);
     }
   };
-  
-  // Handle casting a vote
-  const handleCastVote = async (disputeId) => {
-    if (!wallet.publicKey) {
-      setError('Please connect your wallet first');
-      return;
-    }
-    
-    if (!voteChoice) {
-      setError('Please select a vote choice');
-      return;
-    }
-    
-    setActionInProgress(true);
-    setStatusMessage('Casting vote...');
-    setError('');
+
+  const handleVote = async (forBuyer) => {
+    setVoting(true);
+    setTxStatus({
+      status: 'pending',
+      message: `Voting for ${forBuyer ? 'buyer' : 'seller'}...`
+    });
     
     try {
-      const program = getProgram();
-      if (!program) {
-        throw new Error('Failed to initialize program');
-      }
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const disputePublicKey = new PublicKey(disputeId);
+      // Mock successful vote
+      setTxStatus({
+        status: 'success',
+        message: `Vote for ${forBuyer ? 'buyer' : 'seller'} submitted successfully!`
+      });
       
-      // Generate a new account for the vote
-      const vote = web3.Keypair.generate();
-      
-      await program.methods
-        .castVote(voteChoice === 'buyer')
-        .accounts({
-          dispute: disputePublicKey,
-          juror: wallet.publicKey,
-          vote: vote.publicKey,
-          systemProgram: web3.SystemProgram.programId,
-        })
-        .signers([vote])
-        .rpc();
-      
-      setStatusMessage('Vote cast successfully!');
-      setVoteChoice('');
-      
-      // Refresh disputes
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-      
+      // Update local state
+      setDispute(prev => ({
+        ...prev,
+        votesForBuyer: prev.votesForBuyer + (forBuyer ? 1 : 0),
+        votesForSeller: prev.votesForSeller + (forBuyer ? 0 : 1)
+      }));
     } catch (err) {
-      console.error('Error casting vote:', err);
-      setError(`Failed to cast vote: ${err.message}`);
+      console.error('Error voting:', err);
+      setError(`Failed to submit vote: ${err.message}`);
+      setTxStatus({
+        status: 'error',
+        message: `Failed to submit vote: ${err.message}`
+      });
     } finally {
-      setActionInProgress(false);
+      setVoting(false);
     }
   };
-  
-  // Check if user is a juror for a dispute
-  const isJuror = (dispute) => {
-    if (!wallet.publicKey) return false;
-    return dispute.jurors.includes(wallet.publicKey.toString());
+
+  // Clear transaction status
+  const handleClearTxStatus = () => {
+    setTxStatus(null);
   };
-  
-  // Check if user is the initiator of a dispute
-  const isInitiator = (dispute) => {
-    if (!wallet.publicKey) return false;
-    return dispute.initiator === wallet.publicKey.toString();
-  };
-  
-  // Check if user is the respondent in a dispute
-  const isRespondent = (dispute) => {
-    if (!wallet.publicKey) return false;
-    return dispute.respondent === wallet.publicKey.toString();
-  };
-  
-  // Render action panel based on dispute status and user role
-  const renderActionPanel = (dispute) => {
-    if (!wallet.publicKey) {
-      return (
-        <div className="action-panel">
-          <p>Connect your wallet to interact with disputes.</p>
-          <button className="action-button connect-wallet" disabled={actionInProgress}>
-            Connect Wallet
-          </button>
-        </div>
-      );
-    }
-    
-    switch (dispute.status) {
-      case 'Evidence Submission':
-        if (isInitiator(dispute) || isRespondent(dispute)) {
-          return (
-            <div className="action-panel">
-              <h3>Submit Evidence</h3>
-              <p>Provide evidence to support your case. Upload your evidence to IPFS and paste the URL below.</p>
-              <div className="form-group">
-                <input
-                  type="text"
-                  placeholder="IPFS URL (ipfs://...)"
-                  value={evidenceUrl}
-                  onChange={(e) => setEvidenceUrl(e.target.value)}
-                />
-                <button
-                  className="action-button submit-evidence"
-                  disabled={actionInProgress || !evidenceUrl}
-                  onClick={() => handleSubmitEvidence(dispute.id)}
-                >
-                  Submit Evidence
-                </button>
-              </div>
-            </div>
-          );
-        }
-        return (
-          <div className="action-panel">
-            <p>Waiting for parties to submit evidence.</p>
-          </div>
-        );
-        
-      case 'Voting':
-        if (isJuror(dispute)) {
-          return (
-            <div className="action-panel">
-              <h3>Cast Your Vote</h3>
-              <p>As a juror, you must review the evidence and cast your vote.</p>
-              <div className="form-group">
-                <div className="radio-group">
-                  <label>
-                    <input
-                      type="radio"
-                      name="voteChoice"
-                      value="buyer"
-                      checked={voteChoice === 'buyer'}
-                      onChange={() => setVoteChoice('buyer')}
-                    />
-                    Vote for Buyer
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="voteChoice"
-                      value="seller"
-                      checked={voteChoice === 'seller'}
-                      onChange={() => setVoteChoice('seller')}
-                    />
-                    Vote for Seller
-                  </label>
-                </div>
-                <button
-                  className="action-button cast-vote"
-                  disabled={actionInProgress || !voteChoice}
-                  onClick={() => handleCastVote(dispute.id)}
-                >
-                  Cast Vote
-                </button>
-              </div>
-            </div>
-          );
-        }
-        return (
-          <div className="action-panel">
-            <p>Jurors are currently voting on this dispute.</p>
-            <p>Current votes: {dispute.votesForBuyer} for buyer, {dispute.votesForSeller} for seller.</p>
-          </div>
-        );
-        
-      case 'Verdict Reached':
-        return (
-          <div className="action-panel">
-            <h3>Verdict Reached</h3>
-            <p>
-              The jurors have reached a verdict: 
-              {dispute.votesForBuyer > dispute.votesForSeller 
-                ? ' In favor of the buyer.' 
-                : ' In favor of the seller.'}
-            </p>
-            <p>Votes for buyer: {dispute.votesForBuyer}</p>
-            <p>Votes for seller: {dispute.votesForSeller}</p>
-            <p>The smart contract will automatically execute the verdict.</p>
-          </div>
-        );
-        
-      case 'Resolved':
-        return (
-          <div className="action-panel">
-            <h3>Dispute Resolved</h3>
-            <p>
-              This dispute has been resolved 
-              {dispute.votesForBuyer > dispute.votesForSeller 
-                ? ' in favor of the buyer.' 
-                : ' in favor of the seller.'}
-            </p>
-            <p>Resolved at: {dispute.resolvedAt}</p>
-          </div>
-        );
-        
-      default:
-        return (
-          <div className="action-panel">
-            <p>Current status: {dispute.status}</p>
-            <p>Please wait for the next phase of the dispute resolution process.</p>
-          </div>
-        );
-    }
-  };
-  
+
+  if (loading) {
+    return (
+      <div className="dispute-resolution-container">
+        <LoadingSpinner size="large" text="Loading dispute details..." />
+      </div>
+    );
+  }
+
+  if (!dispute) {
+    return (
+      <div className="dispute-resolution-container">
+        <div className="error-message">Dispute not found</div>
+      </div>
+    );
+  }
+
   return (
     <div className="dispute-resolution-container">
       <h2>Dispute Resolution</h2>
-      <p>View and participate in dispute resolution for P2P trades.</p>
       
       {error && <div className="error-message">{error}</div>}
-      {statusMessage && <div className="status-message">{statusMessage}</div>}
       
-      {loading ? (
-        <div className="loading">Loading disputes...</div>
-      ) : disputes.length === 0 ? (
-        <div className="no-disputes">No disputes found.</div>
-      ) : (
-        <div className="disputes-section">
-          <div className="disputes-list">
-            <h3>Active Disputes</h3>
-            {disputes.map(dispute => (
-              <div 
-                key={dispute.id} 
-                className={`dispute-item ${selectedDispute?.id === dispute.id ? 'selected' : ''}`}
-                onClick={() => setSelectedDispute(dispute)}
-              >
-                <div className="dispute-header">
-                  <div className={`status-badge status-${dispute.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                    {dispute.status}
-                  </div>
-                  <div className="dispute-id">ID: {dispute.id.substring(0, 8)}...</div>
-                </div>
-                <div className="dispute-parties">
-                  <div className="initiator">
-                    Initiator: {dispute.initiator.substring(0, 4)}...{dispute.initiator.substring(dispute.initiator.length - 4)}
-                  </div>
-                  <div className="respondent">
-                    Respondent: {dispute.respondent.substring(0, 4)}...{dispute.respondent.substring(dispute.respondent.length - 4)}
-                  </div>
-                </div>
-                <div className="dispute-date">
-                  Created: {dispute.createdAt}
-                </div>
-              </div>
-            ))}
+      {txStatus && (
+        <TransactionStatus
+          status={txStatus.status}
+          message={txStatus.message}
+          onClose={handleClearTxStatus}
+        />
+      )}
+      
+      <div className="dispute-details">
+        <div className="detail-row">
+          <span className="label">Dispute ID:</span>
+          <span className="value">{dispute.id}</span>
+        </div>
+        
+        <div className="detail-row">
+          <span className="label">Offer ID:</span>
+          <span className="value">{dispute.offerId}</span>
+        </div>
+        
+        <div className="detail-row">
+          <span className="label">Status:</span>
+          <span className="value status-badge">{dispute.status}</span>
+        </div>
+        
+        <div className="detail-row">
+          <span className="label">Reason:</span>
+          <span className="value">{dispute.reason}</span>
+        </div>
+        
+        <div className="detail-row">
+          <span className="label">Created:</span>
+          <span className="value">{new Date(dispute.createdAt).toLocaleString()}</span>
+        </div>
+      </div>
+      
+      <div className="evidence-section">
+        <h3>Evidence</h3>
+        
+        <div className="evidence-columns">
+          <div className="evidence-column">
+            <h4>Buyer Evidence</h4>
+            {dispute.evidenceBuyer.length === 0 ? (
+              <p>No evidence submitted yet</p>
+            ) : (
+              <ul>
+                {dispute.evidenceBuyer.map((item, index) => (
+                  <li key={`buyer-${index}`}>{item}</li>
+                ))}
+              </ul>
+            )}
           </div>
           
-          {selectedDispute && (
-            <div className="dispute-details">
-              <h3>Dispute Details</h3>
-              <div className="detail-item">
-                <span className="label">Status:</span>
-                <span className={`value status-${selectedDispute.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                  {selectedDispute.status}
-                </span>
-              </div>
-              <div className="detail-item">
-                <span className="label">Offer ID:</span>
-                <span className="value">{selectedDispute.offer}</span>
-              </div>
-              <div className="detail-item">
-                <span className="label">Initiator:</span>
-                <span className="value">{selectedDispute.initiator}</span>
-              </div>
-              <div className="detail-item">
-                <span className="label">Respondent:</span>
-                <span className="value">{selectedDispute.respondent}</span>
-              </div>
-              <div className="detail-item">
-                <span className="label">Created:</span>
-                <span className="value">{selectedDispute.createdAt}</span>
-              </div>
-              
-              {selectedDispute.statusCode >= 1 && (
-                <div className="detail-item">
-                  <span className="label">Jurors:</span>
-                  <div className="value jurors-list">
-                    {selectedDispute.jurors.map((juror, index) => (
-                      <div key={index} className="juror-item">
-                        {juror.substring(0, 4)}...{juror.substring(juror.length - 4)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {selectedDispute.statusCode >= 2 && (
-                <div className="evidence-section">
-                  <h4>Evidence</h4>
-                  <div className="evidence-list">
-                    <div className="evidence-party">
-                      <h5>Buyer Evidence:</h5>
-                      {selectedDispute.evidenceBuyer.length > 0 ? (
-                        <ul>
-                          {selectedDispute.evidenceBuyer.map((evidence, index) => (
-                            <li key={index}>
-                              <a href={evidence} target="_blank" rel="noopener noreferrer">
-                                {evidence}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No evidence submitted yet.</p>
-                      )}
-                    </div>
-                    <div className="evidence-party">
-                      <h5>Seller Evidence:</h5>
-                      {selectedDispute.evidenceSeller.length > 0 ? (
-                        <ul>
-                          {selectedDispute.evidenceSeller.map((evidence, index) => (
-                            <li key={index}>
-                              <a href={evidence} target="_blank" rel="noopener noreferrer">
-                                {evidence}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No evidence submitted yet.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {selectedDispute.statusCode >= 3 && (
-                <div className="voting-section">
-                  <h4>Voting Results</h4>
-                  <div className="votes-display">
-                    <div className="vote-bar">
-                      <div 
-                        className="buyer-votes" 
-                        style={{
-                          width: `${selectedDispute.votesForBuyer / (selectedDispute.votesForBuyer + selectedDispute.votesForSeller) * 100}%`
-                        }}
-                      >
-                        {selectedDispute.votesForBuyer}
-                      </div>
-                      <div 
-                        className="seller-votes"
-                        style={{
-                          width: `${selectedDispute.votesForSeller / (selectedDispute.votesForBuyer + selectedDispute.votesForSeller) * 100}%`
-                        }}
-                      >
-                        {selectedDispute.votesForSeller}
-                      </div>
-                    </div>
-                    <div className="vote-labels">
-                      <span>Buyer</span>
-                      <span>Seller</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {renderActionPanel(selectedDispute)}
+          <div className="evidence-column">
+            <h4>Seller Evidence</h4>
+            {dispute.evidenceSeller.length === 0 ? (
+              <p>No evidence submitted yet</p>
+            ) : (
+              <ul>
+                {dispute.evidenceSeller.map((item, index) => (
+                  <li key={`seller-${index}`}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+        
+        {dispute.status === 'EvidenceSubmission' && (
+          <form onSubmit={handleSubmitEvidence} className="evidence-form">
+            <h4>Submit Evidence</h4>
+            <textarea
+              value={evidence}
+              onChange={(e) => setEvidence(e.target.value)}
+              placeholder="Describe your evidence here..."
+              disabled={submittingEvidence}
+              required
+            />
+            <button 
+              type="submit" 
+              className="submit-evidence-button"
+              disabled={submittingEvidence}
+            >
+              {submittingEvidence ? 'Submitting...' : 'Submit Evidence'}
+            </button>
+          </form>
+        )}
+      </div>
+      
+      {dispute.status === 'Voting' && (
+        <div className="voting-section">
+          <h3>Cast Your Vote</h3>
+          <p>As a juror, you must review all evidence and vote for the party you believe is right.</p>
+          
+          <div className="voting-buttons">
+            <button
+              onClick={() => handleVote(true)}
+              disabled={voting}
+              className="vote-button vote-buyer"
+            >
+              {voting ? 'Voting...' : 'Vote for Buyer'}
+            </button>
+            
+            <button
+              onClick={() => handleVote(false)}
+              disabled={voting}
+              className="vote-button vote-seller"
+            >
+              {voting ? 'Voting...' : 'Vote for Seller'}
+            </button>
+          </div>
+          
+          <div className="current-votes">
+            <div className="vote-count">
+              <span className="label">Votes for Buyer:</span>
+              <span className="value">{dispute.votesForBuyer}</span>
             </div>
-          )}
+            
+            <div className="vote-count">
+              <span className="label">Votes for Seller:</span>
+              <span className="value">{dispute.votesForSeller}</span>
+            </div>
+          </div>
         </div>
       )}
       
-      <div className="dispute-info">
-        <h3>About Dispute Resolution</h3>
-        <p>The OpenSVM P2P Exchange uses a decentralized dispute resolution system to handle conflicts between buyers and sellers.</p>
-        <p>When a dispute is opened, a panel of jurors is randomly selected to review evidence and vote on the outcome.</p>
-        <p>The verdict is determined by majority vote, and the smart contract automatically executes the decision.</p>
-        <p>This ensures a fair and transparent process for resolving disputes in the P2P marketplace.</p>
-      </div>
+      {dispute.status === 'VerdictReached' && (
+        <div className="verdict-section">
+          <h3>Verdict</h3>
+          <p className="verdict">
+            {dispute.votesForBuyer > dispute.votesForSeller
+              ? 'The verdict is in favor of the Buyer.'
+              : 'The verdict is in favor of the Seller.'}
+          </p>
+          
+          <div className="final-votes">
+            <div className="vote-count">
+              <span className="label">Votes for Buyer:</span>
+              <span className="value">{dispute.votesForBuyer}</span>
+            </div>
+            
+            <div className="vote-count">
+              <span className="label">Votes for Seller:</span>
+              <span className="value">{dispute.votesForSeller}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,48 +1,29 @@
 import React, { useState, useContext } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
-import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
-import BN from 'bn.js';
-import { AppContext } from '@/contexts/AppContext';
-import idl from '@/idl/p2p_exchange.json'; // This will be the IDL for your program
-
-const { Keypair } = web3;
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { SystemProgram, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { BN } from '@project-serum/anchor';
+import { AppContext } from '../contexts/AppContext';
+import { ButtonLoader, TransactionConfirmation, TransactionStatus } from './common';
 
 const OfferCreation = () => {
+  const { wallet } = useWallet();
   const { connection } = useConnection();
-  const wallet = useWallet();
-  const { network } = useContext(AppContext);
+  const { program, network } = useContext(AppContext);
   
-  // Form state
   const [solAmount, setSolAmount] = useState('');
   const [fiatAmount, setFiatAmount] = useState('');
   const [fiatCurrency, setFiatCurrency] = useState('USD');
   const [paymentMethod, setPaymentMethod] = useState('Bank Transfer');
-  
-  // UI state
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [txHash, setTxHash] = useState('');
+  const [txStatus, setTxStatus] = useState(null);
   
-  // Available currencies and payment methods
   const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
   const paymentMethods = ['Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
   
-  // Create Anchor provider and program
-  const getProgram = () => {
-    if (!wallet.publicKey) return null;
-    
-    // Updated for @coral-xyz/anchor 0.31.0
-    const provider = new AnchorProvider(
-      connection,
-      wallet,
-      { commitment: 'processed' }
-    );
-    
-    return new Program(idl, new PublicKey(network.programId), provider);
-  };
-  
-  // Create and list offer
   const handleCreateOffer = async (e) => {
     e.preventDefault();
     
@@ -51,26 +32,20 @@ const OfferCreation = () => {
       return;
     }
     
-    if (!solAmount || !fiatAmount) {
-      setError('Please enter both SOL and fiat amounts');
-      return;
-    }
-    
-    setIsCreating(true);
     setError('');
     setSuccess('');
+    setIsCreating(true);
+    setTxStatus({
+      status: 'pending',
+      message: 'Creating your offer...'
+    });
     
     try {
-      const program = getProgram();
-      if (!program) {
-        throw new Error('Failed to initialize program');
-      }
-      
       // Convert SOL to lamports
       const lamports = new BN(parseFloat(solAmount) * LAMPORTS_PER_SOL);
       
-      // Convert fiat amount to integer (e.g., cents)
-      const fiatAmountInt = new BN(parseFloat(fiatAmount) * 100);
+      // Convert fiat amount to integer (cents/pennies)
+      const fiatAmountInt = new BN(Math.round(parseFloat(fiatAmount) * 100));
       
       // Generate a new account for the offer
       const offer = Keypair.generate();
@@ -84,7 +59,7 @@ const OfferCreation = () => {
       console.log('Creating offer...');
       
       // Create offer
-      await program.methods
+      const createTx = await program.methods
         .createOffer(
           lamports,
           fiatAmountInt,
@@ -101,16 +76,28 @@ const OfferCreation = () => {
         .signers([offer, escrow])
         .rpc();
       
+      setTxHash(createTx);
+      setTxStatus({
+        status: 'success',
+        message: 'Offer created successfully! Now listing your offer...'
+      });
+      
       console.log('Listing offer...');
       
       // List offer
-      await program.methods
+      const listTx = await program.methods
         .listOffer()
         .accounts({
           offer: offer.publicKey,
           seller: wallet.publicKey,
         })
         .rpc();
+      
+      setTxHash(listTx);
+      setTxStatus({
+        status: 'success',
+        message: 'Offer listed successfully!'
+      });
       
       setSuccess(`Offer created and listed successfully! Offer ID: ${offer.publicKey.toString()}`);
       
@@ -121,6 +108,10 @@ const OfferCreation = () => {
     } catch (err) {
       console.error('Error creating offer:', err);
       setError(`Failed to create offer: ${err.message}`);
+      setTxStatus({
+        status: 'error',
+        message: `Transaction failed: ${err.message}`
+      });
     } finally {
       setIsCreating(false);
     }
@@ -165,6 +156,11 @@ const OfferCreation = () => {
     }
   };
   
+  // Clear transaction status
+  const handleClearTxStatus = () => {
+    setTxStatus(null);
+  };
+  
   return (
     <div className="offer-creation-container">
       <h2>Create a Sell Offer</h2>
@@ -172,6 +168,24 @@ const OfferCreation = () => {
       
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
+      
+      {txHash && success && (
+        <TransactionConfirmation
+          status="success"
+          txHash={txHash}
+          message="Your offer has been created and listed successfully!"
+          onClose={() => setTxHash('')}
+          network={network.name.toLowerCase()}
+        />
+      )}
+      
+      {txStatus && (
+        <TransactionStatus
+          status={txStatus.status}
+          message={txStatus.message}
+          onClose={handleClearTxStatus}
+        />
+      )}
       
       <form onSubmit={handleCreateOffer}>
         <div className="form-group">
@@ -230,13 +244,17 @@ const OfferCreation = () => {
           </select>
         </div>
         
-        <button
+        <ButtonLoader
           type="submit"
+          isLoading={isCreating}
+          disabled={!wallet.publicKey}
+          loadingText="Creating Offer..."
+          variant="primary"
+          size="medium"
           className="create-offer-button"
-          disabled={!wallet.publicKey || isCreating}
         >
-          {isCreating ? 'Creating Offer...' : 'Create Offer'}
-        </button>
+          Create Offer
+        </ButtonLoader>
       </form>
       
       <div className="network-info">
@@ -247,6 +265,5 @@ const OfferCreation = () => {
     </div>
   );
 };
-
 export { OfferCreation };
 export default OfferCreation;
