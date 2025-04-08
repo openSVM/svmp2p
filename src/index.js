@@ -7,3 +7,8 @@ import './index.css';
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(<App />);
+
+// Import responsive styles
+import './styles/responsive.css';
+
+// This adds the import to the main index.js file to include our new responsive styles
