@@ -12,9 +12,17 @@ import {
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
 // with proper formatting and line breaks between them and the first CSS rule.
 // Next.js strictly enforces this CSS specification.
-import '../index.css'; // Import the main CSS file with Tailwind directives
-import '@solana/wallet-adapter-react-ui/styles.css';
-import '@/styles/globals.css';
+// 
+// CSS Import Order:
+// 1. First import index.css with Tailwind directives (@tailwind base, components, utilities)
+//    This is critical as it establishes the Tailwind foundation for all other styles
+// 2. Then import third-party component styles (wallet adapter)
+// 3. Finally import global styles which may override Tailwind or third-party styles
+//
+// This specific order ensures proper CSS cascade and specificity
+import '../index.css'; // Main CSS file with Tailwind directives (must be first)
+import '@solana/wallet-adapter-react-ui/styles.css'; // Third-party component styles
+import '@/styles/globals.css'; // Global styles and overrides
 
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';

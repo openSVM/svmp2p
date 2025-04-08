@@ -3,7 +3,7 @@ const webpack = require('webpack');
 
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  // Removed deprecated swcMinify option
   images: {
     domains: [],
     unoptimized: true,

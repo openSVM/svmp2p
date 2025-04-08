@@ -28,6 +28,14 @@ const OfferList = ({ type }) => {
   const currencies = ['All', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
   const paymentMethods = ['All', 'Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
   
+  // Input IDs for accessibility
+  const inputIds = {
+    minAmount: 'min-amount-input',
+    maxAmount: 'max-amount-input',
+    currency: 'currency-select',
+    paymentMethod: 'payment-method-select'
+  };
+  
   // Create Anchor provider and program
   const getProgram = () => {
     if (!wallet.publicKey) return null;
@@ -520,31 +528,37 @@ const OfferList = ({ type }) => {
       
       <div className="filters">
         <div className="filter-group">
-          <label>SOL Amount:</label>
+          <label htmlFor={inputIds.minAmount}>SOL Amount:</label>
           <input
+            id={inputIds.minAmount}
             type="number"
             placeholder="Min"
             value={minAmount}
             onChange={(e) => setMinAmount(e.target.value)}
             min="0"
             step="0.01"
+            aria-label="Minimum SOL amount"
           />
           <span>to</span>
           <input
+            id={inputIds.maxAmount}
             type="number"
             placeholder="Max"
             value={maxAmount}
             onChange={(e) => setMaxAmount(e.target.value)}
             min="0"
             step="0.01"
+            aria-label="Maximum SOL amount"
           />
         </div>
         
         <div className="filter-group">
-          <label>Currency:</label>
+          <label htmlFor={inputIds.currency}>Currency:</label>
           <select
+            id={inputIds.currency}
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value)}
+            aria-label="Select currency"
           >
             {currencies.map(currency => (
               <option key={currency} value={currency}>{currency}</option>
@@ -553,10 +567,12 @@ const OfferList = ({ type }) => {
         </div>
         
         <div className="filter-group">
-          <label>Payment Method:</label>
+          <label htmlFor={inputIds.paymentMethod}>Payment Method:</label>
           <select
+            id={inputIds.paymentMethod}
             value={selectedPaymentMethod}
             onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+            aria-label="Select payment method"
           >
             {paymentMethods.map(method => (
               <option key={method} value={method}>{method}</option>
