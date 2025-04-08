@@ -12,6 +12,7 @@ import {
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
 // with proper formatting and line breaks between them and the first CSS rule.
 // Next.js strictly enforces this CSS specification.
+import '../index.css'; // Import the main CSS file with Tailwind directives
 import '@solana/wallet-adapter-react-ui/styles.css';
 import '@/styles/globals.css';
 
