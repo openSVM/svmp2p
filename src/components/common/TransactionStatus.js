@@ -24,7 +24,7 @@ const TransactionStatus = ({
     }
   }, [autoClose, autoCloseTime, onClose, status]);
   
-  if (!visible) return null;
+  if (!visible) {
   
   const statusClasses = {
     pending: 'status-pending',
