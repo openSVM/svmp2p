@@ -1,0 +1,105 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-bottom: var(--spacing-6);
+}
+
+.table-header {
+  background-color: var(--color-background-alt);
+  font-weight: var(--font-weight-semibold);
+  text-align: left;
+  color: var(--color-foreground);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table-header th {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-sm);
+}
+
+.table-body tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-fast);
+}
+
+.table-body tr:hover {
+  background-color: var(--color-background-alt);
+}
+
+.table-body td {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-sm);
+}
+
+/* Table variants */
+.table-striped tbody tr:nth-child(odd) {
+  background-color: var(--color-background-alt);
+}
+
+.table-striped tbody tr:nth-child(odd):hover {
+  background-color: var(--color-border-light);
+}
+
+.table-bordered {
+  border: 1px solid var(--color-border);
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid var(--color-border);
+}
+
+.table-compact th,
+.table-compact td {
+  padding: var(--spacing-2);
+}
+
+/* Responsive tables */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .table-responsive-card {
+    display: block;
+  }
+  
+  .table-responsive-card thead {
+    display: none;
+  }
+  
+  .table-responsive-card tbody,
+  .table-responsive-card tr,
+  .table-responsive-card td {
+    display: block;
+    width: 100%;
+  }
+  
+  .table-responsive-card tr {
+    margin-bottom: var(--spacing-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  
+  .table-responsive-card td {
+    display: flex;
+    justify-content: space-between;
+    text-align: right;
+    padding: var(--spacing-3);
+    border-bottom: 1px solid var(--color-border-light);
+  }
+  
+  .table-responsive-card td:last-child {
+    border-bottom: none;
+  }
+  
+  .table-responsive-card td::before {
+    content: attr(data-label);
+    font-weight: var(--font-weight-semibold);
+    margin-right: var(--spacing-4);
+    text-align: left;
+  }
+}
