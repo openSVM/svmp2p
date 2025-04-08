@@ -1,215 +1,202 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
-import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { AppContext } from '@/contexts/AppContext';
-import idl from '@/idl/p2p_exchange.json'; // This will be the IDL for your program
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import ProfileHeader from './profile/ProfileHeader';
+import ReputationCard from './profile/ReputationCard';
+import TransactionHistory from './profile/TransactionHistory';
+import ProfileSettings from './profile/ProfileSettings';
+import TradingStats from './profile/TradingStats';
+import ActivityFeed from './profile/ActivityFeed';
 
-const UserProfile = () => {
-  const { connection } = useConnection();
-  const wallet = useWallet();
-  const { network } = useContext(AppContext);
-  
-  // State
-  const [reputation, setReputation] = useState(null);
-  const [transactions, setTransactions] = useState([]);
+/**
+ * Enhanced UserProfile component that integrates all the profile modules
+ */
+const UserProfile = ({ wallet, network }) => {
+  const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  
-  // Create Anchor provider and program
-  const getProgram = () => {
-    if (!wallet.publicKey) return null;
-    
-    const provider = new AnchorProvider(
-      connection,
-      wallet,
-      { preflightCommitment: 'processed' }
-    );
-    
-    return new Program(idl, new PublicKey(network.programId), provider);
-  };
-  
-  // Fetch user data
+  const [error, setError] = useState(null);
+  const [profileData, setProfileData] = useState({
+    reputation: null,
+    transactions: [],
+    settings: null,
+    tradingStats: null,
+    activities: []
+  });
+
+  // Fetch user profile data
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError('');
-      
+    const fetchProfileData = async () => {
       if (!wallet.publicKey) {
         setLoading(false);
         return;
       }
-      
+
       try {
-        const program = getProgram();
-        if (!program) {
-          throw new Error('Failed to initialize program');
-        }
+        setLoading(true);
         
-        // Fetch reputation
-        try {
-          const reputationAccount = await program.account.reputation.fetch(wallet.publicKey);
-          setReputation({
-            successfulTrades: reputationAccount.successfulTrades,
-            disputedTrades: reputationAccount.disputedTrades,
-            disputesWon: reputationAccount.disputesWon,
-            disputesLost: reputationAccount.disputesLost,
-            rating: reputationAccount.rating,
-            lastUpdated: new Date(reputationAccount.lastUpdated.toNumber() * 1000).toLocaleString(),
-          });
-        } catch (err) {
-          console.log('No reputation account found, using mock data');
-          setReputation(generateMockReputation());
-        }
+        // Simulate API calls to fetch profile data
+        // In a real implementation, these would be actual API calls
         
-        // Fetch transactions (offers where user is seller or buyer)
-        const asSellerOffers = await program.account.offer.all([
-          {
-            memcmp: {
-              offset: 8, // Skip discriminator
-              bytes: wallet.publicKey.toBase58(),
-            },
+        // Mock data for demonstration
+        const mockData = {
+          reputation: {
+            successfulTrades: 28,
+            disputedTrades: 2,
+            disputesWon: 1,
+            totalTrades: 32,
+            completionRate: 87.5,
+            averageRating: 4.2,
+            averageResponseTime: '15 minutes',
+            disputeRate: 6.25,
+            lastUpdated: new Date().toLocaleDateString()
           },
-        ]);
-        
-        const asBuyerOffers = await program.account.offer.all([
-          {
-            memcmp: {
-              offset: 8 + 32, // Skip discriminator + seller
-              bytes: wallet.publicKey.toBase58(),
-            },
+          transactions: Array.from({ length: 10 }, (_, i) => ({
+            id: `tx-${i+1}`,
+            type: i % 3 === 0 ? 'Buy' : i % 3 === 1 ? 'Sell' : 'Deposit',
+            solAmount: Math.random() * 10 + 0.5,
+            fiatAmount: Math.random() * 500 + 20,
+            fiatCurrency: 'USD',
+            status: i % 4 === 0 ? 'Completed' : i % 4 === 1 ? 'Pending' : i % 4 === 2 ? 'Disputed' : 'Cancelled',
+            createdAt: new Date(Date.now() - i * 86400000).toLocaleDateString()
+          })),
+          settings: {
+            displayName: 'Crypto Trader',
+            bio: 'Experienced P2P trader with focus on secure transactions.',
+            showReputationScore: true,
+            showTransactionHistory: false,
+            emailNotifications: true,
+            browserNotifications: true,
+            notificationFrequency: 'immediate',
+            privateProfile: false,
+            hideWalletAddress: false
           },
-        ]);
+          tradingStats: {
+            totalTrades: 32,
+            successfulTrades: 28,
+            completionRate: 87.5,
+            totalVolume: 4325.75,
+            buyOrders: 18,
+            sellOrders: 14,
+            disputedTrades: 2,
+            cancelledTrades: 2,
+            averageResponseTime: '15 minutes',
+            responseTimeRating: 'excellent',
+            periodStart: '90 days ago',
+            periodEnd: 'Today'
+          },
+          activities: Array.from({ length: 5 }, (_, i) => ({
+            id: `activity-${i+1}`,
+            type: i % 5 === 0 ? 'trade' : i % 5 === 1 ? 'offer' : i % 5 === 2 ? 'dispute' : i % 5 === 3 ? 'rating' : 'system',
+            message: i % 5 === 0 ? 'You completed a trade with user123' : 
+                    i % 5 === 1 ? 'You created a new sell offer' :
+                    i % 5 === 2 ? 'A dispute was resolved in your favor' :
+                    i % 5 === 3 ? 'You received a 5-star rating' :
+                    'System maintenance completed',
+            timestamp: new Date(Date.now() - i * 3600000).toISOString(),
+            relatedId: i % 5 !== 4 ? `ref-${i+100}` : null,
+            actionable: i % 3 === 0,
+            actionText: i % 3 === 0 ? 'View Details' : null,
+            actionLink: i % 3 === 0 ? '#' : null
+          }))
+        };
         
-        const allOffers = [...asSellerOffers, ...asBuyerOffers];
+        // Simulate network delay
+        setTimeout(() => {
+          setProfileData(mockData);
+          setLoading(false);
+        }, 1000);
         
-        // Process and set transactions
-        setTransactions(allOffers.map(item => ({
-          id: item.publicKey.toString(),
-          type: item.account.seller.toString() === wallet.publicKey.toString() ? 'Sell' : 'Buy',
-          solAmount: item.account.amount.toNumber() / LAMPORTS_PER_SOL,
-          fiatAmount: item.account.fiatAmount ? item.account.fiatAmount.toNumber() / 100 : 0,
-          fiatCurrency: item.account.fiatCurrency || 'USD',
-          status: getStatusText(item.account.status),
-          createdAt: new Date(item.account.createdAt.toNumber() * 1000).toLocaleString(),
-          updatedAt: new Date(item.account.updatedAt.toNumber() * 1000).toLocaleString(),
-        })));
       } catch (err) {
-        console.error('Error fetching user data:', err);
-        setError('Failed to fetch user data. Using mock data instead.');
-        setReputation(generateMockReputation());
-        setTransactions(generateMockTransactions());
-      } finally {
+        console.error('Error fetching profile data:', err);
+        setError('Failed to load profile data. Please try again later.');
         setLoading(false);
       }
     };
-    
-    fetchUserData();
+
+    fetchProfileData();
   }, [wallet.publicKey, network]);
-  
-  // Helper to get status text from status code
-  const getStatusText = (statusCode) => {
-    const statusMap = {
-      0: 'Created',
-      1: 'Listed',
-      2: 'Accepted',
-      3: 'Awaiting Fiat Payment',
-      4: 'Fiat Sent',
-      5: 'SOL Released',
-      6: 'Dispute Opened',
-      7: 'Completed',
-      8: 'Cancelled'
-    };
-    return statusMap[statusCode] || 'Unknown';
-  };
-  
-  // Generate mock reputation for display when wallet is not connected or no reputation found
-  const generateMockReputation = () => {
-    return {
-      successfulTrades: Math.floor(Math.random() * 20),
-      disputedTrades: Math.floor(Math.random() * 5),
-      disputesWon: Math.floor(Math.random() * 3),
-      disputesLost: Math.floor(Math.random() * 2),
-      rating: Math.floor(Math.random() * 20) + 80, // 80-100 rating
-      lastUpdated: new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
-    };
-  };
-  
-  // Generate mock transactions for display when wallet is not connected
-  const generateMockTransactions = () => {
-    const mockTransactions = [];
-    const statuses = ['Listed', 'Accepted', 'Awaiting Fiat Payment', 'Completed'];
-    const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
+
+  // Handle settings update
+  const handleSaveSettings = (newSettings) => {
+    setProfileData(prevData => ({
+      ...prevData,
+      settings: newSettings
+    }));
     
-    for (let i = 0; i < 5; i++) {
-      const type = Math.random() > 0.5 ? 'Buy' : 'Sell';
-      const solAmount = (Math.random() * 10 + 0.1).toFixed(2);
-      const fiatCurrency = currencies[Math.floor(Math.random() * currencies.length)];
-      const mockSolPrice = {
-        'USD': 150,
-        'EUR': 140,
-        'GBP': 120,
-        'JPY': 16500,
-        'CAD': 200,
-        'AUD': 220
-      };
-      const fiatAmount = (parseFloat(solAmount) * mockSolPrice[fiatCurrency]).toFixed(2);
-      
-      mockTransactions.push({
-        id: `mock-transaction-${i}`,
-        type,
-        solAmount: parseFloat(solAmount),
-        fiatAmount: parseFloat(fiatAmount),
-        fiatCurrency,
-        status: statuses[Math.floor(Math.random() * statuses.length)],
-        createdAt: new Date(Date.now() - Math.random() * 10000000000).toLocaleString(),
-        updatedAt: new Date(Date.now() - Math.random() * 1000000000).toLocaleString(),
-      });
+    // In a real implementation, this would save to backend
+    console.log('Saving settings:', newSettings);
+  };
+
+  // Render tabs navigation
+  const renderTabs = () => (
+    <div className="profile-tabs">
+      <button 
+        className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+        onClick={() => setActiveTab('overview')}
+      >
+        Overview
+      </button>
+      <button 
+        className={`tab-button ${activeTab === 'transactions' ? 'active' : ''}`}
+        onClick={() => setActiveTab('transactions')}
+      >
+        Transactions
+      </button>
+      <button 
+        className={`tab-button ${activeTab === 'stats' ? 'active' : ''}`}
+        onClick={() => setActiveTab('stats')}
+      >
+        Statistics
+      </button>
+      <button 
+        className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
+        onClick={() => setActiveTab('settings')}
+      >
+        Settings
+      </button>
+    </div>
+  );
+
+  // Render tab content based on active tab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return (
+          <div className="profile-overview">
+            <div className="profile-overview-main">
+              <ReputationCard reputation={profileData.reputation} />
+              <ActivityFeed activities={profileData.activities} />
+            </div>
+          </div>
+        );
+      case 'transactions':
+        return (
+          <div className="profile-transactions">
+            <TransactionHistory transactions={profileData.transactions} />
+          </div>
+        );
+      case 'stats':
+        return (
+          <div className="profile-stats">
+            <TradingStats stats={profileData.tradingStats} />
+          </div>
+        );
+      case 'settings':
+        return (
+          <div className="profile-settings-tab">
+            <ProfileSettings 
+              settings={profileData.settings} 
+              onSaveSettings={handleSaveSettings} 
+            />
+          </div>
+        );
+      default:
+        return null;
     }
-    
-    return mockTransactions;
   };
-  
-  // Calculate reputation score
-  const calculateReputationScore = (rep) => {
-    if (!rep) return 0;
-    
-    // Simple calculation: base score + successful trades - disputes lost
-    const baseScore = 50;
-    const successBonus = rep.successfulTrades * 2;
-    const disputePenalty = rep.disputesLost * 5;
-    
-    return Math.min(100, Math.max(0, baseScore + successBonus - disputePenalty));
-  };
-  
-  // Get reputation level based on score
-  const getReputationLevel = (score) => {
-    if (score >= 90) return 'Excellent';
-    if (score >= 80) return 'Very Good';
-    if (score >= 70) return 'Good';
-    if (score >= 60) return 'Fair';
-    if (score >= 50) return 'Neutral';
-    return 'Poor';
-  };
-  
-  // Get star rating based on score
-  const getStarRating = (score) => {
-    const fullStars = Math.floor(score / 20);
-    const halfStar = score % 20 >= 10 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStar;
-    
-    return (
-      <div className="star-rating">
-        {Array(fullStars).fill().map((_, i) => <span key={`full-${i}`} className="star full">★</span>)}
-        {halfStar ? <span className="star half">★</span> : null}
-        {Array(emptyStars).fill().map((_, i) => <span key={`empty-${i}`} className="star empty">☆</span>)}
-      </div>
-    );
-  };
-  
+
   return (
     <div className="user-profile-container">
-      <h2>User Profile</h2>
+      <h2 className="page-title">User Profile</h2>
       
       {error && <div className="error-message">{error}</div>}
       
@@ -218,111 +205,38 @@ const UserProfile = () => {
           <p>Please connect your wallet to view your profile.</p>
         </div>
       ) : loading ? (
-        <div className="loading">Loading profile data...</div>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading profile data...</p>
+        </div>
       ) : (
         <div className="profile-content">
-          <div className="profile-header">
-            <div className="wallet-info">
-              <h3>Wallet Address</h3>
-              <p className="wallet-address">{wallet.publicKey.toString()}</p>
-              <p className="network-info">Network: {network.name}</p>
-            </div>
-            
-            <div className="reputation-summary">
-              <h3>Reputation</h3>
-              <div className="reputation-score">
-                <div className="score-value">{calculateReputationScore(reputation)}</div>
-                <div className="score-label">{getReputationLevel(calculateReputationScore(reputation))}</div>
-                {getStarRating(calculateReputationScore(reputation))}
-              </div>
-            </div>
-          </div>
+          <ProfileHeader 
+            walletAddress={wallet.publicKey.toString()}
+            network={network}
+            username={profileData.settings?.displayName}
+            joinDate="Apr 2025"
+            isVerified={true}
+          />
           
-          <div className="profile-details">
-            <div className="reputation-details">
-              <h3>Trading History</h3>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <div className="stat-value">{reputation?.successfulTrades || 0}</div>
-                  <div className="stat-label">Successful Trades</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-value">{reputation?.disputedTrades || 0}</div>
-                  <div className="stat-label">Disputed Trades</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-value">{reputation?.disputesWon || 0}</div>
-                  <div className="stat-label">Disputes Won</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-value">{reputation?.disputesLost || 0}</div>
-                  <div className="stat-label">Disputes Lost</div>
-                </div>
-              </div>
-              <div className="last-updated">
-                Last updated: {reputation?.lastUpdated || 'Never'}
-              </div>
-            </div>
-            
-            <div className="transaction-history">
-              <h3>Transaction History</h3>
-              {transactions.length === 0 ? (
-                <div className="no-transactions">No transactions found.</div>
-              ) : (
-                <div className="transactions-table">
-                  <div className="table-header">
-                    <div className="col type">Type</div>
-                    <div className="col amount">Amount</div>
-                    <div className="col fiat">Fiat</div>
-                    <div className="col status">Status</div>
-                    <div className="col date">Date</div>
-                  </div>
-                  
-                  {transactions.map(transaction => (
-                    <div key={transaction.id} className="table-row">
-                      <div className={`col type ${transaction.type.toLowerCase()}`}>
-                        {transaction.type}
-                      </div>
-                      <div className="col amount">
-                        {transaction.solAmount.toFixed(2)} SOL
-                      </div>
-                      <div className="col fiat">
-                        {transaction.fiatAmount.toFixed(2)} {transaction.fiatCurrency}
-                      </div>
-                      <div className={`col status status-${transaction.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                        {transaction.status}
-                      </div>
-                      <div className="col date">
-                        {transaction.createdAt}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          {renderTabs()}
           
-          <div className="profile-actions">
-            <h3>Account Actions</h3>
-            <div className="actions-grid">
-              <button className="action-button" onClick={() => alert('Feature coming soon!')}>
-                Export Transaction History
-              </button>
-              <button className="action-button" onClick={() => alert('Feature coming soon!')}>
-                Become a Juror
-              </button>
-              <button className="action-button" onClick={() => alert('Feature coming soon!')}>
-                Stake Reputation
-              </button>
-              <button className="action-button" onClick={() => alert('Feature coming soon!')}>
-                View Analytics
-              </button>
-            </div>
+          <div className="profile-tab-content">
+            {renderTabContent()}
           </div>
         </div>
       )}
     </div>
   );
+};
+
+UserProfile.propTypes = {
+  wallet: PropTypes.shape({
+    publicKey: PropTypes.object
+  }).isRequired,
+  network: PropTypes.shape({
+    name: PropTypes.string.isRequired
+  }).isRequired
 };
 
 export { UserProfile };

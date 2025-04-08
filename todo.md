@@ -6,8 +6,6 @@
 - [x] #12: Simplify trading process with guided workflows (PR #34)
 - [x] #13: Improve visual design and consistency (PR #35)
 - [x] #14: Create user profile interface (PR #36)
-
-## In Progress
 - [ ] #15: Implement notification system
 - [ ] #16: Create comprehensive documentation
 - [ ] #17: Implement frontend testing
