@@ -1,0 +1,120 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * ProfileHeader component displays the user's basic information and avatar
+ */
+const ProfileHeader = ({ 
+  walletAddress, 
+  network, 
+  avatarUrl, 
+  username, 
+  joinDate, 
+  isVerified 
+}) => {
+  // Generate initials from wallet address if no username is provided
+  const getInitials = () => {
+    if (username) {
+      return username.substring(0, 2).toUpperCase();
+    }
+    return walletAddress.substring(0, 2).toUpperCase();
+  };
+
+  // Format wallet address for display (truncate middle)
+  const formatWalletAddress = (address) => {
+    if (!address) return '';
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
+
+  return (
+    <div className="profile-header card">
+      <div className="profile-header-content">
+        <div className="profile-avatar-container">
+          {avatarUrl ? (
+            <img 
+              src={avatarUrl} 
+              alt="User avatar" 
+              className="profile-avatar" 
+            />
+          ) : (
+            <div className="profile-avatar profile-avatar-placeholder">
+              {getInitials()}
+            </div>
+          )}
+          {isVerified && (
+            <div className="profile-verified-badge" title="Verified User">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        
+        <div className="profile-info">
+          <h2 className="profile-username">
+            {username || 'Anonymous User'}
+          </h2>
+          
+          <div className="profile-wallet">
+            <span className="profile-wallet-address" title={walletAddress}>
+              {formatWalletAddress(walletAddress)}
+            </span>
+            <button 
+              className="profile-copy-address" 
+              onClick={() => {
+                navigator.clipboard.writeText(walletAddress);
+                // Could add a toast notification here
+              }}
+              aria-label="Copy wallet address"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="profile-meta">
+            <div className="profile-network">
+              <span className="profile-meta-label">Network:</span>
+              <span className="profile-meta-value">{network.name}</span>
+            </div>
+            
+            <div className="profile-join-date">
+              <span className="profile-meta-label">Member since:</span>
+              <span className="profile-meta-value">{joinDate}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="profile-actions">
+        <button className="button button-outline button-sm">
+          Edit Profile
+        </button>
+        <button className="button button-ghost button-sm">
+          Share Profile
+        </button>
+      </div>
+    </div>
+  );
+};
+
+ProfileHeader.propTypes = {
+  walletAddress: PropTypes.string.isRequired,
+  network: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+  }).isRequired,
+  avatarUrl: PropTypes.string,
+  username: PropTypes.string,
+  joinDate: PropTypes.string,
+  isVerified: PropTypes.bool,
+};
+
+ProfileHeader.defaultProps = {
+  avatarUrl: '',
+  username: '',
+  joinDate: 'Unknown',
+  isVerified: false,
+};
+
+export default ProfileHeader;
