@@ -3,7 +3,7 @@
 ## Issues to Implement (Assigned to @larp0)
 
 - [x] #10: Add loading states and transaction confirmations
-- [ ] #11: Enhance mobile responsiveness
+- [x] #11: Enhance mobile responsiveness
 - [ ] #12: Simplify trading process with guided workflows
 - [ ] #13: Improve visual design and consistency
 - [ ] #14: Create user profile interface
@@ -15,4 +15,5 @@
 ## Current Progress
 
 Completed implementation of issue #10 (Pull Request #31 created).
-Currently working on issue #11: Enhance mobile responsiveness.
+Completed implementation of issue #11 (Pull Request #32 created).
+Currently working on issue #12: Simplify trading process with guided workflows.
