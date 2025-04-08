@@ -1,11 +1,7 @@
 /* 
- * CSS @import rules must be at the top of the stylesheet, 
- * before any other rules or declarations (except @charset or @layer)
- * This is required for proper CSS processing in Next.js
+ * Next.js CSS imports
+ * Removing incorrect asset imports that don't exist
  */
-@import "/assets/css/styles.css";
-
-@import "/assets/css/mobile-responsive.css";
 
 
 /* Additional Next.js specific styles */
