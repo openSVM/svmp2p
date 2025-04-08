@@ -105,7 +105,7 @@ const App = () => {
             <div className="app-container">
               <header className="app-header">
                 <div className="logo-container">
-                  <img src="/assets/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
+                  <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
                   <h1>OpenSVM P2P Exchange</h1>
                 </div>
                 
