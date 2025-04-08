@@ -1,0 +1,53 @@
+digraph {
+  rankdir=LR;
+  node [shape=box, style=filled, fillcolor=lightblue, fontname="Arial"];
+  edge [fontname="Arial"];
+  
+  // Main components
+  Frontend [label="Frontend\nReact Application"];
+  SmartContract [label="Smart Contracts\nSolana Program", fillcolor=lightgreen];
+  Backend [label="Backend Services\nNode.js/Express"];
+  Database [label="Database\nMongoDB"];
+  
+  // Frontend subcomponents
+  subgraph cluster_frontend {
+    label="Frontend Components";
+    style=filled;
+    fillcolor=aliceblue;
+    
+    UI [label="UI Components"];
+    State [label="State Management\nContext API"];
+    Wallet [label="Wallet Integration"];
+    API [label="API Client"];
+  }
+  
+  // Smart Contract subcomponents
+  subgraph cluster_smartcontract {
+    label="Smart Contract Components";
+    style=filled;
+    fillcolor=palegreen;
+    
+    Offers [label="Offer Management"];
+    Escrow [label="Escrow System"];
+    Disputes [label="Dispute Resolution"];
+    Reputation [label="Reputation System"];
+  }
+  
+  // Connections
+  Frontend -> SmartContract [label="Transactions"];
+  Frontend -> Backend [label="API Calls"];
+  Backend -> Database [label="CRUD Operations"];
+  Backend -> SmartContract [label="Read Blockchain State"];
+  
+  // Frontend internal connections
+  UI -> State;
+  State -> Wallet;
+  State -> API;
+  Wallet -> SmartContract [label="Sign & Submit"];
+  API -> Backend;
+  
+  // Smart Contract internal connections
+  Offers -> Escrow;
+  Escrow -> Disputes;
+  Disputes -> Reputation;
+}
