@@ -31,7 +31,7 @@ const SVM_NETWORKS = {
     name: 'Solana',
     endpoint: clusterApiUrl('devnet'),
     programId: 'YOUR_SOLANA_PROGRAM_ID',
-    icon: '/assets/images/solana-logo.svg',
+    icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',
   },
@@ -39,7 +39,7 @@ const SVM_NETWORKS = {
     name: 'Sonic',
     endpoint: 'https://sonic-api.example.com',
     programId: 'YOUR_SONIC_PROGRAM_ID',
-    icon: '/assets/images/sonic-logo.svg',
+    icon: '/images/sonic-logo.svg',
     color: '#00C2FF',
     explorerUrl: 'https://explorer.sonic.example.com',
   },
@@ -47,7 +47,7 @@ const SVM_NETWORKS = {
     name: 'Eclipse',
     endpoint: 'https://eclipse-api.example.com',
     programId: 'YOUR_ECLIPSE_PROGRAM_ID',
-    icon: '/assets/images/eclipse-logo.svg',
+    icon: '/images/eclipse-logo.svg',
     color: '#0052FF',
     explorerUrl: 'https://explorer.eclipse.example.com',
   },
@@ -55,7 +55,7 @@ const SVM_NETWORKS = {
     name: 'svmBNB',
     endpoint: 'https://svmbnb-api.example.com',
     programId: 'YOUR_SVMBNB_PROGRAM_ID',
-    icon: '/assets/images/svmbnb-logo.svg',
+    icon: '/images/svmbnb-logo.svg',
     color: '#F0B90B',
     explorerUrl: 'https://explorer.svmbnb.example.com',
   },
@@ -63,7 +63,7 @@ const SVM_NETWORKS = {
     name: 's00n',
     endpoint: 'https://s00n-api.example.com',
     programId: 'YOUR_S00N_PROGRAM_ID',
-    icon: '/assets/images/s00n-logo.svg',
+    icon: '/images/s00n-logo.svg',
     color: '#00FF9D',
     explorerUrl: 'https://explorer.s00n.example.com',
   }
@@ -105,7 +105,7 @@ const App = () => {
             <div className="app-container">
               <header className="app-header">
                 <div className="logo-container">
-                  <img src="/assets/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
+                  <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
                   <h1>OpenSVM P2P Exchange</h1>
                 </div>
                 

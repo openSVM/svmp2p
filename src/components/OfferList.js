@@ -3,10 +3,10 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
 import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import BN from 'bn.js';
-import { AppContext } from '../AppContext';
-import idl from '../idl/p2p_exchange.json'; // This will be the IDL for your program
+import { AppContext } from '@/contexts/AppContext';
+import idl from '@/idl/p2p_exchange.json'; // This will be the IDL for your program
 
-export const OfferList = ({ type }) => {
+const OfferList = ({ type }) => {
   const { connection } = useConnection();
   const wallet = useWallet();
   const { network } = useContext(AppContext);
@@ -27,6 +27,14 @@ export const OfferList = ({ type }) => {
   // Available currencies and payment methods
   const currencies = ['All', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
   const paymentMethods = ['All', 'Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
+  
+  // Input IDs for accessibility
+  const inputIds = {
+    minAmount: 'min-amount-input',
+    maxAmount: 'max-amount-input',
+    currency: 'currency-select',
+    paymentMethod: 'payment-method-select'
+  };
   
   // Create Anchor provider and program
   const getProgram = () => {
@@ -520,31 +528,37 @@ export const OfferList = ({ type }) => {
       
       <div className="filters">
         <div className="filter-group">
-          <label>SOL Amount:</label>
+          <label htmlFor={inputIds.minAmount}>SOL Amount:</label>
           <input
+            id={inputIds.minAmount}
             type="number"
             placeholder="Min"
             value={minAmount}
             onChange={(e) => setMinAmount(e.target.value)}
             min="0"
             step="0.01"
+            aria-label="Minimum SOL amount"
           />
           <span>to</span>
           <input
+            id={inputIds.maxAmount}
             type="number"
             placeholder="Max"
             value={maxAmount}
             onChange={(e) => setMaxAmount(e.target.value)}
             min="0"
             step="0.01"
+            aria-label="Maximum SOL amount"
           />
         </div>
         
         <div className="filter-group">
-          <label>Currency:</label>
+          <label htmlFor={inputIds.currency}>Currency:</label>
           <select
+            id={inputIds.currency}
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value)}
+            aria-label="Select currency"
           >
             {currencies.map(currency => (
               <option key={currency} value={currency}>{currency}</option>
@@ -553,10 +567,12 @@ export const OfferList = ({ type }) => {
         </div>
         
         <div className="filter-group">
-          <label>Payment Method:</label>
+          <label htmlFor={inputIds.paymentMethod}>Payment Method:</label>
           <select
+            id={inputIds.paymentMethod}
             value={selectedPaymentMethod}
             onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+            aria-label="Select payment method"
           >
             {paymentMethods.map(method => (
               <option key={method} value={method}>{method}</option>
@@ -639,3 +655,6 @@ export const OfferList = ({ type }) => {
     </div>
   );
 };
+
+export { OfferList };
+export default OfferList;

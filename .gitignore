@@ -10,6 +10,10 @@ dist/
 build/
 *.min.js
 
+# Next.js
+.next/
+out/
+
 # Environment variables
 .env
 .env.local

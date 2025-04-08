@@ -3,12 +3,12 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, web3 } from '@coral-xyz/anchor';
 import { PublicKey, LAMPORTS_PER_SOL, SystemProgram } from '@solana/web3.js';
 import BN from 'bn.js';
-import { AppContext } from '../AppContext';
-import idl from '../idl/p2p_exchange.json'; // This will be the IDL for your program
+import { AppContext } from '@/contexts/AppContext';
+import idl from '@/idl/p2p_exchange.json'; // This will be the IDL for your program
 
 const { Keypair } = web3;
 
-export const OfferCreation = () => {
+const OfferCreation = () => {
   const { connection } = useConnection();
   const wallet = useWallet();
   const { network } = useContext(AppContext);
@@ -247,3 +247,6 @@ export const OfferCreation = () => {
     </div>
   );
 };
+
+export { OfferCreation };
+export default OfferCreation;
