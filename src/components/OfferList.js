@@ -1,8 +1,111 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { AppContext } from '../contexts/AppContext';
 import { LoadingSpinner, ButtonLoader, TransactionStatus } from './common';
 
+// Component for rendering a single offer row
+const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction, network }) => {
+  const isProcessing = processingAction.offerId === offer.id;
+  const currentAction = processingAction.action;
+  
+  // Render action buttons based on offer status and user role
+  const renderActionButtons = () => {
+    if (type === 'buy' && offer.status === 'Listed') {
+      return (
+        <ButtonLoader
+          onClick={() => handleOfferAction(offer.id, 'accept')}
+          isLoading={isProcessing && currentAction === 'accept'}
+          loadingText="Accepting..."
+          variant="primary"
+          size="small"
+        >
+          Accept Offer
+        </ButtonLoader>
+      );
+    }
+    
+    if (type === 'my' && offer.status === 'Listed') {
+      return (
+        <ButtonLoader
+          onClick={() => handleOfferAction(offer.id, 'cancel')}
+          isLoading={isProcessing && currentAction === 'cancel'}
+          loadingText="Cancelling..."
+          variant="danger"
+          size="small"
+        >
+          Cancel Offer
+        </ButtonLoader>
+      );
+    }
+    
+    if (type === 'my' && offer.status === 'Accepted') {
+      return (
+        <ButtonLoader
+          onClick={() => handleOfferAction(offer.id, 'confirm')}
+          isLoading={isProcessing && currentAction === 'confirm'}
+          loadingText="Confirming..."
+          variant="success"
+          size="small"
+        >
+          Confirm Payment
+        </ButtonLoader>
+      );
+    }
+    
+    return null;
+  };
+
+  return (
+    <div className="table-row">
+      <div className="col seller">
+        <div className="seller-info">
+          <span className="seller-name">
+            {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
+          </span>
+          <span className="seller-rating">★★★★☆</span>
+        </div>
+      </div>
+      
+      <div className="col amount">
+        <div className="amount-info">
+          <span className="sol-amount">{offer.solAmount.toFixed(2)} SOL</span>
+          <span className="network-badge" style={{backgroundColor: network.color}}>
+            {network.name}
+          </span>
+        </div>
+      </div>
+      
+      <div className="col price">
+        <div className="price-info">
+          <span className="fiat-amount">
+            {offer.fiatAmount.toFixed(2)} {offer.fiatCurrency}
+          </span>
+          <span className="price-per-sol">
+            ({(offer.fiatAmount / offer.solAmount).toFixed(2)} {offer.fiatCurrency}/SOL)
+          </span>
+        </div>
+      </div>
+      
+      <div className="col payment">
+        <div className="payment-method">
+          {offer.paymentMethod}
+        </div>
+      </div>
+      
+      <div className="col status">
+        <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}>
+          {offer.status}
+        </div>
+      </div>
+      
+      <div className="col actions">
+        {renderActionButtons()}
+      </div>
+    </div>
+  );
+});
+
+// Optimized OfferList component
 const OfferList = ({ type = 'buy' }) => {
   const { wallet } = useWallet();
   const { program, network } = useContext(AppContext);
@@ -25,24 +128,20 @@ const OfferList = ({ type = 'buy' }) => {
     action: null
   });
   
-  const currencies = ['', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
-  const paymentMethods = ['', 'Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
+  // Memoize static data
+  const currencies = useMemo(() => ['', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'], []);
+  const paymentMethods = useMemo(() => ['', 'Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'], []);
   
-  // Generate unique IDs for form inputs
-  const inputIds = {
+  // Generate unique IDs for form inputs - memoized to prevent recalculation
+  const inputIds = useMemo(() => ({
     minAmount: `min-amount-${type}`,
     maxAmount: `max-amount-${type}`,
     currency: `currency-${type}`,
     paymentMethod: `payment-method-${type}`
-  };
+  }), [type]);
   
-  // Fetch offers on component mount
-  useEffect(() => {
-    fetchOffers();
-  }, [type, network]);
-  
-  // Fetch offers from the blockchain
-  const fetchOffers = async () => {
+  // Fetch offers on component mount - useCallback to prevent recreation on each render
+  const fetchOffers = useCallback(async () => {
     setLoading(true);
     setError('');
     
@@ -98,35 +197,42 @@ const OfferList = ({ type = 'buy' }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
   
-  // Filter offers based on user criteria
-  const filteredOffers = offers.filter(offer => {
-    // Filter by min amount
-    if (minAmount && offer.solAmount < parseFloat(minAmount)) {
-      return false;
-    }
-    
-    // Filter by max amount
-    if (maxAmount && offer.solAmount > parseFloat(maxAmount)) {
-      return false;
-    }
-    
-    // Filter by currency
-    if (selectedCurrency && offer.fiatCurrency !== selectedCurrency) {
-      return false;
-    }
-    
-    // Filter by payment method
-    if (selectedPaymentMethod && offer.paymentMethod !== selectedPaymentMethod) {
-      return false;
-    }
-    
-    return true;
-  });
+  // Use effect with proper dependencies
+  useEffect(() => {
+    fetchOffers();
+  }, [type, network, fetchOffers]);
   
-  // Handle offer actions (accept, cancel, etc.)
-  const handleOfferAction = async (offerId, action) => {
+  // Filter offers based on user criteria - memoized to prevent recalculation on every render
+  const filteredOffers = useMemo(() => {
+    return offers.filter(offer => {
+      // Filter by min amount
+      if (minAmount && offer.solAmount < parseFloat(minAmount)) {
+        return false;
+      }
+      
+      // Filter by max amount
+      if (maxAmount && offer.solAmount > parseFloat(maxAmount)) {
+        return false;
+      }
+      
+      // Filter by currency
+      if (selectedCurrency && offer.fiatCurrency !== selectedCurrency) {
+        return false;
+      }
+      
+      // Filter by payment method
+      if (selectedPaymentMethod && offer.paymentMethod !== selectedPaymentMethod) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [offers, minAmount, maxAmount, selectedCurrency, selectedPaymentMethod]);
+  
+  // Handle offer actions (accept, cancel, etc.) - useCallback to prevent recreation on each render
+  const handleOfferAction = useCallback(async (offerId, action) => {
     if (!wallet.publicKey) {
       setError('Please connect your wallet first');
       setTxStatus({
@@ -172,70 +278,23 @@ const OfferList = ({ type = 'buy' }) => {
         action: null
       });
     }
-  };
+  }, [wallet.publicKey, fetchOffers]);
   
-  // Render action buttons based on offer status and user role
-  const renderActionButtons = (offer) => {
-    const isProcessing = processingAction.offerId === offer.id;
-    const currentAction = processingAction.action;
-    
-    if (type === 'buy' && offer.status === 'Listed') {
-      return (
-        <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'accept')}
-          isLoading={isProcessing && currentAction === 'accept'}
-          loadingText="Accepting..."
-          variant="primary"
-          size="small"
-        >
-          Accept Offer
-        </ButtonLoader>
-      );
-    }
-    
-    if (type === 'my' && offer.status === 'Listed') {
-      return (
-        <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'cancel')}
-          isLoading={isProcessing && currentAction === 'cancel'}
-          loadingText="Cancelling..."
-          variant="danger"
-          size="small"
-        >
-          Cancel Offer
-        </ButtonLoader>
-      );
-    }
-    
-    if (type === 'my' && offer.status === 'Accepted') {
-      return (
-        <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'confirm')}
-          isLoading={isProcessing && currentAction === 'confirm'}
-          loadingText="Confirming..."
-          variant="success"
-          size="small"
-        >
-          Confirm Payment
-        </ButtonLoader>
-      );
-    }
-    
-    return null;
-  };
-  
-  // Clear transaction status
-  const handleClearTxStatus = () => {
+  // Clear transaction status - useCallback to prevent recreation on each render
+  const handleClearTxStatus = useCallback(() => {
     setTxStatus(null);
-  };
+  }, []);
+  
+  // Memoize the title to prevent recreation on each render
+  const listTitle = useMemo(() => {
+    return type === 'buy' ? 'Buy SOL Offers' : 
+           type === 'sell' ? 'Sell SOL Offers' : 
+           'My Offers';
+  }, [type]);
   
   return (
     <div className="offer-list-container">
-      <h2>
-        {type === 'buy' ? 'Buy SOL Offers' : 
-         type === 'sell' ? 'Sell SOL Offers' : 
-         'My Offers'}
-      </h2>
+      <h2>{listTitle}</h2>
       
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}
@@ -320,53 +379,16 @@ const OfferList = ({ type = 'buy' }) => {
             <div className="col actions">Actions</div>
           </div>
           
+          {/* Use windowing/virtualization for large lists in a real implementation */}
           {filteredOffers.map(offer => (
-            <div key={offer.id} className="table-row">
-              <div className="col seller">
-                <div className="seller-info">
-                  <span className="seller-name">
-                    {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
-                  </span>
-                  <span className="seller-rating">★★★★☆</span>
-                </div>
-              </div>
-              
-              <div className="col amount">
-                <div className="amount-info">
-                  <span className="sol-amount">{offer.solAmount.toFixed(2)} SOL</span>
-                  <span className="network-badge" style={{backgroundColor: network.color}}>
-                    {network.name}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="col price">
-                <div className="price-info">
-                  <span className="fiat-amount">
-                    {offer.fiatAmount.toFixed(2)} {offer.fiatCurrency}
-                  </span>
-                  <span className="price-per-sol">
-                    ({(offer.fiatAmount / offer.solAmount).toFixed(2)} {offer.fiatCurrency}/SOL)
-                  </span>
-                </div>
-              </div>
-              
-              <div className="col payment">
-                <div className="payment-method">
-                  {offer.paymentMethod}
-                </div>
-              </div>
-              
-              <div className="col status">
-                <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                  {offer.status}
-                </div>
-              </div>
-              
-              <div className="col actions">
-                {renderActionButtons(offer)}
-              </div>
-            </div>
+            <OfferRow 
+              key={offer.id} 
+              offer={offer} 
+              type={type} 
+              processingAction={processingAction} 
+              handleOfferAction={handleOfferAction}
+              network={network}
+            />
           ))}
         </div>
       )}
@@ -379,5 +401,7 @@ const OfferList = ({ type = 'buy' }) => {
     </div>
   );
 };
+
+// Export memoized component to prevent unnecessary re-renders
+export default React.memo(OfferList);
 export { OfferList };
-export default OfferList;
