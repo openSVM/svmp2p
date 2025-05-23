@@ -5,6 +5,18 @@ import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../utils/test-utils';
 import OfferList from '../../components/OfferList';
 
+// Mock performance utils
+jest.mock('../../utils/performance', () => ({
+  useDebounce: (value) => value,
+  VirtualizedList: ({ items, renderItem }) => (
+    <div data-testid="virtualized-list">
+      {items.map((item, i) => (
+        <div key={i}>{renderItem(item, i)}</div>
+      ))}
+    </div>
+  )
+}));
+
 // Mock components
 jest.mock('../../components/common/LoadingSpinner', () => ({
   __esModule: true,
@@ -20,29 +32,52 @@ jest.mock('../../components/common/TransactionStatus', () => ({
   )
 }));
 
+// Mock localStorage
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: jest.fn((key) => store[key] || null),
+    setItem: jest.fn((key, value) => {
+      store[key] = value.toString();
+    }),
+    clear: jest.fn(() => {
+      store = {};
+    })
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock
+});
+
 // Mock data
 const mockOffers = [
   {
     id: '1',
-    amount: '100',
-    price: '50',
-    paymentMethod: 'bank_transfer',
+    solAmount: 1.5,
+    fiatAmount: 225,
+    fiatCurrency: 'USD',
+    paymentMethod: 'Bank Transfer',
     seller: '5Gh7Ld7UUAKAdTZu3xcGpU5PYwwGJsGmZP1Gb9DUXwU3',
-    status: 'active'
+    status: 'Listed',
+    createdAt: Date.now() - 3600000
   },
   {
     id: '2',
-    amount: '200',
-    price: '75',
-    paymentMethod: 'paypal',
+    solAmount: 2.0,
+    fiatAmount: 300,
+    fiatCurrency: 'USD',
+    paymentMethod: 'PayPal',
     seller: '8FnkznYpHvfX3FC5HqVWyVmhwwmKQNxFhWP9wZQC2uJU',
-    status: 'active'
+    status: 'Listed',
+    createdAt: Date.now() - 7200000
   }
 ];
 
 describe('OfferList Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorageMock.clear();
     
     // Mock fetch for offers
     global.fetch = jest.fn(() =>
@@ -68,13 +103,13 @@ describe('OfferList Component', () => {
     });
     
     // Check if offers are rendered
-    expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('50')).toBeInTheDocument();
-    expect(screen.getByText('bank_transfer')).toBeInTheDocument();
+    expect(screen.getByText('1.50 SOL')).toBeInTheDocument();
+    expect(screen.getByText('225.00 USD')).toBeInTheDocument();
+    expect(screen.getByText('Bank Transfer')).toBeInTheDocument();
     
-    expect(screen.getByText('200')).toBeInTheDocument();
-    expect(screen.getByText('75')).toBeInTheDocument();
-    expect(screen.getByText('paypal')).toBeInTheDocument();
+    expect(screen.getByText('2.00 SOL')).toBeInTheDocument();
+    expect(screen.getByText('300.00 USD')).toBeInTheDocument();
+    expect(screen.getByText('PayPal')).toBeInTheDocument();
   });
 
   test('filters offers by payment method', async () => {
@@ -86,15 +121,18 @@ describe('OfferList Component', () => {
       expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
     
+    // Show filters
+    await user.click(screen.getByText('Show Filters'));
+    
     // Select payment method filter
-    await user.selectOptions(screen.getByLabelText(/Payment Method/i), ['paypal']);
+    await user.selectOptions(screen.getByLabelText(/Payment Method/i), ['PayPal']);
     
     // Check if only matching offers are displayed
-    expect(screen.queryByText('bank_transfer')).not.toBeInTheDocument();
-    expect(screen.getByText('paypal')).toBeInTheDocument();
+    expect(screen.queryByText('Bank Transfer')).not.toBeInTheDocument();
+    expect(screen.getByText('PayPal')).toBeInTheDocument();
   });
 
-  test('sorts offers by price', async () => {
+  test('sorts offers', async () => {
     const user = userEvent.setup();
     renderWithProviders(<OfferList />);
     
@@ -103,61 +141,106 @@ describe('OfferList Component', () => {
       expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
     
-    // Click sort by price button
-    await user.click(screen.getByText(/Sort by Price/i));
+    // Select sort by SOL Amount
+    await user.selectOptions(screen.getByLabelText(/Sort by/i), ['solAmount']);
     
-    // Check if offers are sorted
-    const priceElements = screen.getAllByText(/\d+/, { selector: '.price' });
-    expect(priceElements[0].textContent).toBe('50');
-    expect(priceElements[1].textContent).toBe('75');
+    // Check if offers are sorted (should be automatically in descending order first)
+    const solAmounts = screen.getAllByText(/SOL/, { exact: false });
+    expect(solAmounts[0].textContent).toContain('2.00 SOL');
+    expect(solAmounts[1].textContent).toContain('1.50 SOL');
     
-    // Click again to reverse sort
-    await user.click(screen.getByText(/Sort by Price/i));
+    // Click sort direction button to change to ascending
+    await user.click(screen.getByLabelText('Toggle sort direction'));
     
     // Check if offers are sorted in reverse
-    const reversedPriceElements = screen.getAllByText(/\d+/, { selector: '.price' });
-    expect(reversedPriceElements[0].textContent).toBe('75');
-    expect(reversedPriceElements[1].textContent).toBe('50');
+    const reversedSolAmounts = screen.getAllByText(/SOL/, { exact: false });
+    expect(reversedSolAmounts[0].textContent).toContain('1.50 SOL');
+    expect(reversedSolAmounts[1].textContent).toContain('2.00 SOL');
   });
 
-  test('handles offer selection', async () => {
+  test('saves and loads searches', async () => {
     const user = userEvent.setup();
-    const handleSelect = jest.fn();
-    
-    renderWithProviders(<OfferList onSelectOffer={handleSelect} />);
+    renderWithProviders(<OfferList />);
     
     // Wait for offers to load
     await waitFor(() => {
       expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
     
-    // Click on an offer
-    await user.click(screen.getAllByRole('button', { name: /View Offer/i })[0]);
+    // Show filters
+    await user.click(screen.getByText('Show Filters'));
     
-    // Check if selection handler was called with correct offer
-    expect(handleSelect).toHaveBeenCalledWith(mockOffers[0]);
+    // Set a filter
+    await user.selectOptions(screen.getByLabelText(/Payment Method/i), ['PayPal']);
+    
+    // Save the search
+    await user.type(screen.getByPlaceholderText('Name this search'), 'PayPal Only');
+    await user.click(screen.getByText('Save'));
+    
+    // Verify localStorage was called
+    expect(localStorageMock.setItem).toHaveBeenCalled();
+    
+    // Reset filters
+    await user.click(screen.getByText('Reset Filters'));
+    
+    // Check that both offers are visible again
+    expect(screen.getByText('Bank Transfer')).toBeInTheDocument();
+    expect(screen.getByText('PayPal')).toBeInTheDocument();
+    
+    // Load the saved search
+    await user.click(screen.getByText('PayPal Only'));
+    
+    // Verify filter is applied
+    expect(screen.queryByText('Bank Transfer')).not.toBeInTheDocument();
+    expect(screen.getByText('PayPal')).toBeInTheDocument();
   });
 
-  test('handles fetch error', async () => {
-    // Mock fetch error
-    global.fetch = jest.fn(() =>
+  test('handles pagination', async () => {
+    // Mock many offers to test pagination
+    const manyOffers = Array.from({ length: 8 }, (_, i) => ({
+      id: `${i + 1}`,
+      solAmount: i + 1,
+      fiatAmount: (i + 1) * 150,
+      fiatCurrency: 'USD',
+      paymentMethod: i % 2 === 0 ? 'Bank Transfer' : 'PayPal',
+      seller: `seller${i}`,
+      status: 'Listed',
+      createdAt: Date.now() - (i * 3600000)
+    }));
+    
+    // Override the fetchOffers mock
+    jest.spyOn(global, 'fetch').mockImplementation(() =>
       Promise.resolve({
-        json: () => Promise.reject(new Error('Failed to fetch offers')),
-        ok: false,
+        json: () => Promise.resolve({ offers: manyOffers }),
+        ok: true,
       })
     );
     
+    const user = userEvent.setup();
     renderWithProviders(<OfferList />);
     
-    // Wait for error message
+    // Wait for offers to load
     await waitFor(() => {
-      expect(screen.getByText(/Failed to fetch offers/i)).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
+    
+    // Only first 5 offers should be visible (default items per page)
+    expect(screen.getByText('1.00 SOL')).toBeInTheDocument();
+    expect(screen.getByText('5.00 SOL')).toBeInTheDocument();
+    expect(screen.queryByText('6.00 SOL')).not.toBeInTheDocument();
+    
+    // Navigate to next page
+    await user.click(screen.getByLabelText('Next page'));
+    
+    // Now offers 6-8 should be visible
+    expect(screen.queryByText('1.00 SOL')).not.toBeInTheDocument();
+    expect(screen.getByText('6.00 SOL')).toBeInTheDocument();
+    expect(screen.getByText('8.00 SOL')).toBeInTheDocument();
   });
 
   test('handles empty offers list', async () => {
     // Mock empty offers list
-    global.fetch = jest.fn(() =>
+    jest.spyOn(global, 'fetch').mockImplementation(() =>
       Promise.resolve({
         json: () => Promise.resolve({ offers: [] }),
         ok: true,
@@ -168,7 +251,7 @@ describe('OfferList Component', () => {
     
     // Wait for no offers message
     await waitFor(() => {
-      expect(screen.getByText(/No offers available/i)).toBeInTheDocument();
+      expect(screen.getByText(/No offers found matching your criteria/i)).toBeInTheDocument();
     });
   });
 });
