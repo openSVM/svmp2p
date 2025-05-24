@@ -24,6 +24,7 @@ import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
 import { DisputeResolution } from './components/DisputeResolution';
 import { UserProfile } from './components/UserProfile';
+import TradingGuidedWorkflow from './components/guided-workflow/TradingGuidedWorkflow';
 
 // SVM Networks configuration
 const SVM_NETWORKS = {
@@ -73,6 +74,8 @@ const App = () => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
+  const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
+  const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -96,6 +99,18 @@ const App = () => {
     activeTab,
     setActiveTab,
   }), [network, selectedNetwork, activeTab]);
+  
+  // Handle starting guided workflow
+  const handleStartGuidedWorkflow = (type) => {
+    setGuidedWorkflowType(type);
+    setIsGuidedWorkflow(true);
+  };
+  
+  // Handle completing guided workflow
+  const handleCompleteGuidedWorkflow = () => {
+    setIsGuidedWorkflow(false);
+    setGuidedWorkflowType(null);
+  };
   
   return (
     <ConnectionProvider endpoint={network.endpoint}>
@@ -142,16 +157,41 @@ const App = () => {
               </nav>
               
               <main className="app-main">
-                {activeTab === 'buy' && <OfferList type="buy" />}
-                {activeTab === 'sell' && (
+                {isGuidedWorkflow ? (
+                  <div className="guided-workflow-container">
+                    <div className="guided-workflow-header">
+                      <h2>{guidedWorkflowType === 'buy' ? 'Buy SOL' : 'Sell SOL'} - Guided Workflow</h2>
+                      <button 
+                        className="exit-workflow-button"
+                        onClick={handleCompleteGuidedWorkflow}
+                      >
+                        Exit Workflow
+                      </button>
+                    </div>
+                    <TradingGuidedWorkflow 
+                      tradingType={guidedWorkflowType} 
+                      onComplete={handleCompleteGuidedWorkflow}
+                    />
+                  </div>
+                ) : (
                   <>
-                    <OfferCreation />
-                    <OfferList type="sell" />
+                    {activeTab === 'buy' && 
+                      <OfferList 
+                        type="buy" 
+                        onStartGuidedWorkflow={handleStartGuidedWorkflow} 
+                      />
+                    }
+                    {activeTab === 'sell' && (
+                      <>
+                        <OfferCreation onStartGuidedWorkflow={handleStartGuidedWorkflow} />
+                        <OfferList type="sell" onStartGuidedWorkflow={handleStartGuidedWorkflow} />
+                      </>
+                    )}
+                    {activeTab === 'myoffers' && <OfferList type="my" />}
+                    {activeTab === 'disputes' && <DisputeResolution />}
+                    {activeTab === 'profile' && <UserProfile />}
                   </>
                 )}
-                {activeTab === 'myoffers' && <OfferList type="my" />}
-                {activeTab === 'disputes' && <DisputeResolution />}
-                {activeTab === 'profile' && <UserProfile />}
               </main>
               
               <footer className="app-footer">
@@ -163,6 +203,46 @@ const App = () => {
                 </p>
               </footer>
             </div>
+            
+            <style jsx>{`
+              .guided-workflow-container {
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                margin-bottom: 20px;
+              }
+              
+              .guided-workflow-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #eee;
+              }
+              
+              .guided-workflow-header h2 {
+                margin: 0;
+                font-size: 1.5rem;
+                color: #333;
+              }
+              
+              .exit-workflow-button {
+                background-color: #f3f4f6;
+                color: #374151;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.2s;
+              }
+              
+              .exit-workflow-button:hover {
+                background-color: #e5e7eb;
+              }
+            `}</style>
           </AppContext.Provider>
         </WalletModalProvider>
       </WalletProvider>
