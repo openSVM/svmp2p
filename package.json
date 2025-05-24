@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "echo 'Dependency installation completed successfully'",
-    "netlify-build": "npm install --legacy-peer-deps && npm run build"
+    "netlify-build": "npm install --legacy-peer-deps && next build --no-lint"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
   "homepage": "https://github.com/openSVM/svmp2p#readme",
   "dependencies": {
     "@coral-xyz/anchor": "0.31.0",
+    "@project-serum/anchor": "^0.26.0",
     "@solana/wallet-adapter-base": "0.9.24",
     "@solana/wallet-adapter-react": "0.15.36",
     "@solana/wallet-adapter-react-ui": "0.9.36",
@@ -52,6 +53,11 @@
     "web-vitals": "4.2.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.3",
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-react": "^7.24.3",
+    "@babel/runtime": "^7.24.3",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.3.0",

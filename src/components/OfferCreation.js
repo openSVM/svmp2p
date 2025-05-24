@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { SystemProgram, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { BN } from '@project-serum/anchor';
+// Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
+import { BN } from '@coral-xyz/anchor';
 import { AppContext } from '../contexts/AppContext';
 import { ButtonLoader, TransactionConfirmation, TransactionStatus } from './common';
 
