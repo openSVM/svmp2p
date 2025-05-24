@@ -4,9 +4,15 @@ import { useConnection } from '@solana/wallet-adapter-react';
 import { SystemProgram, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { BN } from '@project-serum/anchor';
 import { AppContext } from '../contexts/AppContext';
-import { ButtonLoader, TransactionConfirmation, TransactionStatus } from './common';
+import { 
+  ButtonLoader, 
+  TransactionConfirmation, 
+  TransactionStatus, 
+  Tooltip, 
+  ConfirmationDialog 
+} from './common';
 
-const OfferCreation = () => {
+const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const { wallet } = useWallet();
   const { connection } = useConnection();
   const { program, network } = useContext(AppContext);
@@ -20,6 +26,7 @@ const OfferCreation = () => {
   const [success, setSuccess] = useState('');
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   
   const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
   const paymentMethods = ['Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
@@ -32,6 +39,12 @@ const OfferCreation = () => {
       return;
     }
     
+    // Show confirmation dialog
+    setShowConfirmation(true);
+  };
+  
+  // Actual offer creation after confirmation
+  const processCreateOffer = async () => {
     setError('');
     setSuccess('');
     setIsCreating(true);
@@ -163,7 +176,25 @@ const OfferCreation = () => {
   
   return (
     <div className="offer-creation-container">
-      <h2>Create a Sell Offer</h2>
+      <div className="offer-creation-header">
+        <h2>Create a Sell Offer</h2>
+        
+        {/* Guided workflow option */}
+        {onStartGuidedWorkflow && (
+          <Tooltip 
+            content="Start a guided selling process with step-by-step instructions" 
+            position="bottom"
+          >
+            <button 
+              className="guided-workflow-button"
+              onClick={() => onStartGuidedWorkflow('sell')}
+            >
+              Need help? Use guided workflow
+            </button>
+          </Tooltip>
+        )}
+      </div>
+      
       <p>Create an offer to sell SOL for fiat currency</p>
       
       {error && <div className="error-message">{error}</div>}
@@ -189,7 +220,11 @@ const OfferCreation = () => {
       
       <form onSubmit={handleCreateOffer}>
         <div className="form-group">
-          <label htmlFor="solAmount">SOL Amount</label>
+          <label htmlFor="solAmount">
+            <Tooltip content="Enter the amount of SOL you want to sell">
+              <span>SOL Amount</span>
+            </Tooltip>
+          </label>
           <input
             id="solAmount"
             type="number"
@@ -203,7 +238,11 @@ const OfferCreation = () => {
         </div>
         
         <div className="form-group">
-          <label htmlFor="fiatCurrency">Fiat Currency</label>
+          <label htmlFor="fiatCurrency">
+            <Tooltip content="Select the currency you want to receive">
+              <span>Fiat Currency</span>
+            </Tooltip>
+          </label>
           <select
             id="fiatCurrency"
             value={fiatCurrency}
@@ -217,7 +256,11 @@ const OfferCreation = () => {
         </div>
         
         <div className="form-group">
-          <label htmlFor="fiatAmount">Fiat Amount</label>
+          <label htmlFor="fiatAmount">
+            <Tooltip content="The amount in fiat currency you will receive">
+              <span>Fiat Amount</span>
+            </Tooltip>
+          </label>
           <input
             id="fiatAmount"
             type="number"
@@ -231,7 +274,11 @@ const OfferCreation = () => {
         </div>
         
         <div className="form-group">
-          <label htmlFor="paymentMethod">Payment Method</label>
+          <label htmlFor="paymentMethod">
+            <Tooltip content="Select how you want to receive payment">
+              <span>Payment Method</span>
+            </Tooltip>
+          </label>
           <select
             id="paymentMethod"
             value={paymentMethod}
@@ -262,6 +309,55 @@ const OfferCreation = () => {
         <p>Current SOL price is estimated based on market rates.</p>
         <p>Your SOL will be held in escrow until the trade is completed.</p>
       </div>
+      
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={processCreateOffer}
+        title="Confirm Offer Creation"
+        message={`Are you sure you want to create an offer to sell ${solAmount} SOL for ${fiatAmount} ${fiatCurrency}? This will lock your SOL in an escrow contract.`}
+        variant="default"
+      />
+      
+      <style jsx>{`
+        .offer-creation-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .guided-workflow-button {
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .guided-workflow-button::before {
+          content: "?";
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+          background-color: rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          font-size: 0.8rem;
+          font-weight: bold;
+        }
+
+        .guided-workflow-button:hover {
+          background-color: #2563eb;
+        }
+      `}</style>
     </div>
   );
 };

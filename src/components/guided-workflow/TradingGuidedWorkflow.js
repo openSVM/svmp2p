@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import GuidedWorkflow from './GuidedWorkflowStep';
+import GuidedWorkflow from './GuidedWorkflow';
 import TradingWorkflowIntro from './TradingWorkflowIntro';
 import BuyWorkflowSelectOffer from './BuyWorkflowSelectOffer';
 import BuyWorkflowReviewOffer from './BuyWorkflowReviewOffer';
