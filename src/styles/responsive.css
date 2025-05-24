@@ -1,0 +1,8 @@
+/* Main responsive styles import file */
+
+/* Import all responsive styles */
+@import './responsive/enhanced-mobile.css';
+@import './responsive/component-mobile.css';
+@import './responsive/responsive-utilities.css';
+
+/* This file serves as the main entry point for all responsive styles */

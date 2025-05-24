@@ -1,0 +1,579 @@
+/* Mobile-first component styles */
+
+/* OfferCreation component mobile enhancements */
+.offer-creation-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .offer-creation-container {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .offer-creation-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .offer-creation-container p {
+    font-size: 0.875rem;
+    margin-bottom: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  .create-offer-button {
+    width: 100%;
+  }
+  
+  .network-info {
+    font-size: 0.75rem;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+}
+
+/* OfferList component mobile enhancements */
+.offer-list-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .offer-list-container {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .offer-list-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  .filter-group input,
+  .filter-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  .offers-table {
+    border: none;
+  }
+  
+  .table-header {
+    display: none;
+  }
+  
+  .table-row {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .col {
+    width: 100%;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .col:last-child {
+    border-bottom: none;
+  }
+  
+  .col::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: inline-block;
+    width: 40%;
+  }
+  
+  .col.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+  
+  .loading-container {
+    padding: 24px 0;
+    text-align: center;
+  }
+  
+  .no-offers {
+    padding: 24px 0;
+    text-align: center;
+    color: #6b7280;
+  }
+  
+  .network-info {
+    font-size: 0.75rem;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+}
+
+/* DisputeResolution component mobile enhancements */
+.dispute-resolution-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .dispute-resolution-container {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .dispute-resolution-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+  
+  .dispute-details {
+    margin-bottom: 16px;
+  }
+  
+  .detail-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .detail-row .label {
+    font-weight: 600;
+    width: 40%;
+  }
+  
+  .detail-row .value {
+    width: 60%;
+  }
+  
+  .evidence-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+  
+  .evidence-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .evidence-column {
+    width: 100%;
+  }
+  
+  .evidence-column h4 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  
+  .evidence-form {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .evidence-form textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  .submit-evidence-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+  
+  .voting-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .voting-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+  }
+  
+  .voting-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  
+  .vote-button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    color: white;
+  }
+  
+  .vote-buyer {
+    background-color: #3b82f6;
+  }
+  
+  .vote-seller {
+    background-color: #10b981;
+  }
+  
+  .current-votes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+  }
+  
+  .vote-count {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .verdict-section {
+    margin-top: 16px;
+    padding: 16px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+  }
+  
+  .verdict {
+    font-weight: 600;
+    margin: 12px 0;
+  }
+  
+  .final-votes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* UserProfile component mobile enhancements */
+.user-profile-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .user-profile-container {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
+  
+  .profile-info {
+    text-align: center;
+  }
+  
+  .profile-name {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+  }
+  
+  .profile-address {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .stat-card {
+    padding: 12px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+  
+  .profile-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .profile-tab {
+    padding: 12px 16px;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .profile-tab.active {
+    border-bottom-color: #3b82f6;
+    color: #3b82f6;
+  }
+  
+  .tab-content {
+    min-height: 200px;
+  }
+}
+
+/* Layout component mobile enhancements */
+.app-container {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo {
+    height: 32px;
+    margin-right: 8px;
+  }
+  
+  .site-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .mobile-menu-button {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #4b5563;
+  }
+  
+  .app-nav {
+    display: none;
+  }
+  
+  .app-nav.mobile-open {
+    display: block;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+  }
+  
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .nav-item {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    display: block;
+    padding: 16px;
+    color: #4b5563;
+    font-weight: 500;
+  }
+  
+  .nav-link.active {
+    background-color: #f3f4f6;
+    color: #3b82f6;
+  }
+  
+  .app-main {
+    padding: 16px;
+    padding-bottom: 72px; /* Space for bottom navigation */
+  }
+  
+  .app-footer {
+    padding: 16px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  /* Bottom navigation */
+  .bottom-navigation {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+  
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    color: #6b7280;
+  }
+  
+  .bottom-nav-item.active {
+    color: #3b82f6;
+  }
+  
+  .bottom-nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+  }
+  
+  .bottom-nav-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* NetworkSelector component mobile enhancements */
+.network-selector {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .network-selector {
+    margin-bottom: 16px;
+  }
+  
+  .network-options {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    margin: 0 -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .network-option {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    margin-right: 8px;
+    border-radius: 16px;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  
+  .network-option:last-child {
+    margin-right: 16px;
+  }
+  
+  .network-option.active {
+    background-color: #3b82f6;
+    color: white;
+  }
+}
