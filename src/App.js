@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   PhantomWalletAdapter,
@@ -69,24 +69,17 @@ const SVM_NETWORKS = {
   }
 };
 
-const App = () => {
+// Inner component that can use the wallet hook
+const AppContent = () => {
+  // Access wallet from context
+  const wallet = useWallet();
+  
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
-  
-  // Set up wallet adapters - updated for latest wallet adapter versions
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new TorusWalletAdapter(),
-      new LedgerWalletAdapter(),
-    ],
-    []
-  );
   
   // Context values
   const contextValue = useMemo(() => ({
@@ -98,72 +91,92 @@ const App = () => {
   }), [network, selectedNetwork, activeTab]);
   
   return (
+    <AppContext.Provider value={contextValue}>
+      <div className="app-container">
+        <header className="app-header">
+          <div className="logo-container">
+            <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
+            <h1>OpenSVM P2P Exchange</h1>
+          </div>
+          
+          <NetworkSelector 
+            networks={SVM_NETWORKS} 
+            selectedNetwork={selectedNetwork} 
+            onSelectNetwork={setSelectedNetwork} 
+          />
+          
+          <div className="wallet-container">
+            <WalletMultiButton />
+            <WalletDisconnectButton />
+          </div>
+        </header>
+        
+        <nav className="app-nav">
+          <ul>
+            <li className={activeTab === 'buy' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('buy')}>Buy</button>
+            </li>
+            <li className={activeTab === 'sell' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('sell')}>Sell</button>
+            </li>
+            <li className={activeTab === 'myoffers' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('myoffers')}>My Offers</button>
+            </li>
+            <li className={activeTab === 'disputes' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('disputes')}>Disputes</button>
+            </li>
+            <li className={activeTab === 'profile' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('profile')}>Profile</button>
+            </li>
+          </ul>
+        </nav>
+        
+        <main className="app-main">
+          {activeTab === 'buy' && <OfferList type="buy" />}
+          {activeTab === 'sell' && (
+            <>
+              <OfferCreation />
+              <OfferList type="sell" />
+            </>
+          )}
+          {activeTab === 'myoffers' && <OfferList type="my" />}
+          {activeTab === 'disputes' && <DisputeResolution />}
+          {activeTab === 'profile' && <UserProfile wallet={wallet} network={network} />}
+        </main>
+        
+        <footer className="app-footer">
+          <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
+          <p>
+            <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
+              {network.name} Explorer
+            </a>
+          </p>
+        </footer>
+      </div>
+    </AppContext.Provider>
+  );
+};
+
+const App = () => {
+  // Set up wallet adapters - updated for latest wallet adapter versions
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new TorusWalletAdapter(),
+      new LedgerWalletAdapter(),
+    ],
+    []
+  );
+  
+  // Define network for connection provider
+  const network = SVM_NETWORKS['solana'];
+  
+  return (
     <ConnectionProvider endpoint={network.endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <AppContext.Provider value={contextValue}>
-            <div className="app-container">
-              <header className="app-header">
-                <div className="logo-container">
-                  <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
-                  <h1>OpenSVM P2P Exchange</h1>
-                </div>
-                
-                <NetworkSelector 
-                  networks={SVM_NETWORKS} 
-                  selectedNetwork={selectedNetwork} 
-                  onSelectNetwork={setSelectedNetwork} 
-                />
-                
-                <div className="wallet-container">
-                  <WalletMultiButton />
-                  <WalletDisconnectButton />
-                </div>
-              </header>
-              
-              <nav className="app-nav">
-                <ul>
-                  <li className={activeTab === 'buy' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('buy')}>Buy</button>
-                  </li>
-                  <li className={activeTab === 'sell' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('sell')}>Sell</button>
-                  </li>
-                  <li className={activeTab === 'myoffers' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('myoffers')}>My Offers</button>
-                  </li>
-                  <li className={activeTab === 'disputes' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('disputes')}>Disputes</button>
-                  </li>
-                  <li className={activeTab === 'profile' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('profile')}>Profile</button>
-                  </li>
-                </ul>
-              </nav>
-              
-              <main className="app-main">
-                {activeTab === 'buy' && <OfferList type="buy" />}
-                {activeTab === 'sell' && (
-                  <>
-                    <OfferCreation />
-                    <OfferList type="sell" />
-                  </>
-                )}
-                {activeTab === 'myoffers' && <OfferList type="my" />}
-                {activeTab === 'disputes' && <DisputeResolution />}
-                {activeTab === 'profile' && <UserProfile />}
-              </main>
-              
-              <footer className="app-footer">
-                <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
-                <p>
-                  <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
-                    {network.name} Explorer
-                  </a>
-                </p>
-              </footer>
-            </div>
-          </AppContext.Provider>
+          <AppContent />
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>

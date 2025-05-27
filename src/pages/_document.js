@@ -26,9 +26,9 @@ export default function Document() {
         
         {/* Icons */}
         <link rel="icon" type="image/svg+xml" href="/images/opensvm-logo.svg" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.svg" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.svg" />
-        <link rel="apple-touch-icon" href="/images/icon-192x192.svg" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png" />
+        <link rel="apple-touch-icon" href="/images/icon-192x192.png" />
 
         {/* Security Headers */}
         <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" />

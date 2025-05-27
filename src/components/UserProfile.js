@@ -35,7 +35,7 @@ const UserProfile = ({ wallet, network }) => {
 
   // Fetch user profile data - optimized with useCallback
   const fetchProfileData = useCallback(async () => {
-    if (!wallet.publicKey) {
+    if (!wallet || !wallet.publicKey) {
       setLoading(false);
       return;
     }
@@ -120,12 +120,12 @@ const UserProfile = ({ wallet, network }) => {
       setError('Failed to load profile data. Please try again later.');
       setLoading(false);
     }
-  }, [wallet.publicKey]);
+  }, [wallet]);
 
   // Only fetch data when wallet or network changes
   useEffect(() => {
     fetchProfileData();
-  }, [fetchProfileData, network]);
+  }, [fetchProfileData, network, wallet]);
 
   // Handle settings update - optimized with useCallback
   const handleSaveSettings = useCallback((newSettings) => {
@@ -237,11 +237,11 @@ const UserProfile = ({ wallet, network }) => {
       
       {error && <div className="error-message">{error}</div>}
       
-      {!wallet.publicKey ? walletConnectionMessage : 
+      {!wallet || !wallet.publicKey ? walletConnectionMessage : 
        loading ? loadingContainer : (
         <div className="profile-content">
           <ProfileHeader 
-            walletAddress={wallet.publicKey.toString()}
+            walletAddress={wallet.publicKey?.toString()}
             network={network}
             username={profileData.settings?.displayName}
             joinDate="Apr 2025"
