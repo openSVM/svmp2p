@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 const PWAInstallButton = ({ className = '' }) => {
   const { isInstallable, isInstalled, install } = usePWAInstall();
