@@ -3,8 +3,8 @@ const urlsToCache = [
   '/',
   '/manifest.json',
   '/images/opensvm-logo.svg',
-  '/images/icon-192x192.png',
-  '/images/icon-512x512.png'
+  '/images/icon-192x192.svg',
+  '/images/icon-512x512.svg'
 ];
 
 // Skip waiting to ensure the new service worker activates immediately
