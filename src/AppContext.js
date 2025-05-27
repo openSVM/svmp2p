@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import React, { createContext } from 'react';
 
 // Create a context for global app state
 export const AppContext = createContext({
