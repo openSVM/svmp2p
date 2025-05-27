@@ -1,5 +1,7 @@
-/* Update index.css to import the new theme */
+/* Import theme and component styles */
 @import './styles/theme/index.css';
+@import './styles/responsive.css';
+@import './styles/components.css';
 
 /* Keep existing styles for backward compatibility */
 body {
@@ -9,6 +11,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-background);
   color: var(--color-foreground);
+  line-height: var(--line-height-normal);
 }
 
 code {
@@ -46,6 +49,7 @@ code {
 .wallet-container {
   display: flex;
   align-items: center;
+  gap: var(--spacing-2);
 }
 
 .wallet-address {
@@ -644,4 +648,37 @@ code {
   text-align: center;
   font-size: var(--font-size-sm);
   color: var(--color-foreground-muted);
+}
+
+/* Text utilities */
+.text-foreground-muted {
+  color: var(--color-foreground-muted);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+
+.hover\:text-primary:hover {
+  color: var(--color-primary);
+}
+
+.transition-colors {
+  transition: color var(--transition-normal);
+}
+
+/* Slide up animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
