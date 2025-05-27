@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import dynamic from 'next/dynamic';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
@@ -11,7 +12,8 @@ const DisputeResolution = dynamic(() => import('@/components/DisputeResolution')
 const UserProfile = dynamic(() => import('@/components/UserProfile'), { ssr: false });
 
 export default function Home() {
-  const { activeTab } = useContext(AppContext);
+  const { activeTab, network } = useContext(AppContext);
+  const wallet = useWallet();
 
   return (
     <>
@@ -24,7 +26,7 @@ export default function Home() {
       )}
       {activeTab === 'myoffers' && <OfferList type="my" />}
       {activeTab === 'disputes' && <DisputeResolution />}
-      {activeTab === 'profile' && <UserProfile />}
+      {activeTab === 'profile' && <UserProfile wallet={wallet} network={network} />}
     </>
   );
 }

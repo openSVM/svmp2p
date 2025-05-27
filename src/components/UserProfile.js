@@ -21,7 +21,7 @@ const LoadingFallback = () => (
  * Enhanced UserProfile component that integrates all the profile modules
  * Optimized for performance with React.memo, lazy loading, and hooks
  */
-const UserProfile = ({ wallet, network }) => {
+const UserProfile = ({ wallet = {}, network = {} }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -231,6 +231,9 @@ const UserProfile = ({ wallet, network }) => {
     </div>
   ), []);
 
+  // Safe wallet address string with null check
+  const walletAddress = wallet && wallet.publicKey ? wallet.publicKey.toString() : null;
+
   return (
     <div className="user-profile-container">
       <h2 className="page-title">User Profile</h2>
@@ -241,7 +244,7 @@ const UserProfile = ({ wallet, network }) => {
        loading ? loadingContainer : (
         <div className="profile-content">
           <ProfileHeader 
-            walletAddress={wallet.publicKey?.toString()}
+            walletAddress={walletAddress}
             network={network}
             username={profileData.settings?.displayName}
             joinDate="Apr 2025"
@@ -262,10 +265,10 @@ const UserProfile = ({ wallet, network }) => {
 UserProfile.propTypes = {
   wallet: PropTypes.shape({
     publicKey: PropTypes.object
-  }).isRequired,
+  }),
   network: PropTypes.shape({
-    name: PropTypes.string.isRequired
-  }).isRequired
+    name: PropTypes.string
+  })
 };
 
 // Export memoized component to prevent unnecessary re-renders

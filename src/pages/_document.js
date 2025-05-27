@@ -30,10 +30,9 @@ export default function Document() {
         <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png" />
         <link rel="apple-touch-icon" href="/images/icon-192x192.png" />
 
-        {/* Security Headers */}
+        {/* Security Headers - X-Frame-Options removed, should be set in HTTP headers */}
         <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" />
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
       </Head>
       <body>
