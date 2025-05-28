@@ -23,28 +23,7 @@ const LoadingFallback = () => (
  * Optimized for performance with React.memo, lazy loading, and hooks
  */
 const UserProfile = ({ wallet, network }) => {
-  // Early return if wallet is not provided
-  if (!wallet) {
-    console.log('[UserProfile] No wallet provided, returning WalletNotConnected');
-    return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
-  }
-  
-  // Use extremely defensive initialization with nullish coalescing
-  const safeWallet = wallet ?? {};
-  const safeNetwork = network ?? {};
-  
-  // Early check for publicKey before continuing
-  const hasValidPublicKey = safeWallet && 
-                          Object.prototype.hasOwnProperty.call(safeWallet, 'publicKey') &&
-                          safeWallet.publicKey !== null && 
-                          safeWallet.publicKey !== undefined;
-  
-  // If no valid publicKey, show wallet not connected message
-  if (!hasValidPublicKey) {
-    console.log('[UserProfile] No valid publicKey in wallet, returning WalletNotConnected');
-    return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
-  }
-  
+  // Initialize all hooks first (Rules of Hooks)
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -55,11 +34,31 @@ const UserProfile = ({ wallet, network }) => {
     tradingStats: null,
     activities: []
   });
+  
+  // Use extremely defensive initialization with nullish coalescing
+  const safeWallet = useMemo(() => wallet ?? {}, [wallet]);
+  const safeNetwork = useMemo(() => network ?? {}, [network]);
+  
+  // Check for valid wallet and publicKey
+  const hasValidPublicKey = useMemo(() => {
+    return safeWallet && 
+           Object.prototype.hasOwnProperty.call(safeWallet, 'publicKey') &&
+           safeWallet.publicKey !== null && 
+           safeWallet.publicKey !== undefined;
+  }, [safeWallet]);
+  
+  const isWalletConnected = useMemo(() => {
+    return wallet && hasValidPublicKey;
+  }, [wallet, hasValidPublicKey]);
 
   // Fetch user profile data - optimized with useCallback
   const fetchProfileData = useCallback(async () => {
-    // Since we've performed validation at the component level,
-    // this function should only be called with a valid wallet object
+    // Only fetch if wallet is connected and valid
+    if (!isWalletConnected) {
+      setLoading(false);
+      return;
+    }
+
     try {
       // Minimal logging to reduce console noise
       console.log('[UserProfile] Fetching profile data');
@@ -143,7 +142,7 @@ const UserProfile = ({ wallet, network }) => {
       setError('Failed to load profile data. Please try again later.');
       setLoading(false);
     }
-  }, [wallet]);
+  }, [isWalletConnected]);
 
   // Only fetch data when wallet or network changes
   useEffect(() => {
@@ -262,17 +261,22 @@ const UserProfile = ({ wallet, network }) => {
   // Bulletproof wallet address extraction with early validation
   const walletAddress = React.useMemo(() => {
     try {
-      // We've already validated the wallet at component level,
-      // so we can be more confident here
-      return safeWallet.publicKey.toString();
+      // Only extract if we have a connected wallet
+      if (isWalletConnected) {
+        return safeWallet.publicKey.toString();
+      }
+      return null;
     } catch (error) {
       console.warn("[UserProfile] Error extracting wallet address:", error);
       return null;
     }
-  }, [safeWallet]);
+  }, [safeWallet, isWalletConnected]);
 
-  // We've already validated the wallet connection at component level
-  const isWalletConnected = true;
+  // Early return for wallet not connected after all hooks are initialized
+  if (!isWalletConnected) {
+    console.log('[UserProfile] No wallet connected, returning WalletNotConnected');
+    return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
+  }
 
   return (
     <div className="user-profile-container">

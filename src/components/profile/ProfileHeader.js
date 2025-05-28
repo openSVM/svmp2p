@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Image from 'next/image';
 
 /**
  * ProfileHeader component displays the user's basic information and avatar
@@ -41,10 +42,12 @@ const ProfileHeader = ({
       <div className="profile-header-content">
         <div className="profile-avatar-container">
           {avatarUrl ? (
-            <img 
+            <Image 
               src={avatarUrl} 
               alt="User avatar" 
-              className="profile-avatar" 
+              className="profile-avatar"
+              width={64}
+              height={64}
             />
           ) : (
             <div className="profile-avatar profile-avatar-placeholder">

@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 
@@ -93,10 +94,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           <div className="header-content">
             {/* Logo Section */}
             <div className="logo-section">
-              <img 
+              <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
                 className="logo-image"
+                width={32}
+                height={32}
+                priority
               />
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
@@ -155,10 +159,12 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         <div className={`mobile-nav ${mobileNavOpen ? 'open' : ''}`}>
           <div className="mobile-nav-header">
             <div className="logo-section">
-              <img 
+              <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
                 className="logo-image"
+                width={32}
+                height={32}
               />
               <h2 className="logo-text">OpenSVM P2P</h2>
             </div>
