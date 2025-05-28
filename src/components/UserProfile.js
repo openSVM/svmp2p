@@ -22,7 +22,11 @@ const LoadingFallback = () => (
  * Enhanced UserProfile component that integrates all the profile modules
  * Optimized for performance with React.memo, lazy loading, and hooks
  */
-const UserProfile = ({ wallet = {}, network = {} }) => {
+const UserProfile = ({ wallet, network }) => {
+  // Use extremely defensive initialization with nullish coalescing
+  const safeWallet = wallet ?? {};
+  const safeNetwork = network ?? {};
+  
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,21 +42,31 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
   const fetchProfileData = useCallback(async () => {
     // Enhanced error handling for wallet validation
     try {
-      // More robust wallet validation with early return
-      if (!wallet) {
-        console.log('Wallet object is null or undefined');
+      // Safety checks with detailed logging
+      console.log('[UserProfile] Fetch data with wallet:', safeWallet ? 'exists' : 'null/undefined');
+      
+      // Triple-check wallet properties to prevent any possible null reference
+      if (!safeWallet) {
+        console.log('[UserProfile] safeWallet is falsy');
         setLoading(false);
         return;
       }
       
-      if (!wallet.publicKey) {
-        console.log('wallet.publicKey is null or undefined');
+      if (!Object.prototype.hasOwnProperty.call(safeWallet, 'publicKey')) {
+        console.log('[UserProfile] safeWallet has no publicKey property');
         setLoading(false);
         return;
       }
       
-      if (typeof wallet.publicKey !== 'object') {
-        console.log('wallet.publicKey is not an object:', typeof wallet.publicKey);
+      if (safeWallet.publicKey === null || safeWallet.publicKey === undefined) {
+        console.log('[UserProfile] safeWallet.publicKey is null or undefined');
+        setLoading(false);
+        return;
+      }
+      
+      // Additional type checking for publicKey
+      if (typeof safeWallet.publicKey !== 'object') {
+        console.log('[UserProfile] safeWallet.publicKey is not an object:', typeof safeWallet.publicKey);
         setLoading(false);
         return;
       }
@@ -140,8 +154,15 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
 
   // Only fetch data when wallet or network changes
   useEffect(() => {
-    fetchProfileData();
-  }, [fetchProfileData, network, wallet]);
+    // Extra protection in case fetchProfileData changes between renders
+    try {
+      fetchProfileData();
+    } catch (err) {
+      console.error('[UserProfile] Error in fetchProfileData effect:', err);
+      setError('An error occurred while loading your profile');
+      setLoading(false);
+    }
+  }, [fetchProfileData]);
 
   // Handle settings update - optimized with useCallback
   const handleSaveSettings = useCallback((newSettings) => {
@@ -246,44 +267,50 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
   ), []);
 
   // Bulletproof wallet address extraction with multiple layers of null checks
-  const walletAddress = (() => {
+  const walletAddress = React.useMemo(() => {
     try {
-      // First check if wallet exists
-      if (!wallet) {
-        console.log('Wallet is null or undefined during address extraction');
+      // First check if safeWallet exists and has expected structure
+      if (!safeWallet) {
+        console.log('[UserProfile] safeWallet is falsy');
         return null;
       }
       
-      // Then check if publicKey exists
-      if (!wallet.publicKey) {
-        console.log('wallet.publicKey is null or undefined');
+      // Direct check for undefined/null publicKey
+      const pk = safeWallet.publicKey;
+      if (pk === undefined || pk === null) {
+        console.log('[UserProfile] safeWallet.publicKey is null or undefined');
         return null;
       }
       
-      // Then check if publicKey is an actual object (not null or undefined)
-      if (typeof wallet.publicKey !== 'object' || wallet.publicKey === null) {
-        console.log('wallet.publicKey is not an object:', typeof wallet.publicKey);
+      // Check publicKey type
+      if (typeof pk !== 'object') {
+        console.log('[UserProfile] safeWallet.publicKey is not an object:', typeof pk);
         return null;
       }
       
-      // Finally check if toString method exists before calling it
-      if (typeof wallet.publicKey.toString !== 'function') {
-        console.log('wallet.publicKey.toString is not a function');
+      // Check toString method
+      if (typeof pk.toString !== 'function') {
+        console.log('[UserProfile] safeWallet.publicKey.toString is not a function');
         return null;
       }
       
+      // Try to get string representation safely
       try {
-        // Only if all checks pass, return the string representation within a try-catch
-        return wallet.publicKey.toString();
+        const address = pk.toString();
+        if (!address) {
+          console.log('[UserProfile] safeWallet.publicKey.toString() returned empty value');
+          return null;
+        }
+        return address;
       } catch (innerError) {
-        console.error('Error calling wallet.publicKey.toString():', innerError);
+        console.error('[UserProfile] Error calling safeWallet.publicKey.toString():', innerError);
         return null;
       }
     } catch (error) {
-      console.warn("Error extracting wallet address:", error);
+      console.warn("[UserProfile] Error extracting wallet address:", error);
       return null;
     }
-  })();
+  }, [safeWallet]);
 
   // Check if wallet is truly connected and available with a simpler check
   const isWalletConnected = Boolean(walletAddress);
@@ -294,12 +321,17 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
       
       {error && <div className="error-message">{error}</div>}
       
-      {!isWalletConnected ? walletConnectionMessage : 
-       loading ? loadingContainer : (
+      {!walletAddress ? <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." /> : 
+       loading ? (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading profile data...</p>
+        </div>
+       ) : (
         <div className="profile-content">
           <ProfileHeader 
-            walletAddress={walletAddress || ''}
-            network={network || {}}
+            walletAddress={walletAddress}
+            network={safeNetwork}
             username={profileData.settings?.displayName || 'Anonymous User'}
             joinDate="Apr 2025"
             isVerified={Boolean(walletAddress)}

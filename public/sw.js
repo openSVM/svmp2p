@@ -36,6 +36,11 @@ self.addEventListener('activate', (event) => {
 // Network-first strategy for HTML and API requests
 // Cache-first strategy for static assets
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests (fixes PUT issues with POST requests)
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(event.request.url);
   
   // For HTML pages and API requests, use network first
@@ -44,6 +49,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then(response => {
+          // Only cache successful responses
+          if (!response.ok) {
+            return response;
+          }
+          
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseClone);
@@ -68,6 +78,11 @@ self.addEventListener('fetch', (event) => {
           
           return fetch(event.request)
             .then(response => {
+              // Only cache successful responses
+              if (!response.ok) {
+                return response;
+              }
+              
               const responseClone = response.clone();
               caches.open(CACHE_NAME).then(cache => {
                 cache.put(event.request, responseClone);

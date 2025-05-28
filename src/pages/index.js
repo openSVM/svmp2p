@@ -35,13 +35,10 @@ export default function Home() {
       case 'disputes':
         return <DisputeResolution />;
       case 'profile':
-        // Ensure wallet is always an object with expected properties to prevent errors
-        const safeWallet = wallet || {};
-        const safeNetwork = network || {};
-        
+        // Ensure wallet object is properly checked and handled
         console.log('Rendering UserProfile with wallet:', 
-          safeWallet ? 'wallet object exists' : 'wallet is null/undefined',
-          safeWallet && safeWallet.publicKey ? 'publicKey exists' : 'publicKey is null/undefined'
+          wallet !== null && wallet !== undefined ? 'wallet object exists' : 'wallet is null/undefined',
+          wallet?.publicKey ? 'publicKey exists' : 'publicKey is null/undefined'
         );
         
         // Wrap UserProfile in ErrorBoundary to catch and handle any rendering errors
@@ -62,8 +59,8 @@ export default function Home() {
             showReset={true}
           >
             <UserProfile 
-              wallet={safeWallet} 
-              network={safeNetwork} 
+              wallet={wallet} 
+              network={network} 
             />
           </ErrorBoundary>
         );
