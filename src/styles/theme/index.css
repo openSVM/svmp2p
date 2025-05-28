@@ -10,6 +10,7 @@
 @import './cards.css';
 @import './tables.css';
 @import './layout.css';
+@import './animations.css';
 
 /* Additional utility classes */
 .visually-hidden {

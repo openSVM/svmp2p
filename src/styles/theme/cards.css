@@ -4,6 +4,8 @@
   box-shadow: var(--shadow-md);
   overflow: hidden;
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+  will-change: transform, box-shadow;
 }
 
 .card:hover {
@@ -14,6 +16,9 @@
 .card-header {
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-title {
@@ -131,12 +136,210 @@
   gap: var(--spacing-4);
 }
 
+/* Offer Cards - Enhanced */
+.offer-card {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.2, 0, 0.3, 1);
+  margin-bottom: var(--spacing-4);
+  position: relative;
+  border: 1px solid var(--color-border);
+}
+
+.offer-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-light);
+}
+
+.offer-card:active {
+  transform: translateY(-1px);
+}
+
+.offer-card-header {
+  background-color: var(--color-card-header);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.seller-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.seller-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+}
+
+.seller-rating {
+  color: var(--color-warning);
+  font-size: var(--font-size-sm);
+}
+
+.time-info {
+  color: var(--color-foreground-muted);
+  font-size: var(--font-size-sm);
+}
+
+.offer-card-body {
+  padding: var(--spacing-4);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.amount-info, .price-info, .payment-method {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.sol-amount {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-foreground);
+}
+
+.network-badge {
+  display: inline-block;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  color: white;
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-1);
+  align-self: flex-start;
+}
+
+.fiat-amount {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-foreground);
+}
+
+.price-per-sol {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.good-rate {
+  color: var(--color-success);
+}
+
+.rate-indicator {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.payment-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+}
+
+.offer-card-footer {
+  padding: var(--spacing-3) var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-listed {
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.status-accepted {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.status-completed {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.status-cancelled {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.offer-action-button {
+  --button-height: 36px;
+  --button-padding: var(--spacing-2) var(--spacing-3);
+  --button-radius: var(--radius-md);
+}
+
+/* Card shimmer loading effect */
+.card-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-muted);
+  border-radius: var(--radius-lg);
+  height: 100%;
+}
+
+.card-skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Compact view for mobile */
 @media (max-width: 768px) {
-  .card-horizontal {
-    flex-direction: column;
+  .offer-card-body {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-3);
+    gap: var(--spacing-3);
   }
   
-  .card-horizontal .card-media {
-    width: 100%;
+  .offer-card-header,
+  .offer-card-footer {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+  
+  .offer-card {
+    margin-bottom: var(--spacing-3);
   }
 }

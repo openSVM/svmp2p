@@ -1,0 +1,265 @@
+/* 
+ * Animation styles for micro-interactions and UI effects 
+ * These complement Tailwind's built-in animation classes with more specialized effects
+ */
+
+/* Fade animations */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  0% { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  0% { 
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  0% { 
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  0% { 
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Pulse and attention animations */
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulseBorder {
+  0%, 100% { 
+    border-color: var(--color-primary);
+  }
+  50% { 
+    border-color: transparent;
+  }
+}
+
+@keyframes pulseBg {
+  0% { background-color: rgba(153, 69, 255, 0.05); }
+  50% { background-color: rgba(153, 69, 255, 0.15); }
+  100% { background-color: rgba(153, 69, 255, 0.05); }
+}
+
+@keyframes highlight {
+  0% { background-color: rgba(153, 69, 255, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes highlightSuccess {
+  0% { background-color: rgba(76, 175, 80, 0.3); }
+  100% { background-color: transparent; }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  50% {
+    transform: translateY(-5px);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+}
+
+/* Loading animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Button interaction animations */
+@keyframes ripple {
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Animation classes */
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.4s ease-out forwards;
+}
+
+.animate-fadeInLeft {
+  animation: fadeInLeft 0.4s ease-out forwards;
+}
+
+.animate-fadeInRight {
+  animation: fadeInRight 0.4s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-pulseBorder {
+  animation: pulseBorder 2s infinite;
+}
+
+.animate-pulseBg {
+  animation: pulseBg 2s infinite;
+}
+
+.animate-highlight {
+  animation: highlight 1s ease-out;
+}
+
+.animate-highlightSuccess {
+  animation: highlightSuccess 1s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0.3, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+}
+
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Focus effects */
+.focus-glow {
+  transition: box-shadow 0.2s ease;
+}
+
+.focus-glow:focus {
+  box-shadow: 0 0 0 2px rgba(153, 69, 255, 0.3);
+}
+
+/* Active/pressed effects */
+.active-shrink:active {
+  transform: scale(0.97);
+}
+
+/* Button ripple effect */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.7);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+/* Stagger delay helpers */
+.stagger-delay-1 { animation-delay: 50ms; }
+.stagger-delay-2 { animation-delay: 100ms; }
+.stagger-delay-3 { animation-delay: 150ms; }
+.stagger-delay-4 { animation-delay: 200ms; }
+.stagger-delay-5 { animation-delay: 250ms; }
+
+/* Initial opacity for fade-in animations */
+[class*="animate-fadeIn"] {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* Media queries for reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-"], 
+  .hover-lift, 
+  .hover-scale, 
+  .focus-glow, 
+  .active-shrink {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

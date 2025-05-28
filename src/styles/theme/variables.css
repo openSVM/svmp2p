@@ -1,8 +1,8 @@
 :root {
   /* Color palette */
-  --color-primary: #3b82f6;
-  --color-primary-light: #60a5fa;
-  --color-primary-dark: #2563eb;
+  --color-primary: #9945FF;
+  --color-primary-light: #b278ff;
+  --color-primary-dark: #7a36d0;
   --color-secondary: #10b981;
   --color-secondary-light: #34d399;
   --color-secondary-dark: #059669;
@@ -28,9 +28,25 @@
   
   /* Status colors */
   --color-success: #10b981;
+  --color-success-light: rgba(16, 185, 129, 0.1);
   --color-warning: #f59e0b;
+  --color-warning-light: rgba(245, 158, 11, 0.1);
   --color-error: #ef4444;
+  --color-error-light: rgba(239, 68, 68, 0.1);
   --color-info: #3b82f6;
+  --color-info-light: rgba(59, 130, 246, 0.1);
+  
+  /* Card-specific colors */
+  --color-card: #ffffff;
+  --color-card-header: #f9fafb;
+  --color-card-border: #e5e7eb;
+  
+  /* Network colors */
+  --color-solana: #9945FF;
+  --color-sonic: #00C2FF;
+  --color-eclipse: #0052FF;
+  --color-svmbnb: #F0B90B;
+  --color-s00n: #00FF9D;
   
   /* Typography */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -90,15 +106,21 @@
   --radius-full: 9999px;
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   
   /* Transitions */
   --transition-fast: 150ms;
   --transition-normal: 250ms;
   --transition-slow: 350ms;
+  --transition-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --transition-easein: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --transition-easeout: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-easeinout: cubic-bezier(0.42, 0, 0.58, 1);
   
   /* Z-index */
   --z-0: 0;
@@ -126,5 +148,7 @@
     --color-foreground-muted: var(--color-foreground-muted-dark);
     --color-border: var(--color-border-dark);
     --color-border-light: var(--color-border-light-dark);
+    --color-card: #1f2937;
+    --color-card-header: #111827;
   }
 }
