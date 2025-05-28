@@ -232,13 +232,28 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
     </div>
   ), []);
 
-  // Safe wallet address string with extensive null checks
-  const walletAddress = wallet && wallet.publicKey && typeof wallet.publicKey.toString === 'function' 
-    ? wallet.publicKey.toString() 
-    : null;
+  // Bulletproof wallet address extraction with multiple layers of null checks
+  const walletAddress = (() => {
+    try {
+      // First check if wallet exists and has publicKey property
+      if (!wallet || !wallet.publicKey) return null;
+      
+      // Then check if publicKey is an actual object (not null or undefined)
+      if (typeof wallet.publicKey !== 'object' || wallet.publicKey === null) return null;
+      
+      // Finally check if toString method exists before calling it
+      if (typeof wallet.publicKey.toString !== 'function') return null;
+      
+      // Only if all checks pass, return the string representation
+      return wallet.publicKey.toString();
+    } catch (error) {
+      console.warn("Error extracting wallet address:", error);
+      return null;
+    }
+  })();
 
-  // Check if wallet is truly connected and available
-  const isWalletConnected = Boolean(wallet && wallet.publicKey && walletAddress);
+  // Check if wallet is truly connected and available with a simpler check
+  const isWalletConnected = Boolean(walletAddress);
 
   return (
     <div className="user-profile-container">
@@ -250,7 +265,7 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
        loading ? loadingContainer : (
         <div className="profile-content">
           <ProfileHeader 
-            walletAddress={walletAddress}
+            walletAddress={walletAddress || ''}
             network={network || {}}
             username={profileData.settings?.displayName || 'Anonymous User'}
             joinDate="Apr 2025"

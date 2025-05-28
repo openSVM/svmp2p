@@ -17,12 +17,12 @@ const ProfileHeader = ({
     if (username) {
       return username.substring(0, 2).toUpperCase();
     }
-    return walletAddress.substring(0, 2).toUpperCase();
+    return walletAddress && walletAddress.length >= 2 ? walletAddress.substring(0, 2).toUpperCase() : 'NA';
   };
 
   // Format wallet address for display (truncate middle)
   const formatWalletAddress = (address) => {
-    if (!address) return '';
+    if (!address) return 'Not connected';
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };
 
@@ -62,9 +62,12 @@ const ProfileHeader = ({
             <button 
               className="profile-copy-address" 
               onClick={() => {
-                navigator.clipboard.writeText(walletAddress);
-                // Could add a toast notification here
+                if (walletAddress) {
+                  navigator.clipboard.writeText(walletAddress);
+                  // Could add a toast notification here
+                }
               }}
+              disabled={!walletAddress}
               aria-label="Copy wallet address"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
@@ -100,10 +103,10 @@ const ProfileHeader = ({
 };
 
 ProfileHeader.propTypes = {
-  walletAddress: PropTypes.string.isRequired,
+  walletAddress: PropTypes.string,
   network: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+    name: PropTypes.string
+  }),
   avatarUrl: PropTypes.string,
   username: PropTypes.string,
   joinDate: PropTypes.string,
@@ -111,6 +114,8 @@ ProfileHeader.propTypes = {
 };
 
 ProfileHeader.defaultProps = {
+  walletAddress: '',
+  network: { name: 'Unknown' },
   avatarUrl: '',
   username: '',
   joinDate: 'Unknown',
