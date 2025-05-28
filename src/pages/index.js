@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import dynamic from 'next/dynamic';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useSafeWallet } from '@/contexts/WalletContextProvider';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
@@ -16,7 +16,7 @@ const UserProfile = dynamic(() => import('@/components/UserProfile'), { ssr: fal
 
 export default function Home() {
   const { activeTab, network } = useContext(AppContext);
-  const wallet = useWallet();
+  const wallet = useSafeWallet();
 
   // Used to render components conditionally
   const content = () => {

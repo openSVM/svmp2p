@@ -58,9 +58,21 @@ class ErrorBoundary extends React.Component {
     const { error } = this.state;
     if (!error) return 'An unexpected error occurred';
     
-    // Map common errors to user-friendly messages
+    // Map common wallet-related errors to user-friendly messages
     if (error.message && error.message.includes('publicKey')) {
-      return 'There was an issue with your wallet connection. Please reconnect your wallet.';
+      return 'There was an issue with your wallet connection. Please disconnect and reconnect your wallet.';
+    }
+    
+    if (error.message && error.message.includes('WalletContext')) {
+      return 'Wallet connection error. Please refresh the page and try connecting your wallet again.';
+    }
+    
+    if (error.message && error.message.includes('ethereum')) {
+      return 'Multiple wallet extensions detected. Please disable unused wallet extensions and refresh the page.';
+    }
+    
+    if (error.message && error.message.includes('Cannot set property ethereum')) {
+      return 'Wallet extension conflict detected. Please disable conflicting extensions.';
     }
     
     return error.message || 'An unexpected error occurred';

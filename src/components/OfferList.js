@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { AppContext } from '../contexts/AppContext';
+import { useSafeWallet } from '../contexts/WalletContextProvider';
 import { LoadingSpinner, ButtonLoader, TransactionStatus } from './common';
 import { useDebounce, VirtualizedList } from '../utils/performance';
 
@@ -146,7 +146,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
 
 // Optimized OfferList component
 const OfferList = ({ type = 'buy' }) => {
-  const { wallet } = useWallet();
+  const wallet = useSafeWallet();
   const { program, network } = useContext(AppContext);
   
   const [offers, setOffers] = useState([]);

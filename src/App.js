@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { ConnectionProvider, WalletProvider, useWallet } from '@solana/wallet-adapter-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   PhantomWalletAdapter,
@@ -25,6 +25,10 @@ import { OfferList } from './components/OfferList';
 import { DisputeResolution } from './components/DisputeResolution';
 import { UserProfile } from './components/UserProfile';
 import ErrorBoundary from './components/ErrorBoundary';
+
+// Import wallet safety utilities
+import { SafeWalletProvider, useSafeWallet } from './contexts/WalletContextProvider';
+import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
 
 // SVM Networks configuration
 const SVM_NETWORKS = {
@@ -72,8 +76,8 @@ const SVM_NETWORKS = {
 
 // Inner component that can use the wallet hook
 const AppContent = () => {
-  // Access wallet from context
-  const wallet = useWallet();
+  // Use safe wallet context instead of direct wallet adapter
+  const wallet = useSafeWallet();
   
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
@@ -91,6 +95,11 @@ const AppContent = () => {
     setActiveTab,
   }), [network, selectedNetwork, activeTab]);
   
+  // Initialize wallet conflict prevention
+  useEffect(() => {
+    initializeWalletConflictPrevention();
+  }, []);
+  
   return (
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
@@ -107,8 +116,15 @@ const AppContent = () => {
           />
           
           <div className="wallet-container">
-            <WalletMultiButton />
-            <WalletDisconnectButton />
+            <ErrorBoundary fallback={
+              <div className="wallet-error">
+                <p>Wallet connection error</p>
+                <button onClick={() => window.location.reload()}>Retry</button>
+              </div>
+            }>
+              <WalletMultiButton />
+              <WalletDisconnectButton />
+            </ErrorBoundary>
           </div>
         </header>
         
@@ -144,7 +160,7 @@ const AppContent = () => {
             {activeTab === 'myoffers' && <OfferList type="my" />}
             {activeTab === 'disputes' && <DisputeResolution />}
             {activeTab === 'profile' && (
-              <UserProfile wallet={wallet || {}} network={network} />
+              <UserProfile wallet={wallet} network={network} />
             )}
           </ErrorBoundary>
         </main>
@@ -196,9 +212,11 @@ const App = () => {
     }>
       <ConnectionProvider endpoint={network.endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
-          <WalletModalProvider>
-            <AppContent />
-          </WalletModalProvider>
+          <SafeWalletProvider>
+            <WalletModalProvider>
+              <AppContent />
+            </WalletModalProvider>
+          </SafeWalletProvider>
         </WalletProvider>
       </ConnectionProvider>
     </ErrorBoundary>

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useSafeWallet } from '@/contexts/WalletContextProvider';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
@@ -24,7 +24,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     networks 
   } = useContext(AppContext);
   
-  const { connected, publicKey } = useWallet();
+  const { connected, publicKey } = useSafeWallet();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
