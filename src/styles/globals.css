@@ -1,12 +1,12 @@
 /* 
- * ASCII Art Terminal Theme - OpenSVM P2P
- * Terminal/console style interface
+ * Corporate Professional Theme - OpenSVM P2P
+ * Clean, modern interface for enterprise users
  */
 
 /* Additional Next.js specific styles */
 :root {
   --max-width: 1200px;
-  --border-radius: 0; /* No rounded corners for ASCII theme */
+  --border-radius: var(--radius-lg);
 }
 
 * {
@@ -21,7 +21,7 @@ body {
   overflow-x: hidden;
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-sans);
 }
 
 body {
@@ -31,63 +31,72 @@ body {
 a {
   color: var(--color-primary);
   text-decoration: none;
-  border-bottom: 1px dotted var(--color-primary);
   transition: all var(--transition-fast) ease;
 }
 
 a:hover {
-  color: var(--color-secondary);
-  border-bottom-color: var(--color-secondary);
-  text-shadow: 0 0 5px var(--color-secondary);
+  color: var(--color-primary-dark);
+  text-decoration: underline;
 }
 
-/* ASCII Art Terminal Styling */
+/* Professional typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-family-mono);
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-family: var(--font-family-sans);
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
 }
 
-/* ASCII Art Button Styles */
+/* Professional button styles */
 button, .btn {
-  background-color: var(--color-background-alt);
+  background-color: var(--color-background);
   border: 1px solid var(--color-border);
   color: var(--color-foreground);
   padding: var(--spacing-2) var(--spacing-4);
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-sans);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast) ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  border-radius: var(--radius-md);
 }
 
 button:hover, .btn:hover {
-  background-color: var(--color-primary);
-  color: var(--color-background);
+  background-color: var(--color-background-alt);
   border-color: var(--color-primary);
-  text-shadow: 0 0 5px var(--color-background);
+}
+
+button.primary, .btn.primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+button.primary:hover, .btn.primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 button:active, .btn:active {
-  transform: translate(1px, 1px);
+  transform: translateY(1px);
 }
 
-/* ASCII Art Input Styles */
+/* Professional input styles */
 input, textarea, select {
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
   color: var(--color-foreground);
   padding: var(--spacing-2) var(--spacing-3);
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-sans);
   font-size: var(--font-size-sm);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 10px var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -96,7 +105,7 @@ input:focus, textarea:focus, select:focus {
   }
 }
 
-/* ASCII Art Offer Card Component */
+/* Professional Offer Card Component */
 .offers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -106,62 +115,28 @@ input:focus, textarea:focus, select:focus {
 
 .offer-card {
   background-color: var(--color-card);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-none);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   transition: all var(--transition-normal) ease;
   display: flex;
   flex-direction: column;
-  position: relative;
-  font-family: var(--font-family-mono);
-}
-
-.offer-card::before {
-  content: '┌─────────────────────────────────────────────────────────┐';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  color: var(--color-border);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  text-align: center;
-  overflow: hidden;
-}
-
-.offer-card::after {
-  content: '└─────────────────────────────────────────────────────────┘';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  color: var(--color-border);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  text-align: center;
-  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .offer-card:hover {
   border-color: var(--color-primary);
-  background-color: var(--color-background-alt);
-  text-shadow: 0 0 5px var(--color-primary);
-}
-
-.offer-card:hover::before,
-.offer-card:hover::after {
-  color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .offer-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--spacing-4);
   background-color: var(--color-card-header);
   border-bottom: 1px solid var(--color-border);
-  position: relative;
-  z-index: 2;
 }
 
 .offer-card-body {
@@ -170,26 +145,21 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
-  position: relative;
-  z-index: 2;
 }
 
 .offer-card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--spacing-4);
   background-color: var(--color-card-header);
   border-top: 1px solid var(--color-border);
-  position: relative;
-  z-index: 2;
 }
 
 .time-info {
   color: var(--color-foreground-muted);
   font-size: var(--font-size-xs);
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
 }
 
 .price-per-sol {
@@ -197,69 +167,54 @@ input:focus, textarea:focus, select:focus {
   font-size: var(--font-size-sm);
   display: flex;
   align-items: center;
-  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
 }
 
 .rate-indicator {
-  margin-left: var(--spacing-1);
+  margin-left: var(--spacing-2);
   font-size: var(--font-size-xs);
   background-color: var(--color-success-light);
   color: var(--color-success);
-  padding: var(--spacing-0-5) var(--spacing-1-5);
-  border: 1px solid var(--color-success);
-  font-weight: var(--font-weight-bold);
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 .good-rate {
   color: var(--color-success);
-  font-weight: var(--font-weight-bold);
-  text-shadow: 0 0 5px var(--color-success);
+  font-weight: var(--font-weight-semibold);
 }
 
 .payment-label {
   color: var(--color-foreground-muted);
   font-size: var(--font-size-xs);
-  margin-right: var(--spacing-1);
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  margin-right: var(--spacing-2);
+  font-weight: var(--font-weight-medium);
 }
 
 .offer-action-button {
   width: 100%;
   background-color: var(--color-primary);
-  color: var(--color-background);
+  color: white;
   border: 1px solid var(--color-primary);
   padding: var(--spacing-3);
-  font-family: var(--font-family-mono);
-  font-weight: var(--font-weight-bold);
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-md);
 }
 
-/* ASCII Art Filter Section */
+.offer-action-button:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* Professional Filter Section */
 .filter-section {
   margin-bottom: var(--spacing-5);
   background-color: var(--color-background-alt);
-  border: 2px solid var(--color-border);
-  padding: var(--spacing-4);
-  position: relative;
-  font-family: var(--font-family-mono);
-}
-
-.filter-section::before {
-  content: '┌─ FILTERS ─────────────────────────────────────────────────┐';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  color: var(--color-primary);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  text-align: center;
-  overflow: hidden;
-  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-sm);
 }
 
 .filter-toggle-container {
@@ -275,14 +230,13 @@ input:focus, textarea:focus, select:focus {
   gap: var(--spacing-2);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
-  padding: var(--spacing-2) var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-medium);
   color: var(--color-foreground);
   cursor: pointer;
   transition: all var(--transition-fast) ease;
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  border-radius: var(--radius-md);
 }
 
 .filter-toggle:hover {
@@ -292,9 +246,8 @@ input:focus, textarea:focus, select:focus {
 
 .filter-toggle.active {
   background-color: var(--color-primary);
-  color: var(--color-background);
+  color: white;
   border-color: var(--color-primary);
-  text-shadow: 0 0 5px var(--color-background);
 }
 
 .sort-dropdown {
@@ -306,13 +259,19 @@ input:focus, textarea:focus, select:focus {
 .sort-direction {
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-family: var(--font-family-mono);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease;
+}
+
+.sort-direction:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-primary);
 }
 
 .filter-actions {
@@ -327,8 +286,13 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease;
+}
+
+.reset-filters:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-primary);
 }
 
 .save-search {
@@ -340,18 +304,23 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-2) var(--spacing-3);
   border: 1px solid var(--color-border);
   font-size: var(--font-size-sm);
-  font-family: var(--font-family-mono);
+  border-radius: var(--radius-md);
 }
 
 .save-search button {
   background-color: var(--color-primary);
-  color: var(--color-background);
+  color: white;
   border: 1px solid var(--color-primary);
   padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+}
+
+.save-search button:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 .save-search button:disabled {
@@ -360,7 +329,7 @@ input:focus, textarea:focus, select:focus {
   cursor: not-allowed;
 }
 
-/* ASCII Art Saved Searches */
+/* Professional Saved Searches */
 .saved-searches {
   margin-top: var(--spacing-4);
   border-top: 1px solid var(--color-border);
@@ -368,11 +337,10 @@ input:focus, textarea:focus, select:focus {
 }
 
 .saved-searches h4 {
-  margin-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
   font-size: var(--font-size-sm);
-  color: var(--color-primary);
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-semibold);
 }
 
 .saved-search-list {
@@ -393,8 +361,14 @@ input:focus, textarea:focus, select:focus {
   font-size: var(--font-size-xs);
   color: var(--color-foreground);
   cursor: pointer;
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast) ease;
+}
+
+.saved-search-button:hover {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
 }
 
 .saved-search-delete {
@@ -404,10 +378,15 @@ input:focus, textarea:focus, select:focus {
   font-size: var(--font-size-sm);
   cursor: pointer;
   padding: 0 var(--spacing-1);
-  font-family: var(--font-family-mono);
+  transition: all var(--transition-fast) ease;
 }
 
-/* ASCII Art Pagination */
+.saved-search-delete:hover {
+  color: var(--color-error);
+  transform: scale(1.1);
+}
+
+/* Professional Pagination */
 .pagination-controls {
   display: flex;
   justify-content: space-between;
@@ -415,40 +394,25 @@ input:focus, textarea:focus, select:focus {
   margin-top: var(--spacing-5);
   padding: var(--spacing-4);
   background-color: var(--color-background-alt);
-  border: 2px solid var(--color-border);
-  font-family: var(--font-family-mono);
-  position: relative;
-}
-
-.pagination-controls::before {
-  content: '┌─ PAGINATION ──────────────────────────────────────────────┐';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  color: var(--color-primary);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  text-align: center;
-  overflow: hidden;
-  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .pagination-info {
   display: flex;
   align-items: center;
   gap: var(--spacing-4);
-  font-family: var(--font-family-mono);
   font-size: var(--font-size-sm);
-  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
 }
 
 .pagination-info select {
-  padding: var(--spacing-1);
+  padding: var(--spacing-2);
   border: 1px solid var(--color-border);
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-family-mono);
+  border-radius: var(--radius-md);
 }
 
 .pagination-buttons {
@@ -457,8 +421,8 @@ input:focus, textarea:focus, select:focus {
 }
 
 .pagination-button {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -466,8 +430,9 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid var(--color-border);
   cursor: pointer;
   font-size: var(--font-size-sm);
-  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
   transition: all var(--transition-fast) ease;
+  border-radius: var(--radius-md);
 }
 
 .pagination-button:hover {
@@ -482,7 +447,6 @@ input:focus, textarea:focus, select:focus {
 
 .pagination-button.active {
   background-color: var(--color-primary);
-  color: var(--color-background);
+  color: white;
   border-color: var(--color-primary);
-  text-shadow: 0 0 5px var(--color-background);
 }

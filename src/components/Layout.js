@@ -72,11 +72,11 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   };
 
   const navigationItems = [
-    { key: 'buy', label: 'Buy', icon: '[$]' },
-    { key: 'sell', label: 'Sell', icon: '[>$]' },
-    { key: 'myoffers', label: 'My Offers', icon: '[##]' },
-    { key: 'disputes', label: 'Disputes', icon: '[==]' },
-    { key: 'profile', label: 'Profile', icon: '[@]' },
+    { key: 'buy', label: 'Buy', icon: 'shopping-cart' },
+    { key: 'sell', label: 'Sell', icon: 'arrow-up' },
+    { key: 'myoffers', label: 'My Offers', icon: 'list' },
+    { key: 'disputes', label: 'Disputes', icon: 'alert-triangle' },
+    { key: 'profile', label: 'Profile', icon: 'user' },
   ];
 
   return (
@@ -90,29 +90,29 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
 
       <div className="app-layout">
         {/* Header */}
-        <header className="app-header animate-terminal-fadeInDown">
+        <header className="app-header">
           <div className="header-content">
             {/* Logo Section */}
-            <div className="logo-section animate-terminal-fadeInLeft">
+            <div className="logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
-                className="logo-image hover-terminal-glow"
+                className="logo-image"
                 width={32}
                 height={32}
                 priority
               />
-              <h1 className="logo-text animate-terminal-type animate-terminal-cursor">OpenSVM P2P</h1>
+              <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
             
             {/* Desktop Navigation */}
-            <nav className="header-nav animate-terminal-fadeInUp stagger-terminal-delay-1">
+            <nav className="header-nav">
               <div className="nav-tabs">
-                {navigationItems.map((item, index) => (
+                {navigationItems.map((item) => (
                   <button
                     key={item.key}
-                    className={`nav-tab hover-terminal-glow focus-terminal-glow active-terminal-shrink stagger-terminal-delay-${index + 1} ${
-                      activeTab === item.key ? 'active animate-terminal-highlight' : ''
+                    className={`nav-tab ${
+                      activeTab === item.key ? 'active' : ''
                     }`}
                     onClick={() => setActiveTab(item.key)}
                   >
@@ -124,7 +124,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             </nav>
             
             {/* Header Actions */}
-            <div className="header-actions animate-terminal-fadeInRight stagger-terminal-delay-2">
+            <div className="header-actions">
               <NetworkSelector 
                 networks={networks} 
                 selectedNetwork={selectedNetwork} 
@@ -147,47 +147,47 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               
               {/* Mobile Menu Button */}
               <button
-                className="mobile-menu-button hover-terminal-glow focus-terminal-glow active-terminal-shrink"
+                className="mobile-menu-button"
                 onClick={() => setMobileNavOpen(true)}
                 aria-label="Open mobile menu"
               >
-                [|||]
+                ☰
               </button>
             </div>
           </div>
         </header>
 
         {/* Mobile Navigation */}
-        <div className={`mobile-nav ${mobileNavOpen ? 'open animate-terminal-fadeInLeft' : ''}`}>
-          <div className="mobile-nav-header animate-terminal-fadeInDown">
+        <div className={`mobile-nav ${mobileNavOpen ? 'open' : ''}`}>
+          <div className="mobile-nav-header">
             <div className="logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
-                className="logo-image hover-terminal-glow"
+                className="logo-image"
                 width={32}
                 height={32}
               />
               <h2 className="logo-text">OpenSVM P2P</h2>
             </div>
             <button
-              className="mobile-nav-close hover-terminal-glow focus-terminal-glow active-terminal-shrink"
+              className="mobile-nav-close"
               onClick={() => setMobileNavOpen(false)}
               aria-label="Close mobile menu"
             >
-              [X]
+              ×
             </button>
           </div>
           
-          <div className="mobile-nav-content animate-terminal-fadeInUp">
+          <div className="mobile-nav-content">
             <div className="mobile-nav-section">
               <h3>Navigation</h3>
               <div className="mobile-nav-links">
-                {navigationItems.map((item, index) => (
+                {navigationItems.map((item) => (
                   <button
                     key={item.key}
-                    className={`mobile-nav-link hover-terminal-glow active-terminal-shrink stagger-terminal-delay-${index + 1} ${
-                      activeTab === item.key ? 'active animate-terminal-highlight' : ''
+                    className={`mobile-nav-link ${
+                      activeTab === item.key ? 'active' : ''
                     }`}
                     onClick={() => {
                       setActiveTab(item.key);
@@ -227,27 +227,27 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         </div>
         
         {/* Main Content */}
-        <main className="app-main animate-terminal-fadeInUp stagger-terminal-delay-3">
+        <main className="app-main">
           <div className="container">
-            <div className="animate-terminal-fadeInUp stagger-terminal-delay-4">
+            <div>
               {children}
             </div>
           </div>
         </main>
         
         {/* Footer */}
-        <footer className="app-footer animate-terminal-fadeInUp stagger-terminal-delay-5">
+        <footer className="app-footer">
           <div className="container">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-sm text-foreground-muted animate-terminal-fadeInLeft">
+              <p className="text-sm text-foreground-muted">
                 © 2025 OpenSVM P2P Exchange. All rights reserved.
               </p>
-              <div className="flex items-center gap-6 animate-terminal-fadeInRight">
+              <div className="flex items-center gap-6">
                 <a 
                   href={network.explorerUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm text-foreground-muted hover:text-primary transition-colors hover-terminal-glow"
+                  className="text-sm text-foreground-muted hover:text-primary transition-colors"
                 >
                   {network.name} Explorer
                 </a>
