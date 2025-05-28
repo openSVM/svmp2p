@@ -431,7 +431,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  background-color: transparent;
+  background-color: var(--color-background);
   border: 1px solid var(--color-border);
   padding: var(--spacing-2) var(--spacing-3);
   cursor: pointer;
@@ -439,8 +439,8 @@
   font-size: var(--font-size-sm);
   color: var(--color-foreground);
   min-width: 80px;
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
 }
 
 .language-trigger:hover {
@@ -448,23 +448,22 @@
   border-color: var(--color-primary);
 }
 
-.language-flag {
-  font-size: var(--font-size-base);
+.language-country {
+  font-size: var(--font-size-xs);
   line-height: 1;
-  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground-muted);
 }
 
 .language-code {
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-medium);
   flex: 1;
   text-align: left;
-  font-family: var(--font-family-mono);
 }
 
 .language-arrow {
   transition: transform var(--transition-fast) ease;
   color: var(--color-foreground-muted);
-  font-family: var(--font-family-mono);
 }
 
 .language-arrow.open {
@@ -478,6 +477,8 @@
   margin-top: var(--spacing-1);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   z-index: 1000;
   min-width: 200px;
   overflow: hidden;
@@ -501,7 +502,7 @@
   font-size: var(--font-size-sm);
   color: var(--color-foreground);
   text-align: left;
-  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
 }
 
 .language-option:hover {
@@ -510,34 +511,32 @@
 
 .language-option.active {
   background-color: var(--color-primary);
-  color: var(--color-background);
+  color: white;
 }
 
 .language-name {
   flex: 1;
-  font-family: var(--font-family-mono);
 }
 
 .language-check {
-  color: var(--color-primary);
+  color: currentColor;
   flex-shrink: 0;
-  font-family: var(--font-family-mono);
 }
 
-/* ASCII Art Theme Toggle Styles */
+/* Professional Theme Toggle Styles */
 .theme-toggle {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  background-color: transparent;
+  background-color: var(--color-background);
   border: 1px solid var(--color-border);
   padding: var(--spacing-2) var(--spacing-3);
   cursor: pointer;
   transition: all var(--transition-fast) ease;
   font-size: var(--font-size-sm);
   color: var(--color-foreground);
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
 }
 
 .theme-toggle:hover {
@@ -548,12 +547,10 @@
 .theme-icon {
   font-size: var(--font-size-base);
   line-height: 1;
-  font-family: var(--font-family-mono);
 }
 
 .theme-label {
-  font-weight: var(--font-weight-normal);
-  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Mobile Responsive */

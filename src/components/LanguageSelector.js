@@ -5,14 +5,14 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
   const dropdownRef = useRef(null);
 
   const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'ja', name: '日本語', flag: '🇯🇵' },
-    { code: 'ko', name: '한국어', flag: '🇰🇷' },
-    { code: 'zh', name: '中文', flag: '🇨🇳' },
-    { code: 'pt', name: 'Português', flag: '🇵🇹' },
+    { code: 'en', name: 'English', country: 'US' },
+    { code: 'es', name: 'Español', country: 'ES' },
+    { code: 'fr', name: 'Français', country: 'FR' },
+    { code: 'de', name: 'Deutsch', country: 'DE' },
+    { code: 'ja', name: '日本語', country: 'JP' },
+    { code: 'ko', name: '한국어', country: 'KR' },
+    { code: 'zh', name: '中文', country: 'CN' },
+    { code: 'pt', name: 'Português', country: 'PT' },
   ];
 
   const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
@@ -45,7 +45,7 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
         aria-label="Select language"
         aria-expanded={isOpen}
       >
-        <span className="language-flag">{currentLanguage.flag}</span>
+        <span className="language-country">{currentLanguage.country}</span>
         <span className="language-code">{currentLanguage.code.toUpperCase()}</span>
         <svg 
           className={`language-arrow ${isOpen ? 'open' : ''}`}
@@ -73,7 +73,7 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
                 className={`language-option ${language.code === currentLocale ? 'active' : ''}`}
                 onClick={() => handleLanguageSelect(language.code)}
               >
-                <span className="language-flag">{language.flag}</span>
+                <span className="language-country">{language.country}</span>
                 <span className="language-name">{language.name}</span>
                 {language.code === currentLocale && (
                   <svg 

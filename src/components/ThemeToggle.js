@@ -54,9 +54,9 @@ const ThemeToggle = () => {
   };
 
   const getThemeIcon = () => {
-    if (theme === 'light') return '☀️';
-    if (theme === 'dark') return '🌙';
-    return '💻'; // system
+    if (theme === 'light') return '☀';
+    if (theme === 'dark') return '☽';
+    return '⚙'; // system
   };
 
   const getNextTheme = () => {
