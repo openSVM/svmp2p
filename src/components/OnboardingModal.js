@@ -17,29 +17,29 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
       subtitle: "Your gateway to decentralized trading across Solana Virtual Machine networks",
       content: (
         <div className="onboarding-welcome">
-          <div className="welcome-icon">🚀</div>
+          <div className="welcome-icon">[ ^ ]</div>
           <p className="welcome-description">
             Experience peer-to-peer trading like never before. Trade directly with other users 
             across multiple Solana Virtual Machine networks with complete security and transparency.
           </p>
           <div className="features-grid">
             <div className="feature-item">
-              <div className="feature-icon">🔒</div>
+              <div className="feature-icon">[*]</div>
               <h4>Secure Trading</h4>
               <p>Smart contract escrow protection</p>
             </div>
             <div className="feature-item">
-              <div className="feature-icon">🌐</div>
+              <div className="feature-icon">[O]</div>
               <h4>Multi-Chain</h4>
               <p>Trade across 5+ SVM networks</p>
             </div>
             <div className="feature-item">
-              <div className="feature-icon">💰</div>
+              <div className="feature-icon">[$]</div>
               <h4>Low Fees</h4>
               <p>Minimal trading costs</p>
             </div>
             <div className="feature-item">
-              <div className="feature-icon">⚡</div>
+              <div className="feature-icon">[!]</div>
               <h4>Fast Transactions</h4>
               <p>Quick settlement times</p>
             </div>
@@ -52,22 +52,22 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
       subtitle: "Connect your Solana-compatible wallet to start trading securely",
       content: (
         <div className="onboarding-wallet">
-          <div className="wallet-icon">👛</div>
+          <div className="wallet-icon">[$]</div>
           <p className="wallet-description">
             To start trading, you'll need to connect a Solana-compatible wallet. 
             We support popular wallets like Phantom, Solflare, and more.
           </p>
           <div className="wallet-features">
             <div className="wallet-feature">
-              <span className="checkmark">✓</span>
+              <span className="checkmark">[+]</span>
               <span>Secure connection through wallet adapter</span>
             </div>
             <div className="wallet-feature">
-              <span className="checkmark">✓</span>
+              <span className="checkmark">[+]</span>
               <span>No email or password required</span>
             </div>
             <div className="wallet-feature">
-              <span className="checkmark">✓</span>
+              <span className="checkmark">[+]</span>
               <span>Full control of your funds</span>
             </div>
           </div>
@@ -82,7 +82,7 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
       subtitle: "Explore offers and start trading with confidence",
       content: (
         <div className="onboarding-trading">
-          <div className="trading-icon">📊</div>
+          <div className="trading-icon">[#]</div>
           <p className="trading-description">
             Browse existing offers or create your own. Our platform makes it easy to find 
             the best deals and trade with trusted community members.

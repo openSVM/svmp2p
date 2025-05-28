@@ -72,11 +72,11 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   };
 
   const navigationItems = [
-    { key: 'buy', label: 'Buy', icon: '💰' },
-    { key: 'sell', label: 'Sell', icon: '💸' },
-    { key: 'myoffers', label: 'My Offers', icon: '📋' },
-    { key: 'disputes', label: 'Disputes', icon: '⚖️' },
-    { key: 'profile', label: 'Profile', icon: '👤' },
+    { key: 'buy', label: 'Buy', icon: '[$]' },
+    { key: 'sell', label: 'Sell', icon: '[>$]' },
+    { key: 'myoffers', label: 'My Offers', icon: '[##]' },
+    { key: 'disputes', label: 'Disputes', icon: '[==]' },
+    { key: 'profile', label: 'Profile', icon: '[@]' },
   ];
 
   return (
@@ -149,7 +149,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 onClick={() => setMobileNavOpen(true)}
                 aria-label="Open mobile menu"
               >
-                ☰
+                [|||]
               </button>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               onClick={() => setMobileNavOpen(false)}
               aria-label="Close mobile menu"
             >
-              ✕
+              [X]
             </button>
           </div>
           

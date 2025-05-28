@@ -14,7 +14,7 @@ const SellWorkflowComplete = ({ offerDetails, onFinish }) => {
   return (
     <div className="sell-workflow-complete">
       <div className="completion-header">
-        <div className="success-icon">✓</div>
+        <div className="success-icon">[+]</div>
         <h3>Offer Created Successfully!</h3>
         <p>Your offer has been created and is now visible to potential buyers.</p>
       </div>
@@ -95,7 +95,7 @@ const SellWorkflowComplete = ({ offerDetails, onFinish }) => {
           </button>
         ) : (
           <div className="deactivated-message">
-            <span className="icon">✓</span>
+            <span className="icon">[+]</span>
             <span className="message">Listing deactivated. Your SOL has been returned to your wallet.</span>
           </div>
         )}

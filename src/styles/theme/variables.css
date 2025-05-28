@@ -1,56 +1,56 @@
 :root {
-  /* Color palette */
-  --color-primary: #9945FF;
-  --color-primary-light: #b278ff;
-  --color-primary-dark: #7a36d0;
-  --color-secondary: #10b981;
-  --color-secondary-light: #34d399;
-  --color-secondary-dark: #059669;
-  --color-accent: #f59e0b;
-  --color-accent-light: #fbbf24;
-  --color-accent-dark: #d97706;
+  /* ASCII Art Theme Color palette */
+  --color-primary: #00ff00;      /* Terminal green */
+  --color-primary-light: #33ff33;
+  --color-primary-dark: #00cc00;
+  --color-secondary: #ffff00;    /* Terminal yellow */
+  --color-secondary-light: #ffff33;
+  --color-secondary-dark: #cccc00;
+  --color-accent: #ff6600;       /* Terminal orange */
+  --color-accent-light: #ff8833;
+  --color-accent-dark: #cc3300;
   
-  /* Neutral colors */
-  --color-background: #ffffff;
-  --color-background-alt: #f9fafb;
-  --color-foreground: #111827;
-  --color-foreground-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-border-light: #f3f4f6;
+  /* ASCII Art Terminal colors */
+  --color-background: #000000;   /* Black terminal background */
+  --color-background-alt: #111111;
+  --color-foreground: #00ff00;   /* Green terminal text */
+  --color-foreground-muted: #888888;
+  --color-border: #333333;       /* Dark border */
+  --color-border-light: #222222;
   
-  /* Dark mode colors */
-  --color-background-dark: #1f2937;
-  --color-background-alt-dark: #111827;
-  --color-foreground-dark: #f9fafb;
-  --color-foreground-muted-dark: #9ca3af;
-  --color-border-dark: #374151;
-  --color-border-light-dark: #1f2937;
+  /* Dark mode colors (same as ASCII theme) */
+  --color-background-dark: #000000;
+  --color-background-alt-dark: #111111;
+  --color-foreground-dark: #00ff00;
+  --color-foreground-muted-dark: #888888;
+  --color-border-dark: #333333;
+  --color-border-light-dark: #222222;
   
-  /* Status colors */
-  --color-success: #10b981;
-  --color-success-light: rgba(16, 185, 129, 0.1);
-  --color-warning: #f59e0b;
-  --color-warning-light: rgba(245, 158, 11, 0.1);
-  --color-error: #ef4444;
-  --color-error-light: rgba(239, 68, 68, 0.1);
-  --color-info: #3b82f6;
-  --color-info-light: rgba(59, 130, 246, 0.1);
+  /* Status colors - terminal style */
+  --color-success: #00ff00;      /* Green */
+  --color-success-light: rgba(0, 255, 0, 0.1);
+  --color-warning: #ffff00;      /* Yellow */
+  --color-warning-light: rgba(255, 255, 0, 0.1);
+  --color-error: #ff0000;        /* Red */
+  --color-error-light: rgba(255, 0, 0, 0.1);
+  --color-info: #00ffff;         /* Cyan */
+  --color-info-light: rgba(0, 255, 255, 0.1);
   
-  /* Card-specific colors */
-  --color-card: #ffffff;
-  --color-card-header: #f9fafb;
-  --color-card-border: #e5e7eb;
+  /* Card-specific colors - ASCII style */
+  --color-card: #000000;
+  --color-card-header: #111111;
+  --color-card-border: #333333;
   
-  /* Network colors */
-  --color-solana: #9945FF;
-  --color-sonic: #00C2FF;
-  --color-eclipse: #0052FF;
-  --color-svmbnb: #F0B90B;
-  --color-s00n: #00FF9D;
+  /* Network colors - ASCII theme */
+  --color-solana: #00ff00;
+  --color-sonic: #00ffff;
+  --color-eclipse: #0099ff;
+  --color-svmbnb: #ffff00;
+  --color-s00n: #00ff99;
   
-  /* Typography */
-  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-family-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, 'Courier New', monospace;
+  /* Typography - ASCII/Terminal fonts */
+  --font-family-sans: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+  --font-family-mono: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
   
   /* Font sizes */
   --font-size-xs: 0.75rem;   /* 12px */
@@ -96,22 +96,22 @@
   --spacing-20: 5rem;      /* 80px */
   --spacing-24: 6rem;      /* 96px */
   
-  /* Border radius */
+  /* Border radius - minimal for ASCII theme */
   --radius-none: 0;
-  --radius-sm: 0.125rem;   /* 2px */
-  --radius-md: 0.25rem;    /* 4px */
-  --radius-lg: 0.5rem;     /* 8px */
-  --radius-xl: 0.75rem;    /* 12px */
-  --radius-2xl: 1rem;      /* 16px */
-  --radius-full: 9999px;
+  --radius-sm: 0;          /* No rounded corners for ASCII */
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-full: 0;
   
-  /* Shadows */
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  /* Shadows - minimal for ASCII theme */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+  --shadow-inner: none;
   
   /* Transitions */
   --transition-fast: 150ms;
@@ -139,7 +139,7 @@
   --container-2xl: 1536px;
 }
 
-/* Dark mode overrides */
+/* Dark mode overrides - ASCII theme is always dark */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--color-background-dark);
@@ -148,7 +148,7 @@
     --color-foreground-muted: var(--color-foreground-muted-dark);
     --color-border: var(--color-border-dark);
     --color-border-light: var(--color-border-light-dark);
-    --color-card: #1f2937;
-    --color-card-header: #111827;
+    --color-card: #000000;
+    --color-card-header: #111111;
   }
 }

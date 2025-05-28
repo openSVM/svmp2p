@@ -209,14 +209,14 @@ const BuyWorkflowPayment = ({ selectedOffer, onPaymentComplete, onBack }) => {
       <div className="payment-status">
         {paymentStatus === 'completed' && (
           <div className="status-message success">
-            <span className="icon">✓</span>
+            <span className="icon">[+]</span>
             <span className="message">Payment confirmed! Waiting for seller to release SOL.</span>
           </div>
         )}
         
         {paymentStatus === 'failed' && (
           <div className="status-message error">
-            <span className="icon">✗</span>
+            <span className="icon">[X]</span>
             <span className="message">Payment confirmation failed. Please try again.</span>
           </div>
         )}

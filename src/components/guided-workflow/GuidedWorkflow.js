@@ -66,7 +66,7 @@ const GuidedWorkflow = ({
               className={`progress-step ${index === currentStep ? 'active' : ''} ${isStepCompleted(index) ? 'completed' : ''}`}
               onClick={() => goToStep(index)}
             >
-              {isStepCompleted(index) ? '✓' : index + 1}
+              {isStepCompleted(index) ? '[+]' : index + 1}
             </div>
           ))}
         </div>
