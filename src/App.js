@@ -24,6 +24,7 @@ import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
 import { DisputeResolution } from './components/DisputeResolution';
 import { UserProfile } from './components/UserProfile';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // SVM Networks configuration
 const SVM_NETWORKS = {
@@ -141,7 +142,11 @@ const AppContent = () => {
           )}
           {activeTab === 'myoffers' && <OfferList type="my" />}
           {activeTab === 'disputes' && <DisputeResolution />}
-          {activeTab === 'profile' && <UserProfile wallet={wallet} network={network} />}
+          {activeTab === 'profile' && (
+            <ErrorBoundary>
+              <UserProfile wallet={wallet} network={network} />
+            </ErrorBoundary>
+          )}
         </main>
         
         <footer className="app-footer">

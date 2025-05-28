@@ -23,7 +23,13 @@ const ProfileHeader = ({
   // Format wallet address for display (truncate middle)
   const formatWalletAddress = (address) => {
     if (!address) return 'Not connected';
-    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    if (typeof address !== 'string' || address.length < 10) return 'Invalid address';
+    try {
+      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    } catch (error) {
+      console.error('Error formatting wallet address:', error);
+      return 'Address error';
+    }
   };
 
   return (
@@ -62,9 +68,21 @@ const ProfileHeader = ({
             <button 
               className="profile-copy-address" 
               onClick={() => {
-                if (walletAddress) {
-                  navigator.clipboard.writeText(walletAddress);
-                  // Could add a toast notification here
+                try {
+                  if (walletAddress) {
+                    navigator.clipboard.writeText(walletAddress)
+                      .then(() => {
+                        // Could show a success toast notification here
+                        console.log('Wallet address copied to clipboard');
+                      })
+                      .catch(err => {
+                        console.error('Failed to copy wallet address:', err);
+                      });
+                  } else {
+                    console.warn('Cannot copy: wallet address is empty');
+                  }
+                } catch (error) {
+                  console.error('Error copying wallet address:', error);
                 }
               }}
               disabled={!walletAddress}

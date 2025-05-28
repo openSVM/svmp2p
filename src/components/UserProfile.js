@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import ProfileHeader from './profile/ProfileHeader';
+import WalletNotConnected from './WalletNotConnected';
 
 // Lazy load components that aren't needed for initial render
 const ReputationCard = lazy(() => import('./profile/ReputationCard'));
@@ -35,13 +36,27 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
 
   // Fetch user profile data - optimized with useCallback
   const fetchProfileData = useCallback(async () => {
-    // More robust wallet validation
-    if (!wallet || !wallet.publicKey || typeof wallet.publicKey !== 'object') {
-      setLoading(false);
-      return;
-    }
-
+    // Enhanced error handling for wallet validation
     try {
+      // More robust wallet validation with early return
+      if (!wallet) {
+        console.log('Wallet object is null or undefined');
+        setLoading(false);
+        return;
+      }
+      
+      if (!wallet.publicKey) {
+        console.log('wallet.publicKey is null or undefined');
+        setLoading(false);
+        return;
+      }
+      
+      if (typeof wallet.publicKey !== 'object') {
+        console.log('wallet.publicKey is not an object:', typeof wallet.publicKey);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       
       // Simulate API calls to fetch profile data
@@ -219,9 +234,7 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
 
   // Memoize the wallet connection message
   const walletConnectionMessage = useMemo(() => (
-    <div className="connect-wallet-message">
-      <p>Please connect your wallet to view your profile.</p>
-    </div>
+    <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />
   ), []);
 
   // Memoize the loading container
@@ -235,17 +248,37 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
   // Bulletproof wallet address extraction with multiple layers of null checks
   const walletAddress = (() => {
     try {
-      // First check if wallet exists and has publicKey property
-      if (!wallet || !wallet.publicKey) return null;
+      // First check if wallet exists
+      if (!wallet) {
+        console.log('Wallet is null or undefined during address extraction');
+        return null;
+      }
+      
+      // Then check if publicKey exists
+      if (!wallet.publicKey) {
+        console.log('wallet.publicKey is null or undefined');
+        return null;
+      }
       
       // Then check if publicKey is an actual object (not null or undefined)
-      if (typeof wallet.publicKey !== 'object' || wallet.publicKey === null) return null;
+      if (typeof wallet.publicKey !== 'object' || wallet.publicKey === null) {
+        console.log('wallet.publicKey is not an object:', typeof wallet.publicKey);
+        return null;
+      }
       
       // Finally check if toString method exists before calling it
-      if (typeof wallet.publicKey.toString !== 'function') return null;
+      if (typeof wallet.publicKey.toString !== 'function') {
+        console.log('wallet.publicKey.toString is not a function');
+        return null;
+      }
       
-      // Only if all checks pass, return the string representation
-      return wallet.publicKey.toString();
+      try {
+        // Only if all checks pass, return the string representation within a try-catch
+        return wallet.publicKey.toString();
+      } catch (innerError) {
+        console.error('Error calling wallet.publicKey.toString():', innerError);
+        return null;
+      }
     } catch (error) {
       console.warn("Error extracting wallet address:", error);
       return null;
