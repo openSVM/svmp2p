@@ -22,8 +22,12 @@ const ProfileHeader = ({
 
   // Format wallet address for display (truncate middle)
   const formatWalletAddress = (address) => {
+    // Early return with meaningful messages
     if (!address) return 'Not connected';
-    if (typeof address !== 'string' || address.length < 10) return 'Invalid address';
+    if (typeof address !== 'string') return 'Invalid address';
+    if (address.length < 10) return address; // Don't truncate short addresses
+    
+    // Use try-catch for extra safety
     try {
       return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
     } catch (error) {

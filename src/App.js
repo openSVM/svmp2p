@@ -143,7 +143,18 @@ const AppContent = () => {
           {activeTab === 'myoffers' && <OfferList type="my" />}
           {activeTab === 'disputes' && <DisputeResolution />}
           {activeTab === 'profile' && (
-            <ErrorBoundary>
+            <ErrorBoundary fallback={
+              <div className="error-fallback">
+                <h3>Sorry, there was a problem loading the profile</h3>
+                <p>Try reconnecting your wallet or refreshing the page.</p>
+                <button 
+                  className="button" 
+                  onClick={() => window.location.reload()}
+                >
+                  Refresh Page
+                </button>
+              </div>
+            }>
               <UserProfile wallet={wallet} network={network} />
             </ErrorBoundary>
           )}
