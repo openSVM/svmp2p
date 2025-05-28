@@ -35,7 +35,8 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
 
   // Fetch user profile data - optimized with useCallback
   const fetchProfileData = useCallback(async () => {
-    if (!wallet || !wallet.publicKey) {
+    // More robust wallet validation
+    if (!wallet || !wallet.publicKey || typeof wallet.publicKey !== 'object') {
       setLoading(false);
       return;
     }
@@ -231,8 +232,13 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
     </div>
   ), []);
 
-  // Safe wallet address string with null check
-  const walletAddress = wallet && wallet.publicKey ? wallet.publicKey.toString() : null;
+  // Safe wallet address string with extensive null checks
+  const walletAddress = wallet && wallet.publicKey && typeof wallet.publicKey.toString === 'function' 
+    ? wallet.publicKey.toString() 
+    : null;
+
+  // Check if wallet is truly connected and available
+  const isWalletConnected = Boolean(wallet && wallet.publicKey && walletAddress);
 
   return (
     <div className="user-profile-container">
@@ -240,15 +246,15 @@ const UserProfile = ({ wallet = {}, network = {} }) => {
       
       {error && <div className="error-message">{error}</div>}
       
-      {!wallet || !wallet.publicKey ? walletConnectionMessage : 
+      {!isWalletConnected ? walletConnectionMessage : 
        loading ? loadingContainer : (
         <div className="profile-content">
           <ProfileHeader 
             walletAddress={walletAddress}
-            network={network}
-            username={profileData.settings?.displayName}
+            network={network || {}}
+            username={profileData.settings?.displayName || 'Anonymous User'}
             joinDate="Apr 2025"
-            isVerified={true}
+            isVerified={Boolean(walletAddress)}
           />
           
           {renderTabs}

@@ -15,18 +15,29 @@ export default function Home() {
   const { activeTab, network } = useContext(AppContext);
   const wallet = useWallet();
 
-  return (
-    <>
-      {activeTab === 'buy' && <OfferList type="buy" />}
-      {activeTab === 'sell' && (
-        <>
-          <OfferCreation />
-          <OfferList type="sell" />
-        </>
-      )}
-      {activeTab === 'myoffers' && <OfferList type="my" />}
-      {activeTab === 'disputes' && <DisputeResolution />}
-      {activeTab === 'profile' && <UserProfile wallet={wallet} network={network} />}
-    </>
-  );
+  // Used to render components conditionally
+  const content = () => {
+    switch(activeTab) {
+      case 'buy':
+        return <OfferList type="buy" />;
+      case 'sell':
+        return (
+          <>
+            <OfferCreation />
+            <OfferList type="sell" />
+          </>
+        );
+      case 'myoffers':
+        return <OfferList type="my" />;
+      case 'disputes':
+        return <DisputeResolution />;
+      case 'profile':
+        // Ensure we're passing a non-null wallet object to prevent errors
+        return <UserProfile wallet={wallet || {}} network={network || {}} />;
+      default:
+        return <OfferList type="buy" />;
+    }
+  };
+
+  return <>{content()}</>;
 }
