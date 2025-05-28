@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  e2e-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./screenshots:/app/screenshots
+    environment:
+      - DEBUG=true
+      - NODE_ENV=test
+    ports:
+      - "3000:3000"
