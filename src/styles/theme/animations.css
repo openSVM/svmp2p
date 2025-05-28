@@ -1,263 +1,468 @@
 /* 
- * Animation styles for micro-interactions and UI effects 
- * These complement Tailwind's built-in animation classes with more specialized effects
+ * ASCII Art Terminal Animation styles for micro-interactions and UI effects 
+ * Terminal-themed animations with retro computing feel
  */
 
-/* Fade animations */
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+/* ASCII Art Terminal Fade animations */
+@keyframes terminalFadeIn {
+  0% { 
+    opacity: 0; 
+    text-shadow: 0 0 0 var(--color-primary);
+  }
+  100% { 
+    opacity: 1; 
+    text-shadow: 0 0 10px var(--color-primary);
+  }
 }
 
-@keyframes fadeInUp {
+@keyframes terminalFadeInUp {
   0% { 
     opacity: 0;
     transform: translateY(10px);
+    text-shadow: 0 0 0 var(--color-primary);
   }
   100% { 
     opacity: 1;
     transform: translateY(0);
+    text-shadow: 0 0 10px var(--color-primary);
   }
 }
 
-@keyframes fadeInDown {
+@keyframes terminalFadeInDown {
   0% { 
     opacity: 0;
     transform: translateY(-10px);
+    text-shadow: 0 0 0 var(--color-primary);
   }
   100% { 
     opacity: 1;
     transform: translateY(0);
+    text-shadow: 0 0 10px var(--color-primary);
   }
 }
 
-@keyframes fadeInLeft {
+@keyframes terminalFadeInLeft {
   0% { 
     opacity: 0;
     transform: translateX(-10px);
+    text-shadow: 0 0 0 var(--color-primary);
   }
   100% { 
     opacity: 1;
     transform: translateX(0);
+    text-shadow: 0 0 10px var(--color-primary);
   }
 }
 
-@keyframes fadeInRight {
+@keyframes terminalFadeInRight {
   0% { 
     opacity: 0;
     transform: translateX(10px);
+    text-shadow: 0 0 0 var(--color-primary);
   }
   100% { 
     opacity: 1;
     transform: translateX(0);
+    text-shadow: 0 0 10px var(--color-primary);
   }
 }
 
-/* Pulse and attention animations */
-@keyframes pulse {
+/* ASCII Art Terminal pulse and attention animations */
+@keyframes terminalPulse {
   0%, 100% { 
     opacity: 1;
-    transform: scale(1);
-  }
-  50% { 
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes pulseBorder {
-  0%, 100% { 
+    text-shadow: 0 0 10px var(--color-primary);
     border-color: var(--color-primary);
   }
   50% { 
-    border-color: transparent;
+    opacity: 0.7;
+    text-shadow: 0 0 20px var(--color-primary);
+    border-color: var(--color-secondary);
   }
 }
 
-@keyframes pulseBg {
-  0% { background-color: rgba(153, 69, 255, 0.05); }
-  50% { background-color: rgba(153, 69, 255, 0.15); }
-  100% { background-color: rgba(153, 69, 255, 0.05); }
+@keyframes terminalPulseBorder {
+  0%, 100% { 
+    border-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary);
+  }
+  50% { 
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 20px var(--color-secondary);
+  }
 }
 
-@keyframes highlight {
-  0% { background-color: rgba(153, 69, 255, 0.3); }
-  100% { background-color: transparent; }
+@keyframes terminalPulseBg {
+  0% { 
+    background-color: var(--color-background);
+    box-shadow: inset 0 0 10px var(--color-primary);
+  }
+  50% { 
+    background-color: var(--color-background-alt);
+    box-shadow: inset 0 0 20px var(--color-primary);
+  }
+  100% { 
+    background-color: var(--color-background);
+    box-shadow: inset 0 0 10px var(--color-primary);
+  }
 }
 
-@keyframes highlightSuccess {
-  0% { background-color: rgba(76, 175, 80, 0.3); }
-  100% { background-color: transparent; }
+@keyframes terminalHighlight {
+  0% { 
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    text-shadow: 0 0 10px var(--color-background);
+  }
+  100% { 
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    text-shadow: 0 0 10px var(--color-primary);
+  }
 }
 
-@keyframes shake {
+@keyframes terminalHighlightSuccess {
+  0% { 
+    background-color: var(--color-success);
+    color: var(--color-background);
+    text-shadow: 0 0 10px var(--color-background);
+  }
+  100% { 
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    text-shadow: 0 0 10px var(--color-success);
+  }
+}
+
+@keyframes terminalShake {
   0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+  75% { transform: translateX(-2px); }
   100% { transform: translateX(0); }
 }
 
-@keyframes bounce {
+@keyframes terminalBounce {
   0%, 100% {
     transform: translateY(0);
-    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    text-shadow: 0 0 10px var(--color-primary);
   }
   50% {
-    transform: translateY(-5px);
-    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    transform: translateY(-3px);
+    text-shadow: 0 0 15px var(--color-primary);
   }
 }
 
-/* Loading animations */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* ASCII Art Terminal loading animations */
+@keyframes terminalSpin {
+  0% { 
+    transform: rotate(0deg);
+    text-shadow: 0 0 10px var(--color-primary);
+  }
+  100% { 
+    transform: rotate(360deg);
+    text-shadow: 0 0 10px var(--color-primary);
+  }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+@keyframes terminalShimmer {
+  0% { 
+    background-position: -200% 0;
+    text-shadow: 0 0 5px var(--color-primary);
+  }
+  100% { 
+    background-position: 200% 0;
+    text-shadow: 0 0 15px var(--color-primary);
+  }
 }
 
-/* Button interaction animations */
-@keyframes ripple {
+/* ASCII Art Terminal typing effect */
+@keyframes terminalType {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes terminalCursor {
+  0%, 50% { 
+    opacity: 1;
+    text-shadow: 0 0 10px var(--color-primary);
+  }
+  51%, 100% { 
+    opacity: 0;
+    text-shadow: 0 0 0 var(--color-primary);
+  }
+}
+
+/* ASCII Art Terminal glitch effects */
+@keyframes terminalGlitch {
+  0% { 
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% { 
+    transform: translate(-1px, 1px);
+    filter: hue-rotate(90deg);
+  }
+  40% { 
+    transform: translate(-1px, -1px);
+    filter: hue-rotate(180deg);
+  }
+  60% { 
+    transform: translate(1px, 1px);
+    filter: hue-rotate(270deg);
+  }
+  80% { 
+    transform: translate(1px, -1px);
+    filter: hue-rotate(360deg);
+  }
+  100% { 
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+}
+
+/* ASCII Art Terminal scan lines */
+@keyframes terminalScanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Terminal-style button ripple effect */
+@keyframes terminalRipple {
   to {
     transform: scale(2);
     opacity: 0;
+    box-shadow: 0 0 20px var(--color-primary);
   }
 }
 
-/* Animation classes */
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-in-out forwards;
+/* ASCII Art Animation classes */
+.animate-terminal-fadeIn {
+  animation: terminalFadeIn var(--transition-normal) ease-in-out forwards;
 }
 
-.animate-fadeInUp {
-  animation: fadeInUp 0.4s ease-out forwards;
+.animate-terminal-fadeInUp {
+  animation: terminalFadeInUp var(--transition-normal) ease-out forwards;
 }
 
-.animate-fadeInDown {
-  animation: fadeInDown 0.4s ease-out forwards;
+.animate-terminal-fadeInDown {
+  animation: terminalFadeInDown var(--transition-normal) ease-out forwards;
 }
 
-.animate-fadeInLeft {
-  animation: fadeInLeft 0.4s ease-out forwards;
+.animate-terminal-fadeInLeft {
+  animation: terminalFadeInLeft var(--transition-normal) ease-out forwards;
 }
 
-.animate-fadeInRight {
-  animation: fadeInRight 0.4s ease-out forwards;
+.animate-terminal-fadeInRight {
+  animation: terminalFadeInRight var(--transition-normal) ease-out forwards;
 }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.animate-terminal-pulse {
+  animation: terminalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.animate-pulseBorder {
-  animation: pulseBorder 2s infinite;
+.animate-terminal-pulseBorder {
+  animation: terminalPulseBorder 2s infinite;
 }
 
-.animate-pulseBg {
-  animation: pulseBg 2s infinite;
+.animate-terminal-pulseBg {
+  animation: terminalPulseBg 2s infinite;
 }
 
-.animate-highlight {
-  animation: highlight 1s ease-out;
+.animate-terminal-highlight {
+  animation: terminalHighlight 1s ease-out;
 }
 
-.animate-highlightSuccess {
-  animation: highlightSuccess 1s ease-out;
+.animate-terminal-highlightSuccess {
+  animation: terminalHighlightSuccess 1s ease-out;
 }
 
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
+.animate-terminal-shake {
+  animation: terminalShake 0.5s ease-in-out;
 }
 
-.animate-bounce {
-  animation: bounce 1s infinite;
+.animate-terminal-bounce {
+  animation: terminalBounce 1s infinite;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.animate-terminal-spin {
+  animation: terminalSpin 1s linear infinite;
 }
 
-.animate-shimmer {
+.animate-terminal-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0)
+    var(--color-background),
+    var(--color-primary),
+    var(--color-background)
   );
   background-size: 200% 100%;
-  animation: shimmer 2s infinite linear;
+  animation: terminalShimmer 2s infinite linear;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
-/* Hover effects */
-.hover-lift {
-  transition: transform 0.3s cubic-bezier(0.2, 0, 0.3, 1);
+.animate-terminal-type {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: terminalType 3s steps(30) forwards;
 }
 
-.hover-lift:hover {
-  transform: translateY(-3px);
+.animate-terminal-cursor::after {
+  content: '|';
+  animation: terminalCursor 1s infinite;
+  color: var(--color-primary);
+  text-shadow: 0 0 10px var(--color-primary);
 }
 
-.hover-scale {
-  transition: transform 0.2s ease;
+.animate-terminal-glitch {
+  animation: terminalGlitch 0.3s ease-in-out;
 }
 
-.hover-scale:hover {
-  transform: scale(1.05);
+.animate-terminal-scanline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  animation: terminalScanline 2s linear infinite;
+  z-index: 10;
 }
 
-/* Focus effects */
-.focus-glow {
-  transition: box-shadow 0.2s ease;
+/* ASCII Art Terminal hover effects */
+.hover-terminal-lift {
+  transition: all var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
 }
 
-.focus-glow:focus {
-  box-shadow: 0 0 0 2px rgba(153, 69, 255, 0.3);
+.hover-terminal-lift:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 0 15px var(--color-primary);
+  border-color: var(--color-primary);
 }
 
-/* Active/pressed effects */
-.active-shrink:active {
-  transform: scale(0.97);
+.hover-terminal-scale {
+  transition: all var(--transition-fast) ease;
 }
 
-/* Button ripple effect */
-.ripple-container {
+.hover-terminal-scale:hover {
+  transform: scale(1.02);
+  text-shadow: 0 0 15px var(--color-primary);
+}
+
+.hover-terminal-glow {
+  transition: all var(--transition-fast) ease;
+}
+
+.hover-terminal-glow:hover {
+  text-shadow: 0 0 20px var(--color-primary);
+  box-shadow: 0 0 20px var(--color-primary);
+}
+
+/* ASCII Art Terminal focus effects */
+.focus-terminal-glow {
+  transition: all var(--transition-fast) ease;
+}
+
+.focus-terminal-glow:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 20px var(--color-primary);
+  text-shadow: 0 0 15px var(--color-primary);
+}
+
+/* ASCII Art Terminal active/pressed effects */
+.active-terminal-shrink:active {
+  transform: translate(1px, 1px);
+  text-shadow: 0 0 5px var(--color-primary);
+}
+
+/* ASCII Art Terminal button ripple effect */
+.ripple-terminal-container {
   position: relative;
   overflow: hidden;
 }
 
-.ripple {
+.ripple-terminal {
   position: absolute;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 0;
+  background-color: var(--color-primary);
   transform: scale(0);
-  animation: ripple 0.6s linear;
+  animation: terminalRipple 0.6s linear;
   pointer-events: none;
+  box-shadow: 0 0 10px var(--color-primary);
 }
 
-/* Stagger delay helpers */
-.stagger-delay-1 { animation-delay: 50ms; }
-.stagger-delay-2 { animation-delay: 100ms; }
-.stagger-delay-3 { animation-delay: 150ms; }
-.stagger-delay-4 { animation-delay: 200ms; }
-.stagger-delay-5 { animation-delay: 250ms; }
+/* ASCII Art Terminal stagger delay helpers */
+.stagger-terminal-delay-1 { animation-delay: 50ms; }
+.stagger-terminal-delay-2 { animation-delay: 100ms; }
+.stagger-terminal-delay-3 { animation-delay: 150ms; }
+.stagger-terminal-delay-4 { animation-delay: 200ms; }
+.stagger-terminal-delay-5 { animation-delay: 250ms; }
 
-/* Initial opacity for fade-in animations */
-[class*="animate-fadeIn"] {
+/* ASCII Art Terminal initial opacity for fade-in animations */
+[class*="animate-terminal-fadeIn"] {
   opacity: 0;
   animation-fill-mode: forwards;
 }
 
+/* ASCII Art Terminal loading states */
+.loading-terminal {
+  position: relative;
+  color: var(--color-foreground-muted);
+}
+
+.loading-terminal::after {
+  content: '[LOADING...]';
+  position: absolute;
+  right: var(--spacing-2);
+  animation: terminalPulse 1s infinite;
+  color: var(--color-primary);
+  font-family: var(--font-family-mono);
+}
+
+.loading-terminal-dots::after {
+  content: '...';
+  animation: terminalPulse 1s infinite;
+}
+
+/* ASCII Art Terminal error states */
+.error-terminal {
+  animation: terminalShake 0.5s ease-in-out;
+  border-color: var(--color-error) !important;
+  color: var(--color-error) !important;
+  text-shadow: 0 0 10px var(--color-error);
+}
+
+.error-terminal::before {
+  content: '[ERROR] ';
+  color: var(--color-error);
+  text-shadow: 0 0 10px var(--color-error);
+}
+
+/* ASCII Art Terminal success states */
+.success-terminal {
+  animation: terminalHighlightSuccess 1s ease-out;
+  border-color: var(--color-success) !important;
+  color: var(--color-success) !important;
+  text-shadow: 0 0 10px var(--color-success);
+}
+
+.success-terminal::before {
+  content: '[OK] ';
+  color: var(--color-success);
+  text-shadow: 0 0 10px var(--color-success);
+}
+
 /* Media queries for reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  [class*="animate-"], 
-  .hover-lift, 
-  .hover-scale, 
-  .focus-glow, 
-  .active-shrink {
+  [class*="animate-terminal-"], 
+  .hover-terminal-lift, 
+  .hover-terminal-scale, 
+  .hover-terminal-glow,
+  .focus-terminal-glow, 
+  .active-terminal-shrink {
     animation: none !important;
     transition: none !important;
     transform: none !important;

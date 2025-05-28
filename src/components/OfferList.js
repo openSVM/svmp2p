@@ -45,7 +45,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           loadingText="Accepting..."
           variant="primary"
           size="small"
-          className="offer-action-button"
+          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         >
           Accept Offer
         </ButtonLoader>
@@ -60,7 +60,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           loadingText="Cancelling..."
           variant="danger"
           size="small"
-          className="offer-action-button"
+          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         >
           Cancel Offer
         </ButtonLoader>
@@ -75,7 +75,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           loadingText="Confirming..."
           variant="success"
           size="small"
-          className="offer-action-button"
+          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         >
           Confirm Payment
         </ButtonLoader>
@@ -86,24 +86,24 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
   };
 
   return (
-    <div className="offer-card table-row">
-      <div className="offer-card-header">
+    <div className="offer-card table-row animate-terminal-fadeInUp hover-terminal-lift stagger-terminal-delay-1">
+      <div className="offer-card-header animate-terminal-fadeInDown">
         <div className="seller-info">
           <span className="seller-name">
             {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
           </span>
-          <span className="seller-rating">★★★★☆</span>
+          <span className="seller-rating animate-terminal-shimmer">★★★★☆</span>
         </div>
         <div className="time-info">
-          <span className="time-posted">{timeSincePosted}</span>
+          <span className="time-posted animate-terminal-pulse">{timeSincePosted}</span>
         </div>
       </div>
       
-      <div className="offer-card-body">
+      <div className="offer-card-body animate-terminal-fadeInLeft stagger-terminal-delay-2">
         <div className="col amount">
           <div className="amount-info">
-            <span className="sol-amount">{offer.solAmount.toFixed(2)} SOL</span>
-            <span className="network-badge" style={{backgroundColor: network.color}}>
+            <span className="sol-amount animate-terminal-glow">{offer.solAmount.toFixed(2)} SOL</span>
+            <span className="network-badge animate-terminal-pulse" style={{backgroundColor: network.color}}>
               {network.name}
             </span>
           </div>
@@ -111,12 +111,12 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
         
         <div className="col price">
           <div className="price-info">
-            <span className="fiat-amount">
+            <span className="fiat-amount hover-terminal-glow">
               {offer.fiatAmount.toFixed(2)} {offer.fiatCurrency}
             </span>
-            <span className={`price-per-sol ${isGoodRate ? 'good-rate' : ''}`}>
+            <span className={`price-per-sol ${isGoodRate ? 'good-rate animate-terminal-highlight' : ''}`}>
               ({rate} {offer.fiatCurrency}/SOL)
-              {isGoodRate && <span className="rate-indicator">Good Rate</span>}
+              {isGoodRate && <span className="rate-indicator animate-terminal-bounce">Good Rate</span>}
             </span>
           </div>
         </div>
@@ -129,15 +129,17 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
         </div>
       </div>
       
-      <div className="offer-card-footer">
+      <div className="offer-card-footer animate-terminal-fadeInRight stagger-terminal-delay-3">
         <div className="col status">
-          <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}>
+          <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')} animate-terminal-pulseBorder`}>
             {offer.status}
           </div>
         </div>
         
         <div className="col actions">
-          {renderActionButtons()}
+          <div className="hover-terminal-scale active-terminal-shrink">
+            {renderActionButtons()}
+          </div>
         </div>
       </div>
     </div>
