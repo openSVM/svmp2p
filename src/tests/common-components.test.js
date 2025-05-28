@@ -120,9 +120,18 @@ describe('Loading and Transaction Components', () => {
     });
 
     test('renders with error status', () => {
-      render(<TransactionConfirmation status="error" message="Transaction failed" />);
+      const { container } = render(<TransactionConfirmation status="error" message="Transaction failed" />);
+      
+      // Check the header text
       expect(screen.getByText('Transaction Failed')).toBeInTheDocument();
-      expect(screen.getByText('Transaction failed')).toBeInTheDocument();
+      
+      // Use container.querySelector to be more specific about which "Transaction failed" we're checking
+      const statusIndicatorText = container.querySelector('.status-indicator p');
+      expect(statusIndicatorText).toHaveTextContent('Transaction failed');
+      
+      // Check the confirmation message specifically
+      const confirmationMessage = container.querySelector('.confirmation-message');
+      expect(confirmationMessage).toHaveTextContent('Transaction failed');
     });
 
     test('displays transaction hash when provided', () => {

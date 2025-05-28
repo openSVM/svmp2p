@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">88.23% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>15/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -250,7 +250,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -261,7 +261,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -271,16 +271,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -431,18 +431,18 @@
  * ButtonLoader component
  * A button with integrated loading state
  */
-const ButtonLoader = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({ </span></span>
+const ButtonLoader = ({ 
   children, 
-  isLoading = <span class="branch-0 cbranch-no" title="branch not covered" >false, </span>
-  disabled = <span class="branch-0 cbranch-no" title="branch not covered" >false, </span>
+  isLoading = false, 
+  disabled = false, 
   onClick, 
-  type = <span class="branch-0 cbranch-no" title="branch not covered" >'button', </span>
-  variant = <span class="branch-0 cbranch-no" title="branch not covered" >'primary',</span>
-  size = <span class="branch-0 cbranch-no" title="branch not covered" >'medium',</span>
-  className = <span class="branch-0 cbranch-no" title="branch not covered" >'',</span>
-  loadingText = <span class="branch-0 cbranch-no" title="branch not covered" >'Processing...'</span>
+  type = 'button', 
+  variant = 'primary',
+  size = 'medium',
+  className = '',
+  loadingText = 'Processing...'
 }) =&gt; {
-  const variantClasses = <span class="cstat-no" title="statement not covered" >{</span>
+  const variantClasses = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
     success: 'btn-success',
@@ -452,16 +452,16 @@ const ButtonLoader = <span class="cstat-no" title="statement not covered" ><span
     outline: 'btn-outline'
   };
 &nbsp;
-  const sizeClasses = <span class="cstat-no" title="statement not covered" >{</span>
+  const sizeClasses = {
     small: 'btn-small',
     medium: 'btn-medium',
     large: 'btn-large'
   };
 &nbsp;
-  const variantClass = <span class="cstat-no" title="statement not covered" >variantClasses[variant] || 'btn-primary';</span>
-  const sizeClass = <span class="cstat-no" title="statement not covered" >sizeClasses[size] || 'btn-medium';</span>
+  const variantClass = variantClasses[variant] || <span class="branch-1 cbranch-no" title="branch not covered" >'btn-primary';</span>
+  const sizeClass = sizeClasses[size] || <span class="branch-1 cbranch-no" title="branch not covered" >'btn-medium';</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;button
       type={type}
       className={`button-loader ${variantClass} ${sizeClass} ${isLoading ? 'is-loading' : ''} ${className}`}
@@ -613,7 +613,7 @@ export default ButtonLoader;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-28T12:22:24.745Z
+                at 2025-05-28T20:10:47.467Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

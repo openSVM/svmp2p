@@ -914,7 +914,9 @@
 <a name='L849'></a><a href='#L849'>849</a>
 <a name='L850'></a><a href='#L850'>850</a>
 <a name='L851'></a><a href='#L851'>851</a>
-<a name='L852'></a><a href='#L852'>852</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L852'></a><a href='#L852'>852</a>
+<a name='L853'></a><a href='#L853'>853</a>
+<a name='L854'></a><a href='#L854'>854</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1002,6 +1004,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1812,7 +1816,7 @@ const OfferRow = <span class="cstat-no" title="statement not covered" >React.mem
           loadingText="Accepting..."
           variant="primary"
           size="small"
-          className="offer-action-button"
+          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         &gt;
           Accept Offer
         &lt;/ButtonLoader&gt;
@@ -1827,7 +1831,7 @@ const OfferRow = <span class="cstat-no" title="statement not covered" >React.mem
           loadingText="Cancelling..."
           variant="danger"
           size="small"
-          className="offer-action-button"
+          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         &gt;
           Cancel Offer
         &lt;/ButtonLoader&gt;
@@ -1842,7 +1846,7 @@ const OfferRow = <span class="cstat-no" title="statement not covered" >React.mem
           loadingText="Confirming..."
           variant="success"
           size="small"
-          className="offer-action-button"
+          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         &gt;
           Confirm Payment
         &lt;/ButtonLoader&gt;
@@ -1853,24 +1857,24 @@ const OfferRow = <span class="cstat-no" title="statement not covered" >React.mem
   };
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
-    &lt;div className="offer-card table-row"&gt;
-      &lt;div className="offer-card-header"&gt;
+    &lt;div className="offer-card table-row animate-terminal-fadeInUp hover-terminal-lift stagger-terminal-delay-1"&gt;
+      &lt;div className="offer-card-header animate-terminal-fadeInDown"&gt;
         &lt;div className="seller-info"&gt;
           &lt;span className="seller-name"&gt;
             {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
           &lt;/span&gt;
-          &lt;span className="seller-rating"&gt;★★★★☆&lt;/span&gt;
+          &lt;span className="seller-rating animate-terminal-shimmer"&gt;★★★★☆&lt;/span&gt;
         &lt;/div&gt;
         &lt;div className="time-info"&gt;
-          &lt;span className="time-posted"&gt;{timeSincePosted}&lt;/span&gt;
+          &lt;span className="time-posted animate-terminal-pulse"&gt;{timeSincePosted}&lt;/span&gt;
         &lt;/div&gt;
       &lt;/div&gt;
       
-      &lt;div className="offer-card-body"&gt;
+      &lt;div className="offer-card-body animate-terminal-fadeInLeft stagger-terminal-delay-2"&gt;
         &lt;div className="col amount"&gt;
           &lt;div className="amount-info"&gt;
-            &lt;span className="sol-amount"&gt;{offer.solAmount.toFixed(2)} SOL&lt;/span&gt;
-            &lt;span className="network-badge" style={{backgroundColor: network.color}}&gt;
+            &lt;span className="sol-amount animate-terminal-glow"&gt;{offer.solAmount.toFixed(2)} SOL&lt;/span&gt;
+            &lt;span className="network-badge animate-terminal-pulse" style={{backgroundColor: network.color}}&gt;
               {network.name}
             &lt;/span&gt;
           &lt;/div&gt;
@@ -1878,12 +1882,12 @@ const OfferRow = <span class="cstat-no" title="statement not covered" >React.mem
         
         &lt;div className="col price"&gt;
           &lt;div className="price-info"&gt;
-            &lt;span className="fiat-amount"&gt;
+            &lt;span className="fiat-amount hover-terminal-glow"&gt;
               {offer.fiatAmount.toFixed(2)} {offer.fiatCurrency}
             &lt;/span&gt;
-            &lt;span className={`price-per-sol ${isGoodRate ? 'good-rate' : ''}`}&gt;
+            &lt;span className={`price-per-sol ${isGoodRate ? 'good-rate animate-terminal-highlight' : ''}`}&gt;
               ({rate} {offer.fiatCurrency}/SOL)
-              {isGoodRate &amp;&amp; &lt;span className="rate-indicator"&gt;Good Rate&lt;/span&gt;}
+              {isGoodRate &amp;&amp; &lt;span className="rate-indicator animate-terminal-bounce"&gt;Good Rate&lt;/span&gt;}
             &lt;/span&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -1896,15 +1900,17 @@ const OfferRow = <span class="cstat-no" title="statement not covered" >React.mem
         &lt;/div&gt;
       &lt;/div&gt;
       
-      &lt;div className="offer-card-footer"&gt;
+      &lt;div className="offer-card-footer animate-terminal-fadeInRight stagger-terminal-delay-3"&gt;
         &lt;div className="col status"&gt;
-          &lt;div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}&gt;
+          &lt;div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')} animate-terminal-pulseBorder`}&gt;
             {offer.status}
           &lt;/div&gt;
         &lt;/div&gt;
         
         &lt;div className="col actions"&gt;
-          {renderActionButtons()}
+          &lt;div className="hover-terminal-scale active-terminal-shrink"&gt;
+            {renderActionButtons()}
+          &lt;/div&gt;
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/div&gt;
@@ -2623,7 +2629,7 @@ export { OfferList };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-28T12:22:24.745Z
+                at 2025-05-28T20:10:47.467Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
