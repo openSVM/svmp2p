@@ -3,8 +3,40 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 /**
  * Component to show when wallet is not connected
+ * Includes fallback rendering if WalletMultiButton fails
  */
 const WalletNotConnected = ({ message }) => {
+  // Use React.useState to track if there's an error rendering the WalletMultiButton
+  const [buttonError, setButtonError] = React.useState(false);
+
+  // Fallback button when WalletMultiButton can't be used
+  const FallbackButton = () => (
+    <button 
+      className="wallet-connect-fallback-button"
+      onClick={() => {
+        // Redirect to app home to ensure proper wallet context initialization
+        window.location.href = '/';
+      }}
+    >
+      Connect Wallet
+    </button>
+  );
+
+  // Safely render wallet button with error handling
+  const WalletButtonSafe = () => {
+    if (buttonError) {
+      return <FallbackButton />;
+    }
+
+    try {
+      return <WalletMultiButton />;
+    } catch (error) {
+      console.error('Error rendering WalletMultiButton:', error);
+      setButtonError(true);
+      return <FallbackButton />;
+    }
+  };
+
   return (
     <div className="wallet-not-connected">
       <div className="wallet-not-connected-content">
@@ -17,7 +49,7 @@ const WalletNotConnected = ({ message }) => {
         <h3>Wallet Not Connected</h3>
         <p>{message || 'Connect your wallet to access your profile and make transactions.'}</p>
         <div className="wallet-connect-button-wrapper">
-          <WalletMultiButton />
+          <WalletButtonSafe />
         </div>
         <div className="wallet-help">
           <p>New to cryptocurrency wallets?</p>

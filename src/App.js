@@ -133,31 +133,20 @@ const AppContent = () => {
         </nav>
         
         <main className="app-main">
-          {activeTab === 'buy' && <OfferList type="buy" />}
-          {activeTab === 'sell' && (
-            <>
-              <OfferCreation />
-              <OfferList type="sell" />
-            </>
-          )}
-          {activeTab === 'myoffers' && <OfferList type="my" />}
-          {activeTab === 'disputes' && <DisputeResolution />}
-          {activeTab === 'profile' && (
-            <ErrorBoundary fallback={
-              <div className="error-fallback">
-                <h3>Sorry, there was a problem loading the profile</h3>
-                <p>Try reconnecting your wallet or refreshing the page.</p>
-                <button 
-                  className="button" 
-                  onClick={() => window.location.reload()}
-                >
-                  Refresh Page
-                </button>
-              </div>
-            }>
-              <UserProfile wallet={wallet} network={network} />
-            </ErrorBoundary>
-          )}
+          <ErrorBoundary>
+            {activeTab === 'buy' && <OfferList type="buy" />}
+            {activeTab === 'sell' && (
+              <>
+                <OfferCreation />
+                <OfferList type="sell" />
+              </>
+            )}
+            {activeTab === 'myoffers' && <OfferList type="my" />}
+            {activeTab === 'disputes' && <DisputeResolution />}
+            {activeTab === 'profile' && (
+              <UserProfile wallet={wallet || {}} network={network} />
+            )}
+          </ErrorBoundary>
         </main>
         
         <footer className="app-footer">
@@ -187,16 +176,35 @@ const App = () => {
   
   // Define network for connection provider
   const network = SVM_NETWORKS['solana'];
-  
+
+  // Use ErrorBoundary at the root level to catch any rendering errors
   return (
-    <ConnectionProvider endpoint={network.endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <AppContent />
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <ErrorBoundary fallback={
+      <div className="global-error-container">
+        <h1>OpenSVM P2P Exchange</h1>
+        <div className="global-error-content">
+          <h2>Something went wrong</h2>
+          <p>We're sorry, but the application couldn't be loaded properly.</p>
+          <button 
+            className="button" 
+            onClick={() => window.location.reload()}
+          >
+            Refresh Application
+          </button>
+        </div>
+      </div>
+    }>
+      <ConnectionProvider endpoint={network.endpoint}>
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>
+            <AppContent />
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </ErrorBoundary>
   );
 };
+
+export default App;
 
 export default App;
