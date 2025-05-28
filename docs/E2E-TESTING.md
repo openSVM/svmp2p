@@ -15,32 +15,49 @@ The E2E tests simulate real user interactions with the application in a browser 
 
 ## Running Tests
 
-### Local Testing
+### Using the Test Runner Script
 
-To run the E2E tests locally:
+The easiest way to run tests is with the test runner script:
+
+```bash
+# Make the script executable
+chmod +x run-e2e-tests.sh
+
+# Run tests locally
+./run-e2e-tests.sh --env local
+
+# Run tests with debugging enabled (saves screenshots)
+./run-e2e-tests.sh --env local --debug
+
+# Run tests in Docker
+./run-e2e-tests.sh --env docker
+
+# Run tests in CI environment
+./run-e2e-tests.sh --env ci
+```
+
+### Using npm Scripts
+
+You can also use the npm scripts directly:
 
 ```bash
 # Install dependencies
 npm ci
 
-# Run E2E tests
+# Run E2E tests locally
 npm run test:e2e
 
 # Run E2E tests with debugging (saves screenshots)
 npm run test:e2e:debug
-```
 
-### Docker Testing
+# Run in Docker
+npm run test:e2e:docker
 
-To run tests in a Docker container:
+# Run in CI environment
+npm run test:e2e:ci
 
-```bash
-# Build and run the test container
-docker-compose -f docker-compose.test.yml up --build
-
-# Or using Docker directly
-docker build -t svmp2p-e2e-tests -f Dockerfile.test .
-docker run --rm -v $(pwd)/screenshots:/app/screenshots svmp2p-e2e-tests
+# Run in all environments
+npm run test:e2e:all
 ```
 
 ## Test Structure
@@ -66,6 +83,8 @@ src/tests/e2e/
 - `jest-puppeteer.config.js`: Puppeteer configuration
 - `Dockerfile.test`: Docker configuration for running tests
 - `docker-compose.test.yml`: Docker Compose configuration for testing
+- `run-e2e-tests.sh`: Helper script for running tests in different environments
+- `.github/workflows/e2e-tests.yml`: GitHub Actions workflow for running E2E tests
 
 ## Creating New Tests
 
@@ -108,7 +127,22 @@ describe('My Feature', () => {
 - If elements aren't found, check that your selectors match the rendered HTML
 - If the application doesn't load, ensure the development server is running on port 3000
 - Check screenshots in the `screenshots` directory to diagnose issues
+- Look for browser console errors in the test output when running with DEBUG=true
 
 ## CI/CD Integration
 
-E2E tests are automatically run in GitHub Actions for pull requests and pushes to main branch. The workflow is defined in `.github/workflows/e2e-tests.yml`.
+E2E tests are automatically run in GitHub Actions for pull requests and pushes to main branch. The workflow is defined in `.github/workflows/e2e-tests.yml` and `.github/workflows/pr-build.yml`.
+
+When a PR is created or updated, the CI pipeline will:
+1. Build the application
+2. Run unit tests
+3. Run E2E tests
+4. Report results back to the PR
+
+## Reporting Issues
+
+When reporting issues with E2E tests:
+1. Include the exact command used to run the tests
+2. Share any screenshots generated during the failing test
+3. Include the complete error message and stack trace
+4. Specify your environment (local, Docker, CI)
