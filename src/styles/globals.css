@@ -108,24 +108,24 @@ input:focus, textarea:focus, select:focus {
 /* Professional Offer Card Component */
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-5);
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-3);
 }
 
 /* Mobile responsive fixes for offers grid */
 @media (max-width: 768px) {
   .offers-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-3);
-    margin-bottom: var(--spacing-4);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-2);
   }
 }
 
 @media (max-width: 640px) {
   .offers-grid {
-    gap: var(--spacing-2);
-    margin-bottom: var(--spacing-3);
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-2);
   }
 }
 

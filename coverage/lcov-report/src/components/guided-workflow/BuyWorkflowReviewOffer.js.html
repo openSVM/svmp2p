@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">9.09% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>1/11</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">9.09% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>1/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -201,20 +201,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -303,7 +303,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -332,21 +332,21 @@
 /**
  * BuyWorkflowReviewOffer component - Step for reviewing the selected offer in the buy workflow
  */
-const BuyWorkflowReviewOffer = ({ selectedOffer, onConfirm, onBack }) =&gt; {
-  const [isReviewed, setIsReviewed] = useState(false);
+const BuyWorkflowReviewOffer = <span class="fstat-no" title="function not covered" >({</span> selectedOffer, onConfirm, onBack }) =&gt; {
+  const [isReviewed, setIsReviewed] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
   
-  const handleConfirm = () =&gt; {
-    setIsReviewed(true);
-    onConfirm();
+  const handleConfirm = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setIsReviewed(true);</span>
+<span class="cstat-no" title="statement not covered" >    onConfirm();</span>
   };
   
   // Calculate estimated fees and total cost
-  const networkFee = 0.000005; // SOL
-  const serviceFee = selectedOffer.solAmount * 0.01; // 1% service fee
-  const totalSolCost = selectedOffer.solAmount + networkFee + serviceFee;
-  const totalFiatCost = selectedOffer.fiatAmount;
+  const networkFee = <span class="cstat-no" title="statement not covered" >0.000005;</span> // SOL
+  const serviceFee = <span class="cstat-no" title="statement not covered" >selectedOffer.solAmount * 0.01;</span> // 1% service fee
+  const totalSolCost = <span class="cstat-no" title="statement not covered" >selectedOffer.solAmount + networkFee + serviceFee;</span>
+  const totalFiatCost = <span class="cstat-no" title="statement not covered" >selectedOffer.fiatAmount;</span>
   
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="buy-workflow-review-offer"&gt;
       &lt;div className="review-header"&gt;
         &lt;h3&gt;Review Your Selected Offer&lt;/h3&gt;
@@ -435,7 +435,7 @@ const BuyWorkflowReviewOffer = ({ selectedOffer, onConfirm, onBack }) =&gt; {
           &lt;input 
             type="checkbox" 
             checked={isReviewed} 
-            onChange={() =&gt; setIsReviewed(!isReviewed)}
+            onChange={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setIsReviewed(!isReviewed)}</span>
           /&gt;
           &lt;span className="checkmark"&gt;&lt;/span&gt;
           I have reviewed the offer details and agree to the terms
@@ -466,7 +466,7 @@ export default BuyWorkflowReviewOffer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-29T13:29:36.732Z
+                at 2025-05-29T13:59:50.631Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

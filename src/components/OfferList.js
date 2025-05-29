@@ -42,12 +42,12 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
         <ButtonLoader
           onClick={() => handleOfferAction(offer.id, 'accept')}
           isLoading={isProcessing && currentAction === 'accept'}
-          loadingText="Accepting..."
+          loadingText="..."
           variant="primary"
           size="small"
           className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         >
-          Accept Offer
+          Buy
         </ButtonLoader>
       );
     }
@@ -57,12 +57,12 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
         <ButtonLoader
           onClick={() => handleOfferAction(offer.id, 'cancel')}
           isLoading={isProcessing && currentAction === 'cancel'}
-          loadingText="Cancelling..."
+          loadingText="..."
           variant="danger"
           size="small"
           className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         >
-          Cancel Offer
+          X
         </ButtonLoader>
       );
     }
@@ -72,12 +72,12 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
         <ButtonLoader
           onClick={() => handleOfferAction(offer.id, 'confirm')}
           isLoading={isProcessing && currentAction === 'confirm'}
-          loadingText="Confirming..."
+          loadingText="..."
           variant="success"
           size="small"
           className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
         >
-          Confirm Payment
+          ✓
         </ButtonLoader>
       );
     }
@@ -90,9 +90,8 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
       <div className="offer-card-header animate-terminal-fadeInDown">
         <div className="seller-info">
           <span className="seller-name">
-            {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
+            {offer.seller.substring(0, 2)}...{offer.seller.substring(offer.seller.length - 2)}
           </span>
-          <span className="seller-rating animate-terminal-shimmer">★★★★☆</span>
         </div>
         <div className="time-info">
           <span className="time-posted animate-terminal-pulse">{timeSincePosted}</span>
@@ -100,46 +99,31 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
       </div>
       
       <div className="offer-card-body animate-terminal-fadeInLeft stagger-terminal-delay-2">
-        <div className="col amount">
-          <div className="amount-info">
-            <span className="sol-amount animate-terminal-glow">{offer.solAmount.toFixed(2)} SOL</span>
-            <span className="network-badge animate-terminal-pulse" style={{backgroundColor: network.color}}>
-              {network.name}
-            </span>
-          </div>
+        <div className="amount-info">
+          <span className="sol-amount animate-terminal-glow">{offer.solAmount.toFixed(1)} SOL</span>
         </div>
         
-        <div className="col price">
-          <div className="price-info">
-            <span className="fiat-amount hover-terminal-glow">
-              {offer.fiatAmount.toFixed(2)} {offer.fiatCurrency}
-            </span>
-            <span className={`price-per-sol ${isGoodRate ? 'good-rate animate-terminal-highlight' : ''}`}>
-              ({rate} {offer.fiatCurrency}/SOL)
-              {isGoodRate && <span className="rate-indicator animate-terminal-bounce">Good Rate</span>}
-            </span>
-          </div>
+        <div className="price-info">
+          <span className="fiat-amount hover-terminal-glow">
+            {offer.fiatAmount.toFixed(0)} {offer.fiatCurrency}
+          </span>
+          <span className={`price-per-sol ${isGoodRate ? 'good-rate animate-terminal-highlight' : ''}`}>
+            {rate} {offer.fiatCurrency}/SOL
+          </span>
         </div>
         
-        <div className="col payment">
-          <div className="payment-method">
-            <span className="payment-label">Payment:</span>
-            {offer.paymentMethod}
-          </div>
+        <div className="payment-method">
+          {offer.paymentMethod.substring(0, 10)}
         </div>
       </div>
       
       <div className="offer-card-footer animate-terminal-fadeInRight stagger-terminal-delay-3">
-        <div className="col status">
-          <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')} animate-terminal-pulseBorder`}>
-            {offer.status}
-          </div>
+        <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')} animate-terminal-pulseBorder`}>
+          {offer.status.substring(0, 3)}
         </div>
         
-        <div className="col actions">
-          <div className="hover-terminal-scale active-terminal-shrink">
-            {renderActionButtons()}
-          </div>
+        <div className="hover-terminal-scale active-terminal-shrink">
+          {renderActionButtons()}
         </div>
       </div>
     </div>
