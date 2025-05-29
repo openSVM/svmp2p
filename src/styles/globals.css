@@ -113,6 +113,22 @@ input:focus, textarea:focus, select:focus {
   margin-bottom: var(--spacing-5);
 }
 
+/* Mobile responsive fixes for offers grid */
+@media (max-width: 768px) {
+  .offers-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+  }
+}
+
+@media (max-width: 640px) {
+  .offers-grid {
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
+  }
+}
+
 .offer-card {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
@@ -122,6 +138,7 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
+  min-width: 0; /* Allow cards to shrink below content size */
 }
 
 .offer-card:hover {
@@ -137,6 +154,7 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-4);
   background-color: var(--color-card-header);
   border-bottom: 1px solid var(--color-border);
+  min-width: 0; /* Allow header to shrink */
 }
 
 .offer-card-body {
@@ -145,6 +163,9 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
+  min-width: 0; /* Allow body to shrink */
+  word-wrap: break-word; /* Handle long text */
+  overflow-wrap: break-word; /* Handle long text */
 }
 
 .offer-card-footer {
@@ -154,12 +175,44 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-4);
   background-color: var(--color-card-header);
   border-top: 1px solid var(--color-border);
+  min-width: 0; /* Allow footer to shrink */
+}
+
+/* Mobile responsive adjustments for offer cards */
+@media (max-width: 768px) {
+  .offer-card-header,
+  .offer-card-body,
+  .offer-card-footer {
+    padding: var(--spacing-3);
+  }
+  
+  .offer-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+  
+  .offer-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-2);
+  }
+}
+
+@media (max-width: 640px) {
+  .offer-card-header,
+  .offer-card-body,
+  .offer-card-footer {
+    padding: var(--spacing-2);
+  }
 }
 
 .time-info {
   color: var(--color-foreground-muted);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .price-per-sol {
@@ -168,6 +221,22 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   align-items: center;
   font-weight: var(--font-weight-medium);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile responsive text adjustments */
+@media (max-width: 768px) {
+  .time-info {
+    font-size: var(--font-size-xs);
+  }
+  
+  .price-per-sol {
+    font-size: var(--font-size-sm);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
 }
 
 .rate-indicator {
@@ -200,11 +269,23 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-3);
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-md);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 44px; /* Touch-friendly minimum height */
 }
 
 .offer-action-button:hover {
   background-color: var(--color-primary-dark);
   border-color: var(--color-primary-dark);
+}
+
+/* Mobile responsive button adjustments */
+@media (max-width: 768px) {
+  .offer-action-button {
+    min-height: 48px; /* Larger touch target for mobile */
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+  }
 }
 
 /* Professional Filter Section */
