@@ -29,8 +29,12 @@
 .app-header {
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
-  padding: var(--spacing-4) 0;
+  padding: 0; /* Remove padding, let header-content handle it */
   box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-40);
+  backdrop-filter: blur(8px);
 }
 
 .header-content {
@@ -40,6 +44,9 @@
   max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--spacing-4);
+  height: 64px; /* Fixed header height */
+  min-height: 64px;
+  position: relative; /* Add positioning context */
 }
 
 /* Professional Logo */
@@ -49,12 +56,14 @@
   gap: var(--spacing-3);
   color: var(--color-foreground);
   height: 40px; /* Consistent height with header actions */
+  flex-shrink: 0; /* Prevent logo from shrinking */
 }
 
 .logo-image {
   width: 32px;
   height: 32px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .logo-text {
@@ -63,6 +72,7 @@
   color: var(--color-foreground);
   margin: 0;
   line-height: 1;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 /* Professional Navigation */
@@ -70,6 +80,8 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center; /* Ensure proper vertical alignment */
+  height: 40px; /* Consistent height */
 }
 
 .nav-tabs {
@@ -82,6 +94,7 @@
   height: 40px; /* Consistent height */
   align-items: center;
   justify-content: center; /* Center the tabs */
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .nav-tab {
@@ -103,6 +116,8 @@
   min-height: 32px;
   max-height: 32px;
   white-space: nowrap; /* Prevent text wrapping */
+  line-height: 1; /* Ensure consistent line height */
+  flex-shrink: 0; /* Prevent tabs from shrinking */
 }
 
 .nav-tab:hover {
@@ -120,6 +135,8 @@
 .nav-icon {
   font-size: var(--font-size-sm);
   color: inherit;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 /* Professional Header Actions */
@@ -128,6 +145,7 @@
   align-items: center;
   gap: var(--spacing-2);
   height: 40px; /* Consistent height for all header elements */
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .header-actions > * {
@@ -136,6 +154,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0; /* Prevent shrinking */
+  line-height: 1; /* Consistent line height */
 }
 
 .wallet-container {
@@ -143,6 +162,7 @@
   align-items: center;
   gap: var(--spacing-2);
   height: 40px;
+  flex-shrink: 0;
 }
 
 .wallet-container button {
@@ -152,6 +172,12 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  line-height: 1 !important;
+  border-radius: var(--radius-md) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .mobile-menu-button {
@@ -167,6 +193,8 @@
   width: 40px;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
 .mobile-menu-button:hover {
@@ -463,6 +491,10 @@
   .grid-cols-12 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
+  
+  .header-content {
+    padding: 0 var(--spacing-3);
+  }
 }
 
 @media (max-width: 768px) {
@@ -476,6 +508,16 @@
   
   .header-actions {
     gap: var(--spacing-1); /* Tighter spacing on mobile */
+  }
+  
+  .header-content {
+    padding: 0 var(--spacing-3);
+    height: 56px; /* Slightly smaller on mobile */
+    min-height: 56px;
+  }
+  
+  .logo-section {
+    height: 40px; /* Maintain consistent logo height */
   }
   
   .grid-cols-3, .grid-cols-4 {
@@ -502,7 +544,9 @@
   }
   
   .header-content {
-    padding: 0 var(--spacing-3);
+    padding: 0 var(--spacing-2);
+    height: 56px;
+    min-height: 56px;
   }
   
   .flex-sm-col {
@@ -514,7 +558,7 @@
     gap: var(--spacing-0-5);
   }
   
-  /* Hide text labels on very small screens */
+  /* Hide text labels on very small screens but keep buttons functional */
   .header-actions .language-code,
   .header-actions .theme-label,
   .header-actions .pwa-install-text {
@@ -526,7 +570,25 @@
   .header-actions .pwa-install-button {
     min-width: 36px;
     width: 36px;
+    height: 36px !important;
     padding: var(--spacing-1-5);
     justify-content: center;
+  }
+  
+  .wallet-container button {
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    font-size: var(--font-size-xs) !important;
+    padding: var(--spacing-1-5) var(--spacing-2) !important;
+  }
+  
+  .mobile-menu-button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .logo-text {
+    font-size: var(--font-size-base); /* Smaller on mobile */
   }
 }
