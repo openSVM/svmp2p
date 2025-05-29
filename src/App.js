@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
@@ -105,7 +106,13 @@ const AppContent = () => {
       <div className="app-container">
         <header className="app-header">
           <div className="logo-container">
-            <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
+            <Image 
+              src="https://p2p.opensvm.com/images/opensvm-logo.svg" 
+              alt="OpenSVM P2P Exchange"
+              width={32}
+              height={32}
+              priority
+            />
             <h1>OpenSVM P2P Exchange</h1>
           </div>
           
@@ -150,18 +157,20 @@ const AppContent = () => {
         
         <main className="app-main">
           <ErrorBoundary>
-            {activeTab === 'buy' && <OfferList type="buy" />}
-            {activeTab === 'sell' && (
-              <>
-                <OfferCreation />
-                <OfferList type="sell" />
-              </>
-            )}
-            {activeTab === 'myoffers' && <OfferList type="my" />}
-            {activeTab === 'disputes' && <DisputeResolution />}
-            {activeTab === 'profile' && (
-              <UserProfile wallet={wallet} network={network} />
-            )}
+            <div key={activeTab} className="content-wrapper fade-in">
+              {activeTab === 'buy' && <OfferList type="buy" />}
+              {activeTab === 'sell' && (
+                <>
+                  <OfferCreation />
+                  <OfferList type="sell" />
+                </>
+              )}
+              {activeTab === 'myoffers' && <OfferList type="my" />}
+              {activeTab === 'disputes' && <DisputeResolution />}
+              {activeTab === 'profile' && (
+                <UserProfile wallet={wallet} network={network} />
+              )}
+            </div>
           </ErrorBoundary>
         </main>
         

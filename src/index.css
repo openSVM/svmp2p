@@ -287,64 +287,7 @@ code {
   color: var(--color-foreground-muted);
 }
 
-/* The rest of your existing CSS follows... */
-
-/* Apply theme classes to existing elements */
-.app-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-4);
-  background-color: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo-container h1 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  margin: 0;
-  margin-left: var(--spacing-2);
-}
-
-.wallet-container {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.wallet-address {
-  margin-right: var(--spacing-2);
-  font-size: var(--font-size-sm);
-  color: var(--color-foreground-muted);
-}
-
-.app-nav {
-  background-color: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.app-nav ul {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.app-nav li {
-  margin-right: var(--spacing-4);
-}
-
+/* Apply enhanced animations and transitions */
 .app-nav button {
   background: none;
   border: none;
@@ -352,36 +295,14 @@ code {
   cursor: pointer;
   font-size: var(--font-size-base);
   color: var(--color-foreground-muted);
-  transition: color var(--transition-normal);
+  transition: all var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
+  border-radius: var(--radius-md);
 }
 
 .app-nav button:hover {
   color: var(--color-primary);
-}
-
-.app-nav li.active button {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
-  border-bottom: 2px solid var(--color-primary);
-}
-
-.app-main {
-  flex: 1;
-  padding: var(--spacing-6);
-}
-
-.section-title {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-4);
-  color: var(--color-foreground);
-}
-
-.section-subtitle {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: var(--spacing-3);
-  color: var(--color-foreground-muted);
+  background-color: var(--color-background-alt);
+  transform: translateY(-1px);
 }
 
 .action-button {
