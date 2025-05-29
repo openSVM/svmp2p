@@ -88,11 +88,11 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="app-layout">
-        {/* Header */}
-        <header className="app-header">
-          <div className="header-content">
-            {/* Logo Section */}
+      <div className="app-layout-sidebar">
+        {/* Sidebar */}
+        <aside className={`app-sidebar ${mobileNavOpen ? 'mobile-open' : ''}`}>
+          {/* Sidebar Header */}
+          <div className="sidebar-header">
             <div className="logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
@@ -105,161 +105,130 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
             
-            {/* Desktop Navigation */}
-            <nav className="header-nav">
-              <div className="nav-tabs">
-                {navigationItems.map((item) => (
-                  <button
-                    key={item.key}
-                    className={`nav-tab ${
-                      activeTab === item.key ? 'active' : ''
-                    }`}
-                    onClick={() => setActiveTab(item.key)}
-                  >
-                    <span className="nav-icon hidden sm:inline">{item.icon}</span>
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </nav>
-            
-            {/* Header Actions */}
-            <div className="header-actions">
-              <NetworkSelector 
-                networks={networks} 
-                selectedNetwork={selectedNetwork} 
-                onSelectNetwork={setSelectedNetwork} 
-              />
-              
-              <LanguageSelector
-                currentLocale={currentLocale}
-                onLanguageChange={handleLanguageChange}
-              />
-              
-              <ThemeToggle />
-              
-              <PWAInstallButton />
-              
-              <div className="wallet-container">
-                <WalletMultiButton />
-                {connected && <WalletDisconnectButton />}
-              </div>
-              
-              {/* Mobile Menu Button */}
-              <button
-                className="mobile-menu-button"
-                onClick={() => setMobileNavOpen(true)}
-                aria-label="Open mobile menu"
-              >
-                <span>≡</span>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {/* Mobile Navigation */}
-        <div className={`mobile-nav ${mobileNavOpen ? 'open' : ''}`}>
-          <div className="mobile-nav-header">
-            <div className="logo-section">
-              <Image 
-                src="/images/opensvm-logo.svg" 
-                alt="OpenSVM P2P Exchange" 
-                className="logo-image"
-                width={32}
-                height={32}
-              />
-              <h2 className="logo-text">OpenSVM P2P</h2>
-            </div>
+            {/* Close button for mobile */}
             <button
-              className="mobile-nav-close"
+              className="sidebar-close"
               onClick={() => setMobileNavOpen(false)}
-              aria-label="Close mobile menu"
+              aria-label="Close sidebar"
             >
               <span>×</span>
             </button>
           </div>
           
-          <div className="mobile-nav-content">
-            <div className="mobile-nav-section">
+          {/* Sidebar Navigation */}
+          <nav className="sidebar-nav">
+            <div className="nav-section">
               <h3>Navigation</h3>
-              <div className="mobile-nav-links">
+              <ul className="nav-list">
                 {navigationItems.map((item) => (
-                  <button
-                    key={item.key}
-                    className={`mobile-nav-link ${
-                      activeTab === item.key ? 'active' : ''
-                    }`}
-                    onClick={() => {
-                      setActiveTab(item.key);
-                      setMobileNavOpen(false);
-                    }}
-                  >
-                    <span className="mobile-nav-icon">{item.icon}</span>
-                    {item.label}
-                  </button>
+                  <li key={item.key}>
+                    <button
+                      className={`nav-item ${
+                        activeTab === item.key ? 'active' : ''
+                      }`}
+                      onClick={() => {
+                        setActiveTab(item.key);
+                        setMobileNavOpen(false);
+                      }}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
             
-            <div className="mobile-nav-section">
-              <h3>Wallet</h3>
-              <div className="mobile-nav-links">
-                <div className="wallet-container">
-                  <WalletMultiButton />
-                  {connected && <WalletDisconnectButton />}
-                </div>
-              </div>
-            </div>
-            
-            <div className="mobile-nav-section">
+            <div className="nav-section">
               <h3>Settings</h3>
-              <div className="mobile-nav-links">
-                <div className="flex gap-3">
-                  <LanguageSelector
-                    currentLocale={currentLocale}
-                    onLanguageChange={handleLanguageChange}
-                  />
-                  <ThemeToggle />
+              <div className="settings-group">
+                <NetworkSelector 
+                  networks={networks} 
+                  selectedNetwork={selectedNetwork} 
+                  onSelectNetwork={setSelectedNetwork} 
+                />
+                
+                <LanguageSelector
+                  currentLocale={currentLocale}
+                  onLanguageChange={handleLanguageChange}
+                />
+                
+                <ThemeToggle />
+              </div>
+            </div>
+          </nav>
+          
+          {/* Sidebar Footer */}
+          <div className="sidebar-footer">
+            <PWAInstallButton />
+            <div className="wallet-container">
+              <WalletMultiButton />
+              {connected && <WalletDisconnectButton />}
+            </div>
+          </div>
+        </aside>
+
+        {/* Mobile Overlay */}
+        <div 
+          className={`sidebar-overlay ${mobileNavOpen ? 'open' : ''}`}
+          onClick={() => setMobileNavOpen(false)}
+        />
+
+        {/* Main Content Area */}
+        <div className="app-content">
+          {/* Top Header */}
+          <header className="app-header-slim">
+            <div className="header-content-slim">
+              {/* Mobile Menu Button */}
+              <button
+                className="mobile-menu-button"
+                onClick={() => setMobileNavOpen(true)}
+                aria-label="Open sidebar"
+              >
+                <span>≡</span>
+              </button>
+              
+              {/* Header Info */}
+              <div className="header-info">
+                {connected && publicKey && (
+                  <span className="connection-status">
+                    Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
+                  </span>
+                )}
+              </div>
+            </div>
+          </header>
+          
+          {/* Main Content */}
+          <main className="app-main-content">
+            <div className="container">
+              <div>
+                {children}
+              </div>
+            </div>
+          </main>
+          
+          {/* Footer */}
+          <footer className="app-footer">
+            <div className="container">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <p className="text-sm text-foreground-muted">
+                  © 2025 OpenSVM P2P Exchange. All rights reserved.
+                </p>
+                <div className="flex items-center gap-6">
+                  <a 
+                    href={network.explorerUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-foreground-muted hover:text-primary transition-colors"
+                  >
+                    {network.name} Explorer
+                  </a>
                 </div>
               </div>
             </div>
-          </div>
+          </footer>
         </div>
-        
-        {/* Main Content */}
-        <main className="app-main">
-          <div className="container">
-            <div>
-              {children}
-            </div>
-          </div>
-        </main>
-        
-        {/* Footer */}
-        <footer className="app-footer">
-          <div className="container">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-sm text-foreground-muted">
-                © 2025 OpenSVM P2P Exchange. All rights reserved.
-              </p>
-              <div className="flex items-center gap-6">
-                <a 
-                  href={network.explorerUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-foreground-muted hover:text-primary transition-colors"
-                >
-                  {network.name} Explorer
-                </a>
-                <span className="text-sm text-foreground-muted">
-                  {connected && publicKey && (
-                    <>Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}</>
-                  )}
-                </span>
-              </div>
-            </div>
-          </div>
-        </footer>
       </div>
 
       {/* Onboarding Modal */}
