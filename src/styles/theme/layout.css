@@ -81,11 +81,13 @@
   padding: var(--spacing-1);
   height: 40px; /* Consistent height */
   align-items: center;
+  justify-content: center; /* Center the tabs */
 }
 
 .nav-tab {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-2);
   background: transparent;
   border: 1px solid transparent;
@@ -100,6 +102,7 @@
   height: 32px; /* Consistent inner height */
   min-height: 32px;
   max-height: 32px;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .nav-tab:hover {
@@ -131,6 +134,8 @@
   height: 40px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .wallet-container {
@@ -144,6 +149,9 @@
   height: 40px !important;
   min-height: 40px;
   max-height: 40px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .mobile-menu-button {

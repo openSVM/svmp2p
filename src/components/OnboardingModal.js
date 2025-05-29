@@ -1,17 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import LanguageSelector from './LanguageSelector';
 
 const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
+      // Load saved language preference if available
+      const savedLanguage = localStorage.getItem('preferred-language');
+      if (savedLanguage) {
+        setSelectedLanguage(savedLanguage);
+      }
     }
   }, [isOpen]);
 
+  const handleLanguageChange = (locale) => {
+    setSelectedLanguage(locale);
+    localStorage.setItem('preferred-language', locale);
+  };
+
   const steps = [
+    {
+      title: "Select Your Language",
+      subtitle: "Choose your preferred language for the best experience",
+      content: (
+        <div className="onboarding-language">
+          <div className="language-icon">[L]</div>
+          <p className="language-description">
+            Select your preferred language to customize your experience on OpenSVM P2P Exchange. 
+            This setting will be remembered for future visits.
+          </p>
+          <div className="language-selection-container">
+            <LanguageSelector
+              currentLocale={selectedLanguage}
+              onLanguageChange={handleLanguageChange}
+            />
+          </div>
+          <div className="language-features">
+            <div className="language-feature">
+              <span className="checkmark">[+]</span>
+              <span>Interface translated to your language</span>
+            </div>
+            <div className="language-feature">
+              <span className="checkmark">[+]</span>
+              <span>Localized currency and date formats</span>
+            </div>
+            <div className="language-feature">
+              <span className="checkmark">[+]</span>
+              <span>Automatically saved preference</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
     {
       title: "Welcome to OpenSVM P2P Exchange",
       subtitle: "Your gateway to decentralized trading across Solana Virtual Machine networks",

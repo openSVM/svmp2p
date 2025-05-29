@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1748494741589" clover="3.2.0">
-  <project timestamp="1748494741589" name="All files">
-    <metrics statements="1601" coveredstatements="223" conditionals="1088" coveredconditionals="183" methods="484" coveredmethods="57" elements="3173" coveredelements="463" complexity="0" loc="1601" ncloc="1601" packages="10" files="53" classes="53"/>
+<coverage generated="1748499900731" clover="3.2.0">
+  <project timestamp="1748499900731" name="All files">
+    <metrics statements="1608" coveredstatements="223" conditionals="1090" coveredconditionals="183" methods="485" coveredmethods="57" elements="3183" coveredelements="463" complexity="0" loc="1608" ncloc="1608" packages="10" files="53" classes="53"/>
     <package name="src">
       <metrics statements="23" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="14" coveredmethods="0"/>
       <file name="App.js" path="/home/runner/work/svmp2p/svmp2p/src/App.js">
@@ -35,7 +35,7 @@
       </file>
     </package>
     <package name="src.components">
-      <metrics statements="606" coveredstatements="22" conditionals="384" coveredconditionals="3" methods="174" coveredmethods="4"/>
+      <metrics statements="613" coveredstatements="22" conditionals="386" coveredconditionals="3" methods="175" coveredmethods="4"/>
       <file name="DisputeResolution.js" path="/home/runner/work/svmp2p/svmp2p/src/components/DisputeResolution.js">
         <metrics statements="59" coveredstatements="22" conditionals="38" coveredconditionals="3" methods="16" coveredmethods="4"/>
         <line num="7" count="1" type="stmt"/>
@@ -493,31 +493,38 @@
         <line num="827" count="0" type="stmt"/>
       </file>
       <file name="OnboardingModal.js" path="/home/runner/work/svmp2p/svmp2p/src/components/OnboardingModal.js">
-        <metrics statements="24" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="8" coveredmethods="0"/>
-        <line num="4" count="0" type="stmt"/>
+        <metrics statements="31" coveredstatements="0" conditionals="18" coveredconditionals="0" methods="9" coveredmethods="0"/>
         <line num="5" count="0" type="stmt"/>
         <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="12" count="0" type="stmt"/>
         <line num="14" count="0" type="stmt"/>
-        <line num="118" count="0" type="stmt"/>
-        <line num="119" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="120" count="0" type="stmt"/>
-        <line num="122" count="0" type="stmt"/>
-        <line num="126" count="0" type="stmt"/>
-        <line num="127" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="128" count="0" type="stmt"/>
-        <line num="132" count="0" type="stmt"/>
-        <line num="133" count="0" type="stmt"/>
-        <line num="134" count="0" type="stmt"/>
-        <line num="135" count="0" type="stmt"/>
-        <line num="139" count="0" type="stmt"/>
-        <line num="140" count="0" type="stmt"/>
-        <line num="141" count="0" type="stmt"/>
-        <line num="142" count="0" type="stmt"/>
-        <line num="146" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="148" count="0" type="stmt"/>
+        <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="163" count="0" type="stmt"/>
+        <line num="164" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="165" count="0" type="stmt"/>
+        <line num="167" count="0" type="stmt"/>
+        <line num="171" count="0" type="stmt"/>
+        <line num="172" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="177" count="0" type="stmt"/>
+        <line num="178" count="0" type="stmt"/>
+        <line num="179" count="0" type="stmt"/>
+        <line num="180" count="0" type="stmt"/>
+        <line num="184" count="0" type="stmt"/>
+        <line num="185" count="0" type="stmt"/>
+        <line num="186" count="0" type="stmt"/>
+        <line num="187" count="0" type="stmt"/>
+        <line num="191" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="193" count="0" type="stmt"/>
       </file>
       <file name="PWAInstallButton.js" path="/home/runner/work/svmp2p/svmp2p/src/components/PWAInstallButton.js">
         <metrics statements="9" coveredstatements="0" conditionals="7" coveredconditionals="0" methods="2" coveredmethods="0"/>
