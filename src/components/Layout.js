@@ -71,9 +71,15 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     console.log('Language changed to:', locale);
   };
 
-  const navigationItems = [
+  // Top navbar items (most important sections)
+  const topNavItems = [
     { key: 'buy', label: 'Buy', icon: '[B]' },
     { key: 'sell', label: 'Sell', icon: '[S]' },
+    { key: 'help', label: 'Help', icon: '[?]' },
+  ];
+
+  // Sidebar navigation items (secondary sections)
+  const sidebarNavItems = [
     { key: 'myoffers', label: 'My Offers', icon: '[M]' },
     { key: 'disputes', label: 'Disputes', icon: '[!]' },
     { key: 'profile', label: 'Profile', icon: '[U]' },
@@ -117,10 +123,33 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           
           {/* Sidebar Navigation */}
           <nav className="sidebar-nav">
-            <div className="nav-section">
-              <h3>Navigation</h3>
+            {/* Top Navigation - Mobile Only */}
+            <div className="nav-section mobile-top-nav">
+              <h3>Quick Actions</h3>
               <ul className="nav-list">
-                {navigationItems.map((item) => (
+                {topNavItems.map((item) => (
+                  <li key={item.key}>
+                    <button
+                      className={`nav-item ${
+                        activeTab === item.key ? 'active' : ''
+                      }`}
+                      onClick={() => {
+                        setActiveTab(item.key);
+                        setMobileNavOpen(false);
+                      }}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="nav-section">
+              <h3>My Account</h3>
+              <ul className="nav-list">
+                {sidebarNavItems.map((item) => (
                   <li key={item.key}>
                     <button
                       className={`nav-item ${
@@ -187,6 +216,22 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               >
                 <span>≡</span>
               </button>
+              
+              {/* Top Navigation - Desktop */}
+              <nav className="header-nav">
+                {topNavItems.map((item) => (
+                  <button
+                    key={item.key}
+                    className={`nav-tab ${
+                      activeTab === item.key ? 'active' : ''
+                    }`}
+                    onClick={() => setActiveTab(item.key)}
+                  >
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                  </button>
+                ))}
+              </nav>
               
               {/* Header Info */}
               <div className="header-info">
