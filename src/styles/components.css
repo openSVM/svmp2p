@@ -526,6 +526,24 @@
   flex-shrink: 0;
 }
 
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .language-trigger {
+    min-width: 60px;
+    padding: var(--spacing-2);
+  }
+  
+  .language-country {
+    display: none;
+  }
+  
+  .language-dropdown {
+    right: auto;
+    left: 0;
+    min-width: 180px;
+  }
+}
+
 /* Professional Theme Toggle Styles */
 .theme-toggle {
   display: flex;
@@ -541,6 +559,7 @@
   height: 40px;
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
+  min-width: 40px; /* Ensure minimum width for icon */
 }
 
 .theme-toggle:hover {
@@ -560,54 +579,14 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-  .onboarding-modal {
-    width: 95%;
-    margin: var(--spacing-5);
-    max-height: calc(100vh - 40px);
-  }
-
-  .onboarding-title {
-    font-size: var(--font-size-xl);
-  }
-
-  .onboarding-subtitle {
-    font-size: var(--font-size-sm);
-  }
-
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-  }
-
-  .feature-item {
-    padding: var(--spacing-4);
-  }
-
-  .welcome-icon,
-  .wallet-icon,
-  .trading-icon {
-    font-size: var(--font-size-3xl);
-  }
-
-  .onboarding-actions {
-    flex-direction: column;
-    gap: var(--spacing-3);
-    align-items: stretch;
-  }
-
-  .actions-right {
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .language-dropdown {
-    right: auto;
-    left: 0;
-    min-width: 180px;
-  }
-
   .theme-label {
     display: none;
+  }
+  
+  .theme-toggle {
+    padding: var(--spacing-2);
+    width: 40px;
+    justify-content: center;
   }
 }
 
@@ -696,6 +675,7 @@
   transition: all var(--transition-fast) ease;
   height: 40px;
   border-radius: var(--radius-md);
+  min-width: 40px; /* Ensure minimum width for icon */
 }
 
 .pwa-install-button:hover {
@@ -713,6 +693,19 @@
 .pwa-install-text {
   font-weight: var(--font-weight-medium);
   font-family: var(--font-family-sans);
+}
+
+/* Hide text on smaller screens */
+@media (max-width: 768px) {
+  .pwa-install-text {
+    display: none;
+  }
+  
+  .pwa-install-button {
+    padding: var(--spacing-2);
+    width: 40px;
+    justify-content: center;
+  }
 }
 
 /* ASCII Art Dark Theme Overrides */

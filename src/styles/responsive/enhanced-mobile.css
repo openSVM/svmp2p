@@ -325,7 +325,7 @@
 .full-height {
   height: 100vh;
   height: -webkit-fill-available;
-  height: fill-available;
+  height: stretch; /* Updated from fill-available */
 }
 
 /* Improved scrolling for mobile */
