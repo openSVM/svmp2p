@@ -101,7 +101,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           <div className="sidebar-header">
             <div className="logo-section">
               <Image 
-                src="https://p2p.opensvm.com/images/opensvm-logo.svg" 
+                src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
                 className="logo-image"
                 width={32}

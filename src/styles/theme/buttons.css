@@ -57,8 +57,8 @@
 }
 
 .button-danger:hover {
-  background-color: #b91c1c;
-  border-color: #b91c1c;
+  background-color: var(--color-error-dark);
+  border-color: var(--color-error-dark);
 }
 
 .button-warning {
@@ -68,8 +68,8 @@
 }
 
 .button-warning:hover {
-  background-color: #b45309;
-  border-color: #b45309;
+  background-color: var(--color-warning-dark);
+  border-color: var(--color-warning-dark);
 }
 
 .button-info {
@@ -79,8 +79,8 @@
 }
 
 .button-info:hover {
-  background-color: #0369a1;
-  border-color: #0369a1;
+  background-color: var(--color-info-dark);
+  border-color: var(--color-info-dark);
 }
 
 .button-accent {

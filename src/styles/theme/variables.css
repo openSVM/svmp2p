@@ -29,12 +29,16 @@
   /* Status colors - professional */
   --color-success: #059669;      /* Emerald */
   --color-success-light: rgba(5, 150, 105, 0.1);
+  --color-success-dark: #047857;  /* Darker emerald */
   --color-warning: #d97706;      /* Amber */
   --color-warning-light: rgba(217, 119, 6, 0.1);
+  --color-warning-dark: #b45309;  /* Darker amber */
   --color-error: #dc2626;        /* Red */
   --color-error-light: rgba(220, 38, 38, 0.1);
+  --color-error-dark: #b91c1c;   /* Darker red */
   --color-info: #0284c7;         /* Sky blue */
   --color-info-light: rgba(2, 132, 199, 0.1);
+  --color-info-dark: #0369a1;    /* Darker sky blue */
   
   /* Card-specific colors - clean corporate */
   --color-card: #ffffff;

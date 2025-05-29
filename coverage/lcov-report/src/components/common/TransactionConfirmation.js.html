@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">64% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>16/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/5</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -329,19 +329,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -573,30 +573,30 @@
  * TransactionConfirmation component
  * A reusable component for displaying transaction confirmations and status
  */
-const TransactionConfirmation = <span class="fstat-no" title="function not covered" >({ </span>
+const TransactionConfirmation = ({ 
   status, 
   txHash, 
   message, 
   onClose, 
-  showDetails = <span class="branch-0 cbranch-no" title="branch not covered" >true,</span>
-  network = <span class="branch-0 cbranch-no" title="branch not covered" >'mainnet'</span>
+  showDetails = true,
+  network = 'mainnet'
 }) =&gt; {
-  const statusClasses = <span class="cstat-no" title="statement not covered" >{</span>
+  const statusClasses = {
     pending: 'status-pending',
     success: 'status-success',
     error: 'status-error',
     warning: 'status-warning'
   };
 &nbsp;
-  const statusClass = <span class="cstat-no" title="statement not covered" >statusClasses[status] || 'status-pending';</span>
-  const explorerBaseUrl = <span class="cstat-no" title="statement not covered" >network === 'devnet' </span>
-    ? 'https://explorer.solana.com/tx/' 
+  const statusClass = statusClasses[status] || <span class="branch-1 cbranch-no" title="branch not covered" >'status-pending';</span>
+  const explorerBaseUrl = network === 'devnet' 
+    ? <span class="branch-0 cbranch-no" title="branch not covered" >'https://explorer.solana.com/tx/' </span>
     : 'https://explorer.solana.com/tx/';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div className={`transaction-confirmation ${statusClass}`}&gt;
       &lt;div className="confirmation-header"&gt;
-        &lt;h3&gt;Transaction {status === 'success' ? 'Confirmed' : status === 'error' ? 'Failed' : 'Processing'}&lt;/h3&gt;
+        &lt;h3&gt;Transaction {status === 'success' ? 'Confirmed' : <span class="branch-1 cbranch-no" title="branch not covered" >status === 'error' ? 'Failed' : 'Processing'}</span>&lt;/h3&gt;
         {onClose &amp;&amp; (
           &lt;button className="close-button" onClick={onClose} aria-label="Close"&gt;
             ×
@@ -606,7 +606,7 @@ const TransactionConfirmation = <span class="fstat-no" title="function not cover
       
       &lt;div className="confirmation-body"&gt;
         {status === 'pending' &amp;&amp; (
-          &lt;div className="status-indicator"&gt;
+<span class="branch-1 cbranch-no" title="branch not covered" >          &lt;div className="status-indicator"&gt;</span>
             &lt;div className="pulse-animation"&gt;&lt;/div&gt;
             &lt;p&gt;Transaction in progress...&lt;/p&gt;
           &lt;/div&gt;
@@ -620,14 +620,14 @@ const TransactionConfirmation = <span class="fstat-no" title="function not cover
         )}
         
         {status === 'error' &amp;&amp; (
-          &lt;div className="status-indicator"&gt;
+<span class="branch-1 cbranch-no" title="branch not covered" >          &lt;div className="status-indicator"&gt;</span>
             &lt;div className="error-icon"&gt;[X]&lt;/div&gt;
             &lt;p&gt;Transaction failed&lt;/p&gt;
           &lt;/div&gt;
         )}
         
         {status === 'warning' &amp;&amp; (
-          &lt;div className="status-indicator"&gt;
+<span class="branch-1 cbranch-no" title="branch not covered" >          &lt;div className="status-indicator"&gt;</span>
             &lt;div className="warning-icon"&gt;[!]&lt;/div&gt;
             &lt;p&gt;Transaction needs attention&lt;/p&gt;
           &lt;/div&gt;
@@ -636,7 +636,7 @@ const TransactionConfirmation = <span class="fstat-no" title="function not cover
         {message &amp;&amp; &lt;p className="confirmation-message"&gt;{message}&lt;/p&gt;}
         
         {showDetails &amp;&amp; txHash &amp;&amp; (
-          &lt;div className="transaction-details"&gt;
+<span class="branch-2 cbranch-no" title="branch not covered" >          &lt;div className="transaction-details"&gt;</span>
             &lt;p className="tx-hash"&gt;
               Transaction ID: 
               &lt;span className="hash-value"&gt;
@@ -826,7 +826,7 @@ export default TransactionConfirmation;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-29T13:59:50.631Z
+                at 2025-05-29T21:28:55.272Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

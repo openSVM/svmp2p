@@ -25,10 +25,10 @@ export default function Document() {
         <link rel="manifest" href="/manifest.json" />
         
         {/* Icons */}
-        <link rel="icon" type="image/svg+xml" href="https://p2p.opensvm.com/images/opensvm-logo.svg" />
-        <link rel="icon" type="image/svg+xml" sizes="192x192" href="https://p2p.opensvm.com/images/icon-192x192.svg" />
-        <link rel="icon" type="image/svg+xml" sizes="512x512" href="https://p2p.opensvm.com/images/icon-512x512.svg" />
-        <link rel="apple-touch-icon" href="https://p2p.opensvm.com/images/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" href="/images/opensvm-logo.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="192x192" href="/images/icon-192x192.svg" />
+        <link rel="icon" type="image/svg+xml" sizes="512x512" href="/images/icon-512x512.svg" />
+        <link rel="apple-touch-icon" href="/images/icon-192x192.svg" />
 
         {/* Security Headers - X-Frame-Options removed, should be set in HTTP headers */}
         <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" />
