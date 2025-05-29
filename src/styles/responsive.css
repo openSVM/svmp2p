@@ -137,6 +137,8 @@
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-background);
+  min-height: 60px;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .sidebar-close {
@@ -373,6 +375,9 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
+  flex: 1;
+  min-width: 0; /* Allow flex item to shrink below content size */
+  overflow: hidden;
 }
 
 .logo-image {
@@ -385,6 +390,12 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-foreground);
   text-decoration: none;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0; /* Allow text to shrink */
 }
 
 .header-nav {
@@ -759,6 +770,7 @@
   
   .logo-text {
     font-size: var(--font-size-lg);
+    max-width: 120px; /* Limit text width on small screens */
   }
 }
 
@@ -801,6 +813,15 @@
   
   .app-sidebar {
     width: 100%;
+  }
+  
+  .logo-section {
+    max-width: calc(100% - 60px); /* Account for close button */
+  }
+  
+  .logo-text {
+    font-size: var(--font-size-base);
+    max-width: 100px; /* Further limit on very small screens */
   }
   
   .nav-tabs.content-tabs {
