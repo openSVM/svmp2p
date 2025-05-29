@@ -116,6 +116,6 @@ describe('GuidedWorkflowStep Tests', () => {
       </GuidedWorkflowStep>
     );
     
-    expect(screen.getByText('✓')).toBeInTheDocument();
+    expect(screen.getByText('[+]')).toBeInTheDocument();
   });
 });

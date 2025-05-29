@@ -1,9 +1,14 @@
+/* Professional Corporate Layout */
 .layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-family-sans);
 }
 
+/* Professional Container */
 .container {
   width: 100%;
   max-width: var(--container-xl);
@@ -11,6 +16,205 @@
   margin-right: auto;
   padding-left: var(--spacing-4);
   padding-right: var(--spacing-4);
+}
+
+/* Professional App Layout */
+.app-layout {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-family-sans);
+  min-height: 100vh;
+}
+
+.app-header {
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0; /* Remove padding, let header-content handle it */
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-40);
+  backdrop-filter: blur(8px);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+  height: 64px; /* Fixed header height */
+  min-height: 64px;
+  position: relative; /* Add positioning context */
+}
+
+/* Professional Logo */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  color: var(--color-foreground);
+  height: 40px; /* Consistent height with header actions */
+  flex-shrink: 0; /* Prevent logo from shrinking */
+}
+
+.logo-image {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-size: var(--font-size-lg); /* Slightly smaller for consistency */
+  font-weight: var(--font-weight-bold);
+  color: var(--color-foreground);
+  margin: 0;
+  line-height: 1;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Professional Navigation */
+.header-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Ensure proper vertical alignment */
+  height: 40px; /* Consistent height */
+}
+
+.nav-tabs {
+  display: flex;
+  gap: var(--spacing-1);
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-1);
+  height: 40px; /* Consistent height */
+  align-items: center;
+  justify-content: center; /* Center the tabs */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-foreground-muted);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  border-radius: var(--radius-md);
+  height: 32px; /* Consistent inner height */
+  min-height: 32px;
+  max-height: 32px;
+  white-space: nowrap; /* Prevent text wrapping */
+  line-height: 1; /* Ensure consistent line height */
+  flex-shrink: 0; /* Prevent tabs from shrinking */
+}
+
+.nav-tab:hover {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border-color: var(--color-border);
+}
+
+.nav-tab.active {
+  background-color: var(--color-primary);
+  color: #ffffff; /* Explicit white color for contrast */
+  border-color: var(--color-primary);
+}
+
+.nav-icon {
+  font-size: var(--font-size-sm);
+  color: inherit;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Professional Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  height: 40px; /* Consistent height for all header elements */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.header-actions > * {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Prevent shrinking */
+  line-height: 1; /* Consistent line height */
+}
+
+.wallet-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.wallet-container button {
+  height: 40px !important;
+  min-height: 40px;
+  max-height: 40px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  border-radius: var(--radius-md) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.mobile-menu-button {
+  display: none;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  height: 40px;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.mobile-menu-button:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-border);
+}
+
+/* Professional Main Content */
+.app-main {
+  flex: 1;
+  background-color: var(--color-background);
+  padding: var(--spacing-8) 0;
+}
+
+/* Professional Footer */
+.app-footer {
+  background-color: var(--color-background-alt);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-6) 0;
+  color: var(--color-foreground-muted);
 }
 
 .container-sm {
@@ -185,6 +389,95 @@
   gap: var(--spacing-10);
 }
 
+/* Professional Mobile Navigation */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-background);
+  transform: translateX(-100%);
+  transition: transform var(--transition-normal) ease;
+  z-index: 9999;
+  box-shadow: var(--shadow-lg);
+}
+
+.mobile-nav.open {
+  transform: translateX(0);
+}
+
+.mobile-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-nav-close {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-content {
+  padding: var(--spacing-4);
+}
+
+.mobile-nav-section {
+  margin-bottom: var(--spacing-6);
+}
+
+.mobile-nav-section h3 {
+  color: var(--color-foreground);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-3);
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground-muted);
+  padding: var(--spacing-3);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease;
+  font-weight: var(--font-weight-medium);
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.mobile-nav-icon {
+  font-size: var(--font-size-sm);
+}
+
 /* Responsive layout */
 @media (max-width: 1024px) {
   .grid-cols-4 {
@@ -198,9 +491,35 @@
   .grid-cols-12 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
+  
+  .header-content {
+    padding: 0 var(--spacing-3);
+  }
 }
 
 @media (max-width: 768px) {
+  .header-nav {
+    display: none;
+  }
+  
+  .mobile-menu-button {
+    display: flex;
+  }
+  
+  .header-actions {
+    gap: var(--spacing-1); /* Tighter spacing on mobile */
+  }
+  
+  .header-content {
+    padding: 0 var(--spacing-3);
+    height: 56px; /* Slightly smaller on mobile */
+    min-height: 56px;
+  }
+  
+  .logo-section {
+    height: 40px; /* Maintain consistent logo height */
+  }
+  
   .grid-cols-3, .grid-cols-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -224,7 +543,52 @@
     padding-right: var(--spacing-3);
   }
   
+  .header-content {
+    padding: 0 var(--spacing-2);
+    height: 56px;
+    min-height: 56px;
+  }
+  
   .flex-sm-col {
     flex-direction: column;
+  }
+  
+  /* Ultra-compact mobile layout */
+  .header-actions {
+    gap: var(--spacing-0-5);
+  }
+  
+  /* Hide text labels on very small screens but keep buttons functional */
+  .header-actions .language-code,
+  .header-actions .theme-label,
+  .header-actions .pwa-install-text {
+    display: none;
+  }
+  
+  .header-actions .language-trigger,
+  .header-actions .theme-toggle,
+  .header-actions .pwa-install-button {
+    min-width: 36px;
+    width: 36px;
+    height: 36px !important;
+    padding: var(--spacing-1-5);
+    justify-content: center;
+  }
+  
+  .wallet-container button {
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    font-size: var(--font-size-xs) !important;
+    padding: var(--spacing-1-5) var(--spacing-2) !important;
+  }
+  
+  .mobile-menu-button {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .logo-text {
+    font-size: var(--font-size-base); /* Smaller on mobile */
   }
 }

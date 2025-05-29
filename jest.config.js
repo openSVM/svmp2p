@@ -1,5 +1,4 @@
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/tests/setup/jest.setup.js'],
   moduleNameMapper: {
@@ -7,7 +6,7 @@ module.exports = {
     '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/src/tests/setup/fileMock.js'
   },
   transform: {
-    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest'
+    '^.+\\.(js|jsx)$': 'babel-jest'
   },
   testMatch: [
     '**/__tests__/**/*.[jt]s?(x)',
@@ -15,8 +14,7 @@ module.exports = {
   ],
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    '!src/**/*.d.ts',
+    'src/**/*.{js,jsx}',
     '!src/tests/**',
     '!src/index.js',
     '!src/reportWebVitals.js'

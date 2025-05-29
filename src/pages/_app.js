@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
@@ -7,6 +7,7 @@ import {
   TorusWalletAdapter,
   LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
+import dynamic from 'next/dynamic';
 
 // Import styles - order matters for CSS
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
@@ -30,6 +31,9 @@ import { AppContextProvider } from '@/contexts/AppContext';
 // Import Layout
 import Layout from '@/components/Layout';
 
+// Dynamically import ErrorBoundary to prevent SSR issues
+const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary'), { ssr: false });
+
 export default function App({ Component, pageProps }) {
   // Set up wallet adapters
   const wallets = useMemo(
@@ -43,18 +47,33 @@ export default function App({ Component, pageProps }) {
   );
 
   return (
-    <AppContextProvider>
-      {({ network }) => (
-        <ConnectionProvider endpoint={network.endpoint}>
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
-      )}
-    </AppContextProvider>
+    <ErrorBoundary
+      fallback={
+        <div className="app-error-boundary">
+          <h1>Something went wrong</h1>
+          <p>The application encountered an unexpected error.</p>
+          <button 
+            className="button button-primary" 
+            onClick={() => window.location.reload()}
+          >
+            Reload Application
+          </button>
+        </div>
+      }
+    >
+      <AppContextProvider>
+        {({ network }) => (
+          <ConnectionProvider endpoint={network.endpoint}>
+            <WalletProvider wallets={wallets} autoConnect>
+              <WalletModalProvider>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </WalletModalProvider>
+            </WalletProvider>
+          </ConnectionProvider>
+        )}
+      </AppContextProvider>
+    </ErrorBoundary>
   );
 }

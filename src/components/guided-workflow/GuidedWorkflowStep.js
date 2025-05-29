@@ -17,7 +17,7 @@ const GuidedWorkflowStep = ({
         <div className="step-number">{stepNumber}</div>
         <div className="step-title">
           <h3>{title}</h3>
-          {isCompleted && <span className="step-completed-badge">✓</span>}
+          {isCompleted && <span className="step-completed-badge">[+]</span>}
         </div>
       </div>
       

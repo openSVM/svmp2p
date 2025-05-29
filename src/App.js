@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
@@ -24,6 +24,11 @@ import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
 import { DisputeResolution } from './components/DisputeResolution';
 import { UserProfile } from './components/UserProfile';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// Import wallet safety utilities
+import { SafeWalletProvider, useSafeWallet } from './contexts/WalletContextProvider';
+import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
 
 // SVM Networks configuration
 const SVM_NETWORKS = {
@@ -69,7 +74,11 @@ const SVM_NETWORKS = {
   }
 };
 
-const App = () => {
+// Inner component that can use the wallet hook
+const AppContent = () => {
+  // Use safe wallet context instead of direct wallet adapter
+  const wallet = useSafeWallet();
+  
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
@@ -77,6 +86,99 @@ const App = () => {
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
   
+  // Context values
+  const contextValue = useMemo(() => ({
+    network,
+    selectedNetwork,
+    setSelectedNetwork,
+    activeTab,
+    setActiveTab,
+  }), [network, selectedNetwork, activeTab]);
+  
+  // Initialize wallet conflict prevention
+  useEffect(() => {
+    initializeWalletConflictPrevention();
+  }, []);
+  
+  return (
+    <AppContext.Provider value={contextValue}>
+      <div className="app-container">
+        <header className="app-header">
+          <div className="logo-container">
+            <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
+            <h1>OpenSVM P2P Exchange</h1>
+          </div>
+          
+          <NetworkSelector 
+            networks={SVM_NETWORKS} 
+            selectedNetwork={selectedNetwork} 
+            onSelectNetwork={setSelectedNetwork} 
+          />
+          
+          <div className="wallet-container">
+            <ErrorBoundary fallback={
+              <div className="wallet-error">
+                <p>Wallet connection error</p>
+                <button onClick={() => window.location.reload()}>Retry</button>
+              </div>
+            }>
+              <WalletMultiButton />
+              <WalletDisconnectButton />
+            </ErrorBoundary>
+          </div>
+        </header>
+        
+        <nav className="app-nav">
+          <ul>
+            <li className={activeTab === 'buy' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('buy')}>Buy</button>
+            </li>
+            <li className={activeTab === 'sell' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('sell')}>Sell</button>
+            </li>
+            <li className={activeTab === 'myoffers' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('myoffers')}>My Offers</button>
+            </li>
+            <li className={activeTab === 'disputes' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('disputes')}>Disputes</button>
+            </li>
+            <li className={activeTab === 'profile' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('profile')}>Profile</button>
+            </li>
+          </ul>
+        </nav>
+        
+        <main className="app-main">
+          <ErrorBoundary>
+            {activeTab === 'buy' && <OfferList type="buy" />}
+            {activeTab === 'sell' && (
+              <>
+                <OfferCreation />
+                <OfferList type="sell" />
+              </>
+            )}
+            {activeTab === 'myoffers' && <OfferList type="my" />}
+            {activeTab === 'disputes' && <DisputeResolution />}
+            {activeTab === 'profile' && (
+              <UserProfile wallet={wallet} network={network} />
+            )}
+          </ErrorBoundary>
+        </main>
+        
+        <footer className="app-footer">
+          <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
+          <p>
+            <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
+              {network.name} Explorer
+            </a>
+          </p>
+        </footer>
+      </div>
+    </AppContext.Provider>
+  );
+};
+
+const App = () => {
   // Set up wallet adapters - updated for latest wallet adapter versions
   const wallets = useMemo(
     () => [
@@ -88,85 +190,36 @@ const App = () => {
     []
   );
   
-  // Context values
-  const contextValue = useMemo(() => ({
-    network,
-    selectedNetwork,
-    setSelectedNetwork,
-    activeTab,
-    setActiveTab,
-  }), [network, selectedNetwork, activeTab]);
-  
+  // Define network for connection provider
+  const network = SVM_NETWORKS['solana'];
+
+  // Use ErrorBoundary at the root level to catch any rendering errors
   return (
-    <ConnectionProvider endpoint={network.endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <AppContext.Provider value={contextValue}>
-            <div className="app-container">
-              <header className="app-header">
-                <div className="logo-container">
-                  <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
-                  <h1>OpenSVM P2P Exchange</h1>
-                </div>
-                
-                <NetworkSelector 
-                  networks={SVM_NETWORKS} 
-                  selectedNetwork={selectedNetwork} 
-                  onSelectNetwork={setSelectedNetwork} 
-                />
-                
-                <div className="wallet-container">
-                  <WalletMultiButton />
-                  <WalletDisconnectButton />
-                </div>
-              </header>
-              
-              <nav className="app-nav">
-                <ul>
-                  <li className={activeTab === 'buy' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('buy')}>Buy</button>
-                  </li>
-                  <li className={activeTab === 'sell' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('sell')}>Sell</button>
-                  </li>
-                  <li className={activeTab === 'myoffers' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('myoffers')}>My Offers</button>
-                  </li>
-                  <li className={activeTab === 'disputes' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('disputes')}>Disputes</button>
-                  </li>
-                  <li className={activeTab === 'profile' ? 'active' : ''}>
-                    <button onClick={() => setActiveTab('profile')}>Profile</button>
-                  </li>
-                </ul>
-              </nav>
-              
-              <main className="app-main">
-                {activeTab === 'buy' && <OfferList type="buy" />}
-                {activeTab === 'sell' && (
-                  <>
-                    <OfferCreation />
-                    <OfferList type="sell" />
-                  </>
-                )}
-                {activeTab === 'myoffers' && <OfferList type="my" />}
-                {activeTab === 'disputes' && <DisputeResolution />}
-                {activeTab === 'profile' && <UserProfile />}
-              </main>
-              
-              <footer className="app-footer">
-                <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
-                <p>
-                  <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
-                    {network.name} Explorer
-                  </a>
-                </p>
-              </footer>
-            </div>
-          </AppContext.Provider>
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
+    <ErrorBoundary fallback={
+      <div className="global-error-container">
+        <h1>OpenSVM P2P Exchange</h1>
+        <div className="global-error-content">
+          <h2>Something went wrong</h2>
+          <p>We're sorry, but the application couldn't be loaded properly.</p>
+          <button 
+            className="button" 
+            onClick={() => window.location.reload()}
+          >
+            Refresh Application
+          </button>
+        </div>
+      </div>
+    }>
+      <ConnectionProvider endpoint={network.endpoint}>
+        <WalletProvider wallets={wallets} autoConnect>
+          <SafeWalletProvider>
+            <WalletModalProvider>
+              <AppContent />
+            </WalletModalProvider>
+          </SafeWalletProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    </ErrorBoundary>
   );
 };
 

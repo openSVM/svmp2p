@@ -1,4 +1,4 @@
-import { createContext, useState, useMemo } from 'react';
+import React, { createContext, useState, useMemo } from 'react';
 import { clusterApiUrl } from '@solana/web3.js';
 
 // Create a context for global app state
