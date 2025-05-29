@@ -22,8 +22,8 @@ const PWAInstallButton = ({ className = '' }) => {
       aria-label="Install app"
       title="Install OpenSVM P2P Exchange as an app"
     >
-      <span className="pwa-install-icon">📱</span>
-      <span className="pwa-install-text">Install App</span>
+      <span className="pwa-install-icon">↓</span>
+      <span className="pwa-install-text hidden sm:inline">Install App</span>
     </button>
   );
 };

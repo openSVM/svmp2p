@@ -421,10 +421,11 @@
   color: var(--color-foreground);
 }
 
-/* ASCII Art Language Selector Styles */
+/* Professional Language Selector Styles */
 .language-selector {
   position: relative;
   display: inline-block;
+  height: 40px;
 }
 
 .language-trigger {
@@ -439,13 +440,15 @@
   font-size: var(--font-size-sm);
   color: var(--color-foreground);
   min-width: 80px;
+  height: 40px;
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
 }
 
 .language-trigger:hover {
   background-color: var(--color-background-alt);
-  border-color: var(--color-primary);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
 }
 
 .language-country {
@@ -535,13 +538,15 @@
   transition: all var(--transition-fast) ease;
   font-size: var(--font-size-sm);
   color: var(--color-foreground);
+  height: 40px;
   border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
 }
 
 .theme-toggle:hover {
   background-color: var(--color-background-alt);
-  border-color: var(--color-primary);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
 }
 
 .theme-icon {
@@ -606,38 +611,108 @@
   }
 }
 
-/* ASCII Art PWA Install Button */
+/* Professional Network Selector Styles */
+.network-selector {
+  position: relative;
+  display: inline-block;
+  height: 40px;
+}
+
+.network-selector-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground);
+  height: 40px;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  min-width: 120px;
+}
+
+.network-selector-button:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+.network-selector-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--spacing-1);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.network-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast) ease;
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground);
+  text-align: left;
+}
+
+.network-option:hover {
+  background-color: var(--color-background-alt);
+}
+
+.network-option.active {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.network-option-name {
+  font-weight: var(--font-weight-medium);
+}
 .pwa-install-button {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  background-color: var(--color-primary);
-  color: var(--color-background);
-  border: 1px solid var(--color-primary);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
   padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all var(--transition-fast) ease;
-  font-family: var(--font-family-mono);
-  text-transform: uppercase;
+  height: 40px;
+  border-radius: var(--radius-md);
 }
 
 .pwa-install-button:hover {
-  background-color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
-  text-shadow: 0 0 10px var(--color-background);
+  background-color: var(--color-background-alt);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
 }
 
 .pwa-install-icon {
   font-size: var(--font-size-base);
   line-height: 1;
-  font-family: var(--font-family-mono);
+  font-family: var(--font-family-sans);
 }
 
 .pwa-install-text {
-  font-weight: var(--font-weight-normal);
-  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-family-sans);
 }
 
 /* ASCII Art Dark Theme Overrides */
