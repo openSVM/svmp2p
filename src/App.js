@@ -211,6 +211,26 @@ const AppContent = () => {
             
             {/* Header Actions */}
             <div className="header-actions">
+              {/* Language selector */}
+              <div className="relative inline-block text-left">
+                <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  <span className="mr-2">EN</span>
+                  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Solana Explorer link */}
+              <a 
+                href={network.explorerUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+              >
+                {network.name.toUpperCase()} EXPLORER
+              </a>
+              
               <NetworkSelector 
                 networks={SVM_NETWORKS} 
                 selectedNetwork={selectedNetwork} 
@@ -265,42 +285,16 @@ const AppContent = () => {
         <footer className="bg-gray-50 border-t border-gray-200 py-4">
           <div className="container mx-auto px-4 py-6">
             {/* Desktop layout */}
-            <div className="hidden md:grid md:grid-cols-3 md:gap-4 md:items-center">
+            <div className="hidden md:grid md:grid-cols-2 md:gap-4 md:items-center">
               {/* Left: Network info */}
               <div>
                 <p className="text-sm text-gray-600 font-medium">Network: {network.name}</p>
                 <p className="text-sm text-gray-600">Smart contract secured trades with decentralized dispute resolution.</p>
               </div>
               
-              {/* Center: Copyright */}
-              <div className="text-center">
+              {/* Right: Copyright */}
+              <div className="text-right">
                 <p className="text-sm text-gray-500">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
-              </div>
-              
-              {/* Right: Controls */}
-              <div className="flex justify-end items-center space-x-4">
-                {/* Language selector */}
-                <div className="relative inline-block text-left">
-                  <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    <span className="mr-2">EN</span>
-                    <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                    </svg>
-                  </button>
-                </div>
-                
-                {/* System links */}
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-600">[S] System</span>
-                  <a 
-                    href={network.explorerUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    {network.name.toUpperCase()} EXPLORER
-                  </a>
-                </div>
               </div>
             </div>
             
@@ -310,32 +304,6 @@ const AppContent = () => {
               <div>
                 <p className="text-sm text-gray-600 font-medium">Network: {network.name}</p>
                 <p className="text-sm text-gray-600">Smart contract secured trades with decentralized dispute resolution.</p>
-              </div>
-              
-              {/* Controls */}
-              <div className="flex justify-between items-center">
-                {/* Language selector */}
-                <div className="relative inline-block text-left">
-                  <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    <span className="mr-2">EN</span>
-                    <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                    </svg>
-                  </button>
-                </div>
-                
-                {/* System links */}
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-600">[S] System</span>
-                  <a 
-                    href={network.explorerUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    {network.name.toUpperCase()} EXPLORER
-                  </a>
-                </div>
               </div>
               
               {/* Copyright */}
