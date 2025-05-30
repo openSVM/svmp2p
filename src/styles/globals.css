@@ -167,6 +167,7 @@ input:focus, textarea:focus, select:focus {
   min-width: 0; /* Allow cards to shrink below content size */
   min-height: 160px; /* Ensure minimum readable height */
   max-width: 100%; /* Prevent cards from growing too wide */
+  margin: 0; /* Remove default margins */
 }
 
 .offer-card:hover {
@@ -179,10 +180,11 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
   background-color: var(--color-card-header);
   border-bottom: 1px solid var(--color-border);
   min-width: 0; /* Allow header to shrink */
+  height: 48px; /* Consistent height */
 }
 
 .offer-card-body {
@@ -200,10 +202,11 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
   background-color: var(--color-card-header);
   border-top: 1px solid var(--color-border);
   min-width: 0; /* Allow footer to shrink */
+  height: 56px; /* Consistent height */
 }
 
 /* Mobile responsive adjustments for offer cards */
@@ -241,6 +244,18 @@ input:focus, textarea:focus, select:focus {
   font-weight: var(--font-weight-medium);
   word-wrap: break-word;
   overflow-wrap: break-word;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.time-posted {
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
 }
 
 .price-per-sol {
@@ -251,6 +266,26 @@ input:focus, textarea:focus, select:focus {
   font-weight: var(--font-weight-medium);
   word-wrap: break-word;
   overflow-wrap: break-word;
+  margin-top: 4px;
+}
+
+.fiat-amount {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-foreground);
+  margin-right: 8px;
+}
+
+.payment-method {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  display: inline-block;
+  margin-top: 4px;
 }
 
 /* Mobile responsive text adjustments */
@@ -294,17 +329,25 @@ input:focus, textarea:focus, select:focus {
   background-color: var(--color-primary);
   color: white;
   border: 1px solid var(--color-primary);
-  padding: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-4);
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-md);
   word-wrap: break-word;
   overflow-wrap: break-word;
-  min-height: 44px; /* Touch-friendly minimum height */
+  min-height: 40px; /* Touch-friendly minimum height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .offer-action-button:hover {
   background-color: var(--color-primary-dark);
   border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Mobile responsive button adjustments */
@@ -500,8 +543,8 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: var(--spacing-5);
-  padding: var(--spacing-4);
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-3);
   background-color: var(--color-background-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -511,27 +554,29 @@ input:focus, textarea:focus, select:focus {
 .pagination-info {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+  gap: var(--spacing-3);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
 
 .pagination-info select {
-  padding: var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2);
   border: 1px solid var(--color-border);
   background-color: var(--color-background);
   color: var(--color-foreground);
   border-radius: var(--radius-md);
+  height: 32px;
 }
 
 .pagination-buttons {
   display: flex;
   gap: var(--spacing-1);
+  align-items: center;
 }
 
 .pagination-button {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;

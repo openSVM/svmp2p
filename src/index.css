@@ -5,6 +5,7 @@
 @import './styles/wallet-status.css';
 @import './styles/accessibility.css';
 @import './styles/performance.css';
+@import './styles/typography.css';
 
 /* Keep existing styles for backward compatibility */
 body {
@@ -1074,4 +1075,19 @@ code {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+.action-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 100%;
+}
+.action-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 100%;
 }

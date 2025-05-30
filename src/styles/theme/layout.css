@@ -23,6 +23,8 @@
   width: 100%;
   max-width: 100%;
   margin-left: 0; /* Ensure left alignment */
+  margin-right: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -497,19 +499,28 @@
   padding-right: var(--spacing-2);
   width: 100%;
   box-sizing: border-box;
+  margin: 0;
 }
 
 /* Offer listings alignment fixes */
 .offer-list {
   margin-left: 0;
+  margin-right: 0;
   padding-left: 0;
+  padding-right: 0;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .offers-grid {
   margin-left: 0;
+  margin-right: 0;
   padding-left: 0;
+  padding-right: 0;
   width: 100%;
+  gap: var(--spacing-3);
+  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {

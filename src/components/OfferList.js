@@ -122,7 +122,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           {offer.status.substring(0, 3)}
         </div>
         
-        <div className="hover-terminal-scale active-terminal-shrink">
+        <div className="action-button-container">
           {renderActionButtons()}
         </div>
       </div>
@@ -677,7 +677,7 @@ const OfferList = ({ type = 'buy' }) => {
   };
 
   return (
-    <div className="offer-list-container" style={{ padding: '0', margin: '0', paddingRight: '8px' }}>
+    <div className="offer-list-container" style={{ padding: '0', margin: '0', width: '100%' }}>
       <h2 className="offer-list-heading">{listTitle}</h2>
       
       {error && <div className="error-message">{error}</div>}
