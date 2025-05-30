@@ -1,5 +1,5 @@
-/* Import theme and component styles */
-@import './styles/theme/index.css';
+/* Import ASCII theme and component styles */
+@import './styles/ascii-theme.css';
 @import './styles/responsive.css';
 @import './styles/components.css';
 

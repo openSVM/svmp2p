@@ -73,16 +73,16 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
 
   // Top navbar items (most important sections)
   const topNavItems = [
-    { key: 'buy', label: 'Buy', icon: '💰' },
-    { key: 'sell', label: 'Sell', icon: '💸' },
-    { key: 'help', label: 'Help', icon: '❓' },
+    { key: 'buy', label: 'BUY', icon: 'B' },
+    { key: 'sell', label: 'SELL', icon: 'S' },
+    { key: 'help', label: 'HELP', icon: '?' },
   ];
 
   // Sidebar navigation items (secondary sections)
   const sidebarNavItems = [
-    { key: 'myoffers', label: 'My Offers', icon: '📋' },
-    { key: 'disputes', label: 'Disputes', icon: '⚖️' },
-    { key: 'profile', label: 'Profile', icon: '👤' },
+    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
+    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
+    { key: 'profile', label: 'PROFILE', icon: 'P' },
   ];
 
   return (
