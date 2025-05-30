@@ -146,6 +146,32 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             
             {/* Header Actions */}
             <div className="header-actions">
+              {/* Language selector */}
+              <LanguageSelector
+                currentLocale={currentLocale}
+                onLanguageChange={handleLanguageChange}
+              />
+              
+              {/* Theme toggle */}
+              <ThemeToggle />
+              
+              {/* Network selector */}
+              <NetworkSelector 
+                networks={networks} 
+                selectedNetwork={selectedNetwork} 
+                onSelectNetwork={setSelectedNetwork} 
+              />
+              
+              {/* Explorer link */}
+              <a 
+                href={network.explorerUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-foreground-muted hover:text-primary transition-colors"
+              >
+                {network.name} Explorer
+              </a>
+              
               {/* Install App button with proper prominence */}
               <PWAInstallButton className="header-prominent-action" />
               
@@ -162,6 +188,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                   <WalletMultiButton />
                 </div>
               )}
+              
+              {/* Disconnect button for connected users */}
+              {connected && <WalletDisconnectButton />}
             </div>
           </div>
         </header>
@@ -178,31 +207,10 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         {/* Footer */}
         <footer className="app-footer">
           <div className="container">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center">
               <p className="text-sm text-foreground-muted">
                 © 2025 OpenSVM P2P Exchange. All rights reserved.
               </p>
-              <div className="flex items-center gap-6">
-                <NetworkSelector 
-                  networks={networks} 
-                  selectedNetwork={selectedNetwork} 
-                  onSelectNetwork={setSelectedNetwork} 
-                />
-                <LanguageSelector
-                  currentLocale={currentLocale}
-                  onLanguageChange={handleLanguageChange}
-                />
-                <ThemeToggle />
-                {connected && <WalletDisconnectButton />}
-                <a 
-                  href={network.explorerUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-foreground-muted hover:text-primary transition-colors"
-                >
-                  {network.name} Explorer
-                </a>
-              </div>
             </div>
           </div>
         </footer>
