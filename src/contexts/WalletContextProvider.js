@@ -1,3 +1,24 @@
+/**
+ * Safe Wallet Context Provider
+ * 
+ * Security Implementation:
+ * This provider enhances the Solana wallet adapter with additional security measures:
+ * 
+ * 1. **Null Safety**: Prevents null pointer exceptions from uninitialized wallet adapters
+ * 2. **Error Boundary**: Catches and handles wallet connection errors gracefully  
+ * 3. **State Isolation**: Isolates wallet state to prevent cross-component contamination
+ * 4. **Safe Defaults**: Provides safe fallback values when wallet is unavailable
+ * 5. **No Private Key Access**: Only accesses public wallet interface, never private keys
+ * 
+ * Privacy Considerations:
+ * - Only reads public key and connection status
+ * - Never accesses or stores private keys, mnemonics, or seed phrases
+ * - All wallet interactions go through official Solana wallet adapter
+ * - No sensitive data is logged or stored in browser memory
+ * 
+ * @fileoverview Enhanced wallet context with comprehensive security measures
+ */
+
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 
@@ -15,7 +36,17 @@ const SafeWalletContext = createContext({
 
 /**
  * Enhanced wallet context provider that adds safety checks and error handling
- * This helps prevent the "Cannot read properties of null" errors
+ * 
+ * Security Features:
+ * - Comprehensive null checks to prevent runtime errors
+ * - Error event handling for wallet adapter failures
+ * - Safe state management with defensive programming
+ * - Clean error recovery without exposing sensitive information
+ * 
+ * Privacy Protection:
+ * - Only accesses public wallet interface (no private key access)
+ * - Uses read-only wallet adapter properties
+ * - Implements secure error handling without data leakage
  */
 export const SafeWalletProvider = ({ children }) => {
   const walletAdapter = useWallet();

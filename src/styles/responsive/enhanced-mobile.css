@@ -1,13 +1,10 @@
 /* Mobile Responsiveness Enhancements */
 
-/* Base responsive variables */
+/* Note: Breakpoint variables are now defined in responsive-utilities.css */
+/* This file only contains mobile-specific overrides and enhancements */
+
 :root {
-  --breakpoint-xs: 480px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  
+  /* Mobile-specific measurements */
   --header-height-mobile: 60px;
   --header-height-tablet: 70px;
   --header-height-desktop: 80px;
