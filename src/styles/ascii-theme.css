@@ -157,7 +157,6 @@
   --z-40: 40;   /* Overlays */
   --z-50: 50;   /* Tooltips */
 }
-}
 
 @theme inline {
   --color-background: var(--background);
