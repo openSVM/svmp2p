@@ -83,6 +83,7 @@ const AppContent = () => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -100,12 +101,30 @@ const AppContent = () => {
   useEffect(() => {
     initializeWalletConflictPrevention();
   }, []);
+
+  // Handle navigation click
+  const handleNavClick = (tab) => {
+    setActiveTab(tab);
+    setSidebarOpen(false);
+  };
+
+  // Handle sidebar backdrop click
+  const handleBackdropClick = () => {
+    setSidebarOpen(false);
+  };
   
   return (
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
         <header className="app-header">
           <div className="logo-container">
+            <button 
+              className="menu-toggle"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+            >
+              ≡
+            </button>
             <Image 
               src="/images/opensvm-logo.svg" 
               alt="OpenSVM P2P Exchange"
@@ -140,40 +159,62 @@ const AppContent = () => {
               }} />
             </ErrorBoundary>
           </div>
-          
-          <nav className="app-header-nav">
-            <button 
-              className={activeTab === 'buy' ? 'active' : ''}
-              onClick={() => setActiveTab('buy')}
-            >
-              B
-            </button>
-            <button 
-              className={activeTab === 'sell' ? 'active' : ''}
-              onClick={() => setActiveTab('sell')}
-            >
-              S
-            </button>
-            <button 
-              className={activeTab === 'myoffers' ? 'active' : ''}
-              onClick={() => setActiveTab('myoffers')}
-            >
-              M
-            </button>
-            <button 
-              className={activeTab === 'disputes' ? 'active' : ''}
-              onClick={() => setActiveTab('disputes')}
-            >
-              D
-            </button>
-            <button 
-              className={activeTab === 'profile' ? 'active' : ''}
-              onClick={() => setActiveTab('profile')}
-            >
-              P
-            </button>
-          </nav>
         </header>
+
+        {/* Sidebar Overlay */}
+        {sidebarOpen && (
+          <div className="sidebar-overlay" onClick={handleBackdropClick}>
+            <nav className="sidebar-nav" onClick={(e) => e.stopPropagation()}>
+              <div className="sidebar-header">
+                <h2>MENU</h2>
+                <button 
+                  className="sidebar-close"
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Close menu"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="sidebar-content">
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('buy')}
+                >
+                  <span className="nav-icon">B</span>
+                  <span className="nav-label">BUY OFFERS</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('sell')}
+                >
+                  <span className="nav-icon">S</span>
+                  <span className="nav-label">SELL OFFERS</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('myoffers')}
+                >
+                  <span className="nav-icon">M</span>
+                  <span className="nav-label">MY OFFERS</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('disputes')}
+                >
+                  <span className="nav-icon">D</span>
+                  <span className="nav-label">DISPUTES</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('profile')}
+                >
+                  <span className="nav-icon">P</span>
+                  <span className="nav-label">PROFILE</span>
+                </button>
+              </div>
+            </nav>
+          </div>
+        )}
         
         <main className="app-main">
           <ErrorBoundary>
