@@ -107,53 +107,73 @@ const AppContent = () => {
         <header className="app-header">
           <div className="logo-container">
             <Image 
-              src="https://p2p.opensvm.com/images/opensvm-logo.svg" 
+              src="/images/opensvm-logo.svg" 
               alt="OpenSVM P2P Exchange"
-              width={32}
-              height={32}
+              width={24}
+              height={24}
               priority
             />
-            <h1>OpenSVM P2P Exchange</h1>
+            <h1>OpenSVM P2P</h1>
           </div>
           
-          <NetworkSelector 
-            networks={SVM_NETWORKS} 
-            selectedNetwork={selectedNetwork} 
-            onSelectNetwork={setSelectedNetwork} 
-          />
-          
           <div className="wallet-container">
+            <NetworkSelector 
+              networks={SVM_NETWORKS} 
+              selectedNetwork={selectedNetwork} 
+              onSelectNetwork={setSelectedNetwork} 
+            />
             <ErrorBoundary fallback={
               <div className="wallet-error">
-                <p>Wallet connection error</p>
+                <p>Wallet Error</p>
                 <button onClick={() => window.location.reload()}>Retry</button>
               </div>
             }>
-              <WalletMultiButton />
-              <WalletDisconnectButton />
+              <WalletMultiButton style={{ 
+                backgroundColor: 'var(--ascii-neutral-700)',
+                color: 'var(--ascii-white)',
+                border: '1px solid var(--ascii-neutral-900)',
+                padding: '6px 12px',
+                fontSize: '12px',
+                fontFamily: 'Courier New, Courier, monospace',
+                fontWeight: 'bold',
+                textTransform: 'uppercase'
+              }} />
             </ErrorBoundary>
           </div>
+          
+          <nav className="app-header-nav">
+            <button 
+              className={activeTab === 'buy' ? 'active' : ''}
+              onClick={() => setActiveTab('buy')}
+            >
+              B
+            </button>
+            <button 
+              className={activeTab === 'sell' ? 'active' : ''}
+              onClick={() => setActiveTab('sell')}
+            >
+              S
+            </button>
+            <button 
+              className={activeTab === 'myoffers' ? 'active' : ''}
+              onClick={() => setActiveTab('myoffers')}
+            >
+              M
+            </button>
+            <button 
+              className={activeTab === 'disputes' ? 'active' : ''}
+              onClick={() => setActiveTab('disputes')}
+            >
+              D
+            </button>
+            <button 
+              className={activeTab === 'profile' ? 'active' : ''}
+              onClick={() => setActiveTab('profile')}
+            >
+              P
+            </button>
+          </nav>
         </header>
-        
-        <nav className="app-nav">
-          <ul>
-            <li className={activeTab === 'buy' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('buy')}>Buy</button>
-            </li>
-            <li className={activeTab === 'sell' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('sell')}>Sell</button>
-            </li>
-            <li className={activeTab === 'myoffers' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('myoffers')}>My Offers</button>
-            </li>
-            <li className={activeTab === 'disputes' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('disputes')}>Disputes</button>
-            </li>
-            <li className={activeTab === 'profile' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('profile')}>Profile</button>
-            </li>
-          </ul>
-        </nav>
         
         <main className="app-main">
           <ErrorBoundary>
@@ -175,12 +195,7 @@ const AppContent = () => {
         </main>
         
         <footer className="app-footer">
-          <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
-          <p>
-            <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
-              {network.name} Explorer
-            </a>
-          </p>
+          <p style={{ margin: 0, fontSize: '10px' }}>© 2025 OpenSVM P2P | <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">{network.name}</a></p>
         </footer>
       </div>
     </AppContext.Provider>

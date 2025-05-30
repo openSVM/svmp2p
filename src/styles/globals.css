@@ -108,9 +108,9 @@ input:focus, textarea:focus, select:focus {
 /* Responsive Offer Card Grid Component */
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
   width: 100%;
   max-width: 100%;
   overflow: hidden; /* Prevent horizontal overflow */
@@ -121,19 +121,19 @@ input:focus, textarea:focus, select:focus {
 /* Desktop optimizations - limit max columns for readability */
 @media (min-width: 1200px) {
   .offers-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    max-width: 1400px; /* Reasonable max width */
-    margin: 0 auto var(--spacing-4) auto; /* Center the grid */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    max-width: 100%; /* Use full width */
+    margin: 0 0 var(--spacing-3) 0;
   }
 }
 
 /* Mobile responsive fixes for offers grid */
 @media (max-width: 768px) {
   .offers-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-3);
-    margin-bottom: var(--spacing-3);
-    padding: 0 var(--spacing-2);
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+    padding: 0;
   }
 }
 
@@ -142,7 +142,7 @@ input:focus, textarea:focus, select:focus {
     grid-template-columns: 1fr;
     gap: var(--spacing-2);
     margin-bottom: var(--spacing-2);
-    padding: 0 var(--spacing-1);
+    padding: 0;
   }
 }
 
@@ -318,11 +318,11 @@ input:focus, textarea:focus, select:focus {
 
 /* Professional Filter Section */
 .filter-section {
-  margin-bottom: var(--spacing-5);
+  margin-bottom: var(--spacing-2);
   background-color: var(--color-background-alt);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-6);
+  border-radius: 0;
+  padding: var(--spacing-2);
   box-shadow: var(--shadow-sm);
 }
 
@@ -330,22 +330,22 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
 }
 
 .filter-toggle {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--spacing-1);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--spacing-2);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--color-foreground);
   cursor: pointer;
   transition: all var(--transition-fast) ease;
-  border-radius: var(--radius-md);
+  border-radius: 0;
 }
 
 .filter-toggle:hover {

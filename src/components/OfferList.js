@@ -677,8 +677,8 @@ const OfferList = ({ type = 'buy' }) => {
   };
 
   return (
-    <div className="offer-list-container">
-      <h2>{listTitle}</h2>
+    <div className="offer-list-container" style={{ padding: '0', margin: '0' }}>
+      <h2 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>{listTitle}</h2>
       
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}
@@ -823,10 +823,16 @@ const OfferList = ({ type = 'buy' }) => {
         </>
       )}
       
-      <div className="network-info">
-        <p>Network: {network.name}</p>
-        <p>All trades are secured by smart contracts on the {network.name} network.</p>
-        <p>Disputes are resolved through a decentralized juror system.</p>
+      <div className="network-info" style={{ 
+        fontSize: '10px', 
+        color: 'var(--color-foreground-muted)', 
+        marginTop: '8px',
+        padding: '4px',
+        backgroundColor: 'var(--color-background-alt)',
+        border: '1px solid var(--color-border)'
+      }}>
+        <p style={{ margin: '0 0 2px 0' }}>Network: {network.name}</p>
+        <p style={{ margin: 0 }}>Smart contract secured trades with decentralized dispute resolution.</p>
       </div>
     </div>
   );
