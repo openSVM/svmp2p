@@ -68,5 +68,3 @@ const WalletNotConnected = ({ message }) => {
 };
 
 export default WalletNotConnected;
-
-export default WalletNotConnected;
