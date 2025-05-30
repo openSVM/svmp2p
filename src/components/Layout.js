@@ -73,16 +73,16 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
 
   // Top navbar items (most important sections)
   const topNavItems = [
-    { key: 'buy', label: 'Buy', icon: '[B]' },
-    { key: 'sell', label: 'Sell', icon: '[S]' },
-    { key: 'help', label: 'Help', icon: '[?]' },
+    { key: 'buy', label: 'BUY', icon: 'B' },
+    { key: 'sell', label: 'SELL', icon: 'S' },
+    { key: 'help', label: 'HELP', icon: '?' },
   ];
 
   // Sidebar navigation items (secondary sections)
   const sidebarNavItems = [
-    { key: 'myoffers', label: 'My Offers', icon: '[M]' },
-    { key: 'disputes', label: 'Disputes', icon: '[!]' },
-    { key: 'profile', label: 'Profile', icon: '[U]' },
+    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
+    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
+    { key: 'profile', label: 'PROFILE', icon: 'P' },
   ];
 
   return (
@@ -101,7 +101,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           <div className="sidebar-header">
             <div className="logo-section">
               <Image 
-                src="https://p2p.opensvm.com/images/opensvm-logo.svg" 
+                src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
                 className="logo-image"
                 width={32}
@@ -247,7 +247,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           {/* Main Content */}
           <main className="app-main-content">
             <div className="container">
-              <div>
+              <div className="content-transition-wrapper fade-in">
                 {children}
               </div>
             </div>

@@ -105,12 +105,54 @@ input:focus, textarea:focus, select:focus {
   }
 }
 
-/* Professional Offer Card Component */
+/* Responsive Offer Card Grid Component */
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-5);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Prevent horizontal overflow */
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Desktop optimizations - limit max columns for readability */
+@media (min-width: 1200px) {
+  .offers-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    max-width: 100%; /* Use full width */
+    margin: 0 0 var(--spacing-3) 0;
+  }
+}
+
+/* Mobile responsive fixes for offers grid */
+@media (max-width: 768px) {
+  .offers-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .offers-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-2);
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .offers-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-1);
+    padding: 0;
+  }
 }
 
 .offer-card {
@@ -122,6 +164,9 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
+  min-width: 0; /* Allow cards to shrink below content size */
+  min-height: 160px; /* Ensure minimum readable height */
+  max-width: 100%; /* Prevent cards from growing too wide */
 }
 
 .offer-card:hover {
@@ -137,6 +182,7 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-4);
   background-color: var(--color-card-header);
   border-bottom: 1px solid var(--color-border);
+  min-width: 0; /* Allow header to shrink */
 }
 
 .offer-card-body {
@@ -145,6 +191,9 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
+  min-width: 0; /* Allow body to shrink */
+  word-wrap: break-word; /* Handle long text */
+  overflow-wrap: break-word; /* Handle long text */
 }
 
 .offer-card-footer {
@@ -154,12 +203,44 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-4);
   background-color: var(--color-card-header);
   border-top: 1px solid var(--color-border);
+  min-width: 0; /* Allow footer to shrink */
+}
+
+/* Mobile responsive adjustments for offer cards */
+@media (max-width: 768px) {
+  .offer-card-header,
+  .offer-card-body,
+  .offer-card-footer {
+    padding: var(--spacing-3);
+  }
+  
+  .offer-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+  
+  .offer-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-2);
+  }
+}
+
+@media (max-width: 640px) {
+  .offer-card-header,
+  .offer-card-body,
+  .offer-card-footer {
+    padding: var(--spacing-2);
+  }
 }
 
 .time-info {
   color: var(--color-foreground-muted);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .price-per-sol {
@@ -168,6 +249,22 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   align-items: center;
   font-weight: var(--font-weight-medium);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Mobile responsive text adjustments */
+@media (max-width: 768px) {
+  .time-info {
+    font-size: var(--font-size-xs);
+  }
+  
+  .price-per-sol {
+    font-size: var(--font-size-sm);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
 }
 
 .rate-indicator {
@@ -200,6 +297,9 @@ input:focus, textarea:focus, select:focus {
   padding: var(--spacing-3);
   font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-md);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 44px; /* Touch-friendly minimum height */
 }
 
 .offer-action-button:hover {
@@ -207,13 +307,22 @@ input:focus, textarea:focus, select:focus {
   border-color: var(--color-primary-dark);
 }
 
+/* Mobile responsive button adjustments */
+@media (max-width: 768px) {
+  .offer-action-button {
+    min-height: 48px; /* Larger touch target for mobile */
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+  }
+}
+
 /* Professional Filter Section */
 .filter-section {
-  margin-bottom: var(--spacing-5);
+  margin-bottom: var(--spacing-2);
   background-color: var(--color-background-alt);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-6);
+  border-radius: 0;
+  padding: var(--spacing-2);
   box-shadow: var(--shadow-sm);
 }
 
@@ -221,22 +330,22 @@ input:focus, textarea:focus, select:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-4);
+  margin-bottom: var(--spacing-2);
 }
 
 .filter-toggle {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--spacing-1);
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--spacing-2);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--color-foreground);
   cursor: pointer;
   transition: all var(--transition-fast) ease;
-  border-radius: var(--radius-md);
+  border-radius: 0;
 }
 
 .filter-toggle:hover {

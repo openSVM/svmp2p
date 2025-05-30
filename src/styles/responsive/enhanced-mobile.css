@@ -1,13 +1,10 @@
 /* Mobile Responsiveness Enhancements */
 
-/* Base responsive variables */
+/* Note: Breakpoint variables are now defined in responsive-utilities.css */
+/* This file only contains mobile-specific overrides and enhancements */
+
 :root {
-  --breakpoint-xs: 480px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  
+  /* Mobile-specific measurements */
   --header-height-mobile: 60px;
   --header-height-tablet: 70px;
   --header-height-desktop: 80px;
@@ -119,7 +116,7 @@
     display: block;
     width: 100%;
     margin-bottom: 16px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -130,7 +127,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-border);
   }
   
   .responsive-table td:last-child {
@@ -213,7 +210,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .mobile-nav-close {
@@ -238,7 +235,7 @@
 
 .mobile-nav-item:hover,
 .mobile-nav-item.active {
-  background-color: #f3f4f6;
+  background-color: var(--color-background-alt);
 }
 
 /* Bottom navigation for mobile */
@@ -248,7 +245,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: white;
+  background-color: var(--color-background);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
@@ -264,11 +261,11 @@
   flex-direction: column;
   align-items: center;
   padding: 8px;
-  color: #6b7280;
+  color: var(--color-foreground-muted);
 }
 
 .bottom-nav-item.active {
-  color: #3b82f6;
+  color: var(--color-primary);
 }
 
 .bottom-nav-icon {

@@ -3,6 +3,49 @@
  * Clean, corporate-style animations with subtle hover effects
  */
 
+/* Enhanced Page Transition System */
+.content-wrapper {
+  animation: fadeInUp var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
+}
+
+.content-transition-wrapper {
+  animation: fadeInSlide var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(16px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInSlide {
+  from { 
+    opacity: 0; 
+    transform: translateX(8px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+  }
+}
+
+/* Staggered animations for multiple elements */
+.stagger-animation > * {
+  animation: fadeInUp var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.stagger-animation > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-animation > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-animation > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-animation > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-animation > *:nth-child(5) { animation-delay: 200ms; }
+
 /* Professional hover effects - only on user interaction */
 .hover-lift {
   transition: all var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
@@ -27,6 +70,21 @@
 
 .hover-glow:hover {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Enhanced button transitions */
+.nav-tab, .nav-item {
+  transition: all var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
+}
+
+.nav-tab:hover, .nav-item:hover {
+  transform: translateY(-1px);
+  background-color: var(--color-background-alt);
+}
+
+.nav-tab.active, .nav-item.active {
+  transform: translateY(0);
+  background-color: var(--color-primary-light);
 }
 
 /* Professional focus effects */
@@ -172,6 +230,22 @@
   to { transform: translateX(-100%); }
 }
 
+/* Enhanced card animations */
+.card-enter {
+  animation: cardEnter var(--transition-normal) cubic-bezier(0.2, 0, 0.3, 1);
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Media queries for reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -181,7 +255,9 @@
   }
   
   .hover-lift:hover,
-  .hover-scale:hover {
+  .hover-scale:hover,
+  .nav-tab:hover,
+  .nav-item:hover {
     transform: none !important;
   }
 }

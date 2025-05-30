@@ -39,6 +39,50 @@
   border-color: var(--color-secondary-dark);
 }
 
+.button-success {
+  background-color: var(--color-success);
+  color: white;
+  border-color: var(--color-success);
+}
+
+.button-success:hover {
+  background-color: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+}
+
+.button-danger {
+  background-color: var(--color-error);
+  color: white;
+  border-color: var(--color-error);
+}
+
+.button-danger:hover {
+  background-color: var(--color-error-dark);
+  border-color: var(--color-error-dark);
+}
+
+.button-warning {
+  background-color: var(--color-warning);
+  color: white;
+  border-color: var(--color-warning);
+}
+
+.button-warning:hover {
+  background-color: var(--color-warning-dark);
+  border-color: var(--color-warning-dark);
+}
+
+.button-info {
+  background-color: var(--color-info);
+  color: white;
+  border-color: var(--color-info);
+}
+
+.button-info:hover {
+  background-color: var(--color-info-dark);
+  border-color: var(--color-info-dark);
+}
+
 .button-accent {
   background-color: var(--color-accent);
   color: white;

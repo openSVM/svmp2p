@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
@@ -29,8 +30,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 // Import wallet safety utilities
 import { SafeWalletProvider, useSafeWallet } from './contexts/WalletContextProvider';
 import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
+import { createConnection, getNetworkConnection } from './utils/rpcConnection';
 
-// SVM Networks configuration
+// SVM Networks configuration with resilient RPC endpoints
 const SVM_NETWORKS = {
   'solana': {
     name: 'Solana',
@@ -39,6 +41,15 @@ const SVM_NETWORKS = {
     icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',
+    // Fallback endpoints if primary fails
+    fallbackEndpoints: [
+      'https://api.devnet.solana.com',
+      'https://solana-devnet-rpc.allthatnode.com',
+    ],
+    connectionConfig: {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000,
+    }
   },
   'sonic': {
     name: 'Sonic',
@@ -47,6 +58,7 @@ const SVM_NETWORKS = {
     icon: '/images/sonic-logo.svg',
     color: '#00C2FF',
     explorerUrl: 'https://explorer.sonic.example.com',
+    fallbackEndpoints: [],
   },
   'eclipse': {
     name: 'Eclipse',
@@ -55,6 +67,7 @@ const SVM_NETWORKS = {
     icon: '/images/eclipse-logo.svg',
     color: '#0052FF',
     explorerUrl: 'https://explorer.eclipse.example.com',
+    fallbackEndpoints: [],
   },
   'svmBNB': {
     name: 'svmBNB',
@@ -63,6 +76,7 @@ const SVM_NETWORKS = {
     icon: '/images/svmbnb-logo.svg',
     color: '#F0B90B',
     explorerUrl: 'https://explorer.svmbnb.example.com',
+    fallbackEndpoints: [],
   },
   's00n': {
     name: 's00n',
@@ -71,6 +85,7 @@ const SVM_NETWORKS = {
     icon: '/images/s00n-logo.svg',
     color: '#00FF9D',
     explorerUrl: 'https://explorer.s00n.example.com',
+    fallbackEndpoints: [],
   }
 };
 
@@ -82,6 +97,7 @@ const AppContent = () => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -99,79 +115,191 @@ const AppContent = () => {
   useEffect(() => {
     initializeWalletConflictPrevention();
   }, []);
+
+  // Handle navigation click
+  const handleNavClick = (tab) => {
+    setActiveTab(tab);
+    setSidebarOpen(false);
+  };
+
+  // Handle sidebar backdrop click
+  const handleBackdropClick = () => {
+    setSidebarOpen(false);
+  };
+
+  // Status indicator for wallet connection
+  const renderWalletStatus = () => {
+    if (wallet.error) {
+      return (
+        <div className="wallet-status error" title={wallet.error}>
+          <span className="status-dot error"></span>
+          <span>Error</span>
+        </div>
+      );
+    }
+
+    if (wallet.connecting || wallet.connectionState === 'connecting') {
+      return (
+        <div className="wallet-status connecting">
+          <span className="status-dot connecting"></span>
+          <span>Connecting...</span>
+        </div>
+      );
+    }
+
+    if (wallet.connected) {
+      return (
+        <div className="wallet-status connected">
+          <span className="status-dot connected"></span>
+          <span>Connected</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="wallet-status disconnected">
+        <span className="status-dot disconnected"></span>
+        <span>Disconnected</span>
+      </div>
+    );
+  };
   
   return (
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
         <header className="app-header">
           <div className="logo-container">
-            <img src="/images/opensvm-logo.svg" alt="OpenSVM P2P Exchange" />
-            <h1>OpenSVM P2P Exchange</h1>
+            <button 
+              className="menu-toggle"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+            >
+              ≡
+            </button>
+            <Image 
+              src="/images/opensvm-logo.svg" 
+              alt="OpenSVM P2P Exchange"
+              width={24}
+              height={24}
+              priority
+            />
+            <h1>OpenSVM P2P</h1>
           </div>
           
-          <NetworkSelector 
-            networks={SVM_NETWORKS} 
-            selectedNetwork={selectedNetwork} 
-            onSelectNetwork={setSelectedNetwork} 
-          />
-          
           <div className="wallet-container">
+            <NetworkSelector 
+              networks={SVM_NETWORKS} 
+              selectedNetwork={selectedNetwork} 
+              onSelectNetwork={setSelectedNetwork} 
+            />
             <ErrorBoundary fallback={
               <div className="wallet-error">
-                <p>Wallet connection error</p>
-                <button onClick={() => window.location.reload()}>Retry</button>
+                <p>Wallet Error</p>
+                <button onClick={() => wallet.reconnect()}>Retry</button>
               </div>
             }>
-              <WalletMultiButton />
-              <WalletDisconnectButton />
+              <div className="wallet-wrapper">
+                {renderWalletStatus()}
+                <WalletMultiButton style={{ 
+                  backgroundColor: 'var(--ascii-neutral-700)',
+                  color: 'var(--ascii-white)',
+                  border: '1px solid var(--ascii-neutral-900)',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontFamily: 'Courier New, Courier, monospace',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase'
+                }} />
+                {wallet.error && (
+                  <button 
+                    className="wallet-retry-button" 
+                    onClick={() => wallet.reconnect()}
+                    title="Retry connection"
+                  >
+                    ↻
+                  </button>
+                )}
+              </div>
             </ErrorBoundary>
           </div>
         </header>
-        
-        <nav className="app-nav">
-          <ul>
-            <li className={activeTab === 'buy' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('buy')}>Buy</button>
-            </li>
-            <li className={activeTab === 'sell' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('sell')}>Sell</button>
-            </li>
-            <li className={activeTab === 'myoffers' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('myoffers')}>My Offers</button>
-            </li>
-            <li className={activeTab === 'disputes' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('disputes')}>Disputes</button>
-            </li>
-            <li className={activeTab === 'profile' ? 'active' : ''}>
-              <button onClick={() => setActiveTab('profile')}>Profile</button>
-            </li>
-          </ul>
-        </nav>
+
+        {/* Sidebar Overlay */}
+        {sidebarOpen && (
+          <div className="sidebar-overlay" onClick={handleBackdropClick}>
+            <nav className="sidebar-nav" onClick={(e) => e.stopPropagation()}>
+              <div className="sidebar-header">
+                <h2>MENU</h2>
+                <button 
+                  className="sidebar-close"
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Close menu"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="sidebar-content">
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('buy')}
+                >
+                  <span className="nav-icon">B</span>
+                  <span className="nav-label">BUY OFFERS</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('sell')}
+                >
+                  <span className="nav-icon">S</span>
+                  <span className="nav-label">SELL OFFERS</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('myoffers')}
+                >
+                  <span className="nav-icon">M</span>
+                  <span className="nav-label">MY OFFERS</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('disputes')}
+                >
+                  <span className="nav-icon">D</span>
+                  <span className="nav-label">DISPUTES</span>
+                </button>
+                <button 
+                  className={`sidebar-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
+                  onClick={() => handleNavClick('profile')}
+                >
+                  <span className="nav-icon">P</span>
+                  <span className="nav-label">PROFILE</span>
+                </button>
+              </div>
+            </nav>
+          </div>
+        )}
         
         <main className="app-main">
           <ErrorBoundary>
-            {activeTab === 'buy' && <OfferList type="buy" />}
-            {activeTab === 'sell' && (
-              <>
-                <OfferCreation />
-                <OfferList type="sell" />
-              </>
-            )}
-            {activeTab === 'myoffers' && <OfferList type="my" />}
-            {activeTab === 'disputes' && <DisputeResolution />}
-            {activeTab === 'profile' && (
-              <UserProfile wallet={wallet} network={network} />
-            )}
+            <div key={activeTab} className="content-wrapper fade-in">
+              {activeTab === 'buy' && <OfferList type="buy" />}
+              {activeTab === 'sell' && (
+                <>
+                  <OfferCreation />
+                  <OfferList type="sell" />
+                </>
+              )}
+              {activeTab === 'myoffers' && <OfferList type="my" />}
+              {activeTab === 'disputes' && <DisputeResolution />}
+              {activeTab === 'profile' && (
+                <UserProfile wallet={wallet} network={network} />
+              )}
+            </div>
           </ErrorBoundary>
         </main>
         
         <footer className="app-footer">
-          <p>© 2025 OpenSVM P2P Exchange. All rights reserved.</p>
-          <p>
-            <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">
-              {network.name} Explorer
-            </a>
-          </p>
+          <p style={{ margin: 0, fontSize: '10px' }}>© 2025 OpenSVM P2P | <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">{network.name}</a></p>
         </footer>
       </div>
     </AppContext.Provider>
@@ -192,6 +320,14 @@ const App = () => {
   
   // Define network for connection provider
   const network = SVM_NETWORKS['solana'];
+  
+  // Create enhanced connection with retry logic for rate limits
+  const connection = useMemo(() => {
+    return createConnection(network.endpoint, network.connectionConfig || {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000,
+    });
+  }, [network]);
 
   // Use ErrorBoundary at the root level to catch any rendering errors
   return (
@@ -210,7 +346,7 @@ const App = () => {
         </div>
       </div>
     }>
-      <ConnectionProvider endpoint={network.endpoint}>
+      <ConnectionProvider endpoint={network.endpoint} config={network.connectionConfig} connection={connection}>
         <WalletProvider wallets={wallets} autoConnect>
           <SafeWalletProvider>
             <WalletModalProvider>
