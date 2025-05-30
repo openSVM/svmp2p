@@ -97,7 +97,6 @@ const AppContent = () => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -109,6 +108,7 @@ const AppContent = () => {
     setSelectedNetwork,
     activeTab,
     setActiveTab,
+    networks: SVM_NETWORKS,
   }), [network, selectedNetwork, activeTab]);
   
   // Initialize wallet conflict prevention
@@ -119,12 +119,6 @@ const AppContent = () => {
   // Handle navigation click
   const handleNavClick = (tab) => {
     setActiveTab(tab);
-    setSidebarOpen(false);
-  };
-
-  // Handle sidebar backdrop click
-  const handleBackdropClick = () => {
-    setSidebarOpen(false);
   };
 
   // Status indicator for wallet connection
@@ -168,138 +162,124 @@ const AppContent = () => {
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
         <header className="app-header">
-          <div className="logo-container">
-            <button 
-              className="menu-toggle"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open menu"
-            >
-              ≡
-            </button>
-            <Image 
-              src="/images/opensvm-logo.svg" 
-              alt="OpenSVM P2P Exchange"
-              width={24}
-              height={24}
-              priority
-            />
-            <h1>OpenSVM P2P</h1>
+          <div className="header-content">
+            <div className="logo-section">
+              <Image 
+                src="/images/opensvm-logo.svg" 
+                alt="OpenSVM P2P Exchange"
+                className="logo-image"
+                width={24}
+                height={24}
+                priority
+              />
+              <h1 className="logo-text">OpenSVM P2P</h1>
+            </div>
+            
+            {/* Consolidated Navigation */}
+            <nav className="header-nav">
+              <button
+                className={`nav-tab ${activeTab === 'buy' ? 'active' : ''}`}
+                onClick={() => handleNavClick('buy')}
+              >
+                <span className="nav-label">BUY</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'sell' ? 'active' : ''}`}
+                onClick={() => handleNavClick('sell')}
+              >
+                <span className="nav-label">SELL</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'myoffers' ? 'active' : ''}`}
+                onClick={() => handleNavClick('myoffers')}
+              >
+                <span className="nav-label">MY OFFERS</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'disputes' ? 'active' : ''}`}
+                onClick={() => handleNavClick('disputes')}
+              >
+                <span className="nav-label">DISPUTES</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => handleNavClick('profile')}
+              >
+                <span className="nav-label">PROFILE</span>
+              </button>
+            </nav>
+            
+            {/* Header Actions */}
+            <div className="header-actions">
+              <NetworkSelector 
+                networks={SVM_NETWORKS} 
+                selectedNetwork={selectedNetwork} 
+                onSelectNetwork={setSelectedNetwork} 
+              />
+              
+              <ErrorBoundary fallback={
+                <div className="wallet-error">
+                  <p>Wallet Error</p>
+                  <button onClick={() => wallet.reconnect()}>Retry</button>
+                </div>
+              }>
+                <div className="wallet-wrapper">
+                  {renderWalletStatus()}
+                  <WalletMultiButton />
+                  {wallet.error && (
+                    <button 
+                      className="wallet-retry-button" 
+                      onClick={() => wallet.reconnect()}
+                      title="Retry connection"
+                    >
+                      ↻
+                    </button>
+                  )}
+                </div>
+              </ErrorBoundary>
+            </div>
           </div>
-          
-          <div className="wallet-container">
-            <NetworkSelector 
-              networks={SVM_NETWORKS} 
-              selectedNetwork={selectedNetwork} 
-              onSelectNetwork={setSelectedNetwork} 
-            />
-            <ErrorBoundary fallback={
-              <div className="wallet-error">
-                <p>Wallet Error</p>
-                <button onClick={() => wallet.reconnect()}>Retry</button>
-              </div>
-            }>
-              <div className="wallet-wrapper">
-                {renderWalletStatus()}
-                <WalletMultiButton style={{ 
-                  backgroundColor: 'var(--ascii-neutral-700)',
-                  color: 'var(--ascii-white)',
-                  border: '1px solid var(--ascii-neutral-900)',
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  fontFamily: 'Courier New, Courier, monospace',
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase'
-                }} />
-                {wallet.error && (
-                  <button 
-                    className="wallet-retry-button" 
-                    onClick={() => wallet.reconnect()}
-                    title="Retry connection"
-                  >
-                    ↻
-                  </button>
+        </header>
+
+        <main className="app-main">
+          <div className="container content-container">
+            <ErrorBoundary>
+              <div key={activeTab} className="content-transition-wrapper fade-in">
+                {activeTab === 'buy' && <OfferList type="buy" />}
+                {activeTab === 'sell' && (
+                  <>
+                    <OfferCreation />
+                    <OfferList type="sell" />
+                  </>
+                )}
+                {activeTab === 'myoffers' && <OfferList type="my" />}
+                {activeTab === 'disputes' && <DisputeResolution />}
+                {activeTab === 'profile' && (
+                  <UserProfile wallet={wallet} network={network} />
                 )}
               </div>
             </ErrorBoundary>
           </div>
-        </header>
-
-        {/* Sidebar Overlay */}
-        {sidebarOpen && (
-          <div className="sidebar-overlay" onClick={handleBackdropClick}>
-            <nav className="sidebar-nav" onClick={(e) => e.stopPropagation()}>
-              <div className="sidebar-header">
-                <h2>MENU</h2>
-                <button 
-                  className="sidebar-close"
-                  onClick={() => setSidebarOpen(false)}
-                  aria-label="Close menu"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="sidebar-content">
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('buy')}
-                >
-                  <span className="nav-icon">B</span>
-                  <span className="nav-label">BUY OFFERS</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('sell')}
-                >
-                  <span className="nav-icon">S</span>
-                  <span className="nav-label">SELL OFFERS</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('myoffers')}
-                >
-                  <span className="nav-icon">M</span>
-                  <span className="nav-label">MY OFFERS</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('disputes')}
-                >
-                  <span className="nav-icon">D</span>
-                  <span className="nav-label">DISPUTES</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('profile')}
-                >
-                  <span className="nav-icon">P</span>
-                  <span className="nav-label">PROFILE</span>
-                </button>
-              </div>
-            </nav>
-          </div>
-        )}
-        
-        <main className="app-main">
-          <ErrorBoundary>
-            <div key={activeTab} className="content-wrapper fade-in">
-              {activeTab === 'buy' && <OfferList type="buy" />}
-              {activeTab === 'sell' && (
-                <>
-                  <OfferCreation />
-                  <OfferList type="sell" />
-                </>
-              )}
-              {activeTab === 'myoffers' && <OfferList type="my" />}
-              {activeTab === 'disputes' && <DisputeResolution />}
-              {activeTab === 'profile' && (
-                <UserProfile wallet={wallet} network={network} />
-              )}
-            </div>
-          </ErrorBoundary>
         </main>
         
         <footer className="app-footer">
-          <p style={{ margin: 0, fontSize: '10px' }}>© 2025 OpenSVM P2P | <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">{network.name}</a></p>
+          <div className="container">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-foreground-muted">
+                © 2025 OpenSVM P2P Exchange. All rights reserved.
+              </p>
+              <div className="flex items-center gap-6">
+                <a 
+                  href={network.explorerUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-foreground-muted hover:text-primary transition-colors"
+                >
+                  {network.name} Explorer
+                </a>
+              </div>
+            </div>
+          </div>
         </footer>
       </div>
     </AppContext.Provider>
