@@ -454,7 +454,7 @@ code {
 
 .app-main {
   flex: 1;
-  padding: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-1) var(--spacing-1) 0; /* Removed left padding */
   overflow-y: auto;
   height: 0; /* Force flex child to respect parent height */
 }

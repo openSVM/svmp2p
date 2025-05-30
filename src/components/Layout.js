@@ -179,7 +179,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           
           {/* Main Content */}
           <main id="main-content" className="app-main-content">
-            <div className="container">
+            <div className="container content-container">
               <div className="content-transition-wrapper fade-in">
                 {children}
               </div>

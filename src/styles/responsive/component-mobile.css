@@ -58,7 +58,7 @@
 
 /* OfferList component mobile enhancements */
 .offer-list-container {
-  padding: 20px;
+  padding: 20px 20px 20px 0; /* Removed left padding to fix alignment */
   border-radius: 8px;
   background-color: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -67,7 +67,7 @@
 
 @media (max-width: 768px) {
   .offer-list-container {
-    padding: 16px;
+    padding: 16px 16px 16px 0; /* Removed left padding to fix alignment */
     margin-bottom: 16px;
   }
   

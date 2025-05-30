@@ -14,8 +14,16 @@
   max-width: var(--container-xl);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--spacing-2);
+  padding-left: 0; /* Removed left padding to fix alignment */
   padding-right: var(--spacing-2);
+}
+
+/* Content container with proper alignment */
+.content-container {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0; /* Ensure left alignment */
+  box-sizing: border-box;
 }
 
 /* Professional App Layout */
@@ -482,6 +490,27 @@
 }
 
 /* Responsive layout */
+/* Main content area proper alignment */
+.app-main-content {
+  padding-left: 0;
+  padding-right: var(--spacing-2);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Offer listings alignment fixes */
+.offer-list {
+  margin-left: 0;
+  padding-left: 0;
+  width: 100%;
+}
+
+.offers-grid {
+  margin-left: 0;
+  padding-left: 0;
+  width: 100%;
+}
+
 @media (max-width: 1024px) {
   .grid-cols-4 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -542,7 +571,7 @@
   }
   
   .container {
-    padding-left: var(--spacing-2);
+    padding-left: 0; /* Removed left padding to fix alignment */
     padding-right: var(--spacing-2);
   }
   
