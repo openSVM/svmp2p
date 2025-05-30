@@ -571,6 +571,27 @@
   .header-actions .language-trigger,
   .header-actions .theme-toggle,
   .header-actions .pwa-install-button {
+    order: -1; /* Move to beginning of flex container */
+    margin-right: var(--spacing-2); /* Add some spacing */
+    position: relative; /* For positioning the badge */
+  }
+  
+  /* Add a small "new" badge to draw attention */
+  .header-actions .pwa-install-button::before {
+    content: 'NEW';
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--color-success, #22c55e);
+    color: white;
+    font-size: 8px;
+    padding: 2px 4px;
+    border-radius: 10px;
+    font-weight: 700;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(10deg);
+  }
     min-width: 36px;
     width: 36px;
     height: 36px !important;
@@ -594,4 +615,10 @@
   .logo-text {
     font-size: var(--font-size-base); /* Smaller on mobile */
   }
+}
+.header-prominent-action {
+  margin-right: var(--spacing-2); 
+  position: relative;
+  transform: scale(1.05);
+  z-index: 5;
 }

@@ -1,5 +1,15 @@
 /* Performance optimization styles */
 
+/* Add RGB color values for animation effects */
+:root {
+  --color-primary-rgb: 59, 130, 246; /* Blue */
+  --color-secondary-rgb: 100, 116, 139; /* Slate */
+  --color-accent-rgb: 139, 92, 246; /* Purple */
+  --color-success-rgb: 34, 197, 94; /* Green */
+  --color-warning-rgb: 245, 158, 11; /* Yellow */
+  --color-error-rgb: 239, 68, 68; /* Red */
+}
+
 /* Prevent layout shifts by explicitly setting dimensions for common elements */
 img, svg, video, canvas, picture {
   max-width: 100%;

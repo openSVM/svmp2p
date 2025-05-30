@@ -162,6 +162,11 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                   </span>
                 )}
                 
+                {/* Install App button - moved to header for better prominence */}
+                <div className="header-actions">
+                  <PWAInstallButton className="header-prominent-action" />
+                </div>
+                
                 {/* Wallet button moved to header for better accessibility */}
                 {!connected && (
                   <div className="header-wallet-container">
