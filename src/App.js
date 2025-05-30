@@ -262,68 +262,85 @@ const AppContent = () => {
           </div>
         </main>
         
-        <footer className="app-footer">
-          <div className="footer-container">
-            <div className="footer-content">
-              {/* Left section - Brand and copyright */}
-              <div className="footer-brand">
-                <div className="footer-logo">
-                  <Image 
-                    src="/images/opensvm-logo.svg" 
-                    alt="OpenSVM P2P"
-                    width={20}
-                    height={20}
-                    priority
-                  />
-                  <span className="footer-brand-text">OpenSVM P2P</span>
-                </div>
-                <p className="footer-copyright">
-                  © 2025 OpenSVM P2P Exchange. All rights reserved.
-                </p>
+        <footer className="bg-gray-50 border-t border-gray-200 py-4">
+          <div className="container mx-auto px-4 py-6">
+            {/* Desktop layout */}
+            <div className="hidden md:grid md:grid-cols-3 md:gap-4 md:items-center">
+              {/* Left: Network info */}
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Network: {network.name}</p>
+                <p className="text-sm text-gray-600">Smart contract secured trades with decentralized dispute resolution.</p>
               </div>
-
-              {/* Center section - Quick Links */}
-              <div className="footer-links">
-                <a 
-                  href={network.explorerUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="footer-link"
-                >
-                  <span className="footer-link-icon">🔗</span>
-                  <span>{network.name} Explorer</span>
-                </a>
-                <a 
-                  href="/docs" 
-                  className="footer-link"
-                >
-                  <span className="footer-link-icon">📚</span>
-                  <span>Documentation</span>
-                </a>
-                <a 
-                  href="/support" 
-                  className="footer-link"
-                >
-                  <span className="footer-link-icon">💬</span>
-                  <span>Support</span>
-                </a>
+              
+              {/* Center: Copyright */}
+              <div className="text-center">
+                <p className="text-sm text-gray-500">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
               </div>
-
-              {/* Right section - Network status and settings */}
-              <div className="footer-controls">
-                <div className="footer-network-status">
-                  <span className="network-indicator">
-                    <span className="network-dot"></span>
-                    <span className="network-name">{network.name}</span>
-                  </span>
+              
+              {/* Right: Controls */}
+              <div className="flex justify-end items-center space-x-4">
+                {/* Language selector */}
+                <div className="relative inline-block text-left">
+                  <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <span className="mr-2">EN</span>
+                    <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                    </svg>
+                  </button>
                 </div>
-                <div className="footer-settings">
-                  <NetworkSelector 
-                    networks={SVM_NETWORKS} 
-                    selectedNetwork={selectedNetwork} 
-                    onSelectNetwork={setSelectedNetwork} 
-                  />
+                
+                {/* System links */}
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-600">[S] System</span>
+                  <a 
+                    href={network.explorerUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    {network.name.toUpperCase()} EXPLORER
+                  </a>
                 </div>
+              </div>
+            </div>
+            
+            {/* Mobile layout */}
+            <div className="md:hidden space-y-4">
+              {/* Network info */}
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Network: {network.name}</p>
+                <p className="text-sm text-gray-600">Smart contract secured trades with decentralized dispute resolution.</p>
+              </div>
+              
+              {/* Controls */}
+              <div className="flex justify-between items-center">
+                {/* Language selector */}
+                <div className="relative inline-block text-left">
+                  <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <span className="mr-2">EN</span>
+                    <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* System links */}
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-600">[S] System</span>
+                  <a 
+                    href={network.explorerUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    {network.name.toUpperCase()} EXPLORER
+                  </a>
+                </div>
+              </div>
+              
+              {/* Copyright */}
+              <div className="text-center">
+                <p className="text-sm text-gray-500">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
               </div>
             </div>
           </div>
