@@ -136,19 +136,20 @@
   gap: var(--spacing-4);
 }
 
-/* Offer Cards - Compact design for high density */
+/* Offer Cards - Standardized design for consistency */
 .offer-card {
   background-color: var(--color-card);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   transition: all 0.2s cubic-bezier(0.2, 0, 0.3, 1);
-  margin-bottom: var(--spacing-1);
+  margin-bottom: var(--spacing-3);
   position: relative;
   border: 1px solid var(--color-border);
-  min-height: 100px;
-  max-height: 100px;
+  height: 120px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .offer-card:hover {
@@ -163,12 +164,13 @@
 
 .offer-card-header {
   background-color: var(--color-card-header);
-  padding: var(--spacing-1);
+  padding: var(--spacing-2);
   border-bottom: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 20px;
+  height: 30px;
+  min-height: 30px;
 }
 
 .seller-info {
@@ -181,72 +183,81 @@
 .seller-name {
   font-weight: var(--font-weight-medium);
   color: var(--color-foreground);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 40px;
+  max-width: 80px;
 }
 
 .seller-rating {
   color: var(--color-warning);
-  font-size: 8px;
-  display: none; /* Hide rating to save space */
+  font-size: var(--font-size-xs);
 }
 
 .time-info {
   color: var(--color-foreground-muted);
-  font-size: 8px;
+  font-size: var(--font-size-xs);
   white-space: nowrap;
+  padding: var(--spacing-1);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
 }
 
 .offer-card-body {
-  padding: var(--spacing-1);
+  padding: var(--spacing-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  flex-grow: 1;
+}
+
+.amount-info, 
+.price-info, 
+.payment-method {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
-  height: 60px;
-  overflow: hidden;
-}
-
-.amount-info, .price-info, .payment-method {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-height: 0;
 }
 
 .sol-amount {
-  font-size: 10px;
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   color: var(--color-foreground);
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .network-badge {
-  display: none; /* Hide network badge to save space */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--spacing-1);
+  margin-left: var(--spacing-1);
 }
 
 .fiat-amount {
-  font-size: 9px;
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
   color: var(--color-foreground);
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .price-per-sol {
-  font-size: 8px;
+  font-size: var(--font-size-sm);
   color: var(--color-foreground-muted);
   display: flex;
   align-items: center;
   gap: var(--spacing-1);
-  line-height: 1;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
 }
@@ -256,40 +267,48 @@
 }
 
 .rate-indicator {
-  display: none; /* Hide rate indicator to save space */
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
 }
 
 .payment-label {
-  display: none; /* Hide payment label to save space */
+  font-size: var(--font-size-xs);
+  color: var(--color-foreground-muted);
+  margin-bottom: 2px;
 }
 
 .payment-method {
-  font-size: 8px;
-  color: var(--color-foreground-muted);
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: var(--spacing-1);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  max-width: 100%;
 }
 
 .offer-card-footer {
-  padding: var(--spacing-1);
+  padding: var(--spacing-2);
   border-top: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 18px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  height: 40px;
+  min-height: 40px;
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
-  padding: 1px var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
   border-radius: var(--radius-sm);
-  font-size: 7px;
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   line-height: 1;
 }
@@ -314,13 +333,25 @@
   color: var(--color-error);
 }
 
+.action-button-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
 .offer-action-button {
-  --button-height: 16px;
-  --button-padding: 1px var(--spacing-1);
-  --button-radius: var(--radius-sm);
-  font-size: 7px;
+  height: 28px;
+  min-width: 60px;
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   line-height: 1;
-  min-width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Card shimmer loading effect */

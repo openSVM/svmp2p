@@ -99,126 +99,113 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         Skip to main content
       </a>
 
-      <div className="app-layout-sidebar">
-        {/* Main Content Area */}
-        <div className="app-content">
-          {/* Top Header */}
-          <header className="app-header-slim">
-            <div className="header-content-slim">
-              {/* Mobile Menu Button */}
-              <button
-                className="mobile-menu-button"
-                onClick={() => setMobileNavOpen(true)}
-                aria-label="Open sidebar"
-              >
-                <span>≡</span>
-              </button>
+      <div className="app-layout">
+        {/* Top Header */}
+        <header className="app-header">
+          <div className="header-content">
+            <div className="logo-section">
+              <Image 
+                src="/images/opensvm-logo.svg" 
+                alt="OpenSVM P2P Exchange" 
+                className="logo-image"
+                width={24}
+                height={24}
+                priority
+              />
+              <h1 className="logo-text">OpenSVM P2P</h1>
+            </div>
+            
+            {/* Consolidated Navigation - Desktop */}
+            <nav className="header-nav">
+              {/* Primary navigation items */}
+              {topNavItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={`nav-tab ${
+                    activeTab === item.key ? 'active' : ''
+                  }`}
+                  onClick={() => setActiveTab(item.key)}
+                >
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
               
-              <div className="logo-section">
-                <Image 
-                  src="/images/opensvm-logo.svg" 
-                  alt="OpenSVM P2P Exchange" 
-                  className="logo-image"
-                  width={24}
-                  height={24}
-                  priority
+              {/* Secondary navigation items (previously in sidebar) */}
+              {sidebarNavItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={`nav-tab ${
+                    activeTab === item.key ? 'active' : ''
+                  }`}
+                  onClick={() => setActiveTab(item.key)}
+                >
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+            </nav>
+            
+            {/* Header Actions */}
+            <div className="header-actions">
+              {/* Install App button with proper prominence */}
+              <PWAInstallButton className="header-prominent-action" />
+              
+              {/* Connected wallet info */}
+              {connected && publicKey && (
+                <span className="connection-status">
+                  Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
+                </span>
+              )}
+              
+              {/* Wallet connection button */}
+              {!connected && (
+                <div className="header-wallet-container">
+                  <WalletMultiButton />
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+        
+        {/* Main Content */}
+        <main id="main-content" className="app-main">
+          <div className="container content-container">
+            <div className="content-transition-wrapper fade-in">
+              {children}
+            </div>
+          </div>
+        </main>
+        
+        {/* Footer */}
+        <footer className="app-footer">
+          <div className="container">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-foreground-muted">
+                © 2025 OpenSVM P2P Exchange. All rights reserved.
+              </p>
+              <div className="flex items-center gap-6">
+                <NetworkSelector 
+                  networks={networks} 
+                  selectedNetwork={selectedNetwork} 
+                  onSelectNetwork={setSelectedNetwork} 
                 />
-                <h1 className="logo-text">OpenSVM P2P</h1>
-              </div>
-              
-              {/* Top Navigation - Desktop */}
-              <nav className="header-nav">
-                {topNavItems.map((item) => (
-                  <button
-                    key={item.key}
-                    className={`nav-tab ${
-                      activeTab === item.key ? 'active' : ''
-                    }`}
-                    onClick={() => setActiveTab(item.key)}
-                  >
-                    <span className="nav-label">{item.label}</span>
-                  </button>
-                ))}
-                
-                {/* Added secondary navigation items to the horizontal nav */}
-                {sidebarNavItems.map((item) => (
-                  <button
-                    key={item.key}
-                    className={`nav-tab ${
-                      activeTab === item.key ? 'active' : ''
-                    }`}
-                    onClick={() => setActiveTab(item.key)}
-                  >
-                    <span className="nav-label">{item.label}</span>
-                  </button>
-                ))}
-              </nav>
-              
-              {/* Header Info */}
-              <div className="header-info">
-                {connected && publicKey && (
-                  <span className="connection-status">
-                    Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
-                  </span>
-                )}
-                
-                {/* Install App button - moved to header for better prominence */}
-                <div className="header-actions">
-                  <PWAInstallButton className="header-prominent-action" />
-                </div>
-                
-                {/* Wallet button moved to header for better accessibility */}
-                {!connected && (
-                  <div className="header-wallet-container">
-                    <WalletMultiButton />
-                  </div>
-                )}
+                <LanguageSelector
+                  currentLocale={currentLocale}
+                  onLanguageChange={handleLanguageChange}
+                />
+                <ThemeToggle />
+                {connected && <WalletDisconnectButton />}
+                <a 
+                  href={network.explorerUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-foreground-muted hover:text-primary transition-colors"
+                >
+                  {network.name} Explorer
+                </a>
               </div>
             </div>
-          </header>
-          
-          {/* Main Content */}
-          <main id="main-content" className="app-main-content">
-            <div className="container content-container">
-              <div className="content-transition-wrapper fade-in">
-                {children}
-              </div>
-            </div>
-          </main>
-          
-          {/* Footer */}
-          <footer className="app-footer">
-            <div className="container">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p className="text-sm text-foreground-muted">
-                  © 2025 OpenSVM P2P Exchange. All rights reserved.
-                </p>
-                <div className="flex items-center gap-6">
-                  <NetworkSelector 
-                    networks={networks} 
-                    selectedNetwork={selectedNetwork} 
-                    onSelectNetwork={setSelectedNetwork} 
-                  />
-                  <LanguageSelector
-                    currentLocale={currentLocale}
-                    onLanguageChange={handleLanguageChange}
-                  />
-                  <ThemeToggle />
-                  <PWAInstallButton />
-                  {connected && <WalletDisconnectButton />}
-                  <a 
-                    href={network.explorerUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm text-foreground-muted hover:text-primary transition-colors"
-                  >
-                    {network.name} Explorer
-                  </a>
-                </div>
-              </div>
-            </div>
-          </footer>
-        </div>
+          </div>
+        </footer>
       </div>
 
       {/* Onboarding Modal */}

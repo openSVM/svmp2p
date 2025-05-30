@@ -16,15 +16,16 @@
   margin-right: auto;
   padding-left: 0; /* Removed left padding to fix alignment */
   padding-right: var(--spacing-2);
+  box-sizing: border-box;
 }
 
 /* Content container with proper alignment */
 .content-container {
   width: 100%;
   max-width: 100%;
-  margin-left: 0; /* Ensure left alignment */
+  margin-left: 0 !important; /* Ensure left alignment */
   margin-right: 0;
-  padding: 0;
+  padding: 0 !important;
   box-sizing: border-box;
 }
 
@@ -36,6 +37,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .app-header {
@@ -47,6 +51,7 @@
   top: 0;
   z-index: var(--z-40);
   backdrop-filter: blur(8px);
+  width: 100%;
 }
 
 .header-content {
@@ -59,6 +64,7 @@
   height: 48px; /* Reduced header height */
   min-height: 48px;
   position: relative; /* Add positioning context */
+  width: 100%;
 }
 
 /* Professional Logo */
@@ -220,7 +226,11 @@
 .app-main {
   flex: 1;
   background-color: var(--color-background);
-  padding: var(--spacing-3) 0; /* Reduced padding */
+  padding: var(--spacing-3) 0;
+  width: 100%;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  box-sizing: border-box;
 }
 
 /* Professional Footer */
@@ -502,25 +512,31 @@
   margin: 0;
 }
 
-/* Offer listings alignment fixes */
-.offer-list {
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
+/* Offer List Container */
+.offer-list-container {
   width: 100%;
-  max-width: 100%;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
 }
 
+.offer-list-heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
 .offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-3);
+  width: 100%;
   margin-left: 0;
   margin-right: 0;
   padding-left: 0;
   padding-right: 0;
-  width: 100%;
-  gap: var(--spacing-3);
-  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {
