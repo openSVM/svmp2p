@@ -1,0 +1,91 @@
+/**
+ * Wallet Status Indicator Styles
+ * 
+ * These styles provide visual feedback about the wallet connection state
+ */
+
+.wallet-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wallet-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: var(--ascii-neutral-800);
+  color: var(--ascii-neutral-300);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.connecting {
+  background-color: #ffb700;
+  animation: pulse 1.5s infinite;
+}
+
+.status-dot.connected {
+  background-color: #00d16c;
+}
+
+.status-dot.disconnected {
+  background-color: var(--ascii-neutral-500);
+}
+
+.status-dot.error {
+  background-color: #ff4d4d;
+}
+
+.wallet-status.error {
+  background-color: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-retry-button {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-600);
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wallet-retry-button:hover {
+  background-color: var(--ascii-neutral-600);
+}
+
+.wallet-retry-button:active {
+  transform: scale(0.95);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}

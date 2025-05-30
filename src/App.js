@@ -30,8 +30,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 // Import wallet safety utilities
 import { SafeWalletProvider, useSafeWallet } from './contexts/WalletContextProvider';
 import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
+import { createConnection, getNetworkConnection } from './utils/rpcConnection';
 
-// SVM Networks configuration
+// SVM Networks configuration with resilient RPC endpoints
 const SVM_NETWORKS = {
   'solana': {
     name: 'Solana',
@@ -40,6 +41,15 @@ const SVM_NETWORKS = {
     icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',
+    // Fallback endpoints if primary fails
+    fallbackEndpoints: [
+      'https://api.devnet.solana.com',
+      'https://solana-devnet-rpc.allthatnode.com',
+    ],
+    connectionConfig: {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000,
+    }
   },
   'sonic': {
     name: 'Sonic',
@@ -48,6 +58,7 @@ const SVM_NETWORKS = {
     icon: '/images/sonic-logo.svg',
     color: '#00C2FF',
     explorerUrl: 'https://explorer.sonic.example.com',
+    fallbackEndpoints: [],
   },
   'eclipse': {
     name: 'Eclipse',
@@ -56,6 +67,7 @@ const SVM_NETWORKS = {
     icon: '/images/eclipse-logo.svg',
     color: '#0052FF',
     explorerUrl: 'https://explorer.eclipse.example.com',
+    fallbackEndpoints: [],
   },
   'svmBNB': {
     name: 'svmBNB',
@@ -64,6 +76,7 @@ const SVM_NETWORKS = {
     icon: '/images/svmbnb-logo.svg',
     color: '#F0B90B',
     explorerUrl: 'https://explorer.svmbnb.example.com',
+    fallbackEndpoints: [],
   },
   's00n': {
     name: 's00n',
@@ -72,6 +85,7 @@ const SVM_NETWORKS = {
     icon: '/images/s00n-logo.svg',
     color: '#00FF9D',
     explorerUrl: 'https://explorer.s00n.example.com',
+    fallbackEndpoints: [],
   }
 };
 
@@ -112,6 +126,43 @@ const AppContent = () => {
   const handleBackdropClick = () => {
     setSidebarOpen(false);
   };
+
+  // Status indicator for wallet connection
+  const renderWalletStatus = () => {
+    if (wallet.error) {
+      return (
+        <div className="wallet-status error" title={wallet.error}>
+          <span className="status-dot error"></span>
+          <span>Error</span>
+        </div>
+      );
+    }
+
+    if (wallet.connecting || wallet.connectionState === 'connecting') {
+      return (
+        <div className="wallet-status connecting">
+          <span className="status-dot connecting"></span>
+          <span>Connecting...</span>
+        </div>
+      );
+    }
+
+    if (wallet.connected) {
+      return (
+        <div className="wallet-status connected">
+          <span className="status-dot connected"></span>
+          <span>Connected</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="wallet-status disconnected">
+        <span className="status-dot disconnected"></span>
+        <span>Disconnected</span>
+      </div>
+    );
+  };
   
   return (
     <AppContext.Provider value={contextValue}>
@@ -144,19 +195,31 @@ const AppContent = () => {
             <ErrorBoundary fallback={
               <div className="wallet-error">
                 <p>Wallet Error</p>
-                <button onClick={() => window.location.reload()}>Retry</button>
+                <button onClick={() => wallet.reconnect()}>Retry</button>
               </div>
             }>
-              <WalletMultiButton style={{ 
-                backgroundColor: 'var(--ascii-neutral-700)',
-                color: 'var(--ascii-white)',
-                border: '1px solid var(--ascii-neutral-900)',
-                padding: '6px 12px',
-                fontSize: '12px',
-                fontFamily: 'Courier New, Courier, monospace',
-                fontWeight: 'bold',
-                textTransform: 'uppercase'
-              }} />
+              <div className="wallet-wrapper">
+                {renderWalletStatus()}
+                <WalletMultiButton style={{ 
+                  backgroundColor: 'var(--ascii-neutral-700)',
+                  color: 'var(--ascii-white)',
+                  border: '1px solid var(--ascii-neutral-900)',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontFamily: 'Courier New, Courier, monospace',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase'
+                }} />
+                {wallet.error && (
+                  <button 
+                    className="wallet-retry-button" 
+                    onClick={() => wallet.reconnect()}
+                    title="Retry connection"
+                  >
+                    ↻
+                  </button>
+                )}
+              </div>
             </ErrorBoundary>
           </div>
         </header>
@@ -257,6 +320,14 @@ const App = () => {
   
   // Define network for connection provider
   const network = SVM_NETWORKS['solana'];
+  
+  // Create enhanced connection with retry logic for rate limits
+  const connection = useMemo(() => {
+    return createConnection(network.endpoint, network.connectionConfig || {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000,
+    });
+  }, [network]);
 
   // Use ErrorBoundary at the root level to catch any rendering errors
   return (
@@ -275,7 +346,7 @@ const App = () => {
         </div>
       </div>
     }>
-      <ConnectionProvider endpoint={network.endpoint}>
+      <ConnectionProvider endpoint={network.endpoint} config={network.connectionConfig} connection={connection}>
         <WalletProvider wallets={wallets} autoConnect>
           <SafeWalletProvider>
             <WalletModalProvider>
