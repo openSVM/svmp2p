@@ -1,0 +1,77 @@
+/* Accessibility enhancements */
+
+/* Focus styles for all interactive elements */
+button:focus, 
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Hide outline for mouse users, but keep it for keyboard users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Navigation tab focus styles */
+.nav-tab:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-primary);
+  outline: none;
+}
+
+/* Wallet button focus styles */
+.wallet-adapter-button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-primary);
+  outline: none;
+}
+
+/* Skip to main content link - hidden by default, visible on focus */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-to-content:focus {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: var(--font-weight-medium);
+  z-index: 9999;
+}
+
+/* Improved contrast for various elements */
+.connection-status {
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-medium);
+}
+
+.text-foreground-muted {
+  color: var(--ascii-neutral-600); /* Using the improved contrast color */
+}
+
+/* Make sure buttons have sufficient contrast */
+.nav-tab {
+  color: var(--ascii-neutral-700); /* Darker for better contrast */
+}
+
+/* Better focus indicators */
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}

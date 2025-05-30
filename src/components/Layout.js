@@ -94,115 +94,12 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* Accessibility: Skip to main content link */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       <div className="app-layout-sidebar">
-        {/* Sidebar */}
-        <aside className={`app-sidebar ${mobileNavOpen ? 'mobile-open' : ''}`}>
-          {/* Sidebar Header */}
-          <div className="sidebar-header">
-            <div className="logo-section">
-              <Image 
-                src="/images/opensvm-logo.svg" 
-                alt="OpenSVM P2P Exchange" 
-                className="logo-image"
-                width={32}
-                height={32}
-                priority
-              />
-              <h1 className="logo-text">OpenSVM P2P</h1>
-            </div>
-            
-            {/* Close button for mobile */}
-            <button
-              className="sidebar-close"
-              onClick={() => setMobileNavOpen(false)}
-              aria-label="Close sidebar"
-            >
-              <span>×</span>
-            </button>
-          </div>
-          
-          {/* Sidebar Navigation */}
-          <nav className="sidebar-nav">
-            {/* Top Navigation - Mobile Only */}
-            <div className="nav-section mobile-top-nav">
-              <h3>Quick Actions</h3>
-              <ul className="nav-list">
-                {topNavItems.map((item) => (
-                  <li key={item.key}>
-                    <button
-                      className={`nav-item ${
-                        activeTab === item.key ? 'active' : ''
-                      }`}
-                      onClick={() => {
-                        setActiveTab(item.key);
-                        setMobileNavOpen(false);
-                      }}
-                    >
-                      <span className="nav-icon">{item.icon}</span>
-                      <span className="nav-label">{item.label}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="nav-section">
-              <h3>My Account</h3>
-              <ul className="nav-list">
-                {sidebarNavItems.map((item) => (
-                  <li key={item.key}>
-                    <button
-                      className={`nav-item ${
-                        activeTab === item.key ? 'active' : ''
-                      }`}
-                      onClick={() => {
-                        setActiveTab(item.key);
-                        setMobileNavOpen(false);
-                      }}
-                    >
-                      <span className="nav-icon">{item.icon}</span>
-                      <span className="nav-label">{item.label}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="nav-section">
-              <h3>Settings</h3>
-              <div className="settings-group">
-                <NetworkSelector 
-                  networks={networks} 
-                  selectedNetwork={selectedNetwork} 
-                  onSelectNetwork={setSelectedNetwork} 
-                />
-                
-                <LanguageSelector
-                  currentLocale={currentLocale}
-                  onLanguageChange={handleLanguageChange}
-                />
-                
-                <ThemeToggle />
-              </div>
-            </div>
-          </nav>
-          
-          {/* Sidebar Footer */}
-          <div className="sidebar-footer">
-            <PWAInstallButton />
-            <div className="wallet-container">
-              <WalletMultiButton />
-              {connected && <WalletDisconnectButton />}
-            </div>
-          </div>
-        </aside>
-
-        {/* Mobile Overlay */}
-        <div 
-          className={`sidebar-overlay ${mobileNavOpen ? 'open' : ''}`}
-          onClick={() => setMobileNavOpen(false)}
-        />
-
         {/* Main Content Area */}
         <div className="app-content">
           {/* Top Header */}
@@ -217,6 +114,18 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 <span>≡</span>
               </button>
               
+              <div className="logo-section">
+                <Image 
+                  src="/images/opensvm-logo.svg" 
+                  alt="OpenSVM P2P Exchange" 
+                  className="logo-image"
+                  width={24}
+                  height={24}
+                  priority
+                />
+                <h1 className="logo-text">OpenSVM P2P</h1>
+              </div>
+              
               {/* Top Navigation - Desktop */}
               <nav className="header-nav">
                 {topNavItems.map((item) => (
@@ -227,7 +136,19 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                     }`}
                     onClick={() => setActiveTab(item.key)}
                   >
-                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                  </button>
+                ))}
+                
+                {/* Added secondary navigation items to the horizontal nav */}
+                {sidebarNavItems.map((item) => (
+                  <button
+                    key={item.key}
+                    className={`nav-tab ${
+                      activeTab === item.key ? 'active' : ''
+                    }`}
+                    onClick={() => setActiveTab(item.key)}
+                  >
                     <span className="nav-label">{item.label}</span>
                   </button>
                 ))}
@@ -240,12 +161,19 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                     Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
                   </span>
                 )}
+                
+                {/* Wallet button moved to header for better accessibility */}
+                {!connected && (
+                  <div className="header-wallet-container">
+                    <WalletMultiButton />
+                  </div>
+                )}
               </div>
             </div>
           </header>
           
           {/* Main Content */}
-          <main className="app-main-content">
+          <main id="main-content" className="app-main-content">
             <div className="container">
               <div className="content-transition-wrapper fade-in">
                 {children}
@@ -261,6 +189,18 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                   © 2025 OpenSVM P2P Exchange. All rights reserved.
                 </p>
                 <div className="flex items-center gap-6">
+                  <NetworkSelector 
+                    networks={networks} 
+                    selectedNetwork={selectedNetwork} 
+                    onSelectNetwork={setSelectedNetwork} 
+                  />
+                  <LanguageSelector
+                    currentLocale={currentLocale}
+                    onLanguageChange={handleLanguageChange}
+                  />
+                  <ThemeToggle />
+                  <PWAInstallButton />
+                  {connected && <WalletDisconnectButton />}
                   <a 
                     href={network.explorerUrl} 
                     target="_blank" 

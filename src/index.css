@@ -3,6 +3,8 @@
 @import './styles/responsive.css';
 @import './styles/components.css';
 @import './styles/wallet-status.css';
+@import './styles/accessibility.css';
+@import './styles/performance.css';
 
 /* Keep existing styles for backward compatibility */
 body {
@@ -129,7 +131,7 @@ code {
 }
 
 .wallet-not-connected {
-  padding: var(--spacing-6);
+  padding: var(--spacing-4);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,39 +139,58 @@ code {
   text-align: center;
   background-color: var(--color-background-alt);
   border-radius: var(--radius-lg);
-  margin: var(--spacing-4) 0;
+  margin: var(--spacing-2) 0;
+  border: 1px solid var(--color-border);
 }
 
 .wallet-not-connected-content {
-  max-width: 500px;
+  max-width: 400px;
   animation: slide-down var(--transition-normal);
 }
 
 .wallet-icon {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   background-color: var(--color-background);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--spacing-4);
+  margin: 0 auto var(--spacing-3);
   color: var(--color-primary);
+  border: 2px solid var(--color-primary);
 }
 
 .wallet-connect-button-wrapper {
-  margin: var(--spacing-6) 0;
+  margin: var(--spacing-4) 0;
 }
 
 .wallet-connect-fallback-button {
   background-color: var(--color-primary);
   color: white;
-  padding: var(--spacing-3) var(--spacing-6);
+  padding: var(--spacing-2) var(--spacing-6);
   border-radius: var(--radius-md);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   border: none;
   transition: background-color var(--transition-normal);
+  font-size: var(--font-size-base);
+  min-width: 200px;
+  height: 40px;
+}
+
+.wallet-connect-fallback-button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.prominent-wallet-button {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-size: var(--font-size-base) !important;
+  min-width: 200px !important;
+  height: 40px !important;
 }
 
 .wallet-connect-fallback-button:hover {
@@ -205,11 +226,11 @@ code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: var(--spacing-1) var(--spacing-4); /* Reduced padding */
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
-  min-height: 60px;
+  min-height: 48px; /* Reduced height */
 }
 
 .logo-container {

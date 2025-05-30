@@ -24,6 +24,8 @@
   color: var(--color-foreground);
   font-family: var(--font-family-sans);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-header {
@@ -44,8 +46,8 @@
   max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--spacing-4);
-  height: 64px; /* Fixed header height */
-  min-height: 64px;
+  height: 48px; /* Reduced header height */
+  min-height: 48px;
   position: relative; /* Add positioning context */
 }
 
@@ -53,15 +55,15 @@
 .logo-section {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: var(--spacing-2); /* Reduced gap */
   color: var(--color-foreground);
-  height: 40px; /* Consistent height with header actions */
+  height: 36px; /* Reduced height */
   flex-shrink: 0; /* Prevent logo from shrinking */
 }
 
 .logo-image {
-  width: 32px;
-  height: 32px;
+  width: 24px; /* Reduced size */
+  height: 24px; /* Reduced size */
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -101,11 +103,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
   background: transparent;
   border: 1px solid transparent;
   color: var(--color-foreground-muted);
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: var(--spacing-2) var(--spacing-3);
   font-family: var(--font-family-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -157,7 +158,7 @@
   line-height: 1; /* Consistent line height */
 }
 
-.wallet-container {
+.wallet-container, .header-wallet-container {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
@@ -165,7 +166,7 @@
   flex-shrink: 0;
 }
 
-.wallet-container button {
+.wallet-container button, .header-wallet-container button {
   height: 40px !important;
   min-height: 40px;
   max-height: 40px;
@@ -178,6 +179,8 @@
   font-weight: var(--font-weight-medium) !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
+  background-color: var(--color-primary) !important; /* Make button more prominent */
+  color: white !important;
 }
 
 .mobile-menu-button {
@@ -206,7 +209,7 @@
 .app-main {
   flex: 1;
   background-color: var(--color-background);
-  padding: var(--spacing-8) 0;
+  padding: var(--spacing-4) 0; /* Reduced padding */
 }
 
 /* Professional Footer */

@@ -1,0 +1,86 @@
+/* Performance optimization styles */
+
+/* Prevent layout shifts by explicitly setting dimensions for common elements */
+img, svg, video, canvas, picture {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Reserve space for images and other content that might load late */
+.image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9; /* Default aspect ratio */
+  overflow: hidden;
+  background-color: var(--color-background-alt);
+}
+
+.image-container img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Prevent font-based layout shifts */
+html {
+  font-display: swap;
+}
+
+/* Set explicit height for header elements to prevent shifts */
+.app-header, .app-header-slim, .header-content, .header-content-slim {
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+}
+
+/* Fix dimensions for icons and logos */
+.logo-image, .nav-icon, .wallet-icon svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* Cache fonts efficiently */
+@font-face {
+  font-family: var(--font-family-sans);
+  font-display: swap;
+}
+
+/* Minimize main thread work for animations */
+.transition-gpu {
+  transition-property: transform, opacity;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Ensure proper width:height ratio to avoid layout shifts */
+[style*="--aspect-ratio"] {
+  position: relative;
+}
+
+[style*="--aspect-ratio"]::before {
+  content: "";
+  display: block;
+  padding-bottom: calc(100% / (var(--aspect-ratio)));
+}
+
+[style*="--aspect-ratio"] > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix height for common UI components */
+.wallet-not-connected {
+  min-height: 200px;
+}
+
+.wallet-container button, .header-wallet-container button {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+}
