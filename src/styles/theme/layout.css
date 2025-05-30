@@ -14,8 +14,8 @@
   max-width: var(--container-xl);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--spacing-4);
-  padding-right: var(--spacing-4);
+  padding-left: var(--spacing-2);
+  padding-right: var(--spacing-2);
 }
 
 /* Professional App Layout */
@@ -45,7 +45,7 @@
   justify-content: space-between;
   max-width: var(--container-xl);
   margin: 0 auto;
-  padding: 0 var(--spacing-4);
+  padding: 0 var(--spacing-2);
   height: 48px; /* Reduced header height */
   min-height: 48px;
   position: relative; /* Add positioning context */
@@ -209,7 +209,7 @@
 .app-main {
   flex: 1;
   background-color: var(--color-background);
-  padding: var(--spacing-4) 0; /* Reduced padding */
+  padding: var(--spacing-3) 0; /* Reduced padding */
 }
 
 /* Professional Footer */
@@ -496,7 +496,7 @@
   }
   
   .header-content {
-    padding: 0 var(--spacing-3);
+    padding: 0 var(--spacing-2);
   }
 }
 
@@ -514,7 +514,7 @@
   }
   
   .header-content {
-    padding: 0 var(--spacing-3);
+    padding: 0 var(--spacing-2);
     height: 56px; /* Slightly smaller on mobile */
     min-height: 56px;
   }
@@ -542,12 +542,12 @@
   }
   
   .container {
-    padding-left: var(--spacing-3);
-    padding-right: var(--spacing-3);
+    padding-left: var(--spacing-2);
+    padding-right: var(--spacing-2);
   }
   
   .header-content {
-    padding: 0 var(--spacing-2);
+    padding: 0 var(--spacing-1);
     height: 56px;
     min-height: 56px;
   }

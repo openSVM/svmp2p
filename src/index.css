@@ -226,7 +226,7 @@ code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-1) var(--spacing-4); /* Reduced padding */
+  padding: var(--spacing-1) var(--spacing-2); /* Reduced padding */
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
@@ -454,7 +454,7 @@ code {
 
 .app-main {
   flex: 1;
-  padding: var(--spacing-2);
+  padding: var(--spacing-1);
   overflow-y: auto;
   height: 0; /* Force flex child to respect parent height */
 }
