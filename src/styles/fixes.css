@@ -1,0 +1,154 @@
+/* CSS fixes for remaining visual design issues */
+
+/* Fix remaining left padding issues */
+.main-container, .content-area {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+.container, .content-container {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  width: 100%;
+  max-width: 100%;
+}
+
+.app-main-content {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+/* Improve card styling */
+.offer-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Consistent button styling */
+.action-button, .buy-button, .offer-action-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  height: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Offer List Container Fixes */
+.offer-list-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.offer-list, .offers-grid {
+  width: 100%;
+  margin-left: 0 !important;
+  padding-left: 16px !important; /* Consistent with design system spacing */
+  box-sizing: border-box;
+}
+
+/* Fix pagination controls alignment */
+.pagination-controls {
+  width: 100%;
+  margin-left: 0;
+  padding-left: 16px;
+  box-sizing: border-box;
+}
+
+.pagination-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sidebar and Navigation Fixes */
+.nav-tab {
+  padding: 8px 16px;
+  height: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Fix heading styles and hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 16px 0;
+  font-weight: 600;
+}
+
+.offer-list-heading {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Fix payment method indicators styling */
+.payment-method {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Fix timestamps alignment and styling */
+.time-posted {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Ensure all content uses available space efficiently */
+body, html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app-layout-sidebar {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.app-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Action button container fixes */
+.action-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 100%;
+}

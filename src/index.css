@@ -6,6 +6,7 @@
 @import './styles/accessibility.css';
 @import './styles/performance.css';
 @import './styles/typography.css';
+@import './styles/fixes.css';
 
 /* Keep existing styles for backward compatibility */
 body {
