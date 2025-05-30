@@ -450,7 +450,8 @@ button.primary:hover,
   cursor: not-allowed !important;
 }
 
-/* ===== FOOTER FIXES ===== */
+/* ===== FOOTER FIXES - BASIC FALLBACK ===== */
+/* Note: Detailed footer styles are in footer-improvements.css */
 .app-footer {
   background-color: var(--color-background-alt) !important;
   border-top: 1px solid var(--color-border) !important;
@@ -458,7 +459,7 @@ button.primary:hover,
   margin-top: auto !important;
   width: 100% !important;
   box-sizing: border-box !important;
-  height: 60px !important;
+  height: auto !important;
   min-height: 60px !important;
   display: flex !important;
   align-items: center !important;

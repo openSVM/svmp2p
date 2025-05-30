@@ -263,20 +263,67 @@ const AppContent = () => {
         </main>
         
         <footer className="app-footer">
-          <div className="container">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-sm text-foreground-muted">
-                © 2025 OpenSVM P2P Exchange. All rights reserved.
-              </p>
-              <div className="flex items-center gap-6">
+          <div className="footer-container">
+            <div className="footer-content">
+              {/* Left section - Brand and copyright */}
+              <div className="footer-brand">
+                <div className="footer-logo">
+                  <Image 
+                    src="/images/opensvm-logo.svg" 
+                    alt="OpenSVM P2P"
+                    width={20}
+                    height={20}
+                    priority
+                  />
+                  <span className="footer-brand-text">OpenSVM P2P</span>
+                </div>
+                <p className="footer-copyright">
+                  © 2025 OpenSVM P2P Exchange. All rights reserved.
+                </p>
+              </div>
+
+              {/* Center section - Quick Links */}
+              <div className="footer-links">
                 <a 
                   href={network.explorerUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm text-foreground-muted hover:text-primary transition-colors"
+                  className="footer-link"
                 >
-                  {network.name} Explorer
+                  <span className="footer-link-icon">🔗</span>
+                  <span>{network.name} Explorer</span>
                 </a>
+                <a 
+                  href="/docs" 
+                  className="footer-link"
+                >
+                  <span className="footer-link-icon">📚</span>
+                  <span>Documentation</span>
+                </a>
+                <a 
+                  href="/support" 
+                  className="footer-link"
+                >
+                  <span className="footer-link-icon">💬</span>
+                  <span>Support</span>
+                </a>
+              </div>
+
+              {/* Right section - Network status and settings */}
+              <div className="footer-controls">
+                <div className="footer-network-status">
+                  <span className="network-indicator">
+                    <span className="network-dot"></span>
+                    <span className="network-name">{network.name}</span>
+                  </span>
+                </div>
+                <div className="footer-settings">
+                  <NetworkSelector 
+                    networks={SVM_NETWORKS} 
+                    selectedNetwork={selectedNetwork} 
+                    onSelectNetwork={setSelectedNetwork} 
+                  />
+                </div>
               </div>
             </div>
           </div>

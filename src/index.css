@@ -8,6 +8,7 @@
 @import './styles/typography.css';
 @import './styles/fixes.css';
 @import './styles/comprehensive-ui-fixes.css';
+@import './styles/footer-improvements.css';
 
 /* Keep existing styles for backward compatibility */
 body {
