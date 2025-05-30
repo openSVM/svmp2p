@@ -181,6 +181,7 @@
   font-size: 14px;
   line-height: 1.4;
   scroll-behavior: smooth;
+  overflow-x: hidden; /* Prevent horizontal scroll */
   
   /* Subtle texture background */
   background-image: 
@@ -193,6 +194,20 @@
 *, *::before, *::after {
   border-radius: 0 !important;
   font-family: 'Courier New', Courier, monospace !important;
+  box-sizing: border-box; /* Ensure proper box model */
+}
+
+/* Prevent horizontal overflow globally */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Container constraints to prevent overflow */
+.app-container, .offers-container, .content-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Override Tailwind rounded classes */
@@ -781,6 +796,9 @@
 .app-main-content {
   background-color: var(--ascii-neutral-50);
   padding: 8px;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .app-footer {
@@ -811,6 +829,16 @@
 .container {
   padding: 4px !important;
   margin: 0 !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure all major layout elements stay within viewport */
+.offers-container, .offer-list-container, .content-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding: 0 var(--spacing-2);
 }
 
 /* Mobile adjustments */
@@ -833,6 +861,8 @@
   
   .app-main-content {
     padding: 4px;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
   
   .ascii-card {

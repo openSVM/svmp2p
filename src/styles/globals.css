@@ -105,27 +105,53 @@ input:focus, textarea:focus, select:focus {
   }
 }
 
-/* Professional Offer Card Component */
+/* Responsive Offer Card Grid Component */
 .offers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: var(--spacing-1);
-  margin-bottom: var(--spacing-3);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden; /* Prevent horizontal overflow */
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Desktop optimizations - limit max columns for readability */
+@media (min-width: 1200px) {
+  .offers-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    max-width: 1400px; /* Reasonable max width */
+    margin: 0 auto var(--spacing-4) auto; /* Center the grid */
+  }
 }
 
 /* Mobile responsive fixes for offers grid */
 @media (max-width: 768px) {
   .offers-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: var(--spacing-1);
-    margin-bottom: var(--spacing-2);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-3);
+    padding: 0 var(--spacing-2);
   }
 }
 
 @media (max-width: 640px) {
   .offers-grid {
-    gap: var(--spacing-1);
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
     margin-bottom: var(--spacing-2);
+    padding: 0 var(--spacing-1);
+  }
+}
+
+@media (max-width: 480px) {
+  .offers-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-1);
+    padding: 0;
   }
 }
 
@@ -139,6 +165,8 @@ input:focus, textarea:focus, select:focus {
   flex-direction: column;
   box-shadow: var(--shadow-sm);
   min-width: 0; /* Allow cards to shrink below content size */
+  min-height: 160px; /* Ensure minimum readable height */
+  max-width: 100%; /* Prevent cards from growing too wide */
 }
 
 .offer-card:hover {
