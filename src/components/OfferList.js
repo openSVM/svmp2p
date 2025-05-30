@@ -678,7 +678,7 @@ const OfferList = ({ type = 'buy' }) => {
 
   return (
     <div className="offer-list-container" style={{ padding: '0', margin: '0', paddingRight: '8px' }}>
-      <h2 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>{listTitle}</h2>
+      <h2 className="offer-list-heading">{listTitle}</h2>
       
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}

@@ -92,15 +92,16 @@
   justify-content: center;
   align-items: center; /* Ensure proper vertical alignment */
   height: 40px; /* Consistent height */
+  gap: var(--spacing-2); /* Added consistent gap between navigation items */
 }
 
 .nav-tabs {
   display: flex;
-  gap: var(--spacing-1);
+  gap: var(--spacing-2); /* Consistent gap for all navigation elements */
   background-color: var(--color-background-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-1);
+  padding: var(--spacing-2); /* Consistent padding */
   height: 40px; /* Consistent height */
   align-items: center;
   justify-content: center; /* Center the tabs */

@@ -1030,6 +1030,19 @@ code {
   min-height: 24px;
 }
 
+.offer-list-heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-foreground);
+  margin: 0 0 var(--spacing-4) 0;
+  padding-bottom: var(--spacing-2);
+  border-bottom: 2px solid var(--color-primary);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
 /* Text utilities */
 .text-foreground-muted {
   color: var(--color-foreground-muted);

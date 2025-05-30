@@ -684,7 +684,7 @@ html, body {
 .nav-item {
   background: none;
   border: 1px solid var(--ascii-neutral-700);
-  color: var(--ascii-neutral-200);
+  color: var(--ascii-white); /* Improved contrast for better readability */
   padding: 6px 8px;
   margin: 2px 0;
   font-family: 'Courier New', Courier, monospace !important;
@@ -752,7 +752,10 @@ html, body {
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
+  justify-content: center; /* Added for better alignment */
   gap: 6px;
+  margin: 0 4px; /* Added consistent spacing between buttons */
+  min-width: 80px; /* Added for consistent button width */
 }
 
 .nav-tab:hover {
@@ -760,8 +763,9 @@ html, body {
 }
 
 .nav-tab.active {
-  background-color: var(--ascii-neutral-400);
+  background-color: var(--ascii-white); /* Changed for better contrast */
   color: var(--ascii-neutral-900);
+  border-color: var(--ascii-white);
 }
 
 .nav-tab .nav-icon {
@@ -792,7 +796,7 @@ html, body {
 .connection-status {
   font-family: 'Courier New', Courier, monospace !important;
   font-size: 10px;
-  color: var(--ascii-neutral-300);
+  color: var(--ascii-white); /* Improved contrast for better readability */
   text-transform: uppercase;
 }
 
