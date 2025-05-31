@@ -1,0 +1,174 @@
+/* 
+ * HEADER CONTROLS STYLING
+ * Styling for language selector, theme toggle, and explorer link
+ */
+
+/* ===== LANGUAGE SELECTOR ===== */
+.language-selector {
+  position: relative;
+  display: inline-block;
+}
+
+.language-trigger {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-1) !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) ease !important;
+  height: 32px !important;
+  min-width: 60px !important;
+}
+
+.language-trigger:hover {
+  background-color: var(--color-background-alt) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.language-country {
+  font-size: var(--font-size-xs) !important;
+  color: var(--color-foreground-muted) !important;
+  background-color: var(--color-background-alt) !important;
+  padding: 2px 4px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.language-code {
+  font-weight: var(--font-weight-semibold) !important;
+  text-transform: uppercase !important;
+}
+
+.language-arrow {
+  transition: transform var(--transition-fast) ease !important;
+  color: var(--color-foreground-muted) !important;
+}
+
+.language-arrow.open {
+  transform: rotate(180deg) !important;
+}
+
+.language-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  min-width: 200px !important;
+  margin-top: var(--spacing-1) !important;
+}
+
+.language-list {
+  padding: var(--spacing-2) 0 !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.language-option {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  cursor: pointer !important;
+  transition: background-color var(--transition-fast) ease !important;
+  text-align: left !important;
+}
+
+.language-option:hover {
+  background-color: var(--color-background-alt) !important;
+}
+
+.language-option.active {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+.language-name {
+  flex: 1 !important;
+  margin-left: var(--spacing-2) !important;
+}
+
+.language-check {
+  color: var(--color-primary) !important;
+  margin-left: var(--spacing-2) !important;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-1) !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) ease !important;
+  height: 32px !important;
+  min-width: 80px !important;
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-background-alt) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.theme-icon {
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-bold) !important;
+  color: var(--color-foreground-muted) !important;
+  background-color: var(--color-background-alt) !important;
+  padding: 2px 4px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.theme-label {
+  font-weight: var(--font-weight-medium) !important;
+  text-transform: capitalize !important;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header-controls {
+    gap: var(--spacing-2) !important;
+    padding-right: var(--spacing-2) !important;
+    margin-right: var(--spacing-2) !important;
+  }
+
+  .language-trigger,
+  .theme-toggle {
+    min-width: 50px !important;
+    padding: var(--spacing-1) var(--spacing-2) !important;
+    font-size: var(--font-size-xs) !important;
+  }
+
+  .explorer-link {
+    font-size: var(--font-size-xs) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-controls {
+    border-right: none !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}

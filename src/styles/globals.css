@@ -6,6 +6,9 @@
 /* Import comprehensive UI fixes */
 @import './comprehensive-ui-fixes.css';
 
+/* Import header controls styling */
+@import './header-controls.css';
+
 /* Additional Next.js specific styles */
 :root {
   --max-width: 1200px;
