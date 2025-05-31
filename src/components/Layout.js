@@ -82,7 +82,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const sidebarNavItems = [
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D' },
-    { key: 'profile', label: 'PROFILE', icon: 'P' },
   ];
 
   return (
@@ -146,6 +145,19 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             
             {/* RIGHT SIDE: ALL HEADER CONTROLS */}
             <div className="header-controls">
+              {/* PROFILE element - now properly in the flex container */}
+              <div className="profile-nav">
+                <a 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab('profile');
+                  }}
+                >
+                  PROFILE
+                </a>
+              </div>
+              
               {/* Network selector */}
               <NetworkSelector 
                 networks={networks} 
