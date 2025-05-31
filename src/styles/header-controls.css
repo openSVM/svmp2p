@@ -6,7 +6,9 @@
 /* ===== LANGUAGE SELECTOR ===== */
 .language-selector {
   position: relative;
-  display: inline-block;
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
 }
 
 .language-trigger {
@@ -24,6 +26,8 @@
   transition: all var(--transition-fast) ease !important;
   height: 32px !important;
   min-width: 60px !important;
+  flex-shrink: 0 !important; /* Ensure flex layout participation */
+  box-sizing: border-box !important;
 }
 
 .language-trigger:hover {
@@ -122,6 +126,8 @@
   transition: all var(--transition-fast) ease !important;
   height: 32px !important;
   min-width: 80px !important;
+  flex-shrink: 0 !important; /* Ensure flex layout participation */
+  box-sizing: border-box !important;
 }
 
 .theme-toggle:hover {
