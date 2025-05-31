@@ -144,8 +144,15 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               ))}
             </nav>
             
-            {/* Header Controls - Navigation Controls */}
+            {/* RIGHT SIDE: ALL HEADER CONTROLS */}
             <div className="header-controls">
+              {/* Network selector */}
+              <NetworkSelector 
+                networks={networks} 
+                selectedNetwork={selectedNetwork} 
+                onSelectNetwork={setSelectedNetwork} 
+              />
+              
               {/* Language selector */}
               <LanguageSelector
                 currentLocale={currentLocale}
@@ -164,16 +171,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               >
                 SOLANA EXPLORER
               </a>
-            </div>
-            
-            {/* Header Actions - Functional Actions */}
-            <div className="header-actions">
-              {/* Network selector */}
-              <NetworkSelector 
-                networks={networks} 
-                selectedNetwork={selectedNetwork} 
-                onSelectNetwork={setSelectedNetwork} 
-              />
               
               {/* Install App button with proper prominence */}
               <PWAInstallButton className="header-prominent-action" />
