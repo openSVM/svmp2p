@@ -1,27 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const languages = [
-  { code: 'en', name: 'English', country: 'US' },
-  { code: 'es', name: 'Español', country: 'ES' },
-  { code: 'fr', name: 'Français', country: 'FR' },
-  { code: 'de', name: 'Deutsch', country: 'DE' },
-  { code: 'it', name: 'Italiano', country: 'IT' },
-  { code: 'pt', name: 'Português', country: 'PT' },
-  { code: 'ru', name: 'Русский', country: 'RU' },
-  { code: 'zh', name: '中文', country: 'CN' },
-  { code: 'ja', name: '日本語', country: 'JP' },
-  { code: 'ko', name: '한국어', country: 'KR' },
-];
-
-const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
+/**
+ * LanguageSelector component for selecting between different languages
+ * 
+ * @param {Object} props - Component props
+ * @param {Array} props.languages - Array of language objects with code, name, and country properties
+ * @param {string} props.currentLocale - Current selected language code
+ * @param {Function} props.onLanguageChange - Callback function when language is changed
+ */
+export const LanguageSelector = ({ languages, currentLocale, onLanguageChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef(null);
   const triggerRef = useRef(null);
   const optionRefs = useRef([]);
-
+  
+  // Find current language object
   const currentLanguage = languages.find(lang => lang.code === currentLocale) || languages[0];
-
+  
   // Custom SVG icon component based on provided SVG file
   const DropdownIcon = ({ className }) => (
     <svg 
@@ -39,7 +35,13 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
       </g>
     </svg>
   );
-
+  
+  // Reset optionRefs when languages change
+  useEffect(() => {
+    optionRefs.current = optionRefs.current.slice(0, languages.length);
+  }, [languages]);
+  
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -47,19 +49,18 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
         setFocusedIndex(-1);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
+  
   useEffect(() => {
     if (isOpen && focusedIndex >= 0 && optionRefs.current[focusedIndex]) {
       optionRefs.current[focusedIndex].focus();
     }
   }, [isOpen, focusedIndex]);
-
+  
   const handleKeyDown = (event) => {
     switch (event.key) {
       case 'ArrowDown':
@@ -101,7 +102,7 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
         break;
     }
   };
-
+  
   const handleLanguageSelect = (languageCode) => {
     setIsOpen(false);
     setFocusedIndex(-1);
@@ -111,7 +112,7 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
     // Return focus to trigger button
     triggerRef.current?.focus();
   };
-
+  
   const handleTriggerClick = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -120,12 +121,12 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
       setFocusedIndex(-1);
     }
   };
-
+  
   return (
     <div className="relative inline-flex" ref={dropdownRef}>
       <button
         ref={triggerRef}
-        className="inline-flex items-center justify-center gap-2 px-3 py-2 min-w-[80px] h-8 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition-all duration-200 ease-in-out"
+        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition-all duration-200 ease-in-out"
         onClick={handleTriggerClick}
         onKeyDown={handleKeyDown}
         aria-label={`Current language: ${currentLanguage.name}. Click to change language`}
@@ -134,17 +135,18 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
         aria-controls="language-dropdown"
         role="combobox"
       >
-        <span className="mr-2 text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+        <span className="text-sm font-medium">
           {currentLanguage.country} {currentLanguage.code.toUpperCase()}
         </span>
         <DropdownIcon 
-          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+          className={`h-4 w-4 ml-1.5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
         />
       </button>
+      
       {isOpen && (
         <div 
           id="language-dropdown"
-          className="absolute top-full right-0 z-50 mt-1 min-w-[200px] bg-white border border-gray-200 rounded-md shadow-lg ring-1 ring-black ring-opacity-5"
+          className="absolute top-full right-0 z-50 mt-1 min-w-[200px] bg-white border border-gray-200 rounded-md shadow-lg"
         >
           <div 
             className="py-1 max-h-60 overflow-auto"
@@ -155,12 +157,12 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
               <button
                 key={language.code}
                 ref={el => optionRefs.current[index] = el}
-                className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors duration-150 ${
+                className={`w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors duration-150 ${
                   language.code === currentLocale 
-                    ? 'bg-blue-50 text-blue-700' 
+                    ? 'bg-gray-800 text-white' 
                     : 'text-gray-700'
                 } ${
-                  focusedIndex === index ? 'bg-gray-50' : ''
+                  focusedIndex === index ? 'bg-gray-100' : ''
                 }`}
                 onClick={() => handleLanguageSelect(language.code)}
                 onKeyDown={handleKeyDown}
@@ -168,15 +170,13 @@ const LanguageSelector = ({ currentLocale = 'en', onLanguageChange }) => {
                 aria-selected={language.code === currentLocale}
                 tabIndex={-1}
               >
-                <div className="flex items-center">
-                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded mr-3">
-                    {language.country}
-                  </span>
-                  <span className="font-medium">{language.name}</span>
-                </div>
+                <span className="font-medium">
+                  {language.country}{language.code.toUpperCase()}
+                </span>
+                <span className="ml-3">{language.name}</span>
                 {language.code === currentLocale && (
                   <svg 
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 ml-auto text-white"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
