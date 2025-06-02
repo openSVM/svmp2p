@@ -45,7 +45,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           loadingText="..."
           variant="primary"
           size="small"
-          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
+          className="offer-action-button"
         >
           Buy
         </ButtonLoader>
@@ -60,9 +60,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           loadingText="..."
           variant="danger"
           size="small"
-          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
+          className="offer-action-button"
         >
-          X
+          Cancel
         </ButtonLoader>
       );
     }
@@ -75,9 +75,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           loadingText="..."
           variant="success"
           size="small"
-          className="offer-action-button hover-terminal-glow focus-terminal-glow active-terminal-shrink ripple-terminal-container"
+          className="offer-action-button"
         >
-          ✓
+          Confirm
         </ButtonLoader>
       );
     }
@@ -86,43 +86,45 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
   };
 
   return (
-    <div className="offer-card table-row animate-terminal-fadeInUp hover-terminal-lift stagger-terminal-delay-1">
-      <div className="offer-card-header animate-terminal-fadeInDown">
+    <div className="offer-card">
+      <div className="offer-card-header">
         <div className="seller-info">
           <span className="seller-name">
-            {offer.seller.substring(0, 2)}...{offer.seller.substring(offer.seller.length - 2)}
+            {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
           </span>
         </div>
         <div className="time-info">
-          <span className="time-posted animate-terminal-pulse">{timeSincePosted}</span>
+          <span className="time-posted">{timeSincePosted}</span>
         </div>
       </div>
       
-      <div className="offer-card-body animate-terminal-fadeInLeft stagger-terminal-delay-2">
+      <div className="offer-card-body">
         <div className="amount-info">
-          <span className="sol-amount animate-terminal-glow">{offer.solAmount.toFixed(1)} SOL</span>
+          <span className="sol-amount">{offer.solAmount.toFixed(1)} SOL</span>
         </div>
         
         <div className="price-info">
-          <span className="fiat-amount hover-terminal-glow">
+          <span className="fiat-amount">
             {offer.fiatAmount.toFixed(0)} {offer.fiatCurrency}
           </span>
-          <span className={`price-per-sol ${isGoodRate ? 'good-rate animate-terminal-highlight' : ''}`}>
+          <span className={`price-per-sol ${isGoodRate ? 'good-rate' : ''}`}>
             {rate} {offer.fiatCurrency}/SOL
           </span>
         </div>
         
-        <div className="payment-method">
-          {offer.paymentMethod.substring(0, 10)}
+        <div className="payment-method-container">
+          <span className="payment-method">
+            {offer.paymentMethod}
+          </span>
         </div>
       </div>
       
-      <div className="offer-card-footer animate-terminal-fadeInRight stagger-terminal-delay-3">
-        <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')} animate-terminal-pulseBorder`}>
-          {offer.status.substring(0, 3)}
+      <div className="offer-card-footer">
+        <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}>
+          {offer.status}
         </div>
         
-        <div className="hover-terminal-scale active-terminal-shrink">
+        <div className="action-button-container">
           {renderActionButtons()}
         </div>
       </div>
@@ -677,8 +679,8 @@ const OfferList = ({ type = 'buy' }) => {
   };
 
   return (
-    <div className="offer-list-container" style={{ padding: '0', margin: '0' }}>
-      <h2 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold' }}>{listTitle}</h2>
+    <div className="offer-list-container">
+      <h2 className="offer-list-heading">{listTitle}</h2>
       
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}
@@ -806,7 +808,7 @@ const OfferList = ({ type = 'buy' }) => {
         <div className="no-offers">No offers found matching your criteria.</div>
       ) : (
         <>
-          <div className="offers-grid">
+          <div className="offers-grid responsive-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {paginatedOffers.map(offer => (
               <OfferRow 
                 key={offer.id} 

@@ -14,6 +14,7 @@
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   border: 1px solid transparent;
+  height: 36px;
 }
 
 /* Button variants */
@@ -120,16 +121,19 @@
 .button-sm {
   padding: var(--spacing-1) var(--spacing-2);
   font-size: var(--font-size-sm);
+  height: 28px;
 }
 
 .button-lg {
   padding: var(--spacing-3) var(--spacing-6);
   font-size: var(--font-size-lg);
+  height: 44px;
 }
 
 .button-xl {
   padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-xl);
+  height: 52px;
 }
 
 /* Button states */
@@ -192,4 +196,92 @@
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-right-width: 0;
+}
+
+/* Navigation Button Styles */
+.nav-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-foreground-muted);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  border-radius: var(--radius-md);
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  min-width: 80px;
+  white-space: nowrap;
+  line-height: 1;
+  margin: 0 var(--spacing-1);
+}
+
+.nav-tab:hover {
+  background-color: var(--color-background-alt);
+  color: var(--color-foreground);
+  border-color: var(--color-border);
+}
+
+.nav-tab.active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+/* Offer Action Button Styles */
+.offer-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 28px;
+  min-width: 60px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.offer-action-button:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.offer-action-button:active {
+  transform: translateY(0);
+}
+
+/* Variants for offer action buttons */
+.offer-action-button[variant="danger"] {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.offer-action-button[variant="danger"]:hover {
+  background-color: var(--color-error-dark);
+  border-color: var(--color-error-dark);
+}
+
+.offer-action-button[variant="success"] {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.offer-action-button[variant="success"]:hover {
+  background-color: var(--color-success-dark);
+  border-color: var(--color-success-dark);
 }

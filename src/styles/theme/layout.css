@@ -14,8 +14,19 @@
   max-width: var(--container-xl);
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--spacing-4);
-  padding-right: var(--spacing-4);
+  padding-left: 0; /* Removed left padding to fix alignment */
+  padding-right: var(--spacing-2);
+  box-sizing: border-box;
+}
+
+/* Content container with proper alignment */
+.content-container {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0 !important; /* Ensure left alignment */
+  margin-right: 0;
+  padding: 0 !important;
+  box-sizing: border-box;
 }
 
 /* Professional App Layout */
@@ -24,6 +35,11 @@
   color: var(--color-foreground);
   font-family: var(--font-family-sans);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .app-header {
@@ -35,6 +51,7 @@
   top: 0;
   z-index: var(--z-40);
   backdrop-filter: blur(8px);
+  width: 100%;
 }
 
 .header-content {
@@ -43,25 +60,26 @@
   justify-content: space-between;
   max-width: var(--container-xl);
   margin: 0 auto;
-  padding: 0 var(--spacing-4);
-  height: 64px; /* Fixed header height */
-  min-height: 64px;
+  padding: 0 var(--spacing-2);
+  height: 48px; /* Reduced header height */
+  min-height: 48px;
   position: relative; /* Add positioning context */
+  width: 100%;
 }
 
 /* Professional Logo */
 .logo-section {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: var(--spacing-2); /* Reduced gap */
   color: var(--color-foreground);
-  height: 40px; /* Consistent height with header actions */
+  height: 36px; /* Reduced height */
   flex-shrink: 0; /* Prevent logo from shrinking */
 }
 
 .logo-image {
-  width: 32px;
-  height: 32px;
+  width: 24px; /* Reduced size */
+  height: 24px; /* Reduced size */
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -82,15 +100,16 @@
   justify-content: center;
   align-items: center; /* Ensure proper vertical alignment */
   height: 40px; /* Consistent height */
+  gap: var(--spacing-2); /* Added consistent gap between navigation items */
 }
 
 .nav-tabs {
   display: flex;
-  gap: var(--spacing-1);
+  gap: var(--spacing-2); /* Consistent gap for all navigation elements */
   background-color: var(--color-background-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-1);
+  padding: var(--spacing-2); /* Consistent padding */
   height: 40px; /* Consistent height */
   align-items: center;
   justify-content: center; /* Center the tabs */
@@ -101,11 +120,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
   background: transparent;
   border: 1px solid transparent;
   color: var(--color-foreground-muted);
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: var(--spacing-2) var(--spacing-3);
   font-family: var(--font-family-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -157,7 +175,7 @@
   line-height: 1; /* Consistent line height */
 }
 
-.wallet-container {
+.wallet-container, .header-wallet-container {
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
@@ -165,7 +183,7 @@
   flex-shrink: 0;
 }
 
-.wallet-container button {
+.wallet-container button, .header-wallet-container button {
   height: 40px !important;
   min-height: 40px;
   max-height: 40px;
@@ -178,6 +196,8 @@
   font-weight: var(--font-weight-medium) !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
+  background-color: var(--color-primary) !important; /* Make button more prominent */
+  color: white !important;
 }
 
 .mobile-menu-button {
@@ -206,7 +226,11 @@
 .app-main {
   flex: 1;
   background-color: var(--color-background);
-  padding: var(--spacing-8) 0;
+  padding: var(--spacing-3) 0;
+  width: 100%;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  box-sizing: border-box;
 }
 
 /* Professional Footer */
@@ -479,6 +503,42 @@
 }
 
 /* Responsive layout */
+/* Main content area proper alignment */
+.app-main-content {
+  padding-left: 0;
+  padding-right: var(--spacing-2);
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Offer List Container */
+.offer-list-container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.offer-list-heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-3);
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 @media (max-width: 1024px) {
   .grid-cols-4 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -493,7 +553,7 @@
   }
   
   .header-content {
-    padding: 0 var(--spacing-3);
+    padding: 0 var(--spacing-2);
   }
 }
 
@@ -511,7 +571,7 @@
   }
   
   .header-content {
-    padding: 0 var(--spacing-3);
+    padding: 0 var(--spacing-2);
     height: 56px; /* Slightly smaller on mobile */
     min-height: 56px;
   }
@@ -539,12 +599,12 @@
   }
   
   .container {
-    padding-left: var(--spacing-3);
-    padding-right: var(--spacing-3);
+    padding-left: 0; /* Removed left padding to fix alignment */
+    padding-right: var(--spacing-2);
   }
   
   .header-content {
-    padding: 0 var(--spacing-2);
+    padding: 0 var(--spacing-1);
     height: 56px;
     min-height: 56px;
   }
@@ -568,6 +628,27 @@
   .header-actions .language-trigger,
   .header-actions .theme-toggle,
   .header-actions .pwa-install-button {
+    order: -1; /* Move to beginning of flex container */
+    margin-right: var(--spacing-2); /* Add some spacing */
+    position: relative; /* For positioning the badge */
+  }
+  
+  /* Add a small "new" badge to draw attention */
+  .header-actions .pwa-install-button::before {
+    content: 'NEW';
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--color-success, #22c55e);
+    color: white;
+    font-size: 8px;
+    padding: 2px 4px;
+    border-radius: 10px;
+    font-weight: 700;
+    line-height: 1;
+    pointer-events: none;
+    transform: rotate(10deg);
+  }
     min-width: 36px;
     width: 36px;
     height: 36px !important;
@@ -591,4 +672,10 @@
   .logo-text {
     font-size: var(--font-size-base); /* Smaller on mobile */
   }
+}
+.header-prominent-action {
+  margin-right: var(--spacing-2); 
+  position: relative;
+  transform: scale(1.05);
+  z-index: 5;
 }

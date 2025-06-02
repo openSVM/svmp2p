@@ -11,7 +11,7 @@ const TradingStats = ({ stats }) => {
         <h3 className="card-title">Trading Statistics</h3>
       </div>
       
-      <div className="stats-grid">
+      <div className="stats-grid responsive-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <div className="stat-item">
           <div className="stat-value">{stats.totalTrades || 0}</div>
           <div className="stat-label">Total Trades</div>

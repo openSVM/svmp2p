@@ -97,7 +97,6 @@ const AppContent = () => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -109,6 +108,7 @@ const AppContent = () => {
     setSelectedNetwork,
     activeTab,
     setActiveTab,
+    networks: SVM_NETWORKS,
   }), [network, selectedNetwork, activeTab]);
   
   // Initialize wallet conflict prevention
@@ -119,12 +119,6 @@ const AppContent = () => {
   // Handle navigation click
   const handleNavClick = (tab) => {
     setActiveTab(tab);
-    setSidebarOpen(false);
-  };
-
-  // Handle sidebar backdrop click
-  const handleBackdropClick = () => {
-    setSidebarOpen(false);
   };
 
   // Status indicator for wallet connection
@@ -168,138 +162,156 @@ const AppContent = () => {
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
         <header className="app-header">
-          <div className="logo-container">
-            <button 
-              className="menu-toggle"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open menu"
-            >
-              ≡
-            </button>
-            <Image 
-              src="/images/opensvm-logo.svg" 
-              alt="OpenSVM P2P Exchange"
-              width={24}
-              height={24}
-              priority
-            />
-            <h1>OpenSVM P2P</h1>
-          </div>
-          
-          <div className="wallet-container">
-            <NetworkSelector 
-              networks={SVM_NETWORKS} 
-              selectedNetwork={selectedNetwork} 
-              onSelectNetwork={setSelectedNetwork} 
-            />
-            <ErrorBoundary fallback={
-              <div className="wallet-error">
-                <p>Wallet Error</p>
-                <button onClick={() => wallet.reconnect()}>Retry</button>
+          <div className="header-content">
+            <div className="logo-section">
+              <Image 
+                src="/images/opensvm-logo.svg" 
+                alt="OpenSVM P2P Exchange"
+                className="logo-image"
+                width={24}
+                height={24}
+                priority
+              />
+              <h1 className="logo-text">OpenSVM P2P</h1>
+            </div>
+            
+            {/* Consolidated Navigation */}
+            <nav className="header-nav">
+              <button
+                className={`nav-tab ${activeTab === 'buy' ? 'active' : ''}`}
+                onClick={() => handleNavClick('buy')}
+              >
+                <span className="nav-label">BUY</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'sell' ? 'active' : ''}`}
+                onClick={() => handleNavClick('sell')}
+              >
+                <span className="nav-label">SELL</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'myoffers' ? 'active' : ''}`}
+                onClick={() => handleNavClick('myoffers')}
+              >
+                <span className="nav-label">MY OFFERS</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'disputes' ? 'active' : ''}`}
+                onClick={() => handleNavClick('disputes')}
+              >
+                <span className="nav-label">DISPUTES</span>
+              </button>
+              <button
+                className={`nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => handleNavClick('profile')}
+              >
+                <span className="nav-label">PROFILE</span>
+              </button>
+            </nav>
+            
+            {/* Header Actions */}
+            <div className="header-actions">
+              {/* Language selector */}
+              <div className="relative inline-block text-left">
+                <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  <span className="mr-2">EN</span>
+                  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                  </svg>
+                </button>
               </div>
-            }>
-              <div className="wallet-wrapper">
-                {renderWalletStatus()}
-                <WalletMultiButton style={{ 
-                  backgroundColor: 'var(--ascii-neutral-700)',
-                  color: 'var(--ascii-white)',
-                  border: '1px solid var(--ascii-neutral-900)',
-                  padding: '6px 12px',
-                  fontSize: '12px',
-                  fontFamily: 'Courier New, Courier, monospace',
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase'
-                }} />
-                {wallet.error && (
-                  <button 
-                    className="wallet-retry-button" 
-                    onClick={() => wallet.reconnect()}
-                    title="Retry connection"
-                  >
-                    ↻
-                  </button>
+              
+              {/* Solana Explorer link */}
+              <a 
+                href={network.explorerUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+              >
+                {network.name.toUpperCase()} EXPLORER
+              </a>
+              
+              <NetworkSelector 
+                networks={SVM_NETWORKS} 
+                selectedNetwork={selectedNetwork} 
+                onSelectNetwork={setSelectedNetwork} 
+              />
+              
+              <ErrorBoundary fallback={
+                <div className="wallet-error">
+                  <p>Wallet Error</p>
+                  <button onClick={() => wallet.reconnect()}>Retry</button>
+                </div>
+              }>
+                <div className="wallet-wrapper">
+                  {renderWalletStatus()}
+                  <WalletMultiButton />
+                  {wallet.error && (
+                    <button 
+                      className="wallet-retry-button" 
+                      onClick={() => wallet.reconnect()}
+                      title="Retry connection"
+                    >
+                      ↻
+                    </button>
+                  )}
+                </div>
+              </ErrorBoundary>
+            </div>
+          </div>
+        </header>
+
+        <main className="app-main">
+          <div className="container content-container">
+            <ErrorBoundary>
+              <div key={activeTab} className="content-transition-wrapper fade-in">
+                {activeTab === 'buy' && <OfferList type="buy" />}
+                {activeTab === 'sell' && (
+                  <>
+                    <OfferCreation />
+                    <OfferList type="sell" />
+                  </>
+                )}
+                {activeTab === 'myoffers' && <OfferList type="my" />}
+                {activeTab === 'disputes' && <DisputeResolution />}
+                {activeTab === 'profile' && (
+                  <UserProfile wallet={wallet} network={network} />
                 )}
               </div>
             </ErrorBoundary>
           </div>
-        </header>
-
-        {/* Sidebar Overlay */}
-        {sidebarOpen && (
-          <div className="sidebar-overlay" onClick={handleBackdropClick}>
-            <nav className="sidebar-nav" onClick={(e) => e.stopPropagation()}>
-              <div className="sidebar-header">
-                <h2>MENU</h2>
-                <button 
-                  className="sidebar-close"
-                  onClick={() => setSidebarOpen(false)}
-                  aria-label="Close menu"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="sidebar-content">
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('buy')}
-                >
-                  <span className="nav-icon">B</span>
-                  <span className="nav-label">BUY OFFERS</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('sell')}
-                >
-                  <span className="nav-icon">S</span>
-                  <span className="nav-label">SELL OFFERS</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('myoffers')}
-                >
-                  <span className="nav-icon">M</span>
-                  <span className="nav-label">MY OFFERS</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('disputes')}
-                >
-                  <span className="nav-icon">D</span>
-                  <span className="nav-label">DISPUTES</span>
-                </button>
-                <button 
-                  className={`sidebar-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
-                  onClick={() => handleNavClick('profile')}
-                >
-                  <span className="nav-icon">P</span>
-                  <span className="nav-label">PROFILE</span>
-                </button>
-              </div>
-            </nav>
-          </div>
-        )}
-        
-        <main className="app-main">
-          <ErrorBoundary>
-            <div key={activeTab} className="content-wrapper fade-in">
-              {activeTab === 'buy' && <OfferList type="buy" />}
-              {activeTab === 'sell' && (
-                <>
-                  <OfferCreation />
-                  <OfferList type="sell" />
-                </>
-              )}
-              {activeTab === 'myoffers' && <OfferList type="my" />}
-              {activeTab === 'disputes' && <DisputeResolution />}
-              {activeTab === 'profile' && (
-                <UserProfile wallet={wallet} network={network} />
-              )}
-            </div>
-          </ErrorBoundary>
         </main>
         
-        <footer className="app-footer">
-          <p style={{ margin: 0, fontSize: '10px' }}>© 2025 OpenSVM P2P | <a href={network.explorerUrl} target="_blank" rel="noopener noreferrer">{network.name}</a></p>
+        <footer className="bg-gray-50 border-t border-gray-200 py-4">
+          <div className="container mx-auto px-4 py-6">
+            {/* Desktop layout */}
+            <div className="hidden md:grid md:grid-cols-2 md:gap-4 md:items-center">
+              {/* Left: Network info */}
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Network: {network.name}</p>
+                <p className="text-sm text-gray-600">Smart contract secured trades with decentralized dispute resolution.</p>
+              </div>
+              
+              {/* Right: Copyright */}
+              <div className="text-right">
+                <p className="text-sm text-gray-500">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
+              </div>
+            </div>
+            
+            {/* Mobile layout */}
+            <div className="md:hidden space-y-4">
+              {/* Network info */}
+              <div>
+                <p className="text-sm text-gray-600 font-medium">Network: {network.name}</p>
+                <p className="text-sm text-gray-600">Smart contract secured trades with decentralized dispute resolution.</p>
+              </div>
+              
+              {/* Copyright */}
+              <div className="text-center">
+                <p className="text-sm text-gray-500">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
+              </div>
+            </div>
+          </div>
         </footer>
       </div>
     </AppContext.Provider>

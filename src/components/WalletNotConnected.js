@@ -29,7 +29,7 @@ const WalletNotConnected = ({ message }) => {
     }
 
     try {
-      return <WalletMultiButton />;
+      return <WalletMultiButton className="prominent-wallet-button" />;
     } catch (error) {
       console.error('Error rendering WalletMultiButton:', error);
       setButtonError(true);
@@ -46,8 +46,8 @@ const WalletNotConnected = ({ message }) => {
             <circle cx="16" cy="12" r="1.5" />
           </svg>
         </div>
-        <h3>Wallet Not Connected</h3>
-        <p>{message || 'Connect your wallet to access your profile and make transactions.'}</p>
+        <h3>Connect Your Wallet</h3>
+        <p>{message || 'To access your profile and make transactions, connect your wallet now.'}</p>
         <div className="wallet-connect-button-wrapper">
           <WalletButtonSafe />
         </div>

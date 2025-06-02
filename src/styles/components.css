@@ -855,26 +855,49 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  border: 1px solid var(--color-border);
+  background: var(--color-primary); /* Changed to match wallet button */
+  color: white;
+  border: 1px solid var(--color-primary);
   padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all var(--transition-fast) ease;
+  transition: all var(--transition-normal) ease;
   height: 40px;
   border-radius: var(--radius-md);
   min-width: 40px; /* Ensure minimum width for icon */
   line-height: 1;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
 }
 
 .pwa-install-button:hover {
-  background-color: var(--color-background-alt);
-  border-color: var(--color-border);
-  color: var(--color-foreground);
+  background: var(--color-primary-dark); /* Changed to match wallet button hover */
+  border-color: var(--color-primary-dark);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.pwa-install-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity var(--transition-normal) ease, transform var(--transition-normal) ease;
+}
+
+.pwa-install-button:hover::after {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .pwa-install-icon {
@@ -899,6 +922,23 @@
     width: 40px;
     justify-content: center;
   }
+}
+
+/* Attention-grabbing subtle pulse animation */
+@keyframes pulse-soft {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb, 0, 120, 255), 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(var(--color-accent-rgb, 0, 120, 255), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-accent-rgb, 0, 120, 255), 0);
+  }
+}
+
+.pulse-attention {
+  animation: pulse-soft 2s infinite;
 }
 
 /* ASCII Art Dark Theme Overrides */

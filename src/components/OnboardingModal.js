@@ -67,7 +67,7 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
             Experience peer-to-peer trading like never before. Trade directly with other users 
             across multiple Solana Virtual Machine networks with complete security and transparency.
           </p>
-          <div className="features-grid">
+          <div className="features-grid responsive-grid grid-cols-1 md:grid-cols-3">
             <div className="feature-item">
               <div className="feature-icon">SEC</div>
               <h4>Secure Trading</h4>

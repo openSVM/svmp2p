@@ -1,19 +1,10 @@
+// SVM Selector Dropdown Component with Custom SVG Icon
 import React, { useState, useRef, useEffect } from 'react';
 
-/**
- * NetworkSelector component for selecting between different SVM networks
- * 
- * @param {Object} props - Component props
- * @param {Object} props.networks - Object containing network configurations
- * @param {string} props.selectedNetwork - Currently selected network key
- * @param {Function} props.onSelectNetwork - Callback function when network is selected
- * @returns {JSX.Element} NetworkSelector component
- */
-export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) => {
+const SVMSelectorDropdown = ({ options, selectedOption, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const network = networks[selectedNetwork];
-  
+
   // Custom SVG icon component based on provided SVG file
   const DropdownIcon = ({ className }) => (
     <svg 
@@ -31,7 +22,7 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
       </g>
     </svg>
   );
-  
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -46,48 +37,74 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
     };
   }, []);
 
+  // Handle keyboard navigation
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+    } else if (event.key === 'ArrowDown' && isOpen && options.length > 0) {
+      event.preventDefault();
+      const currentIndex = options.findIndex(option => option.value === selectedOption.value);
+      const nextIndex = (currentIndex + 1) % options.length;
+      onChange(options[nextIndex]);
+    } else if (event.key === 'ArrowUp' && isOpen && options.length > 0) {
+      event.preventDefault();
+      const currentIndex = options.findIndex(option => option.value === selectedOption.value);
+      const prevIndex = (currentIndex - 1 + options.length) % options.length;
+      onChange(options[prevIndex]);
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setIsOpen(!isOpen);
+    }
+  };
+
   return (
-    <div className="network-selector" ref={dropdownRef}>
-      <button 
-        className="network-selector-button"
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
+        onKeyDown={handleKeyDown}
+        className="flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-150 ease-in-out min-w-[90px]"
         aria-haspopup="listbox"
+        aria-expanded={isOpen}
       >
-        <div 
-          className="w-3 h-3 rounded-full mr-1.5"
-          style={{ backgroundColor: network.color }}
-        />
-        <span>{network.name}</span>
+        <span className="mr-2">{selectedOption.label}</span>
         <DropdownIcon 
-          className={`h-4 w-4 ml-1.5 transition-transform duration-200 ${
+          className={`w-5 h-5 text-gray-700 transition-transform duration-200 ${
             isOpen ? 'transform rotate-180' : ''
-          }`}
+          }`} 
         />
       </button>
-      
+
       {isOpen && (
-        <div className="network-selector-dropdown" role="listbox">
-          {Object.entries(networks).map(([key, network]) => (
-            <div 
-              key={key}
-              className={`network-option ${key === selectedNetwork ? 'active' : ''}`}
-              onClick={() => {
-                onSelectNetwork(key);
-                setIsOpen(false);
-              }}
-              role="option"
-              aria-selected={key === selectedNetwork}
-            >
-              <div 
-                className="w-3 h-3 rounded-full mr-1.5"
-                style={{ backgroundColor: network.color }}
-              />
-              <span className="network-option-name">{network.name}</span>
-            </div>
-          ))}
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
+          <ul
+            className="py-1 overflow-auto text-base max-h-60"
+            role="listbox"
+            tabIndex={-1}
+          >
+            {options.map((option) => (
+              <li
+                key={option.value}
+                className={`cursor-pointer select-none relative py-2 px-3 ${
+                  selectedOption.value === option.value
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-700'
+                } hover:bg-gray-100 hover:text-gray-900`}
+                onClick={() => {
+                  onChange(option);
+                  setIsOpen(false);
+                }}
+                role="option"
+                aria-selected={selectedOption.value === option.value}
+              >
+                {option.label}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
   );
 };
+
+export default SVMSelectorDropdown;

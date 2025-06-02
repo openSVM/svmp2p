@@ -25,7 +25,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   } = useContext(AppContext);
   
   const { connected, publicKey } = useSafeWallet();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
 
@@ -82,7 +81,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const sidebarNavItems = [
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D' },
-    { key: 'profile', label: 'PROFILE', icon: 'P' },
   ];
 
   return (
@@ -94,186 +92,170 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="app-layout-sidebar">
-        {/* Sidebar */}
-        <aside className={`app-sidebar ${mobileNavOpen ? 'mobile-open' : ''}`}>
-          {/* Sidebar Header */}
-          <div className="sidebar-header">
+      {/* Accessibility: Skip to main content link */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
+      <div className="app-layout">
+        {/* Top Header */}
+        <header className="app-header">
+          <div className="header-content">
             <div className="logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
                 className="logo-image"
-                width={32}
-                height={32}
+                width={24}
+                height={24}
                 priority
               />
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
             
-            {/* Close button for mobile */}
-            <button
-              className="sidebar-close"
-              onClick={() => setMobileNavOpen(false)}
-              aria-label="Close sidebar"
-            >
-              <span>×</span>
-            </button>
-          </div>
-          
-          {/* Sidebar Navigation */}
-          <nav className="sidebar-nav">
-            {/* Top Navigation - Mobile Only */}
-            <div className="nav-section mobile-top-nav">
-              <h3>Quick Actions</h3>
-              <ul className="nav-list">
-                {topNavItems.map((item) => (
-                  <li key={item.key}>
-                    <button
-                      className={`nav-item ${
-                        activeTab === item.key ? 'active' : ''
-                      }`}
-                      onClick={() => {
-                        setActiveTab(item.key);
-                        setMobileNavOpen(false);
-                      }}
-                    >
-                      <span className="nav-icon">{item.icon}</span>
-                      <span className="nav-label">{item.label}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="nav-section">
-              <h3>My Account</h3>
-              <ul className="nav-list">
-                {sidebarNavItems.map((item) => (
-                  <li key={item.key}>
-                    <button
-                      className={`nav-item ${
-                        activeTab === item.key ? 'active' : ''
-                      }`}
-                      onClick={() => {
-                        setActiveTab(item.key);
-                        setMobileNavOpen(false);
-                      }}
-                    >
-                      <span className="nav-icon">{item.icon}</span>
-                      <span className="nav-label">{item.label}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Desktop Navigation - Horizontal layout for desktop */}
+            <nav className="desktop-nav">
+              {/* Primary navigation items */}
+              {topNavItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={`nav-tab ${
+                    activeTab === item.key ? 'active' : ''
+                  }`}
+                  onClick={() => setActiveTab(item.key)}
+                >
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+              
+              {/* Secondary navigation items (previously in sidebar) */}
+              {sidebarNavItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={`nav-tab ${
+                    activeTab === item.key ? 'active' : ''
+                  }`}
+                  onClick={() => setActiveTab(item.key)}
+                >
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+            </nav>
             
-            <div className="nav-section">
-              <h3>Settings</h3>
-              <div className="settings-group">
-                <NetworkSelector 
-                  networks={networks} 
-                  selectedNetwork={selectedNetwork} 
-                  onSelectNetwork={setSelectedNetwork} 
-                />
-                
-                <LanguageSelector
-                  currentLocale={currentLocale}
-                  onLanguageChange={handleLanguageChange}
-                />
-                
-                <ThemeToggle />
+            {/* RIGHT SIDE: ALL HEADER CONTROLS */}
+            <div className="header-controls">
+              {/* PROFILE element - now properly in the flex container */}
+              <div className="profile-nav">
+                <a 
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab('profile');
+                  }}
+                >
+                  PROFILE
+                </a>
               </div>
-            </div>
-          </nav>
-          
-          {/* Sidebar Footer */}
-          <div className="sidebar-footer">
-            <PWAInstallButton />
-            <div className="wallet-container">
-              <WalletMultiButton />
+              
+              {/* Network selector */}
+              <NetworkSelector 
+                networks={networks} 
+                selectedNetwork={selectedNetwork} 
+                onSelectNetwork={setSelectedNetwork} 
+              />
+              
+              {/* Language selector */}
+              <LanguageSelector
+                currentLocale={currentLocale}
+                onLanguageChange={handleLanguageChange}
+              />
+              
+              {/* Theme toggle */}
+              <ThemeToggle />
+              
+              {/* Explorer link */}
+              <a 
+                href={network.explorerUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="explorer-link"
+              >
+                SOLANA EXPLORER
+              </a>
+              
+              {/* Install App button with proper prominence */}
+              <PWAInstallButton className="header-prominent-action" />
+              
+              {/* Connected wallet info */}
+              {connected && publicKey && (
+                <span className="connection-status">
+                  Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
+                </span>
+              )}
+              
+              {/* Wallet connection button */}
+              {!connected && (
+                <div className="header-wallet-container">
+                  <WalletMultiButton />
+                </div>
+              )}
+              
+              {/* Disconnect button for connected users */}
               {connected && <WalletDisconnectButton />}
             </div>
           </div>
-        </aside>
+        </header>
 
-        {/* Mobile Overlay */}
-        <div 
-          className={`sidebar-overlay ${mobileNavOpen ? 'open' : ''}`}
-          onClick={() => setMobileNavOpen(false)}
-        />
-
-        {/* Main Content Area */}
-        <div className="app-content">
-          {/* Top Header */}
-          <header className="app-header-slim">
-            <div className="header-content-slim">
-              {/* Mobile Menu Button */}
+        {/* Mobile Navigation - Stacked below header */}
+        <nav className="mobile-nav">
+          <div className="mobile-nav-buttons">
+            {/* Primary navigation items */}
+            {topNavItems.map((item) => (
               <button
-                className="mobile-menu-button"
-                onClick={() => setMobileNavOpen(true)}
-                aria-label="Open sidebar"
+                key={item.key}
+                className={`mobile-nav-btn ${
+                  activeTab === item.key ? 'active' : ''
+                }`}
+                onClick={() => setActiveTab(item.key)}
               >
-                <span>≡</span>
+                <span className="nav-label">{item.label}</span>
               </button>
-              
-              {/* Top Navigation - Desktop */}
-              <nav className="header-nav">
-                {topNavItems.map((item) => (
-                  <button
-                    key={item.key}
-                    className={`nav-tab ${
-                      activeTab === item.key ? 'active' : ''
-                    }`}
-                    onClick={() => setActiveTab(item.key)}
-                  >
-                    <span className="nav-icon">{item.icon}</span>
-                    <span className="nav-label">{item.label}</span>
-                  </button>
-                ))}
-              </nav>
-              
-              {/* Header Info */}
-              <div className="header-info">
-                {connected && publicKey && (
-                  <span className="connection-status">
-                    Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
-                  </span>
-                )}
-              </div>
+            ))}
+            
+            {/* Secondary navigation items */}
+            {sidebarNavItems.map((item) => (
+              <button
+                key={item.key}
+                className={`mobile-nav-btn ${
+                  activeTab === item.key ? 'active' : ''
+                }`}
+                onClick={() => setActiveTab(item.key)}
+              >
+                <span className="nav-label">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+        
+        {/* Main Content */}
+        <main id="main-content" className="app-main">
+          <div className="container content-container">
+            <div className="content-transition-wrapper fade-in">
+              {children}
             </div>
-          </header>
-          
-          {/* Main Content */}
-          <main className="app-main-content">
-            <div className="container">
-              <div className="content-transition-wrapper fade-in">
-                {children}
-              </div>
+          </div>
+        </main>
+        
+        {/* Footer */}
+        <footer className="app-footer">
+          <div className="container">
+            <div className="text-center">
+              <p className="text-sm text-foreground-muted">
+                © 2025 OpenSVM P2P Exchange. All rights reserved.
+              </p>
             </div>
-          </main>
-          
-          {/* Footer */}
-          <footer className="app-footer">
-            <div className="container">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p className="text-sm text-foreground-muted">
-                  © 2025 OpenSVM P2P Exchange. All rights reserved.
-                </p>
-                <div className="flex items-center gap-6">
-                  <a 
-                    href={network.explorerUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm text-foreground-muted hover:text-primary transition-colors"
-                  >
-                    {network.name} Explorer
-                  </a>
-                </div>
-              </div>
-            </div>
-          </footer>
-        </div>
+          </div>
+        </footer>
       </div>
 
       {/* Onboarding Modal */}
