@@ -9,6 +9,12 @@
 /* Import header controls styling */
 @import './header-controls.css';
 
+/* Import responsive navigation system */
+@import './responsive-navigation.css';
+
+/* Import responsive grid layout system */
+@import './responsive-grid.css';
+
 /* Additional Next.js specific styles */
 :root {
   --max-width: 1200px;

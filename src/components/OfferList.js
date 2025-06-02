@@ -808,7 +808,7 @@ const OfferList = ({ type = 'buy' }) => {
         <div className="no-offers">No offers found matching your criteria.</div>
       ) : (
         <>
-          <div className="offers-grid">
+          <div className="offers-grid responsive-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {paginatedOffers.map(offer => (
               <OfferRow 
                 key={offer.id} 

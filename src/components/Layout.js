@@ -25,37 +25,8 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   } = useContext(AppContext);
   
   const { connected, publicKey } = useSafeWallet();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
-
-  // Lock body scroll when mobile nav is open
-  useEffect(() => {
-    if (mobileNavOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
-    // Cleanup function to restore scroll on unmount
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [mobileNavOpen]);
-
-  // Handle escape key for mobile navigation
-  useEffect(() => {
-    const handleEscapeKey = (event) => {
-      if (event.key === 'Escape' && mobileNavOpen) {
-        setMobileNavOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscapeKey);
-    return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
-    };
-  }, [mobileNavOpen]);
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -142,8 +113,8 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
             
-            {/* Desktop Navigation - Hidden on mobile */}
-            <nav className="header-nav hide-on-mobile">
+            {/* Desktop Navigation - Horizontal layout for desktop */}
+            <nav className="desktop-nav">
               {/* Primary navigation items */}
               {topNavItems.map((item) => (
                 <button
@@ -170,15 +141,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 </button>
               ))}
             </nav>
-
-            {/* Mobile Hamburger Menu Button - Only visible on mobile */}
-            <button 
-              className="mobile-menu-button show-on-mobile"
-              onClick={() => setMobileNavOpen(!mobileNavOpen)}
-              aria-label="Toggle mobile navigation"
-            >
-              <span className="hamburger-icon">☰</span>
-            </button>
             
             {/* RIGHT SIDE: ALL HEADER CONTROLS */}
             <div className="header-controls">
@@ -244,95 +206,36 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           </div>
         </header>
 
-        {/* Mobile Navigation Drawer */}
-        <div className={`mobile-nav-drawer ${mobileNavOpen ? 'open' : ''}`}>
-          <div className="mobile-nav-content">
-            <div className="mobile-nav-header">
-              <h2 className="mobile-nav-title">Navigation</h2>
-              <button 
-                className="mobile-nav-close"
-                onClick={() => setMobileNavOpen(false)}
-                aria-label="Close navigation"
+        {/* Mobile Navigation - Stacked below header */}
+        <nav className="mobile-nav">
+          <div className="mobile-nav-buttons">
+            {/* Primary navigation items */}
+            {topNavItems.map((item) => (
+              <button
+                key={item.key}
+                className={`mobile-nav-btn ${
+                  activeTab === item.key ? 'active' : ''
+                }`}
+                onClick={() => setActiveTab(item.key)}
               >
-                ×
+                <span className="nav-label">{item.label}</span>
               </button>
-            </div>
-            <div className="mobile-nav-items">
-              {/* Primary navigation items */}
-              {topNavItems.map((item) => (
-                <button
-                  key={item.key}
-                  className={`mobile-nav-item ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setActiveTab(item.key);
-                    setMobileNavOpen(false);
-                  }}
-                >
-                  <span className="nav-label">{item.label}</span>
-                </button>
-              ))}
-              
-              {/* Secondary navigation items */}
-              {sidebarNavItems.map((item) => (
-                <button
-                  key={item.key}
-                  className={`mobile-nav-item ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setActiveTab(item.key);
-                    setMobileNavOpen(false);
-                  }}
-                >
-                  <span className="nav-label">{item.label}</span>
-                </button>
-              ))}
-
-              {/* Mobile-specific controls */}
-              <div className="mobile-nav-controls">
-                <div className="mobile-control-item">
-                  <span className="control-label">Network:</span>
-                  <NetworkSelector 
-                    networks={networks} 
-                    selectedNetwork={selectedNetwork} 
-                    onSelectNetwork={setSelectedNetwork} 
-                  />
-                </div>
-                <div className="mobile-control-item">
-                  <span className="control-label">Language:</span>
-                  <LanguageSelector
-                    currentLocale={currentLocale}
-                    onLanguageChange={handleLanguageChange}
-                  />
-                </div>
-                <div className="mobile-control-item">
-                  <span className="control-label">Theme:</span>
-                  <ThemeToggle />
-                </div>
-                <div className="mobile-control-item">
-                  <a 
-                    href={network.explorerUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mobile-nav-link"
-                  >
-                    SOLANA EXPLORER
-                  </a>
-                </div>
-              </div>
-            </div>
+            ))}
+            
+            {/* Secondary navigation items */}
+            {sidebarNavItems.map((item) => (
+              <button
+                key={item.key}
+                className={`mobile-nav-btn ${
+                  activeTab === item.key ? 'active' : ''
+                }`}
+                onClick={() => setActiveTab(item.key)}
+              >
+                <span className="nav-label">{item.label}</span>
+              </button>
+            ))}
           </div>
-        </div>
-
-        {/* Mobile Navigation Overlay */}
-        {mobileNavOpen && (
-          <div 
-            className="mobile-nav-overlay"
-            onClick={() => setMobileNavOpen(false)}
-          />
-        )}
+        </nav>
         
         {/* Main Content */}
         <main id="main-content" className="app-main">
