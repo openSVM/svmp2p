@@ -187,29 +187,53 @@
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 768px) {
   .header-controls {
-    gap: var(--spacing-2) !important;
-    padding-right: var(--spacing-2) !important;
-    margin-right: var(--spacing-2) !important;
+    display: none !important; /* Hide on mobile - controls shown in nav drawer */
   }
 
   .language-trigger,
   .theme-toggle {
-    min-width: 50px !important;
-    padding: var(--spacing-1) var(--spacing-2) !important;
-    font-size: var(--font-size-xs) !important;
+    min-width: auto !important;
+    min-height: 48px !important; /* Touch-friendly targets */
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    font-size: var(--font-size-base-mobile) !important;
+    width: 100% !important;
   }
 
   .explorer-link {
-    font-size: var(--font-size-xs) !important;
+    font-size: var(--font-size-base-mobile) !important;
+    min-height: 48px !important;
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Mobile dropdown adjustments */
+  .language-dropdown {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 300px !important;
+    max-height: 70vh !important;
+    border-radius: var(--radius-lg) !important;
+  }
+
+  .language-list {
+    max-height: 60vh !important;
+  }
+
+  .language-option {
+    min-height: 48px !important;
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    font-size: var(--font-size-base-mobile) !important;
   }
 }
 
 @media (max-width: 640px) {
-  .header-controls {
-    border-right: none !important;
-    padding-right: 0 !important;
-    margin-right: 0 !important;
-    width: 100% !important;
-    justify-content: center !important;
+  .language-trigger,
+  .theme-toggle {
+    padding: var(--spacing-2) var(--spacing-3) !important;
+    font-size: var(--font-size-small-mobile) !important;
   }
 }
