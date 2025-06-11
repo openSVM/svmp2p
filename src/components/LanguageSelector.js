@@ -23,6 +23,7 @@ const LanguageSelector = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef(null);
   const triggerRef = useRef(null);
   const optionRefs = useRef([]);
@@ -35,6 +36,29 @@ const LanguageSelector = ({
     safeLanguages.find(lang => lang.code === currentLocale) || 
     safeLanguages[0] || 
     { code: 'en', name: 'English', country: 'US' }; // Fallback default
+
+  // Calculate dropdown position
+  const calculateDropdownPosition = () => {
+    if (triggerRef.current) {
+      const buttonRect = triggerRef.current.getBoundingClientRect();
+      const dropdownWidth = 200; // Approximate dropdown width
+      const dropdownHeight = Math.min(300, safeLanguages.length * 48 + 16); // Dynamic height based on options
+      
+      let top = buttonRect.bottom + 4;
+      let left = buttonRect.right - dropdownWidth;
+      
+      // Adjust if dropdown would go off screen
+      if (left < 8) {
+        left = buttonRect.left;
+      }
+      
+      if (top + dropdownHeight > window.innerHeight - 8) {
+        top = buttonRect.top - dropdownHeight - 4;
+      }
+      
+      setDropdownPosition({ top, left });
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -56,6 +80,20 @@ const LanguageSelector = ({
       optionRefs.current[focusedIndex].focus();
     }
   }, [isOpen, focusedIndex]);
+
+  // Update position when opening dropdown
+  useEffect(() => {
+    if (isOpen) {
+      calculateDropdownPosition();
+      window.addEventListener('resize', calculateDropdownPosition);
+      window.addEventListener('scroll', calculateDropdownPosition);
+      
+      return () => {
+        window.removeEventListener('resize', calculateDropdownPosition);
+        window.removeEventListener('scroll', calculateDropdownPosition);
+      };
+    }
+  }, [isOpen]);
   
   // Keyboard navigation
   const handleKeyDown = (event) => {
@@ -112,6 +150,9 @@ const LanguageSelector = ({
   
   // Handle trigger button click
   const handleTriggerClick = () => {
+    if (!isOpen) {
+      calculateDropdownPosition();
+    }
     setIsOpen(!isOpen);
     if (!isOpen) {
       setFocusedIndex(0);
@@ -121,7 +162,7 @@ const LanguageSelector = ({
   };
   
   return (
-    <div className="relative inline-flex" ref={dropdownRef}>
+    <div className="language-selector relative inline-flex" ref={dropdownRef}>
       <button
         ref={triggerRef}
         className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-500 transition-all duration-200 ease-in-out min-w-[90px]"
@@ -142,57 +183,71 @@ const LanguageSelector = ({
       </button>
       
       {isOpen && (
-        <div 
-          id="language-dropdown"
-          className="absolute top-full right-0 z-50 mt-1 min-w-[200px] bg-white border border-gray-200 rounded-md shadow-lg"
-        >
+        <>
+          <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} />
           <div 
-            className="py-1 max-h-60 overflow-auto"
-            role="listbox"
-            aria-label="Language options"
+            id="language-dropdown"
+            className="language-dropdown"
+            style={{
+              position: 'fixed',
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+              zIndex: 99999,
+              minWidth: '200px',
+              backgroundColor: 'var(--color-background)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-md)',
+              boxShadow: 'var(--shadow-lg)'
+            }}
           >
-            {/* Map over safeLanguages */} 
-            {safeLanguages.map((language, index) => (
-              <button
-                key={language.code}
-                ref={el => optionRefs.current[index] = el}
-                className={`w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors duration-150 ${
-                  language.code === currentLocale 
-                    ? 'bg-gray-800 text-white' 
-                    : 'text-gray-700'
-                } ${
-                  focusedIndex === index ? 'bg-gray-100' : '' // Keep focus style separate
-                }`}
-                onClick={() => handleLanguageSelect(language.code)}
-                onKeyDown={handleKeyDown}
-                role="option"
-                aria-selected={language.code === currentLocale}
-                tabIndex={-1}
-              >
-                <span className="font-medium">
-                  {language.country}{language.code.toUpperCase()}
-                </span>
-                <span className="ml-3">{language.name}</span>
-                {language.code === currentLocale && (
-                  <svg 
-                    className="w-4 h-4 ml-auto text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M5 13l4 4L19 7" 
-                    />
-                  </svg>
-                )}
-              </button>
-            ))}
+            <div 
+              className="py-1 max-h-60 overflow-auto"
+              role="listbox"
+              aria-label="Language options"
+            >
+              {/* Map over safeLanguages */} 
+              {safeLanguages.map((language, index) => (
+                <button
+                  key={language.code}
+                  ref={el => optionRefs.current[index] = el}
+                  className={`language-option w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors duration-150 ${
+                    language.code === currentLocale 
+                      ? 'bg-gray-800 text-white' 
+                      : 'text-gray-700'
+                  } ${
+                    focusedIndex === index ? 'bg-gray-100' : '' // Keep focus style separate
+                  }`}
+                  onClick={() => handleLanguageSelect(language.code)}
+                  onKeyDown={handleKeyDown}
+                  role="option"
+                  aria-selected={language.code === currentLocale}
+                  tabIndex={-1}
+                >
+                  <span className="font-medium">
+                    {language.country}{language.code.toUpperCase()}
+                  </span>
+                  <span className="ml-3">{language.name}</span>
+                  {language.code === currentLocale && (
+                    <svg 
+                      className="w-4 h-4 ml-auto text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M5 13l4 4L19 7" 
+                      />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
