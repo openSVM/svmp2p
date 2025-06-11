@@ -278,21 +278,46 @@ const AppContent = () => {
 
         <main className="app-main">
           {isGuidedWorkflow ? (
-            <div className="guided-workflow-container">
-              <div className="guided-workflow-header">
-                <h2>{guidedWorkflowType === 'buy' ? 'Buy SOL' : 'Sell SOL'} - Guided Workflow</h2>
+            <ErrorBoundary fallback={
+              <div className="guided-workflow-error">
+                <h2>Guided Workflow Error</h2>
+                <p>Something went wrong with the guided workflow. Please try again or use the manual interface.</p>
                 <button 
-                  className="exit-workflow-button"
+                  className="error-recovery-button"
                   onClick={handleCompleteGuidedWorkflow}
                 >
-                  Exit Workflow
+                  Exit to Manual Interface
                 </button>
               </div>
-              <TradingGuidedWorkflow 
-                tradingType={guidedWorkflowType} 
-                onComplete={handleCompleteGuidedWorkflow}
-              />
-            </div>
+            }>
+              <div 
+                className="guided-workflow-container"
+                role="region" 
+                aria-label="Guided trading workflow"
+                tabIndex="-1"
+                ref={(el) => {
+                  // Focus management: focus the container when workflow starts
+                  if (el && isGuidedWorkflow) {
+                    setTimeout(() => el.focus(), 100);
+                  }
+                }}
+              >
+                <div className="guided-workflow-header">
+                  <h2>{guidedWorkflowType === 'buy' ? 'Buy SOL' : 'Sell SOL'} - Guided Workflow</h2>
+                  <button 
+                    className="exit-workflow-button"
+                    onClick={handleCompleteGuidedWorkflow}
+                    aria-label="Exit guided workflow and return to manual interface"
+                  >
+                    Exit Workflow
+                  </button>
+                </div>
+                <TradingGuidedWorkflow 
+                  tradingType={guidedWorkflowType} 
+                  onComplete={handleCompleteGuidedWorkflow}
+                />
+              </div>
+            </ErrorBoundary>
           ) : (
             <div className="container content-container">
               <ErrorBoundary>

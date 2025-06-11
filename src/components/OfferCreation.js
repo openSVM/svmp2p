@@ -12,8 +12,15 @@ import {
   ConfirmationDialog 
 } from './common';
 
-
 import { useSafeWallet } from '../contexts/WalletContextProvider';
+import { useActionDebounce, useInputValidation } from '../hooks/useActionDebounce';
+import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../utils/validation';
+import { 
+  MOCK_SOL_PRICES, 
+  SUPPORTED_CURRENCIES, 
+  SUPPORTED_PAYMENT_METHODS,
+  VALIDATION_CONSTRAINTS 
+} from '../constants/tradingConstants';
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = useSafeWallet();
@@ -31,8 +38,19 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
-  const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
-  const paymentMethods = ['Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
+  // Validation states
+  const solValidation = useInputValidation(solAmount, validateSolAmount);
+  const fiatValidation = useInputValidation(fiatAmount, (value) => validateFiatAmount(value, fiatCurrency));
+  const rateValidation = useInputValidation(
+    `${solAmount}-${fiatAmount}-${fiatCurrency}`, 
+    () => validateMarketRate(parseFloat(solAmount), parseFloat(fiatAmount), fiatCurrency)
+  );
+  
+  // Debounced action handler
+  const { debouncedCallback: debouncedCreateOffer, isDisabled: isActionDisabled } = useActionDebounce(
+    processCreateOffer,
+    1000
+  );
   
   const handleCreateOffer = async (e) => {
     e.preventDefault();
@@ -42,12 +60,23 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       return;
     }
     
+    // Validate inputs before proceeding
+    if (!solValidation.isValid) {
+      setError(solValidation.error);
+      return;
+    }
+    
+    if (!fiatValidation.isValid) {
+      setError(fiatValidation.error);
+      return;
+    }
+    
     // Show confirmation dialog
     setShowConfirmation(true);
   };
   
   // Actual offer creation after confirmation
-  const processCreateOffer = async () => {
+  async function processCreateOffer() {
     setError('');
     setSuccess('');
     setIsCreating(true);
@@ -131,25 +160,15 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     } finally {
       setIsCreating(false);
     }
-  };
+  }
   
   // Calculate fiat amount based on SOL amount (simple conversion for demo)
   const handleSolAmountChange = (e) => {
     const sol = e.target.value;
     setSolAmount(sol);
     
-    // Mock price calculation - in a real app, you'd use an oracle or price feed
-    const mockSolPrice = {
-      'USD': 150,
-      'EUR': 140,
-      'GBP': 120,
-      'JPY': 16500,
-      'CAD': 200,
-      'AUD': 220
-    };
-    
     if (sol && !isNaN(sol)) {
-      const calculatedFiat = (parseFloat(sol) * mockSolPrice[fiatCurrency]).toFixed(2);
+      const calculatedFiat = (parseFloat(sol) * MOCK_SOL_PRICES[fiatCurrency]).toFixed(2);
       setFiatAmount(calculatedFiat);
     }
   };
@@ -159,15 +178,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     setFiatCurrency(e.target.value);
     if (solAmount && !isNaN(solAmount)) {
       // Recalculate fiat amount with new currency
-      const mockSolPrice = {
-        'USD': 150,
-        'EUR': 140,
-        'GBP': 120,
-        'JPY': 16500,
-        'CAD': 200,
-        'AUD': 220
-      };
-      const calculatedFiat = (parseFloat(solAmount) * mockSolPrice[e.target.value]).toFixed(2);
+      const calculatedFiat = (parseFloat(solAmount) * MOCK_SOL_PRICES[e.target.value]).toFixed(2);
       setFiatAmount(calculatedFiat);
     }
   };
@@ -234,10 +245,15 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
             value={solAmount}
             onChange={handleSolAmountChange}
             placeholder="Enter SOL amount"
-            min="0.01"
-            step="0.01"
+            min={VALIDATION_CONSTRAINTS.SOL_AMOUNT.min}
+            max={VALIDATION_CONSTRAINTS.SOL_AMOUNT.max}
+            step={VALIDATION_CONSTRAINTS.SOL_AMOUNT.step}
             required
+            className={!solValidation.isValid ? 'input-error' : ''}
           />
+          {!solValidation.isValid && (
+            <div className="validation-error">{solValidation.error}</div>
+          )}
         </div>
         
         <div className="form-group">
@@ -252,7 +268,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
             onChange={handleCurrencyChange}
             required
           >
-            {currencies.map(currency => (
+            {SUPPORTED_CURRENCIES.map(currency => (
               <option key={currency} value={currency}>{currency}</option>
             ))}
           </select>
@@ -270,10 +286,18 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
             value={fiatAmount}
             onChange={(e) => setFiatAmount(e.target.value)}
             placeholder="Enter fiat amount"
-            min="0.01"
-            step="0.01"
+            min={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.min}
+            max={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.max}
+            step={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.step}
             required
+            className={!fiatValidation.isValid ? 'input-error' : ''}
           />
+          {!fiatValidation.isValid && (
+            <div className="validation-error">{fiatValidation.error}</div>
+          )}
+          {rateValidation.error && (
+            <div className="validation-warning">{rateValidation.error}</div>
+          )}
         </div>
         
         <div className="form-group">
@@ -288,7 +312,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
             onChange={(e) => setPaymentMethod(e.target.value)}
             required
           >
-            {paymentMethods.map(method => (
+            {SUPPORTED_PAYMENT_METHODS.map(method => (
               <option key={method} value={method}>{method}</option>
             ))}
           </select>
@@ -297,7 +321,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         <ButtonLoader
           type="submit"
           isLoading={isCreating}
-          disabled={!wallet.connected || !wallet.publicKey}
+          disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
           loadingText="Creating Offer..."
           variant="primary"
           size="medium"
@@ -317,7 +341,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       <ConfirmationDialog
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}
-        onConfirm={processCreateOffer}
+        onConfirm={debouncedCreateOffer}
         title="Confirm Offer Creation"
         message={`Are you sure you want to create an offer to sell ${solAmount} SOL for ${fiatAmount} ${fiatCurrency}? This will lock your SOL in an escrow contract.`}
         variant="default"
@@ -359,6 +383,23 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
 
         .guided-workflow-button:hover {
           background-color: #2563eb;
+        }
+
+        .input-error {
+          border-color: #ef4444 !important;
+          box-shadow: 0 0 0 1px #ef4444;
+        }
+
+        .validation-error {
+          color: #ef4444;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+        }
+
+        .validation-warning {
+          color: #f59e0b;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
         }
       `}</style>
     </div>

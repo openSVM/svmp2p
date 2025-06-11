@@ -3,11 +3,27 @@ import { AppContext } from '../contexts/AppContext';
 import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationDialog } from './common';
 import { useSafeWallet } from '../contexts/WalletContextProvider';
 import { useDebounce, VirtualizedList } from '../utils/performance';
+import { useActionDebounce } from '../hooks/useActionDebounce';
+import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
 
 // Component for rendering a single offer row
 const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction, network }) => {
   const isProcessing = processingAction.offerId === offer.id;
   const currentAction = processingAction.action;
+  
+  // Debounced action handlers
+  const { debouncedCallback: debouncedAccept, isDisabled: isAcceptDisabled } = useActionDebounce(
+    () => handleOfferAction(offer.id, 'accept'),
+    1000
+  );
+  const { debouncedCallback: debouncedCancel, isDisabled: isCancelDisabled } = useActionDebounce(
+    () => handleOfferAction(offer.id, 'cancel'),
+    1000
+  );
+  const { debouncedCallback: debouncedConfirm, isDisabled: isConfirmDisabled } = useActionDebounce(
+    () => handleOfferAction(offer.id, 'confirm'),
+    1000
+  );
   
   // Calculate the rate and determine if it's a good rate
   const rate = (offer.fiatAmount / offer.solAmount).toFixed(2);
@@ -40,8 +56,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     if (type === 'buy' && offer.status === 'Listed') {
       return (
         <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'accept')}
+          onClick={debouncedAccept}
           isLoading={isProcessing && currentAction === 'accept'}
+          disabled={isAcceptDisabled}
           loadingText="..."
           variant="primary"
           size="small"
@@ -55,8 +72,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     if (type === 'my' && offer.status === 'Listed') {
       return (
         <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'cancel')}
+          onClick={debouncedCancel}
           isLoading={isProcessing && currentAction === 'cancel'}
+          disabled={isCancelDisabled}
           loadingText="..."
           variant="danger"
           size="small"
@@ -70,8 +88,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     if (type === 'my' && offer.status === 'Accepted') {
       return (
         <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'confirm')}
+          onClick={debouncedConfirm}
           isLoading={isProcessing && currentAction === 'confirm'}
+          disabled={isConfirmDisabled}
           loadingText="..."
           variant="success"
           size="small"
@@ -179,8 +198,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
   
   
   // Memoize static data
-  const currencies = useMemo(() => ['', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'], []);
-  const paymentMethods = useMemo(() => ['', 'Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'], []);
+  const currencies = useMemo(() => ['', ...SUPPORTED_CURRENCIES], []);
+  const paymentMethods = useMemo(() => ['', ...SUPPORTED_PAYMENT_METHODS], []);
   const sortOptions = useMemo(() => [
     { value: 'createdAt', label: 'Date Posted' },
     { value: 'solAmount', label: 'SOL Amount' },
@@ -742,7 +761,6 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         )}
       </div>
 
-      
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}
       
@@ -754,55 +772,6 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         />
       )}
       
-      <div className="filters">
-        <div className="filter-group">
-          <label htmlFor={inputIds.minAmount}>
-            <Tooltip content="Enter minimum amount of SOL you want to trade">
-              <span>SOL Amount:</span>
-            </Tooltip>
-          </label>
-          <input
-            id={inputIds.minAmount}
-            type="number"
-            placeholder="Min"
-            value={minAmount}
-            onChange={(e) => setMinAmount(e.target.value)}
-            min="0"
-            step="0.01"
-            aria-label="Minimum SOL amount"
-          />
-          <span>to</span>
-          <input
-            id={inputIds.maxAmount}
-            type="number"
-            placeholder="Max"
-            value={maxAmount}
-            onChange={(e) => setMaxAmount(e.target.value)}
-            min="0"
-            step="0.01"
-            aria-label="Maximum SOL amount"
-          />
-        </div>
-        
-        <div className="filter-group">
-          <label htmlFor={inputIds.currency}>
-            <Tooltip content="Select the currency you want to trade in">
-              <span>Currency:</span>
-            </Tooltip>
-          </label>
-          <select
-            id={inputIds.currency}
-            value={selectedCurrency}
-            onChange={(e) => setSelectedCurrency(e.target.value)}
-            aria-label="Select currency"
-          >
-            {currencies.map(currency => (
-              <option key={currency} value={currency}>{currency}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
       <div className="filter-section">
         <div className="filter-toggle-container">
           <button 
@@ -833,30 +802,16 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
             </button>
           </div>
         </div>
-        
-        <div className="filter-group">
-          <label htmlFor={inputIds.paymentMethod}>
-            <Tooltip content="Select your preferred payment method">
-              <span>Payment Method:</span>
-            </Tooltip>
-          </label>
-          <select
-            id={inputIds.paymentMethod}
-            value={selectedPaymentMethod}
-            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-            aria-label="Select payment method"
-          >
-            {paymentMethods.map(method => (
-              <option key={method} value={method}>{method || 'All Payment Methods'}</option>
-            ))}
-          </select>
-        </div>
 
         {showAdvancedFilters && (
           <>
             <div className="filters">
               <div className="filter-group">
-                <label htmlFor={inputIds.minAmount}>SOL Amount:</label>
+                <label htmlFor={inputIds.minAmount}>
+                  <Tooltip content="Enter minimum amount of SOL you want to trade">
+                    <span>SOL Amount:</span>
+                  </Tooltip>
+                </label>
                 <input
                   id={inputIds.minAmount}
                   type="number"
@@ -881,7 +836,11 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
               </div>
               
               <div className="filter-group">
-                <label htmlFor={inputIds.currency}>Currency:</label>
+                <label htmlFor={inputIds.currency}>
+                  <Tooltip content="Select the currency you want to trade in">
+                    <span>Currency:</span>
+                  </Tooltip>
+                </label>
                 <select
                   id={inputIds.currency}
                   value={selectedCurrency}
@@ -895,7 +854,11 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
               </div>
               
               <div className="filter-group">
-                <label htmlFor={inputIds.paymentMethod}>Payment Method:</label>
+                <label htmlFor={inputIds.paymentMethod}>
+                  <Tooltip content="Select your preferred payment method">
+                    <span>Payment Method:</span>
+                  </Tooltip>
+                </label>
                 <select
                   id={inputIds.paymentMethod}
                   value={selectedPaymentMethod}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 /**
  * ConfirmationDialog component for important actions requiring confirmation
@@ -13,6 +13,24 @@ const ConfirmationDialog = ({
   cancelText = 'Cancel',
   variant = 'default' // 'default', 'warning', 'danger'
 }) => {
+  // Handle ESC key press for accessibility
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      
+      // Cleanup listener when dialog closes or component unmounts
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
   
   const handleBackdropClick = (e) => {
