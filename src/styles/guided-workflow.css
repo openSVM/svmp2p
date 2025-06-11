@@ -6,6 +6,78 @@
   margin-bottom: 20px;
 }
 
+/* Add guided workflow lazy loading styles */
+.guided-workflow-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.loading-container {
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-message {
+  color: var(--color-foreground-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.guided-workflow-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 2rem;
+}
+
+.error-container {
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-container h3 {
+  color: var(--color-error);
+  margin-bottom: 0.5rem;
+}
+
+.error-container p {
+  color: var(--color-foreground-muted);
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
 .guided-workflow-header {
   display: flex;
   justify-content: space-between;

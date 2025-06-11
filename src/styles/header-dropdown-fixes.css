@@ -42,6 +42,22 @@
   transform: translateY(4px) !important;
 }
 
+/* Network option focus styles */
+.network-option {
+  outline: none !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.network-option:hover,
+.network-option.focused {
+  background-color: var(--color-background-tertiary) !important;
+}
+
+.network-option:focus-visible {
+  outline: 2px solid var(--color-primary) !important;
+  outline-offset: -2px !important;
+}
+
 /* ===== WALLET ADAPTER DROPDOWN FIXES ===== */
 .wallet-adapter-dropdown,
 .wallet-adapter-dropdown-list,

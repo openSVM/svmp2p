@@ -12,9 +12,13 @@ import React, { useState, useRef, useEffect } from 'react';
 export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
+  const optionRefs = useRef([]);
   const network = networks[selectedNetwork];
+  
+  const networkKeys = Object.keys(networks);
   
   // Custom SVG icon component based on provided SVG file
   const DropdownIcon = ({ className }) => (
@@ -62,6 +66,7 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
+        setFocusedIndex(-1);
       }
     };
 
@@ -70,6 +75,13 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+  
+  // Focus management for accessibility
+  useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && optionRefs.current[focusedIndex]) {
+      optionRefs.current[focusedIndex].focus();
+    }
+  }, [isOpen, focusedIndex]);
   
   // Update position when opening dropdown
   useEffect(() => {
@@ -85,9 +97,64 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
     }
   }, [isOpen]);
 
+  // Keyboard navigation
+  const handleKeyDown = (event) => {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (!isOpen) {
+          setIsOpen(true);
+          calculateDropdownPosition();
+          setFocusedIndex(0);
+        } else if (networkKeys.length > 0) {
+          setFocusedIndex(prev => 
+            prev < networkKeys.length - 1 ? prev + 1 : 0
+          );
+        }
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (isOpen && networkKeys.length > 0) {
+          setFocusedIndex(prev => 
+            prev > 0 ? prev - 1 : networkKeys.length - 1
+          );
+        }
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        if (!isOpen) {
+          setIsOpen(true);
+          calculateDropdownPosition();
+          setFocusedIndex(0);
+        } else if (focusedIndex >= 0 && networkKeys[focusedIndex]) {
+          handleNetworkSelect(networkKeys[focusedIndex]);
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        setIsOpen(false);
+        setFocusedIndex(-1);
+        buttonRef.current?.focus();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleNetworkSelect = (networkKey) => {
+    onSelectNetwork(networkKey);
+    setIsOpen(false);
+    setFocusedIndex(-1);
+    buttonRef.current?.focus(); // Return focus to trigger button
+  };
+
   const handleToggleDropdown = () => {
     if (!isOpen) {
       calculateDropdownPosition();
+      setFocusedIndex(0);
+    } else {
+      setFocusedIndex(-1);
     }
     setIsOpen(!isOpen);
   };
@@ -98,8 +165,10 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
         ref={buttonRef}
         className="network-selector-button"
         onClick={handleToggleDropdown}
+        onKeyDown={handleKeyDown}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
+        aria-label={`Current network: ${network.name}. Press Enter or Space to open network options`}
       >
         <div 
           className="w-3 h-3 rounded-full mr-1.5"
@@ -126,16 +195,18 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
               zIndex: 99999
             }}
           >
-            {Object.entries(networks).map(([key, network]) => (
+            {Object.entries(networks).map(([key, network], index) => (
               <div 
                 key={key}
-                className={`network-option ${key === selectedNetwork ? 'active' : ''}`}
-                onClick={() => {
-                  onSelectNetwork(key);
-                  setIsOpen(false);
-                }}
+                ref={el => optionRefs.current[index] = el}
+                className={`network-option ${key === selectedNetwork ? 'active' : ''} ${
+                  focusedIndex === index ? 'focused' : ''
+                }`}
+                onClick={() => handleNetworkSelect(key)}
+                onKeyDown={handleKeyDown}
                 role="option"
                 aria-selected={key === selectedNetwork}
+                tabIndex={-1}
               >
                 <div 
                   className="w-3 h-3 rounded-full mr-1.5"

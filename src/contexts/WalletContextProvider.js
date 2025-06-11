@@ -66,6 +66,10 @@ export const SafeWalletProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
   const [connectionState, setConnectionState] = useState('unknown');
+  
+  // Add refs for cancellation tokens
+  const reconnectTimeoutRef = useRef(null);
+  const reconnectCancelledRef = useRef(false);
 
   // Calculate exponential backoff time based on attempt number
   const getBackoffTime = useCallback((attempt) => {
@@ -73,10 +77,21 @@ export const SafeWalletProvider = ({ children }) => {
   }, []);
   
   /**
+   * Cancel any pending reconnection attempts
+   */
+  const cancelReconnection = useCallback(() => {
+    reconnectCancelledRef.current = true;
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+  }, []);
+
+  /**
    * Attempt to reconnect to wallet with exponential backoff
    */
   const reconnect = useCallback(async () => {
-    if (!walletAdapter?.connect || reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    if (!walletAdapter?.connect || reconnectAttempts >= MAX_RECONNECT_ATTEMPTS || reconnectCancelledRef.current) {
       return;
     }
 
@@ -88,8 +103,21 @@ export const SafeWalletProvider = ({ children }) => {
     console.log(`[SafeWalletProvider] Reconnecting to wallet (attempt ${attempt}/${MAX_RECONNECT_ATTEMPTS}) after ${Math.round(backoffTime)}ms`);
     
     try {
-      // Wait for backoff time
-      await new Promise(resolve => setTimeout(resolve, backoffTime));
+      // Wait for backoff time with cancellation support
+      await new Promise((resolve, reject) => {
+        reconnectTimeoutRef.current = setTimeout(() => {
+          if (reconnectCancelledRef.current) {
+            reject(new Error('Reconnection cancelled'));
+            return;
+          }
+          resolve();
+        }, backoffTime);
+      });
+      
+      // Check if cancelled before attempting connection
+      if (reconnectCancelledRef.current) {
+        return;
+      }
       
       // Try to connect
       await walletAdapter.connect();
@@ -99,6 +127,11 @@ export const SafeWalletProvider = ({ children }) => {
       setConnectionState('connected');
       setError(null);
     } catch (err) {
+      // Check if operation was cancelled
+      if (reconnectCancelledRef.current || err.message === 'Reconnection cancelled') {
+        return;
+      }
+      
       console.error('[SafeWalletProvider] Reconnection attempt failed:', err);
       
       // Check for rate limit errors
@@ -112,11 +145,19 @@ export const SafeWalletProvider = ({ children }) => {
         const retryTime = retryAfterMatch ? parseInt(retryAfterMatch[1], 10) : getBackoffTime(attempt + 2);
         console.warn(`[SafeWalletProvider] Rate limited. Will retry after ${retryTime}ms`);
         
-        // Schedule next retry
-        setTimeout(reconnect, retryTime);
+        // Schedule next retry with cancellation support
+        reconnectTimeoutRef.current = setTimeout(() => {
+          if (!reconnectCancelledRef.current) {
+            reconnect();
+          }
+        }, retryTime);
       } else if (attempt < MAX_RECONNECT_ATTEMPTS) {
         // For other errors, try again if we haven't reached max attempts
-        setTimeout(reconnect, getBackoffTime(attempt + 1));
+        reconnectTimeoutRef.current = setTimeout(() => {
+          if (!reconnectCancelledRef.current) {
+            reconnect();
+          }
+        }, getBackoffTime(attempt + 1));
       } else {
         // Give up after max attempts
         setConnectionState('error');
@@ -135,6 +176,8 @@ export const SafeWalletProvider = ({ children }) => {
         connecting: Boolean(walletAdapter?.connecting),
         disconnect: async () => {
           try {
+            // Cancel any pending reconnection attempts
+            cancelReconnection();
             if (walletAdapter?.disconnect) {
               await walletAdapter.disconnect();
               setConnectionState('disconnected');
@@ -147,6 +190,8 @@ export const SafeWalletProvider = ({ children }) => {
         },
         connect: async () => {
           try {
+            // Reset cancellation flag for new connection attempt
+            reconnectCancelledRef.current = false;
             setConnectionState('connecting');
             if (walletAdapter?.connect) {
               await walletAdapter.connect();
@@ -176,6 +221,7 @@ export const SafeWalletProvider = ({ children }) => {
         isReady: isReady,
         error: error,
         reconnect: reconnect,
+        cancelReconnection: cancelReconnection,
         connectionState: connectionState
       };
     } catch (err) {
@@ -190,10 +236,12 @@ export const SafeWalletProvider = ({ children }) => {
         isReady: false,
         error: err.message || 'Wallet initialization error',
         reconnect: () => {},
+        cancelReconnection: () => {},
+        cancelReconnection: () => {},
         connectionState: 'error'
       };
     }
-  }, [walletAdapter, isReady, error, reconnect, connectionState]);
+  }, [walletAdapter, isReady, error, reconnect, cancelReconnection, connectionState]);
 
   // Monitor wallet adapter initialization
   useEffect(() => {
@@ -286,7 +334,12 @@ export const SafeWalletProvider = ({ children }) => {
         walletAdapter.wallet.adapter.off('readyStateChange', handleReadyStateChange);
       };
     }
-  }, [walletAdapter?.wallet?.adapter]);
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      cancelReconnection();
+    };
+  }, [cancelReconnection]);
 
   return (
     <SafeWalletContext.Provider value={safeWallet}>
