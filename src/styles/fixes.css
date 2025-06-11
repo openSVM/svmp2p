@@ -1,0 +1,162 @@
+/* CSS fixes for remaining visual design issues */
+
+/* Remove any sidebar remnants */
+.app-layout-sidebar {
+  display: none !important;
+}
+
+/* Fix remaining left padding issues */
+.main-container, .content-area, .content-container, .container {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.app-main, .app-main-content {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  width: 100%;
+}
+
+/* Improve card styling */
+.offer-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Consistent button styling */
+.action-button, .buy-button, .offer-action-button {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  height: 28px;
+  min-height: 28px;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Offer List Container Fixes */
+.offer-list-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.offer-list, .offers-grid {
+  width: 100%;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-3);
+}
+
+/* Fix pagination controls alignment */
+.pagination-controls {
+  width: 100%;
+  margin-left: 0;
+  padding-left: 0;
+  box-sizing: border-box;
+  margin-top: var(--spacing-4);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagination-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2px;
+}
+
+/* Navigation Tab Fixes */
+.nav-tab {
+  padding: var(--spacing-2) var(--spacing-3);
+  height: 36px;
+  min-height: 36px;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 var(--spacing-1);
+}
+
+/* Fix heading styles and hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 var(--spacing-4) 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.offer-list-heading {
+  margin: 0 0 var(--spacing-4) 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Fix payment method indicators styling */
+.payment-method {
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Fix timestamps alignment and styling */
+.time-posted {
+  background-color: var(--color-background-alt);
+  padding: 2px var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Ensure all content uses available space efficiently */
+body, html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Action button container fixes */
+.action-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 100%;
+}

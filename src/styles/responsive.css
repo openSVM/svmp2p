@@ -1,8 +1,276 @@
-/* Main responsive styles import file */
+/* ASCII Responsive Layout System - Override all existing styles */
 
-/* Import all responsive styles */
+/* Import responsive styles - keep only the specific files we need */
 @import './responsive/enhanced-mobile.css';
 @import './responsive/component-mobile.css';
 @import './responsive/responsive-utilities.css';
 
-/* This file serves as the main entry point for all responsive styles */
+/* ASCII Layout Overrides */
+.app-layout-sidebar {
+  font-family: 'Courier New', Courier, monospace !important;
+  background-color: var(--ascii-neutral-50);
+}
+
+.app-sidebar {
+  width: 200px; /* Smaller sidebar for more content space */
+  background-color: var(--ascii-neutral-700);
+  border-right: 1px solid var(--ascii-neutral-900);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.sidebar-header {
+  background-color: var(--ascii-neutral-800);
+  border-bottom: 1px solid var(--ascii-neutral-900);
+  padding: 6px;
+  min-height: 40px; /* Smaller header */
+}
+
+.nav-section h3 {
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--ascii-neutral-300);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  font-family: 'Courier New', Courier, monospace !important;
+  letter-spacing: 0;
+}
+
+.nav-item {
+  background: none;
+  border: 1px solid var(--ascii-neutral-700);
+  color: var(--ascii-neutral-200);
+  padding: 4px 6px;
+  margin: 1px 0;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 11px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  border-radius: 0 !important;
+}
+
+.nav-item:hover {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+}
+
+.nav-item.active {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+  font-weight: bold;
+}
+
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+  font-size: 8px;
+  font-weight: bold;
+  border: 1px solid var(--ascii-neutral-800);
+  flex-shrink: 0;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.nav-item.active .nav-icon {
+  background-color: var(--ascii-neutral-800);
+}
+
+.app-content {
+  margin-left: 200px; /* Match smaller sidebar */
+  background-color: var(--ascii-neutral-50);
+}
+
+.app-header-slim {
+  background-color: var(--ascii-neutral-700);
+  border-bottom: 1px solid var(--ascii-neutral-900);
+  padding: 4px 8px;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.header-content-slim {
+  height: 36px; /* Smaller header */
+  padding: 4px 8px;
+}
+
+.header-nav .nav-tab {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-800);
+  padding: 4px 8px;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  border-radius: 0 !important;
+}
+
+.header-nav .nav-tab:hover {
+  background-color: var(--ascii-neutral-500);
+}
+
+.header-nav .nav-tab.active {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+}
+
+.header-nav .nav-tab .nav-icon {
+  background-color: var(--ascii-neutral-800);
+  color: var(--ascii-white);
+  width: 12px;
+  height: 12px;
+  font-size: 8px;
+}
+
+.header-nav .nav-tab.active .nav-icon {
+  background-color: var(--ascii-neutral-900);
+  color: var(--ascii-white);
+}
+
+.mobile-menu-button {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-800);
+  padding: 4px 6px;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 0 !important;
+}
+
+.mobile-menu-button:hover {
+  background-color: var(--ascii-neutral-500);
+}
+
+.connection-status {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 9px;
+  color: var(--ascii-neutral-300);
+  text-transform: uppercase;
+}
+
+.app-main-content {
+  background-color: var(--ascii-neutral-50);
+  padding: 6px;
+}
+
+.container {
+  padding: 2px !important;
+  margin: 0 !important;
+}
+
+/* Mobile responsive overrides */
+@media (max-width: 768px) {
+  .app-sidebar {
+    width: 100%;
+    transform: translateX(-100%);
+  }
+  
+  .app-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .app-content {
+    margin-left: 0;
+  }
+  
+  .nav-item {
+    padding: 3px 4px;
+    font-size: 10px;
+  }
+  
+  .nav-icon {
+    width: 10px;
+    height: 10px;
+    font-size: 7px;
+  }
+  
+  .header-nav .nav-tab {
+    padding: 3px 6px;
+    font-size: 10px;
+    height: 24px;
+  }
+  
+  .header-nav .nav-tab .nav-icon {
+    width: 10px;
+    height: 10px;
+    font-size: 7px;
+  }
+  
+  .app-main-content {
+    padding: 4px;
+  }
+  
+  .header-content-slim {
+    height: 32px;
+    padding: 2px 4px;
+  }
+  
+  .connection-status {
+    font-size: 8px;
+  }
+  
+  /* Make nav labels very short on mobile */
+  .nav-label {
+    font-size: 9px;
+  }
+  
+  .header-nav .nav-label {
+    display: none; /* Hide labels on mobile to save space */
+  }
+}
+
+@media (max-width: 640px) {
+  .app-sidebar {
+    width: 100%;
+  }
+  
+  .nav-item {
+    padding: 2px 3px;
+    font-size: 9px;
+    margin: 0.5px 0;
+  }
+  
+  .nav-icon {
+    width: 8px;
+    height: 8px;
+    font-size: 6px;
+  }
+  
+  .nav-section h3 {
+    font-size: 8px;
+    margin-bottom: 2px;
+  }
+  
+  .sidebar-header {
+    padding: 4px;
+    min-height: 32px;
+  }
+  
+  .logo-text {
+    font-size: 11px;
+  }
+  
+  .app-main-content {
+    padding: 2px;
+  }
+  
+  .container {
+    padding: 1px !important;
+  }
+}

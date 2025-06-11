@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
 import ProfileHeader from './profile/ProfileHeader';
+import WalletNotConnected from './WalletNotConnected';
+import { useSafeWallet } from '../contexts/WalletContextProvider';
 
 // Lazy load components that aren't needed for initial render
 const ReputationCard = lazy(() => import('./profile/ReputationCard'));
@@ -20,8 +22,14 @@ const LoadingFallback = () => (
 /**
  * Enhanced UserProfile component that integrates all the profile modules
  * Optimized for performance with React.memo, lazy loading, and hooks
+ * Now uses SafeWallet context to prevent null reference errors
  */
-const UserProfile = ({ wallet, network }) => {
+const UserProfile = ({ wallet: walletProp, network }) => {
+  // Use safe wallet context if no wallet prop provided
+  const contextWallet = useSafeWallet();
+  const wallet = walletProp || contextWallet;
+  
+  // Initialize all hooks first (Rules of Hooks)
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,15 +40,36 @@ const UserProfile = ({ wallet, network }) => {
     tradingStats: null,
     activities: []
   });
+  
+  // Check for valid wallet and publicKey with enhanced safety
+  const hasValidPublicKey = useMemo(() => {
+    try {
+      return wallet && 
+             wallet.connected &&
+             wallet.publicKey !== null && 
+             wallet.publicKey !== undefined;
+    } catch (err) {
+      console.warn('[UserProfile] Error checking wallet validity:', err);
+      return false;
+    }
+  }, [wallet]);
+  
+  const isWalletConnected = useMemo(() => {
+    return wallet && hasValidPublicKey;
+  }, [wallet, hasValidPublicKey]);
 
   // Fetch user profile data - optimized with useCallback
   const fetchProfileData = useCallback(async () => {
-    if (!wallet.publicKey) {
+    // Only fetch if wallet is connected and valid
+    if (!isWalletConnected) {
       setLoading(false);
       return;
     }
 
     try {
+      // Minimal logging to reduce console noise
+      console.log('[UserProfile] Fetching profile data');
+
       setLoading(true);
       
       // Simulate API calls to fetch profile data
@@ -120,12 +149,19 @@ const UserProfile = ({ wallet, network }) => {
       setError('Failed to load profile data. Please try again later.');
       setLoading(false);
     }
-  }, [wallet.publicKey]);
+  }, [isWalletConnected]);
 
   // Only fetch data when wallet or network changes
   useEffect(() => {
-    fetchProfileData();
-  }, [fetchProfileData, network]);
+    // Extra protection in case fetchProfileData changes between renders
+    try {
+      fetchProfileData();
+    } catch (err) {
+      console.error('[UserProfile] Error in fetchProfileData effect:', err);
+      setError('An error occurred while loading your profile');
+      setLoading(false);
+    }
+  }, [fetchProfileData]);
 
   // Handle settings update - optimized with useCallback
   const handleSaveSettings = useCallback((newSettings) => {
@@ -218,9 +254,7 @@ const UserProfile = ({ wallet, network }) => {
 
   // Memoize the wallet connection message
   const walletConnectionMessage = useMemo(() => (
-    <div className="connect-wallet-message">
-      <p>Please connect your wallet to view your profile.</p>
-    </div>
+    <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />
   ), []);
 
   // Memoize the loading container
@@ -231,19 +265,43 @@ const UserProfile = ({ wallet, network }) => {
     </div>
   ), []);
 
+  // Bulletproof wallet address extraction with early validation
+  const walletAddress = React.useMemo(() => {
+    try {
+      // Only extract if we have a connected wallet
+      if (isWalletConnected && wallet.publicKey) {
+        return wallet.publicKey.toString();
+      }
+      return null;
+    } catch (error) {
+      console.warn("[UserProfile] Error extracting wallet address:", error);
+      return null;
+    }
+  }, [wallet, isWalletConnected]);
+
+  // Early return for wallet not connected after all hooks are initialized
+  if (!isWalletConnected) {
+    console.log('[UserProfile] No wallet connected, returning WalletNotConnected');
+    return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
+  }
+
   return (
     <div className="user-profile-container">
       <h2 className="page-title">User Profile</h2>
       
       {error && <div className="error-message">{error}</div>}
       
-      {!wallet.publicKey ? walletConnectionMessage : 
-       loading ? loadingContainer : (
+      {loading ? (
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading profile data...</p>
+        </div>
+      ) : (
         <div className="profile-content">
           <ProfileHeader 
-            walletAddress={wallet.publicKey.toString()}
+            walletAddress={walletAddress}
             network={network}
-            username={profileData.settings?.displayName}
+            username={profileData.settings?.displayName || 'Anonymous User'}
             joinDate="Apr 2025"
             isVerified={true}
           />
@@ -262,10 +320,10 @@ const UserProfile = ({ wallet, network }) => {
 UserProfile.propTypes = {
   wallet: PropTypes.shape({
     publicKey: PropTypes.object
-  }).isRequired,
+  }),
   network: PropTypes.shape({
-    name: PropTypes.string.isRequired
-  }).isRequired
+    name: PropTypes.string
+  })
 };
 
 // Export memoized component to prevent unnecessary re-renders

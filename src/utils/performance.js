@@ -32,15 +32,16 @@ export const useIntersectionObserver = (options = {}) => {
   useEffect(() => {
     if (!ref.current) return;
     
+    const currentRef = ref.current; // Store ref.current in a variable
     const observer = new IntersectionObserver(([entry]) => {
       setIsIntersecting(entry.isIntersecting);
     }, options);
     
-    observer.observe(ref.current);
+    observer.observe(currentRef);
     
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [options]);

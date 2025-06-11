@@ -45,21 +45,21 @@ const TransactionConfirmation = ({
         
         {status === 'success' && (
           <div className="status-indicator">
-            <div className="success-checkmark">✓</div>
+            <div className="success-checkmark">[+]</div>
             <p>Transaction confirmed!</p>
           </div>
         )}
         
         {status === 'error' && (
           <div className="status-indicator">
-            <div className="error-icon">✗</div>
+            <div className="error-icon">[X]</div>
             <p>Transaction failed</p>
           </div>
         )}
         
         {status === 'warning' && (
           <div className="status-indicator">
-            <div className="warning-icon">⚠</div>
+            <div className="warning-icon">[!]</div>
             <p>Transaction needs attention</p>
           </div>
         )}

@@ -1,0 +1,32 @@
+{
+  "welcomeTitle": "Welcome to OpenSVM P2P Exchange",
+  "welcomeSubtitle": "Your gateway to decentralized trading across Solana Virtual Machine networks",
+  "step1Title": "Connect Your Wallet",
+  "step1Description": "Connect your Solana-compatible wallet to start trading securely",
+  "step2Title": "Browse Offers",
+  "step2Description": "Explore buy and sell offers from verified traders in our marketplace",
+  "step3Title": "Start Trading",
+  "step3Description": "Create your own offers or trade with existing ones safely and efficiently",
+  "getStarted": "Get Started",
+  "learnMore": "Learn More",
+  "features": {
+    "title": "Why Choose OpenSVM P2P?",
+    "decentralized": {
+      "title": "Fully Decentralized",
+      "description": "Trade directly with other users without intermediaries"
+    },
+    "secure": {
+      "title": "Secure & Safe",
+      "description": "Smart contract escrow ensures secure transactions"
+    },
+    "multichain": {
+      "title": "Multi-Chain Support",
+      "description": "Trade across Solana, Sonic, Eclipse, svmBNB, and s00n networks"
+    },
+    "lowFees": {
+      "title": "Low Fees",
+      "description": "Minimal trading fees compared to centralized exchanges"
+    }
+  },
+  "skipOnboarding": "Skip Onboarding"
+}

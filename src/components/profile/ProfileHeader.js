@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Image from 'next/image';
 
 /**
  * ProfileHeader component displays the user's basic information and avatar
@@ -17,13 +18,23 @@ const ProfileHeader = ({
     if (username) {
       return username.substring(0, 2).toUpperCase();
     }
-    return walletAddress.substring(0, 2).toUpperCase();
+    return walletAddress && walletAddress.length >= 2 ? walletAddress.substring(0, 2).toUpperCase() : 'NA';
   };
 
   // Format wallet address for display (truncate middle)
   const formatWalletAddress = (address) => {
-    if (!address) return '';
-    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    // Early return with meaningful messages
+    if (!address) return 'Not connected';
+    if (typeof address !== 'string') return 'Invalid address';
+    if (address.length < 10) return address; // Don't truncate short addresses
+    
+    // Use try-catch for extra safety
+    try {
+      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    } catch (error) {
+      console.error('Error formatting wallet address:', error);
+      return 'Address error';
+    }
   };
 
   return (
@@ -31,10 +42,12 @@ const ProfileHeader = ({
       <div className="profile-header-content">
         <div className="profile-avatar-container">
           {avatarUrl ? (
-            <img 
+            <Image 
               src={avatarUrl} 
               alt="User avatar" 
-              className="profile-avatar" 
+              className="profile-avatar"
+              width={64}
+              height={64}
             />
           ) : (
             <div className="profile-avatar profile-avatar-placeholder">
@@ -62,9 +75,24 @@ const ProfileHeader = ({
             <button 
               className="profile-copy-address" 
               onClick={() => {
-                navigator.clipboard.writeText(walletAddress);
-                // Could add a toast notification here
+                try {
+                  if (walletAddress) {
+                    navigator.clipboard.writeText(walletAddress)
+                      .then(() => {
+                        // Could show a success toast notification here
+                        console.log('Wallet address copied to clipboard');
+                      })
+                      .catch(err => {
+                        console.error('Failed to copy wallet address:', err);
+                      });
+                  } else {
+                    console.warn('Cannot copy: wallet address is empty');
+                  }
+                } catch (error) {
+                  console.error('Error copying wallet address:', error);
+                }
               }}
+              disabled={!walletAddress}
               aria-label="Copy wallet address"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
@@ -100,10 +128,10 @@ const ProfileHeader = ({
 };
 
 ProfileHeader.propTypes = {
-  walletAddress: PropTypes.string.isRequired,
+  walletAddress: PropTypes.string,
   network: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-  }).isRequired,
+    name: PropTypes.string
+  }),
   avatarUrl: PropTypes.string,
   username: PropTypes.string,
   joinDate: PropTypes.string,
@@ -111,6 +139,8 @@ ProfileHeader.propTypes = {
 };
 
 ProfileHeader.defaultProps = {
+  walletAddress: '',
+  network: { name: 'Unknown' },
   avatarUrl: '',
   username: '',
   joinDate: 'Unknown',

@@ -21,7 +21,7 @@ const BuyWorkflowComplete = ({ transaction, onFinish }) => {
   return (
     <div className="buy-workflow-complete">
       <div className="completion-header">
-        <div className="success-icon">✓</div>
+        <div className="success-icon">[+]</div>
         <h3>Transaction Complete!</h3>
         <p>Your SOL has been successfully transferred to your wallet.</p>
       </div>
@@ -100,7 +100,7 @@ const BuyWorkflowComplete = ({ transaction, onFinish }) => {
       ) : (
         <div className="rating-submitted">
           <div className="success-message">
-            <span className="icon">✓</span>
+            <span className="icon">[+]</span>
             <span className="message">Thank you for your feedback!</span>
           </div>
         </div>

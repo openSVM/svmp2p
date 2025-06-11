@@ -4,6 +4,8 @@
   box-shadow: var(--shadow-md);
   overflow: hidden;
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+  will-change: transform, box-shadow;
 }
 
 .card:hover {
@@ -14,6 +16,9 @@
 .card-header {
   padding: var(--spacing-4);
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-title {
@@ -131,12 +136,295 @@
   gap: var(--spacing-4);
 }
 
+/* Offer Cards - Standardized design for consistency */
+.offer-card {
+  background-color: var(--color-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0.3, 1);
+  margin-bottom: var(--spacing-3);
+  position: relative;
+  border: 1px solid var(--color-border);
+  height: 120px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.offer-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+
+.offer-card:active {
+  transform: translateY(0);
+}
+
+.offer-card-header {
+  background-color: var(--color-card-header);
+  padding: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 30px;
+  min-height: 30px;
+}
+
+.seller-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  overflow: hidden;
+}
+
+.seller-name {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.seller-rating {
+  color: var(--color-warning);
+  font-size: var(--font-size-xs);
+}
+
+.time-info {
+  color: var(--color-foreground-muted);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  padding: var(--spacing-1);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
+}
+
+.offer-card-body {
+  padding: var(--spacing-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  flex-grow: 1;
+}
+
+.amount-info, 
+.price-info, 
+.payment-method {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.sol-amount {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-foreground);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.network-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--spacing-1);
+  margin-left: var(--spacing-1);
+}
+
+.fiat-amount {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-per-sol {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.good-rate {
+  color: var(--color-success);
+}
+
+.rate-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.payment-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-foreground-muted);
+  margin-bottom: 2px;
+}
+
+.payment-method {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: var(--spacing-1);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  max-width: 100%;
+}
+
+.offer-card-footer {
+  padding: var(--spacing-2);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  min-height: 40px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+}
+
+.status-listed {
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.status-accepted {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.status-completed {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.status-cancelled {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.action-button-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.offer-action-button {
+  height: 28px;
+  min-width: 60px;
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card shimmer loading effect */
+.card-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-muted);
+  border-radius: var(--radius-lg);
+  height: 100%;
+}
+
+.card-skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Compact view for mobile */
 @media (max-width: 768px) {
-  .card-horizontal {
-    flex-direction: column;
+  .offer-card-body {
+    padding: var(--spacing-1);
+    gap: var(--spacing-1);
   }
   
-  .card-horizontal .card-media {
-    width: 100%;
+  .offer-card-header,
+  .offer-card-footer {
+    padding: var(--spacing-1);
+  }
+  
+  .offer-card {
+    margin-bottom: var(--spacing-1);
+    min-height: 90px;
+    max-height: 90px;
+  }
+  
+  .sol-amount {
+    font-size: 9px;
+  }
+  
+  .fiat-amount {
+    font-size: 8px;
+  }
+  
+  .price-per-sol {
+    font-size: 7px;
+  }
+  
+  .seller-name {
+    max-width: 30px;
+    font-size: 8px;
+  }
+  
+  .offer-action-button {
+    --button-height: 14px;
+    font-size: 6px;
+    min-width: 25px;
   }
 }

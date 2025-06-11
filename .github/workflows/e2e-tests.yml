@@ -1,0 +1,70 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Puppeteer dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          chromium-browser \
+          libgbm1 \
+          libnss3 \
+          libatk1.0-0 \
+          libatk-bridge2.0-0 \
+          libcups2 \
+          libdrm2 \
+          libxkbcommon0 \
+          libxcomposite1 \
+          libxdamage1 \
+          libxrandr2 \
+          libasound2 \
+          libpangocairo-1.0-0 \
+          libxss1 \
+          xvfb
+    
+    - name: Set up Puppeteer environment variables
+      run: |
+        echo "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true" >> $GITHUB_ENV
+        echo "PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser" >> $GITHUB_ENV
+          
+    - name: Start Next.js dev server
+      run: |
+        npm run dev &
+        echo "Waiting for dev server to start..."
+        sleep 20
+      env:
+        NODE_ENV: test
+        
+    - name: Run tests with Xvfb
+      run: |
+        mkdir -p screenshots
+        xvfb-run --server-args="-screen 0 1280x720x24" npm run test:e2e
+        
+    - name: Archive screenshots
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: e2e-screenshots
+        path: screenshots/
+        retention-days: 5

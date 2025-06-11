@@ -1,0 +1,363 @@
+/* 
+ * HEADER CONTROLS STYLING
+ * Styling for language selector, theme toggle, and explorer link
+ */
+
+/* ===== HEADER LAYOUT SYSTEM ===== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  width: 100%;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+/* Profile specific styling */
+.profile-nav {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.profile-nav a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground);
+  text-transform: uppercase;
+}
+
+/* ===== NETWORK SELECTOR ===== */
+.network-selector {
+  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
+}
+
+.network-trigger {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-1) !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) ease !important;
+  height: 32px !important;
+  min-width: 80px !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.network-trigger:hover {
+  background-color: var(--color-background-alt) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.network-icon {
+  font-size: var(--font-size-xs) !important;
+  color: var(--color-foreground-muted) !important;
+  background-color: var(--color-background-alt) !important;
+  padding: 2px 4px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.network-name {
+  font-weight: var(--font-weight-semibold) !important;
+  text-transform: uppercase !important;
+}
+
+.network-arrow {
+  transition: transform var(--transition-fast) ease !important;
+  color: var(--color-foreground-muted) !important;
+}
+
+.network-arrow.open {
+  transform: rotate(180deg) !important;
+}
+
+.network-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  min-width: 200px !important;
+  margin-top: var(--spacing-1) !important;
+}
+
+.network-list {
+  padding: var(--spacing-2) 0 !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.network-option {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  cursor: pointer !important;
+  transition: background-color var(--transition-fast) ease !important;
+  text-align: left !important;
+}
+
+.network-option:hover {
+  background-color: var(--color-background-alt) !important;
+}
+
+.network-option.active {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+.network-label {
+  flex: 1 !important;
+  margin-left: var(--spacing-2) !important;
+}
+
+.network-check {
+  color: var(--color-primary) !important;
+  margin-left: var(--spacing-2) !important;
+}
+.language-selector {
+  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
+}
+
+.language-trigger {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-1) !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) ease !important;
+  height: 32px !important;
+  min-width: 60px !important;
+  flex-shrink: 0 !important; /* Ensure flex layout participation */
+  box-sizing: border-box !important;
+}
+
+.language-trigger:hover {
+  background-color: var(--color-background-alt) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.language-country {
+  font-size: var(--font-size-xs) !important;
+  color: var(--color-foreground-muted) !important;
+  background-color: var(--color-background-alt) !important;
+  padding: 2px 4px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.language-code {
+  font-weight: var(--font-weight-semibold) !important;
+  text-transform: uppercase !important;
+}
+
+.language-arrow {
+  transition: transform var(--transition-fast) ease !important;
+  color: var(--color-foreground-muted) !important;
+}
+
+.language-arrow.open {
+  transform: rotate(180deg) !important;
+}
+
+.language-dropdown {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  min-width: 200px !important;
+  margin-top: var(--spacing-1) !important;
+}
+
+.language-list {
+  padding: var(--spacing-2) 0 !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.language-option {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  cursor: pointer !important;
+  transition: background-color var(--transition-fast) ease !important;
+  text-align: left !important;
+}
+
+.language-option:hover {
+  background-color: var(--color-background-alt) !important;
+}
+
+.language-option.active {
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+.language-name {
+  flex: 1 !important;
+  margin-left: var(--spacing-2) !important;
+}
+
+.language-check {
+  color: var(--color-primary) !important;
+  margin-left: var(--spacing-2) !important;
+}
+
+/* ===== THEME TOGGLE ===== */
+.theme-toggle {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--spacing-1) !important;
+  padding: var(--spacing-2) var(--spacing-3) !important;
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-foreground) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) ease !important;
+  height: 32px !important;
+  min-width: 80px !important;
+  flex-shrink: 0 !important; /* Ensure flex layout participation */
+  box-sizing: border-box !important;
+}
+
+.theme-toggle:hover {
+  background-color: var(--color-background-alt) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.theme-icon {
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-bold) !important;
+  color: var(--color-foreground-muted) !important;
+  background-color: var(--color-background-alt) !important;
+  padding: 2px 4px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.theme-label {
+  font-weight: var(--font-weight-medium) !important;
+  text-transform: capitalize !important;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header-controls {
+    display: none !important; /* Hide on mobile - controls shown in nav drawer */
+  }
+
+  .language-trigger,
+  .theme-toggle,
+  .network-trigger {
+    min-width: auto !important;
+    min-height: 48px !important; /* Touch-friendly targets */
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    font-size: var(--font-size-base-mobile) !important;
+    width: 100% !important;
+  }
+
+  .explorer-link {
+    font-size: var(--font-size-base-mobile) !important;
+    min-height: 48px !important;
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Mobile dropdown adjustments */
+  .language-dropdown,
+  .network-dropdown {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 300px !important;
+    max-height: 70vh !important;
+    border-radius: var(--radius-lg) !important;
+    z-index: 9999 !important;
+  }
+
+  .language-list,
+  .network-list {
+    max-height: 60vh !important;
+  }
+
+  .language-option,
+  .network-option {
+    min-height: 48px !important;
+    padding: var(--spacing-3) var(--spacing-4) !important;
+    font-size: var(--font-size-base-mobile) !important;
+  }
+
+  /* Add backdrop for mobile dropdowns */
+  .language-dropdown::before,
+  .network-dropdown::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .language-trigger,
+  .theme-toggle,
+  .network-trigger {
+    padding: var(--spacing-2) var(--spacing-3) !important;
+    font-size: var(--font-size-small-mobile) !important;
+  }
+}

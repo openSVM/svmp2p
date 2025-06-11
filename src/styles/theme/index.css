@@ -1,7 +1,6 @@
 /* Main theme file that imports all theme components */
 
-/* Import variables first so they're available to all other files */
-@import './variables.css';
+/* Note: Variables are now in ascii-theme.css - this file imports component styles only */
 
 /* Import component styles */
 @import './typography.css';
@@ -10,6 +9,7 @@
 @import './cards.css';
 @import './tables.css';
 @import './layout.css';
+@import './animations.css';
 
 /* Additional utility classes */
 .visually-hidden {

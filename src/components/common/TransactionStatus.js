@@ -34,14 +34,14 @@ const TransactionStatus = ({
   };
   
   const statusIcons = {
-    pending: '⏳',
-    success: '✅',
-    error: '❌',
-    warning: '⚠️'
+    pending: '[...]',
+    success: '[OK]',
+    error: '[X]',
+    warning: '[!]'
   };
   
   const statusClass = statusClasses[status] || 'status-pending';
-  const statusIcon = statusIcons[status] || '⏳';
+  const statusIcon = statusIcons[status] || '[...]';
   
   return (
     <div className={`transaction-status ${statusClass}`}>

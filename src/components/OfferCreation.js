@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { SystemProgram, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { BN } from '@project-serum/anchor';
+// Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
+import { BN } from '@coral-xyz/anchor';
 import { AppContext } from '../contexts/AppContext';
 import { 
   ButtonLoader, 
@@ -12,8 +12,11 @@ import {
   ConfirmationDialog 
 } from './common';
 
+
+import { useSafeWallet } from '../contexts/WalletContextProvider';
+
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
-  const { wallet } = useWallet();
+  const wallet = useSafeWallet();
   const { connection } = useConnection();
   const { program, network } = useContext(AppContext);
   
@@ -34,7 +37,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const handleCreateOffer = async (e) => {
     e.preventDefault();
     
-    if (!wallet.publicKey) {
+    if (!wallet.publicKey || !wallet.connected) {
       setError('Please connect your wallet first');
       return;
     }
@@ -294,7 +297,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         <ButtonLoader
           type="submit"
           isLoading={isCreating}
-          disabled={!wallet.publicKey}
+          disabled={!wallet.connected || !wallet.publicKey}
           loadingText="Creating Offer..."
           variant="primary"
           size="medium"

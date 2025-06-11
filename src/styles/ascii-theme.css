@@ -1,0 +1,880 @@
+/**
+ * ASCII Grayscale Theme System
+ * 
+ * Design Philosophy:
+ * This theme implements a strict ASCII-art inspired aesthetic using:
+ * - Monospace typography (Courier New) for technical/retro feel
+ * - Grayscale-only color palette for high contrast and accessibility
+ * - Minimal spacing and sharp corners for compact, information-dense layouts
+ * - No rounded corners or gradients to maintain ASCII art aesthetic
+ * 
+ * Accessibility Considerations:
+ * - High contrast ratios between text and backgrounds
+ * - Consistent spacing using CSS custom properties
+ * - Readable font sizes with good line height
+ * - Touch-friendly button sizes on mobile devices
+ * 
+ * Performance Benefits:
+ * - Single color palette reduces CSS complexity
+ * - Minimal spacing reduces layout calculations
+ * - Monospace fonts have predictable character widths
+ */
+
+/* ASCII Grayscale Color Palette */
+:root {
+  /* 
+   * Grayscale palette from lightest to darkest
+   * Each step provides sufficient contrast for text readability
+   * Values chosen to meet WCAG AA contrast requirements
+   */
+  --ascii-white: #FFFFFF;        /* Pure white - lightest backgrounds */
+  /* Base Colors (Meets WCAG AA contrast ratios) */
+  --ascii-white: #FFFFFF;
+  --ascii-black: #000000;
+  --ascii-neutral-50: #F8F9FA;   /* Off-white - main background */
+  --ascii-neutral-100: #F1F3F5;  /* Light gray - card backgrounds */
+  --ascii-neutral-200: #E9ECEF;  /* Light border color */
+  --ascii-neutral-300: #DEE2E6;  /* Medium light - disabled states */
+  --ascii-neutral-400: #CED4DA;  /* Medium - borders and dividers */
+  --ascii-neutral-500: #ADB5BD;  /* Medium dark - secondary text */
+  --ascii-neutral-600: #495057;  /* Dark - muted text - improved for 4.5:1 contrast */
+  --ascii-neutral-700: #343A40;  /* Darker - headers and emphasis */
+  --ascii-neutral-800: #212529;  /* Very dark - primary text */
+  --ascii-neutral-900: #121416;  /* Darkest - high emphasis text */
+  
+  /* 
+   * Semantic color mapping for consistent theming
+   * These variables map grayscale values to semantic purposes
+   * allowing for easy theme-wide color changes
+   */
+  --background: var(--ascii-neutral-50);      /* Main app background */
+  --foreground: var(--ascii-neutral-800);     /* Primary text color */
+  --card-background: var(--ascii-neutral-100); /* Card/container backgrounds */
+  --border-color: var(--ascii-neutral-400);   /* Border and divider color */
+  --header-background: var(--ascii-neutral-700); /* Header sections */
+  --text-muted: var(--ascii-neutral-600);     /* Secondary/muted text */
+  
+  /* 
+   * Color mapping for existing theme variables
+   * This maintains compatibility with existing components while applying ASCII theme
+   * Maps all color variations to appropriate grayscale values
+   */
+  --color-background: var(--ascii-neutral-50);     /* Primary backgrounds */
+  --color-background-alt: var(--ascii-neutral-100); /* Secondary backgrounds */
+  --color-foreground: var(--ascii-neutral-800);    /* Primary text */
+  --color-foreground-muted: var(--ascii-neutral-600); /* Secondary text */
+  --color-border: var(--ascii-neutral-400);        /* Standard borders */
+  --color-primary: var(--ascii-neutral-700);       /* Primary actions */
+  --color-primary-dark: var(--ascii-neutral-800);  /* Primary actions (pressed) */
+  --color-primary-light: var(--ascii-neutral-600); /* Primary actions (hover) */
+  --color-secondary: var(--ascii-neutral-600);     /* Secondary actions */
+  --color-accent: var(--ascii-neutral-700);        /* Accent elements */
+  --color-success: var(--ascii-neutral-600);       /* Success states */
+  --color-error: var(--ascii-neutral-800);         /* Error states */
+  --color-warning: var(--ascii-neutral-600);       /* Warning states */
+  --color-info: var(--ascii-neutral-600);          /* Info states */
+  
+  /* 
+   * Typography System
+   * Courier New provides:
+   * - Monospace character width for ASCII art compatibility
+   * - Technical/retro aesthetic matching the design theme
+   * - Excellent readability at small sizes
+   * - Wide browser support without web font loading
+   */
+  --font-family-sans: 'Courier New', Courier, monospace;
+  --font-family-mono: 'Courier New', Courier, monospace;
+  
+  /* Line height system for readability */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* 
+   * Minimal Spacing System
+   * Reduced spacing values for information-dense layouts
+   * Values progression: 2px, 4px, 6px, 8px, 10px, 12px, 16px
+   * This creates compact layouts while maintaining readability
+   */
+  --spacing-1: 2px;   /* Minimal internal padding */
+  --spacing-2: 4px;   /* Small gaps between related elements */
+  --spacing-3: 6px;   /* Medium internal padding */
+  --spacing-4: 8px;   /* Standard internal padding */
+  --spacing-5: 10px;  /* Large internal padding */
+  --spacing-6: 12px;  /* Section spacing */
+  --spacing-8: 16px;  /* Major section spacing */
+  
+  /* 
+   * Compact Font Size System
+   * Smaller font sizes for information density
+   * Each size maintains readability while maximizing content visibility
+   */
+  --font-size-xs: 10px;   /* Fine print, secondary info */
+  --font-size-sm: 12px;   /* Small text, labels */
+  --font-size-base: 14px; /* Body text - primary reading size */
+  --font-size-lg: 16px;   /* Emphasized text */
+  --font-size-xl: 18px;   /* Small headings */
+  --font-size-2xl: 20px;  /* Medium headings */
+  --font-size-3xl: 24px;  /* Large headings */
+  --font-size-4xl: 28px;  /* Page titles */
+  
+  /* 
+   * No Border Radius System
+   * All radius values set to 0 for sharp, ASCII-art aesthetic
+   * This maintains the technical/terminal interface appearance
+   */
+  --radius-sm: 0;   /* Small elements */
+  --radius-md: 0;   /* Standard elements */
+  --radius-lg: 0;   /* Large elements */
+  --radius-xl: 0;   /* Extra large elements */
+  --radius-2xl: 0;  /* Modal/overlay elements */
+  --radius-full: 0; /* Circular elements (now square) */
+  
+  /* 
+   * Minimal Shadow System
+   * ASCII-style shadows using solid borders instead of blur
+   * Creates depth without softness, maintaining sharp aesthetic
+   */
+  --shadow-sm: 1px 1px 0px var(--ascii-neutral-400);   /* Subtle depth */
+  --shadow-md: 2px 2px 0px var(--ascii-neutral-400);   /* Standard depth */
+  --shadow-lg: 3px 3px 0px var(--ascii-neutral-400);   /* Pronounced depth */
+  --shadow-xl: 4px 4px 0px var(--ascii-neutral-400);   /* Strong depth */
+  --shadow-2xl: 6px 6px 0px var(--ascii-neutral-400);  /* Maximum depth */
+  
+  /* 
+   * Fast Transition System
+   * Quick transitions maintain responsiveness while preserving sharp aesthetic
+   * Shorter durations prevent blurring effects that would conflict with ASCII theme
+   */
+  --transition-fast: 0.1s;     /* Instant feedback */
+  --transition-normal: 0.2s;   /* Standard interactions */
+  
+  /* 
+   * Z-index Management System
+   * Consistent layering values for proper element stacking
+   * Prevents z-index conflicts and maintains proper overlay hierarchy
+   */
+  --z-10: 10;   /* Dropdowns */
+  --z-20: 20;   /* Fixed elements */
+  --z-30: 30;   /* Modals */
+  --z-40: 40;   /* Overlays */
+  --z-50: 50;   /* Tooltips */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: 'Courier New', Courier, monospace;
+  --font-mono: 'Courier New', Courier, monospace;
+}
+
+/* Remove dark mode - ASCII aesthetic is always grayscale */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--ascii-neutral-50);
+    --foreground: var(--ascii-neutral-800);
+  }
+}
+
+/* Global ASCII styling - applies to React app only */
+:not(.static-html) body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 14px;
+  line-height: 1.4;
+  scroll-behavior: smooth;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  
+  /* Subtle texture background */
+  background-image: 
+    radial-gradient(circle at 1px 1px, var(--ascii-neutral-300) 1px, transparent 0);
+  background-size: 20px 20px;
+  background-attachment: fixed;
+}
+
+/* Remove all border-radius globally for sharp corners */
+*, *::before, *::after {
+  border-radius: 0 !important;
+  font-family: 'Courier New', Courier, monospace !important;
+  box-sizing: border-box; /* Ensure proper box model */
+}
+
+/* Prevent horizontal overflow globally */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Container constraints to prevent overflow */
+.app-container, .offers-container, .content-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Override Tailwind rounded classes */
+.rounded,
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-full {
+  border-radius: 0 !important;
+}
+
+/* ASCII Typography System */
+.ascii-title {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--ascii-neutral-900);
+}
+
+.ascii-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--ascii-neutral-900);
+  border-bottom: 1px solid var(--ascii-neutral-600);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+.ascii-subsection-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--ascii-neutral-800);
+  margin-top: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px dotted var(--ascii-neutral-500);
+  padding-bottom: 2px;
+}
+
+.ascii-body-text {
+  color: var(--ascii-neutral-800);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.ascii-lead-text {
+  font-size: 15px;
+  color: var(--ascii-neutral-600);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+/* ASCII Navigation Styles */
+.ascii-header {
+  background-color: var(--ascii-neutral-700);
+  border-bottom: 1px solid var(--ascii-neutral-900);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-nav-link {
+  color: var(--ascii-neutral-200);
+  transition: color 0.2s ease, background-color 0.2s ease;
+  padding: 4px 8px;
+  border: 1px solid var(--ascii-neutral-700);
+  font-weight: normal;
+  text-transform: uppercase;
+  display: inline-block;
+  margin: 2px 0;
+  text-decoration: none;
+}
+
+.ascii-nav-link:hover {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+  border-color: var(--ascii-neutral-500);
+}
+
+.ascii-nav-link.active {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  font-weight: bold;
+  border-color: var(--ascii-neutral-700);
+}
+
+/* ASCII Logo/Brand */
+.ascii-logo {
+  background-color: var(--ascii-neutral-700);
+  border: 1px solid var(--ascii-neutral-400);
+  color: var(--ascii-white);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ascii-brand-text {
+  color: var(--ascii-white);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+/* ASCII Card System */
+.ascii-card {
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  box-shadow: 2px 2px 0px var(--ascii-neutral-400);
+  padding: 8px;
+  margin-bottom: 8px;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-card:hover {
+  box-shadow: 1px 1px 0px var(--ascii-neutral-400);
+}
+
+/* ASCII Button System */
+.ascii-button-primary {
+  font-family: 'Courier New', Courier, monospace !important;
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-900);
+  padding: 6px 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+  box-shadow: 2px 2px 0px var(--ascii-neutral-400);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.ascii-button-primary:hover {
+  background-color: var(--ascii-neutral-500);
+  border-color: var(--ascii-neutral-500);
+  box-shadow: 1px 1px 0px var(--ascii-neutral-400);
+  color: var(--ascii-white);
+}
+
+.ascii-button-secondary {
+  font-family: 'Courier New', Courier, monospace !important;
+  background-color: var(--ascii-white);
+  color: var(--ascii-neutral-800);
+  border: 1px solid var(--ascii-neutral-400);
+  padding: 6px 12px;
+  text-transform: uppercase;
+  font-weight: normal;
+  box-shadow: 2px 2px 0px var(--ascii-neutral-400);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.ascii-button-secondary:hover {
+  background-color: var(--ascii-neutral-200);
+  border-color: var(--ascii-neutral-500);
+  box-shadow: 1px 1px 0px var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+}
+
+/* ASCII Form Elements */
+.ascii-input {
+  font-family: 'Courier New', Courier, monospace !important;
+  border: 1px solid var(--ascii-neutral-400);
+  background-color: var(--ascii-white);
+  color: var(--ascii-neutral-800);
+  padding: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ascii-input:focus {
+  outline: none;
+  border-color: var(--ascii-neutral-600);
+  background-color: var(--ascii-neutral-50);
+}
+
+.ascii-input::placeholder {
+  color: var(--ascii-neutral-500);
+  text-transform: uppercase;
+}
+
+.ascii-select {
+  font-family: 'Courier New', Courier, monospace !important;
+  border: 1px solid var(--ascii-neutral-400);
+  background-color: var(--ascii-white);
+  color: var(--ascii-neutral-800);
+  padding: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ascii-select:focus {
+  outline: none;
+  border-color: var(--ascii-neutral-600);
+  background-color: var(--ascii-neutral-50);
+}
+
+/* ASCII Status Badges */
+.ascii-status {
+  border: 1px solid var(--ascii-neutral-400);
+  padding: 2px 4px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-status-active {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-900);
+}
+
+.ascii-status-inactive {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-700);
+}
+
+/* ASCII Info Boxes */
+.ascii-info-box {
+  background-color: var(--ascii-neutral-200);
+  border: 1px dashed var(--ascii-neutral-400);
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.ascii-info-box-title {
+  color: var(--ascii-neutral-900);
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.ascii-info-box-text {
+  color: var(--ascii-neutral-800);
+}
+
+/* ASCII Table System */
+.ascii-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 12px;
+  border: 1px solid var(--ascii-neutral-500);
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.ascii-table th {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+  font-weight: bold;
+  padding: 4px 6px;
+  border: 1px solid var(--ascii-neutral-400);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.ascii-table td {
+  padding: 4px 6px;
+  border: 1px solid var(--ascii-neutral-400);
+  text-align: left;
+  vertical-align: top;
+  color: var(--ascii-neutral-800);
+}
+
+.ascii-table tbody tr:nth-child(even) {
+  background-color: var(--ascii-neutral-200);
+}
+
+.ascii-table tbody tr:hover {
+  background-color: var(--ascii-neutral-300);
+}
+
+/* ASCII Footer */
+.ascii-footer {
+  background-color: var(--ascii-neutral-700);
+  border-top: 1px solid var(--ascii-neutral-900);
+  color: var(--ascii-neutral-300);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-footer-text {
+  color: var(--ascii-neutral-300);
+}
+
+.ascii-footer-link {
+  color: var(--ascii-neutral-600);
+  text-decoration: underline;
+}
+
+.ascii-footer-link:hover {
+  color: var(--ascii-neutral-400);
+}
+
+/* ASCII Link Styles */
+.ascii-link {
+  color: var(--ascii-neutral-600);
+  font-weight: bold;
+  text-decoration: underline;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-link:hover {
+  color: var(--ascii-neutral-900);
+}
+
+/* ASCII Code/Monospace Elements */
+.ascii-code {
+  font-family: 'Courier New', Courier, monospace !important;
+  background-color: var(--ascii-neutral-300);
+  padding: 2px 4px;
+  border: 1px solid var(--ascii-neutral-400);
+  font-size: 11px;
+  color: var(--ascii-neutral-900);
+  word-break: break-all;
+}
+
+/* Utility Classes for ASCII Styling */
+.ascii-border {
+  border: 1px solid var(--ascii-neutral-400);
+}
+
+.ascii-border-dashed {
+  border: 1px dashed var(--ascii-neutral-400);
+}
+
+.ascii-border-dotted {
+  border-bottom: 1px dotted var(--ascii-neutral-500);
+}
+
+.ascii-shadow {
+  box-shadow: 2px 2px 0px var(--ascii-neutral-400);
+}
+
+.ascii-shadow-sm {
+  box-shadow: 1px 1px 0px var(--ascii-neutral-400);
+}
+
+/* ASCII Loading/Animation States */
+.ascii-loading {
+  background-color: var(--ascii-neutral-200);
+  animation: ascii-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes ascii-pulse {
+  0%, 100% {
+    background-color: var(--ascii-neutral-200);
+  }
+  50% {
+    background-color: var(--ascii-neutral-300);
+  }
+}
+
+/* ASCII Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .ascii-nav-link {
+    display: block;
+    margin: 1px 0;
+    text-align: center;
+  }
+  
+  .ascii-section-title {
+    font-size: 16px;
+  }
+  
+  .ascii-card {
+    padding: 6px;
+  }
+}
+
+/* Tab styles */
+.ascii-tab {
+  background-color: #E5E5E5;
+  color: #525252;
+  border: 1px solid #A3A3A3;
+  border-radius: 0;
+  padding: 6px 12px;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ascii-tab:hover {
+  background-color: #D4D4D4;
+  color: #404040;
+}
+
+.ascii-tab-active {
+  background-color: #404040;
+  color: #FFFFFF;
+  border-color: #404040;
+}
+
+/* Compact card improvements */
+.ascii-card:hover {
+  box-shadow: 3px 3px 0px #A3A3A3;
+  transform: translateY(-1px);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Truncate utility - but ensure text fits */
+.truncate {
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+}
+
+/* Real-time indicator */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Transition utilities */
+.transition-shadow {
+  transition-property: box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Override existing layout styles with ASCII theme */
+.app-layout-sidebar {
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.app-sidebar {
+  background-color: var(--ascii-neutral-700);
+  border-right: 1px solid var(--ascii-neutral-900);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.sidebar-header {
+  background-color: var(--ascii-neutral-800);
+  border-bottom: 1px solid var(--ascii-neutral-900);
+  padding: 8px;
+}
+
+.logo-text {
+  color: var(--ascii-white);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.nav-item {
+  background: none;
+  border: 1px solid var(--ascii-neutral-700);
+  color: var(--ascii-white); /* Improved contrast for better readability */
+  padding: 6px 8px;
+  margin: 2px 0;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 12px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+}
+
+.nav-item.active {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+  font-weight: bold;
+}
+
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid var(--ascii-neutral-800);
+  flex-shrink: 0;
+}
+
+.nav-label {
+  font-weight: inherit;
+}
+
+.app-header-slim {
+  background-color: var(--ascii-neutral-700);
+  border-bottom: 1px solid var(--ascii-neutral-900);
+  padding: 6px 12px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-tab {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-800);
+  padding: 6px 12px;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Added for better alignment */
+  gap: 6px;
+  margin: 0 4px; /* Added consistent spacing between buttons */
+  min-width: 80px; /* Added for consistent button width */
+}
+
+.nav-tab:hover {
+  background-color: var(--ascii-neutral-500);
+}
+
+.nav-tab.active {
+  background-color: var(--ascii-white); /* Changed for better contrast */
+  color: var(--ascii-neutral-900);
+  border-color: var(--ascii-white);
+}
+
+.nav-tab .nav-icon {
+  background-color: var(--ascii-neutral-800);
+  color: var(--ascii-white);
+}
+
+.nav-tab.active .nav-icon {
+  background-color: var(--ascii-neutral-900);
+  color: var(--ascii-white);
+}
+
+.mobile-menu-button {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-800);
+  padding: 6px 8px;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mobile-menu-button:hover {
+  background-color: var(--ascii-neutral-500);
+}
+
+.connection-status {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 10px;
+  color: var(--ascii-white); /* Improved contrast for better readability */
+  text-transform: uppercase;
+}
+
+.app-main-content {
+  background-color: var(--ascii-neutral-50);
+  padding: 8px;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.app-footer {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-neutral-300);
+  border-top: 1px solid var(--ascii-neutral-900);
+  padding: 6px 12px;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+/* Ensure all text fits - disable truncation */
+* {
+  text-overflow: unset !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+
+/* Special case for very long text that must fit */
+.force-fit-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Minimal spacing overrides */
+.container {
+  padding: 4px !important;
+  margin: 0 !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure all major layout elements stay within viewport */
+.offers-container, .offer-list-container, .content-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding-left: 0; /* Removed left padding to fix alignment */
+  padding-right: var(--spacing-2);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .nav-item {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+  
+  .nav-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+  
+  .nav-tab {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .app-main-content {
+    padding: 4px;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  .ascii-card {
+    padding: 4px;
+    margin-bottom: 4px;
+  }
+}

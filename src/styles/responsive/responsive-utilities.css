@@ -1,7 +1,20 @@
-/* Responsive utilities and mixins */
+/**
+ * Responsive Utilities and Breakpoints
+ * 
+ * Centralized breakpoint system for consistent responsive design
+ * These values are used across all responsive CSS files and should be
+ * the single source of truth for media query breakpoints.
+ */
 
-/* Media query breakpoints */
+/* Media query breakpoints - Mobile First Approach */
 :root {
+  /* Breakpoint System Documentation:
+   * xs: 480px  - Large phones (landscape)
+   * sm: 640px  - Small tablets 
+   * md: 768px  - Tablets and small laptops
+   * lg: 1024px - Laptops and desktops
+   * xl: 1280px - Large desktops
+   */
   --breakpoint-xs: 480px;
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;

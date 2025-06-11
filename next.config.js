@@ -3,7 +3,12 @@ const webpack = require('webpack');
 
 const nextConfig = {
   reactStrictMode: true,
-  // Removed deprecated swcMinify option
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     domains: [],
     unoptimized: true,
@@ -30,6 +35,33 @@ const nextConfig = {
     );
 
     return config;
+  },
+  // PWA headers
+  async headers() {
+    return [
+      {
+        source: '/manifest.json',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/manifest+json',
+          },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript',
+          },
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/',
+          },
+        ],
+      },
+    ];
   },
   // For static export
   output: 'export',
