@@ -18,4 +18,8 @@ pub enum ErrorCode {
     DisputeAlreadyExists,
     #[msg("Invalid amount")]
     InvalidAmount,
+    #[msg("Input string too long")]
+    InputTooLong,
+    #[msg("Admin authority required")]
+    AdminRequired,
 }

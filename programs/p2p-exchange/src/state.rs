@@ -3,6 +3,19 @@ use anchor_lang::prelude::*;
 declare_id!("FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9");
 
 #[account]
+pub struct Admin {
+    pub authority: Pubkey,
+    pub bump: u8,
+}
+
+impl Admin {
+    pub const LEN: usize = 32 + // authority
+                           1;   // bump
+
+    pub const SEED: &'static str = "admin";
+}
+
+#[account]
 pub struct Offer {
     pub seller: Pubkey,
     pub buyer: Pubkey,
@@ -122,3 +135,9 @@ pub enum DisputeStatus {
     VerdictReached,
     Resolved,
 }
+
+// Input validation constants
+pub const MAX_FIAT_CURRENCY_LEN: usize = 10;  // e.g., "USD", "EUR"
+pub const MAX_PAYMENT_METHOD_LEN: usize = 50; // e.g., "Bank Transfer"
+pub const MAX_DISPUTE_REASON_LEN: usize = 200;
+pub const MAX_EVIDENCE_URL_LEN: usize = 300;

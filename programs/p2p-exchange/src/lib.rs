@@ -12,6 +12,11 @@ declare_id!("FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9");
 pub mod p2p_exchange {
     use super::*;
 
+    // Admin Initialization
+    pub fn initialize_admin(ctx: Context<InitializeAdmin>) -> Result<()> {
+        instructions::admin::initialize_admin(ctx)
+    }
+
     // Offer Management Instructions
     pub fn create_offer(
         ctx: Context<CreateOffer>,

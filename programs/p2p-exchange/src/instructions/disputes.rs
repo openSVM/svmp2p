@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
-use crate::state::{Offer, Dispute, Vote, OfferStatus, DisputeStatus};
+use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
+use crate::state::{Admin, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN};
 use crate::errors::ErrorCode;
 
 #[derive(Accounts)]
@@ -25,6 +26,12 @@ pub struct AssignJurors<'info> {
     pub juror2: AccountInfo<'info>,
     /// CHECK: This is juror 3
     pub juror3: AccountInfo<'info>,
+    #[account(
+        seeds = [Admin::SEED.as_bytes()],
+        bump,
+        constraint = admin.authority == authority.key() @ ErrorCode::AdminRequired
+    )]
+    pub admin: Account<'info, Admin>,
     #[account(mut)]
     pub authority: Signer<'info>,
 }
@@ -38,12 +45,19 @@ pub struct SubmitEvidence<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(vote_for_buyer: bool)]
 pub struct CastVote<'info> {
     #[account(mut)]
     pub dispute: Account<'info, Dispute>,
     #[account(mut)]
     pub juror: Signer<'info>,
-    #[account(init, payer = juror, space = 8 + Vote::LEN)]
+    #[account(
+        init, 
+        payer = juror, 
+        space = 8 + Vote::LEN,
+        seeds = [b"vote", dispute.key().as_ref(), juror.key().as_ref()],
+        bump
+    )]
     pub vote: Account<'info, Vote>,
     pub system_program: Program<'info, System>,
 }
@@ -63,11 +77,23 @@ pub struct ExecuteVerdict<'info> {
     /// CHECK: This is the seller
     #[account(mut)]
     pub seller: AccountInfo<'info>,
+    #[account(
+        seeds = [Admin::SEED.as_bytes()],
+        bump,
+        constraint = admin.authority == authority.key() @ ErrorCode::AdminRequired
+    )]
+    pub admin: Account<'info, Admin>,
     #[account(mut)]
     pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
+    // Input validation
+    if reason.len() > MAX_DISPUTE_REASON_LEN {
+        return Err(error!(ErrorCode::InputTooLong));
+    }
+
     let dispute = &mut ctx.accounts.dispute;
     let offer = &mut ctx.accounts.offer;
     let initiator = &ctx.accounts.initiator;
@@ -138,6 +164,11 @@ pub fn assign_jurors(ctx: Context<AssignJurors>) -> Result<()> {
 }
 
 pub fn submit_evidence(ctx: Context<SubmitEvidence>, evidence_url: String) -> Result<()> {
+    // Input validation
+    if evidence_url.len() > MAX_EVIDENCE_URL_LEN {
+        return Err(error!(ErrorCode::InputTooLong));
+    }
+
     let dispute = &mut ctx.accounts.dispute;
     let submitter = &ctx.accounts.submitter;
 
@@ -182,7 +213,7 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         return Err(error!(ErrorCode::NotAJuror));
     }
 
-    // Initialize vote data
+    // Initialize vote data (PDA prevents duplicate votes)
     vote.dispute = dispute.key();
     vote.juror = juror.key();
     vote.vote_for_buyer = vote_for_buyer;
@@ -224,20 +255,31 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
     // Determine winner and transfer funds accordingly
     let escrow_balance = escrow_account.lamports();
     
-    if dispute.votes_for_buyer > dispute.votes_for_seller {
-        // Buyer wins - gets the SOL
-        **buyer.lamports.borrow_mut() = buyer.lamports()
-            .checked_add(escrow_balance)
-            .ok_or(ErrorCode::InvalidAmount)?;
-    } else {
-        // Seller wins - gets the SOL back
-        **seller.lamports.borrow_mut() = seller.lamports()
-            .checked_add(escrow_balance)
-            .ok_or(ErrorCode::InvalidAmount)?;
-    }
+    if escrow_balance > 0 {
+        let recipient = if dispute.votes_for_buyer > dispute.votes_for_seller {
+            buyer // Buyer wins
+        } else {
+            seller // Seller wins
+        };
 
-    // Clear escrow account
-    **escrow_account.lamports.borrow_mut() = 0;
+        let transfer_instruction = system_instruction::transfer(
+            &escrow_account.key(),
+            &recipient.key(),
+            escrow_balance,
+        );
+
+        // Note: In a real implementation, the escrow account would need to be a PDA
+        // controlled by the program to sign for the transfer
+        invoke_signed(
+            &transfer_instruction,
+            &[
+                escrow_account.to_account_info(),
+                recipient.to_account_info(),
+                ctx.accounts.system_program.to_account_info(),
+            ],
+            &[],
+        )?;
+    }
 
     // Update dispute and offer status
     dispute.status = DisputeStatus::Resolved as u8;
