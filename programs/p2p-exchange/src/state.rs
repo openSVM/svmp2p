@@ -1,0 +1,124 @@
+use anchor_lang::prelude::*;
+
+declare_id!("FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9");
+
+#[account]
+pub struct Offer {
+    pub seller: Pubkey,
+    pub buyer: Pubkey,
+    pub amount: u64,
+    pub security_bond: u64,
+    pub status: u8,
+    pub fiat_amount: u64,
+    pub fiat_currency: String,
+    pub payment_method: String,
+    pub escrow_account: Pubkey,
+    pub created_at: i64,
+    pub updated_at: i64,
+    pub dispute_id: Option<Pubkey>,
+}
+
+impl Offer {
+    pub const LEN: usize = 32 + // seller
+                           32 + // buyer
+                           8 +  // amount
+                           8 +  // security_bond
+                           1 +  // status
+                           8 +  // fiat_amount
+                           36 + // fiat_currency (max 32 chars + 4 bytes for length)
+                           36 + // payment_method (max 32 chars + 4 bytes for length)
+                           32 + // escrow_account
+                           8 +  // created_at
+                           8 +  // updated_at
+                           33;  // dispute_id (Option<Pubkey>)
+}
+
+#[account]
+pub struct Dispute {
+    pub offer: Pubkey,
+    pub initiator: Pubkey,
+    pub respondent: Pubkey,
+    pub reason: String,
+    pub status: u8,
+    pub jurors: [Pubkey; 3],
+    pub evidence_buyer: Vec<String>,
+    pub evidence_seller: Vec<String>,
+    pub votes_for_buyer: u8,
+    pub votes_for_seller: u8,
+    pub created_at: i64,
+    pub resolved_at: i64,
+}
+
+impl Dispute {
+    pub const LEN: usize = 32 + // offer
+                           32 + // initiator
+                           32 + // respondent
+                           64 + // reason (max 60 chars + 4 bytes for length)
+                           1 +  // status
+                           96 + // jurors (3 * 32)
+                           200 + // evidence_buyer (estimate)
+                           200 + // evidence_seller (estimate)
+                           1 +  // votes_for_buyer
+                           1 +  // votes_for_seller
+                           8 +  // created_at
+                           8;   // resolved_at
+}
+
+#[account]
+pub struct Vote {
+    pub dispute: Pubkey,
+    pub juror: Pubkey,
+    pub vote_for_buyer: bool,
+    pub timestamp: i64,
+}
+
+impl Vote {
+    pub const LEN: usize = 32 + // dispute
+                           32 + // juror
+                           1 +  // vote_for_buyer
+                           8;   // timestamp
+}
+
+#[account]
+pub struct Reputation {
+    pub user: Pubkey,
+    pub successful_trades: u32,
+    pub disputed_trades: u32,
+    pub disputes_won: u32,
+    pub disputes_lost: u32,
+    pub rating: u8,
+    pub last_updated: i64,
+}
+
+impl Reputation {
+    pub const LEN: usize = 32 + // user
+                           4 +  // successful_trades
+                           4 +  // disputed_trades
+                           4 +  // disputes_won
+                           4 +  // disputes_lost
+                           1 +  // rating
+                           8;   // last_updated
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum OfferStatus {
+    Created,
+    Listed,
+    Accepted,
+    AwaitingFiatPayment,
+    FiatSent,
+    SolReleased,
+    DisputeOpened,
+    Completed,
+    Cancelled,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum DisputeStatus {
+    Opened,
+    JurorsAssigned,
+    EvidenceSubmission,
+    Voting,
+    VerdictReached,
+    Resolved,
+}
