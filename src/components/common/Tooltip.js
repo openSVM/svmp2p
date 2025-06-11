@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../styles/tooltip.css';
 
 /**
  * Tooltip component for displaying contextual help

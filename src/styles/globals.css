@@ -15,6 +15,10 @@
 /* Import responsive grid layout system */
 @import './responsive-grid.css';
 
+/* Import component styles */
+@import './confirmation-dialog.css';
+@import './tooltip.css';
+
 /* Additional Next.js specific styles */
 :root {
   --max-width: 1200px;

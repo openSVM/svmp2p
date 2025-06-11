@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/confirmation-dialog.css';
 
 /**
  * ConfirmationDialog component for important actions requiring confirmation
