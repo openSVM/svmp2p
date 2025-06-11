@@ -276,6 +276,42 @@ const AppContent = () => {
           </div>
         </header>
 
+        {/* Mobile Navigation - Visible only on mobile */}
+        <nav className="mobile-nav">
+          <div className="mobile-nav-buttons">
+            <button
+              className={`mobile-nav-btn ${activeTab === 'buy' ? 'active' : ''}`}
+              onClick={() => handleNavClick('buy')}
+            >
+              BUY
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'sell' ? 'active' : ''}`}
+              onClick={() => handleNavClick('sell')}
+            >
+              SELL
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'myoffers' ? 'active' : ''}`}
+              onClick={() => handleNavClick('myoffers')}
+            >
+              MY OFFERS
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'disputes' ? 'active' : ''}`}
+              onClick={() => handleNavClick('disputes')}
+            >
+              DISPUTES
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => handleNavClick('profile')}
+            >
+              PROFILE
+            </button>
+          </div>
+        </nav>
+
         <main className="app-main">
           {isGuidedWorkflow ? (
             <ErrorBoundary fallback={

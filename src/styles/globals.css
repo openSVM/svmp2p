@@ -19,6 +19,9 @@
 @import './confirmation-dialog.css';
 @import './tooltip.css';
 
+/* Import header fixes */
+@import './header-fixes.css';
+
 /* Additional Next.js specific styles */
 :root {
   --max-width: 1200px;
