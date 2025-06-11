@@ -795,6 +795,14 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value)}
             aria-label="Select currency"
+          >
+            {currencies.map(currency => (
+              <option key={currency} value={currency}>{currency}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="filter-section">
         <div className="filter-toggle-container">
           <button 
