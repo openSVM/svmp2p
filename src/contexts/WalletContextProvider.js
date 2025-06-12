@@ -334,6 +334,8 @@ export const SafeWalletProvider = ({ children }) => {
         walletAdapter.wallet.adapter.off('readyStateChange', handleReadyStateChange);
       };
     }
+  }, [walletAdapter?.wallet?.adapter]);
+
   // Clean up on unmount
   useEffect(() => {
     return () => {
