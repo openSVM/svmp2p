@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 #[error_code]
-pub enum ErrorCode {
+pub enum P2PExchangeError {
     #[msg("Invalid offer status for this operation")]
     InvalidOfferStatus,
     #[msg("Invalid dispute status for this operation")]
@@ -28,4 +28,15 @@ pub enum ErrorCode {
     InvalidUtf8,
     #[msg("Vote is tied, cannot execute verdict")]
     TiedVote,
+    #[msg("Math operation resulted in overflow")]
+    MathOverflow,
+    #[msg("No rewards available to claim")]
+    NoRewardsToClaim,
+    #[msg("Reward token not initialized")]
+    RewardTokenNotInitialized,
+    #[msg("Too many requests - rate limit exceeded")]
+    TooManyRequests,
 }
+
+// Maintain backward compatibility
+pub use P2PExchangeError as ErrorCode;

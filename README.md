@@ -9,6 +9,9 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 - **Responsive Design**: Fully optimized for mobile, tablet, and desktop devices
 - **Wallet Integration**: Connect with popular Solana wallets (Phantom, Solflare, etc.)
 - **Secure Trading**: Escrow-based P2P trading system
+- **Tokenized Loyalty System**: Earn reward tokens through trading and governance participation
+- **Dispute Resolution**: Community-driven dispute resolution with juror voting
+- **User Reputation**: Comprehensive reputation tracking system
 
 ## Technologies Used
 
@@ -69,6 +72,27 @@ The exchange is fully responsive and works on all device sizes:
 - **Eclipse**: Cross-chain applications SVM network
 - **svmBNB**: BNB Chain integration with SVM
 - **s00n**: Ultra-fast optimistic rollup SVM network
+
+## Tokenized Loyalty System
+
+The platform features a comprehensive reward system that incentivizes user engagement:
+
+### Earning Rewards
+- **Trading Rewards**: Earn tokens for every successful trade completion
+- **Governance Rewards**: Get paid for participating in dispute resolution as a juror
+- **Volume Thresholds**: Minimum trade volumes ensure quality over quantity
+
+### Using Rewards
+- **Real-time Tracking**: Monitor your earnings in the dedicated Rewards dashboard
+- **Instant Claiming**: Claim your accumulated rewards at any time
+- **Future Utility**: Tokens will enable fee discounts, governance voting, and exclusive features
+
+### Key Features
+- **Fair Distribution**: Both buyers and sellers earn equal rewards
+- **Anti-abuse Protection**: Multiple safeguards prevent gaming the system
+- **Transparent Progress**: Clear indicators show your path to next rewards
+
+For detailed tokenomics information, see [docs/tokenomics-design.md](docs/tokenomics-design.md).
 
 ## License
 

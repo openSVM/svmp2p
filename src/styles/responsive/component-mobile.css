@@ -3,9 +3,9 @@
 /* OfferCreation component mobile enhancements */
 .offer-creation-container {
   padding: 20px;
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0; /* ASCII theme uses square corners */
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--ascii-neutral-400);
   margin-bottom: 24px;
 }
 
@@ -59,9 +59,9 @@
 /* OfferList component mobile enhancements */
 .offer-list-container {
   padding: 20px 20px 20px 0; /* Removed left padding to fix alignment */
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0; /* ASCII theme uses square corners */
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--ascii-neutral-400);
   margin-bottom: 24px;
 }
 
@@ -166,9 +166,9 @@
 /* DisputeResolution component mobile enhancements */
 .dispute-resolution-container {
   padding: 20px;
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0; /* ASCII theme uses square corners */
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--ascii-neutral-400);
   margin-bottom: 24px;
 }
 
@@ -319,9 +319,9 @@
 /* UserProfile component mobile enhancements */
 .user-profile-container {
   padding: 20px;
-  border-radius: 8px;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0; /* ASCII theme uses square corners */
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--ascii-neutral-400);
   margin-bottom: 24px;
 }
 
@@ -421,9 +421,9 @@
     padding: 12px 16px;
     position: sticky;
     top: 0;
-    background-color: white;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--ascii-neutral-400);
     z-index: 10;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
   
   .header-content {
@@ -465,8 +465,8 @@
     top: 60px;
     left: 0;
     width: 100%;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--ascii-neutral-400);
     z-index: 20;
   }
   
@@ -511,8 +511,8 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: white;
-    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-background);
+    border-top: 1px solid var(--ascii-neutral-400);
     z-index: 10;
   }
   

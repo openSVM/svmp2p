@@ -15,6 +15,7 @@ import {
 import { useSafeWallet } from '../contexts/WalletContextProvider';
 import { useActionDebounce, useInputValidation } from '../hooks/useActionDebounce';
 import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../utils/validation';
+import { createLogger } from '../utils/logger';
 import { 
   MOCK_SOL_PRICES, 
   SUPPORTED_CURRENCIES, 
@@ -24,6 +25,8 @@ import {
 } from '../constants/tradingConstants';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
 import DemoIndicator from './DemoIndicator';
+
+const logger = createLogger('OfferCreation');
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = useSafeWallet();
@@ -110,7 +113,12 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       // Current timestamp
       const now = new BN(Math.floor(Date.now() / 1000));
       
-      console.log('Creating offer...');
+      logger.info('Creating offer', { 
+        solAmountLamports: solAmountLamports.toString(),
+        fiatAmount: parseFloat(fiatAmount),
+        currency: selectedCurrency,
+        paymentMethod: selectedPaymentMethod
+      });
       
       // Create offer
       const createTx = await program.methods
@@ -136,7 +144,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         message: 'Offer created successfully! Now listing your offer...'
       });
       
-      console.log('Listing offer...');
+      logger.info('Listing offer', { offerPubkey: offerKeypair.publicKey.toString() });
       
       // List offer
       const listTx = await program.methods
@@ -160,7 +168,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       setFiatAmount('');
       
     } catch (err) {
-      console.error('Error creating offer:', err);
+      logger.error('Error creating offer', { 
+        error: err.message, 
+        solAmount, 
+        fiatAmount, 
+        currency: selectedCurrency,
+        paymentMethod: selectedPaymentMethod
+      });
       setError(`Failed to create offer: ${err.message}`);
       setTxStatus({
         status: 'error',
@@ -383,11 +397,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .guided-workflow-button {
-          background-color: #3b82f6;
+          background-color: var(--color-primary);
           color: white;
           border: none;
           padding: 8px 16px;
-          border-radius: 4px;
+          border-radius: 0;
           cursor: pointer;
           font-size: 0.9rem;
           display: flex;
@@ -403,13 +417,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           width: 18px;
           height: 18px;
           background-color: rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
+          border-radius: 0;
           font-size: 0.8rem;
           font-weight: bold;
         }
 
         .guided-workflow-button:hover {
-          background-color: #2563eb;
+          background-color: var(--color-primary-dark);
         }
 
         .input-error {

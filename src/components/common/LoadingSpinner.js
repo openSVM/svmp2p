@@ -42,8 +42,8 @@ const LoadingSpinner = ({ size = 'medium', color = 'primary', text = 'Loading...
         }
         
         .spinner-circle {
-          border-radius: 50%;
-          border: 3px solid rgba(0, 0, 0, 0.1);
+          border-radius: 0;
+          border: 3px solid var(--ascii-neutral-300);
           border-top-color: currentColor;
           animation: spin 0.8s linear infinite;
         }
@@ -67,33 +67,35 @@ const LoadingSpinner = ({ size = 'medium', color = 'primary', text = 'Loading...
         }
         
         .spinner-primary {
-          color: #3b82f6;
+          color: var(--ascii-neutral-700);
         }
         
         .spinner-secondary {
-          color: #6b7280;
+          color: var(--ascii-neutral-600);
         }
         
         .spinner-success {
-          color: #10b981;
+          color: var(--ascii-neutral-800);
         }
         
         .spinner-danger {
-          color: #ef4444;
+          color: var(--ascii-neutral-900);
         }
         
         .spinner-warning {
-          color: #f59e0b;
+          color: var(--ascii-neutral-600);
         }
         
         .spinner-info {
-          color: #3b82f6;
+          color: var(--ascii-neutral-700);
         }
         
         .spinner-text {
           margin-top: 0.5rem;
           font-size: 0.875rem;
-          color: #6b7280;
+          color: var(--ascii-neutral-600);
+          font-family: 'Courier New', Courier, monospace;
+          text-transform: uppercase;
         }
         
         @keyframes spin {

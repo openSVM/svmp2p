@@ -31,6 +31,7 @@ use anchor_lang::prelude::*;
 pub mod state;
 pub mod instructions;
 pub mod errors;
+pub mod utils;
 
 use instructions::*;
 
@@ -146,5 +147,58 @@ pub mod p2p_exchange {
         dispute_won: bool,
     ) -> Result<()> {
         instructions::reputation::update_reputation(ctx, successful_trade, dispute_resolved, dispute_won)
+    }
+
+    /// Initialize the reward token system (admin-only)
+    ///
+    /// # Arguments
+    /// * `reward_rate_per_trade` - Tokens awarded per successful trade
+    /// * `reward_rate_per_vote` - Tokens awarded per governance vote
+    /// * `min_trade_volume` - Minimum trade volume to qualify for rewards
+    pub fn create_reward_token(
+        ctx: Context<CreateRewardToken>,
+        reward_rate_per_trade: u64,
+        reward_rate_per_vote: u64,
+        min_trade_volume: u64,
+    ) -> Result<()> {
+        instructions::rewards::create_reward_token(ctx, reward_rate_per_trade, reward_rate_per_vote, min_trade_volume)
+    }
+
+    /// Update reward token parameters (admin-only, rate limited)
+    ///
+    /// # Arguments
+    /// * `reward_rate_per_trade` - New tokens awarded per successful trade
+    /// * `reward_rate_per_vote` - New tokens awarded per governance vote  
+    /// * `min_trade_volume` - New minimum trade volume to qualify for rewards
+    pub fn update_reward_token(
+        ctx: Context<UpdateRewardToken>,
+        reward_rate_per_trade: u64,
+        reward_rate_per_vote: u64,
+        min_trade_volume: u64,
+    ) -> Result<()> {
+        instructions::rewards::update_reward_token(ctx, reward_rate_per_trade, reward_rate_per_vote, min_trade_volume)
+    }
+
+    /// Initialize a user rewards account
+    pub fn create_user_rewards(ctx: Context<CreateUserRewards>) -> Result<()> {
+        instructions::rewards::create_user_rewards(ctx)
+    }
+
+    /// Mint trade rewards for completed trade
+    /// 
+    /// # Arguments
+    /// * `trade_volume` - Volume of the completed trade
+    pub fn mint_trade_rewards(ctx: Context<MintTradeRewards>, trade_volume: u64) -> Result<()> {
+        instructions::rewards::mint_trade_rewards(ctx, trade_volume)
+    }
+
+    /// Mint governance rewards for voting participation
+    pub fn mint_vote_rewards(ctx: Context<MintVoteRewards>) -> Result<()> {
+        instructions::rewards::mint_vote_rewards(ctx)
+    }
+
+    /// Claim accumulated rewards
+    pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
+        instructions::rewards::claim_rewards(ctx)
     }
 }

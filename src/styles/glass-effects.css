@@ -1,0 +1,330 @@
+/**
+ * Glass Transparency Effects for Forms and Layouts
+ * 
+ * This CSS file implements glass morphism effects for form elements,
+ * modals, dialogs, and other layout components to replace solid
+ * color backgrounds with transparent glass-like effects.
+ */
+
+/* Glass effect base styles */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.glass-effect-light {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.glass-effect-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Apply glass effect to confirmation dialog */
+.confirmation-dialog {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+.confirmation-dialog-header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.confirmation-dialog-body {
+  background: transparent;
+}
+
+.confirmation-dialog-actions {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Apply glass effect to transaction status */
+.transaction-status {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+.transaction-confirmation-container {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+.transaction-confirmation-header {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Apply glass effect to forms */
+.form-input,
+.form-select,
+.form-textarea,
+.ascii-input,
+.ascii-select {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-foreground) !important;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.ascii-input:focus,
+.ascii-select:focus {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Apply glass effect to cards and containers */
+.ascii-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ascii-card:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Apply glass effect to info boxes */
+.ascii-info-box {
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px dashed rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Apply glass effect to modals and overlays */
+.modal-overlay,
+.onboarding-modal,
+.sidebar-overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.modal-content,
+.onboarding-modal-content {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Apply glass effect to navigation elements */
+.sidebar-nav {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.sidebar-header {
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Apply glass effect to buttons with transparency */
+.ascii-button-secondary {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.ascii-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Apply glass effect to status badges */
+.ascii-status {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.ascii-status-active {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ascii-status-inactive {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Apply glass effect to table elements */
+.ascii-table {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.ascii-table th {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.ascii-table td {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.ascii-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.ascii-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Apply glass effect to code elements */
+.ascii-code {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Apply glass effect to reward dashboard components */
+.reward-dashboard,
+.reward-widget,
+.reward-progress-container {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Apply glass effect to error boundaries and global containers */
+.error-boundary-fallback,
+.global-error-content {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Apply glass effect to wallet components */
+.wallet-not-connected {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Special glass effect for loading states */
+.ascii-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  ) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Ensure text remains readable with glass effects */
+.glass-effect *,
+.ascii-card *,
+.confirmation-dialog *,
+.transaction-status *,
+.form-input,
+.form-select,
+.form-textarea {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhance contrast for placeholders */
+.form-input::placeholder,
+.form-textarea::placeholder,
+.ascii-input::placeholder {
+  color: rgba(107, 114, 128, 0.8) !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile optimizations for glass effects */
+@media (max-width: 768px) {
+  .glass-effect,
+  .ascii-card,
+  .confirmation-dialog,
+  .transaction-status {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  
+  .form-input,
+  .form-select,
+  .form-textarea,
+  .ascii-input,
+  .ascii-select {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* Ensure compatibility with existing theme */
+@supports not (backdrop-filter: blur(10px)) {
+  .glass-effect,
+  .ascii-card,
+  .confirmation-dialog,
+  .transaction-status,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background: rgba(255, 255, 255, 0.9) !important;
+  }
+}

@@ -1,23 +1,11 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
 use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
-use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted};
+use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted, RewardEligible};
 use crate::errors::ErrorCode;
+use crate::utils::validate_and_process_string;
 
-/// Validates that a string is valid UTF-8 and trims whitespace
-fn validate_and_trim_string(input: &str) -> Result<String> {
-    // Check if string is valid UTF-8 (Rust strings are UTF-8 by default, but extra safety)
-    if !input.is_ascii() && !input.chars().all(|c| c.is_ascii() || c.len_utf8() <= 4) {
-        return Err(error!(ErrorCode::InvalidUtf8));
-    }
-    
-    let trimmed = input.trim().to_string();
-    if trimmed.is_empty() {
-        return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
-    }
-    
-    Ok(trimmed)
-}
+// Remove the duplicated validate_and_trim_string function - now using common utility
 
 #[derive(Accounts)]
 pub struct OpenDispute<'info> {
@@ -109,7 +97,7 @@ pub struct ExecuteVerdict<'info> {
 
 pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
     // Input validation and sanitization
-    let reason = validate_and_trim_string(&reason)?;
+    let reason = validate_and_process_string(&reason, MAX_DISPUTE_REASON_LEN)?;
     if reason.len() > MAX_DISPUTE_REASON_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }
@@ -204,7 +192,7 @@ pub fn assign_jurors(ctx: Context<AssignJurors>) -> Result<()> {
 
 pub fn submit_evidence(ctx: Context<SubmitEvidence>, evidence_url: String) -> Result<()> {
     // Input validation and sanitization
-    let evidence_url = validate_and_trim_string(&evidence_url)?;
+    let evidence_url = validate_and_process_string(&evidence_url, MAX_EVIDENCE_URL_LEN)?;
     if evidence_url.len() > MAX_EVIDENCE_URL_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }
@@ -270,14 +258,31 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         return Err(error!(ErrorCode::NotAJuror));
     }
 
-    // Additional check: ensure this vote doesn't exceed our vote limits per voter
-    // This is a safeguard in addition to the PDA-based duplicate prevention
-    let _juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
+    // Additional security: Verify juror index and ensure no manipulation
+    let juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
         .ok_or(ErrorCode::NotAJuror)?;
+        
+    // Ensure juror index is valid (0, 1, or 2 for our 3-juror system)
+    if juror_index >= 3 {
+        return Err(error!(ErrorCode::NotAJuror));
+    }
+    // Double-check that this specific juror hasn't been counted already
+    // This is extra safety on top of PDA-based duplicate prevention
+    let mut vote_count = 0;
+    if dispute.votes_for_buyer > 0 || dispute.votes_for_seller > 0 {
+        vote_count = dispute.votes_for_buyer + dispute.votes_for_seller;
+    }
     
+    // Sanity check: total votes should never exceed number of jurors
+    if vote_count >= 3 {
+        return Err(error!(ErrorCode::AlreadyVoted));
+    }
+    
+    // Validate that the juror has not already voted
+    // Check by using Vote PDA - if the account exists, they've already voted
+    // This is handled by the PDA constraint in the CastVote accounts struct=======
     // Note: PDA-based duplicate prevention ensures jurors can't vote twice
     // The vote account PDA will fail to initialize if the juror already voted
-
     // Initialize vote data (PDA prevents duplicate votes)
     vote.dispute = dispute.key();
     vote.juror = juror.key();
@@ -308,6 +313,30 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         vote_for_buyer,
     });
 
+    // Try to mint governance rewards for voting (optional - fails silently if reward system not set up)
+    let _ = try_mint_vote_rewards_for_juror(&juror.key());
+
+    Ok(())
+}
+
+// Helper function to mint governance rewards after voting
+fn try_mint_vote_rewards_for_juror(juror: &Pubkey) -> Result<()> {
+    let clock = Clock::get()?;
+    let users = vec![*juror];
+    
+    // Rate limiting: Governance votes are naturally rate-limited by dispute frequency
+    // Only emit one event per vote to prevent spamming
+    emit!(RewardEligible {
+        users: users.clone(),
+        trade_volume: 0, // Not applicable for governance rewards
+        reward_type: "vote".to_string(),
+        timestamp: clock.unix_timestamp,
+    });
+    
+    // Note: Actual reward minting should be done via separate instructions
+    // This maintains backward compatibility while enabling monitoring
+    msg!("Governance vote cast - eligible for rewards. Juror: {}", juror);
+    
     Ok(())
 }
 

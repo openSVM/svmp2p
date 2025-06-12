@@ -70,8 +70,9 @@ const TransactionStatus = ({
           display: flex;
           align-items: center;
           padding: 12px 16px;
-          border-radius: 8px;
-          background-color: white;
+          border-radius: 0;
+          /* Glass effect applied via glass-effects.css */
+          /* background-color: white; */
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           z-index: 1000;
           max-width: 400px;

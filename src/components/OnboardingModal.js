@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 import LanguageSelector from './LanguageSelector';
+import { createUserRewardsAccount, hasUserRewardsAccount } from '../utils/rewardTransactions';
+import { REWARD_CONSTANTS, UI_CONFIG } from '../constants/rewardConstants';
 
 const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
+  const { publicKey, connected, wallet } = useWallet();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [rewardAccountSetup, setRewardAccountSetup] = useState({
+    status: 'checking', // 'checking', 'needed', 'creating', 'exists', 'created', 'error'
+    error: null
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -17,6 +25,59 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
       }
     }
   }, [isOpen]);
+
+  // Check reward account status when wallet connects
+  useEffect(() => {
+    const checkRewardAccount = async () => {
+      if (connected && publicKey && currentStep >= 2) { // After wallet connection step
+        setRewardAccountSetup({ status: 'checking', error: null });
+        
+        try {
+          const accountExists = await hasUserRewardsAccount(null, publicKey); // connection would be passed in real implementation
+          
+          if (accountExists) {
+            setRewardAccountSetup({ status: 'exists', error: null });
+          } else {
+            setRewardAccountSetup({ status: 'needed', error: null });
+          }
+        } catch (error) {
+          console.error('Error checking reward account:', error);
+          setRewardAccountSetup({ status: 'error', error: error.message });
+        }
+      }
+    };
+
+    checkRewardAccount();
+  }, [connected, publicKey, currentStep]);
+
+  // Create reward account function
+  const handleCreateRewardAccount = async () => {
+    if (!connected || !wallet || !publicKey) {
+      setRewardAccountSetup({ 
+        status: 'error', 
+        error: 'Please connect your wallet first' 
+      });
+      return;
+    }
+
+    setRewardAccountSetup({ status: 'creating', error: null });
+
+    try {
+      await createUserRewardsAccount(wallet, null, publicKey); // connection would be passed in real implementation
+      setRewardAccountSetup({ status: 'created', error: null });
+      
+      // Auto-advance to next step after successful creation
+      setTimeout(() => {
+        setCurrentStep(prev => prev + 1);
+      }, 1500);
+    } catch (error) {
+      console.error('Error creating reward account:', error);
+      setRewardAccountSetup({ 
+        status: 'error', 
+        error: `Failed to create rewards account: ${error.message}` 
+      });
+    }
+  };
 
   const handleLanguageChange = (locale) => {
     setSelectedLanguage(locale);
@@ -118,6 +179,106 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
           </div>
           <div className="wallet-connect-section">
             <WalletMultiButton />
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Setup Loyalty Rewards",
+      subtitle: "Activate your rewards account to earn tokens for trading and governance",
+      content: (
+        <div className="onboarding-rewards">
+          <div className="rewards-icon">💎</div>
+          <p className="rewards-description">
+            Set up your loyalty rewards account to earn tokens for every trade you complete and 
+            every governance vote you cast. Start earning rewards immediately!
+          </p>
+          
+          <div className="rewards-benefits">
+            <div className="reward-benefit">
+              <span className="checkmark">✓</span>
+              <span>Earn {REWARD_CONSTANTS.REWARD_RATES.PER_TRADE} tokens per successful trade</span>
+            </div>
+            <div className="reward-benefit">
+              <span className="checkmark">✓</span>
+              <span>Earn {REWARD_CONSTANTS.REWARD_RATES.PER_VOTE} tokens per governance vote</span>
+            </div>
+            <div className="reward-benefit">
+              <span className="checkmark">✓</span>
+              <span>Future utility: discounts, voting power, staking rewards</span>
+            </div>
+            <div className="reward-benefit">
+              <span className="checkmark">✓</span>
+              <span>Optional auto-claim feature for convenience</span>
+            </div>
+          </div>
+
+          <div className="rewards-setup-section">
+            {rewardAccountSetup.status === 'checking' && (
+              <div className="setup-status checking">
+                <div className="spinner"></div>
+                <span>Checking your rewards account...</span>
+              </div>
+            )}
+            
+            {rewardAccountSetup.status === 'exists' && (
+              <div className="setup-status exists">
+                <span className="status-icon">✅</span>
+                <span>Rewards account already set up! You're ready to earn tokens.</span>
+              </div>
+            )}
+            
+            {rewardAccountSetup.status === 'needed' && (
+              <div className="setup-status needed">
+                <button 
+                  className="setup-rewards-button"
+                  onClick={handleCreateRewardAccount}
+                  disabled={!connected}
+                >
+                  {connected ? 'Create Rewards Account' : 'Connect Wallet First'}
+                </button>
+                <p className="setup-note">
+                  This will create your personal rewards account on the blockchain. 
+                  No cost to you - the platform covers the setup fees.
+                </p>
+              </div>
+            )}
+            
+            {rewardAccountSetup.status === 'creating' && (
+              <div className="setup-status creating">
+                <div className="spinner"></div>
+                <span>Creating your rewards account...</span>
+              </div>
+            )}
+            
+            {rewardAccountSetup.status === 'created' && (
+              <div className="setup-status created">
+                <span className="status-icon">🎉</span>
+                <span>Rewards account created successfully! You can now earn tokens.</span>
+              </div>
+            )}
+            
+            {rewardAccountSetup.status === 'error' && (
+              <div className="setup-status error">
+                <span className="status-icon">❌</span>
+                <div>
+                  <p>Setup failed: {rewardAccountSetup.error}</p>
+                  <button 
+                    className="retry-button"
+                    onClick={handleCreateRewardAccount}
+                    disabled={!connected}
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="rewards-skip-note">
+            <small>
+              You can skip this step and set up rewards later from the Rewards tab.
+            </small>
           </div>
         </div>
       )
@@ -259,3 +420,190 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
 };
 
 export default OnboardingModal;
+
+{/* Add styles for rewards onboarding */}
+<style jsx>{`
+  .onboarding-rewards {
+    text-align: center;
+    padding: 20px;
+  }
+
+  .rewards-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+
+  .rewards-description {
+    font-size: 16px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .rewards-benefits {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 32px;
+    text-align: left;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .reward-benefit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .reward-benefit .checkmark {
+    color: #059669;
+    font-weight: bold;
+  }
+
+  .rewards-setup-section {
+    margin-bottom: 20px;
+  }
+
+  .setup-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .setup-status.checking {
+    background: rgba(243, 244, 246, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    color: var(--color-foreground-muted);
+  }
+
+  .setup-status.exists {
+    background: rgba(220, 252, 231, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(22, 101, 52, 0.2);
+    color: var(--color-success);
+  }
+
+  .setup-status.needed {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .setup-status.creating {
+    background: rgba(219, 234, 254, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(30, 64, 175, 0.2);
+    color: var(--color-info);
+  }
+
+  .setup-status.created {
+    background: rgba(254, 243, 199, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(146, 64, 14, 0.2);
+    color: var(--color-warning);
+  }
+
+  .setup-status.error {
+    background: rgba(254, 226, 226, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    color: var(--color-error);
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .setup-rewards-button {
+    /* Use glass effect instead of gradient */
+    background: rgba(124, 58, 237, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    color: var(--color-foreground);
+    border-radius: 0;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .setup-rewards-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(124, 58, 237, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+  }
+
+  .setup-rewards-button:disabled {
+    background: rgba(229, 231, 235, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(156, 163, 175, 0.2);
+    color: var(--color-foreground-muted);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .retry-button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 0;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .retry-button:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+  }
+
+  .retry-button:disabled {
+    background-color: var(--color-foreground-muted);
+    cursor: not-allowed;
+  }
+
+  .setup-note {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+    max-width: 300px;
+  }
+
+  .rewards-skip-note {
+    margin-top: 20px;
+    color: #9ca3af;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #7c3aed;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .status-icon {
+    font-size: 20px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`}</style>

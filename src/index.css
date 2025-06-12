@@ -10,6 +10,7 @@
 @import './styles/comprehensive-ui-fixes.css';
 @import './styles/footer-improvements.css';
 @import './styles/demo-mode.css';
+@import './styles/glass-effects.css';
 
 /* Keep existing styles for backward compatibility */
 body {

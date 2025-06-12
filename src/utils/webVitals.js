@@ -1,6 +1,6 @@
 // Web Vitals monitoring and reporting
 import React from 'react';
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
 
 /**
  * Web Vitals configuration
@@ -10,7 +10,7 @@ const VITALS_CONFIG = {
   thresholds: {
     FCP: 1000,    // First Contentful Paint < 1s
     LCP: 2000,    // Largest Contentful Paint < 2s
-    FID: 100,     // First Input Delay < 100ms
+    INP: 200,     // Interaction to Next Paint < 200ms
     CLS: 0.1,     // Cumulative Layout Shift < 0.1
     TTFB: 600,    // Time to First Byte < 600ms
   },
@@ -100,7 +100,7 @@ const handleMetric = (metric) => {
 export const initWebVitals = () => {
   try {
     onCLS(handleMetric);
-    onFID(handleMetric);
+    onINP(handleMetric);
     onFCP(handleMetric);
     onLCP(handleMetric);
     onTTFB(handleMetric);

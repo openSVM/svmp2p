@@ -1,23 +1,11 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke, program::invoke_signed, system_instruction};
 use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
-use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased};
+use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased, RewardEligible};
 use crate::errors::ErrorCode;
+use crate::utils::validate_and_process_string;
 
-/// Validates that a string is valid UTF-8 and trims whitespace
-fn validate_and_trim_string(input: &str) -> Result<String> {
-    // Check if string is valid UTF-8 (Rust strings are UTF-8 by default, but extra safety)
-    if !input.is_ascii() && !input.chars().all(|c| c.is_ascii() || c.len_utf8() <= 4) {
-        return Err(error!(ErrorCode::InvalidUtf8));
-    }
-    
-    let trimmed = input.trim().to_string();
-    if trimmed.is_empty() {
-        return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
-    }
-    
-    Ok(trimmed)
-}
+// Remove the duplicated validate_and_trim_string function - now using common utility
 
 #[derive(Accounts)]
 pub struct CreateOffer<'info> {
@@ -102,8 +90,8 @@ pub fn create_offer(
     created_at: i64,
 ) -> Result<()> {
     // Input validation and sanitization
-    let fiat_currency = validate_and_trim_string(&fiat_currency)?;
-    let payment_method = validate_and_trim_string(&payment_method)?;
+    let fiat_currency = validate_and_process_string(&fiat_currency, MAX_FIAT_CURRENCY_LEN)?;
+    let payment_method = validate_and_process_string(&payment_method, MAX_PAYMENT_METHOD_LEN)?;
     
     if fiat_currency.len() > MAX_FIAT_CURRENCY_LEN {
         return Err(error!(ErrorCode::InputTooLong));
@@ -326,5 +314,44 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
         amount: escrow_balance,
     });
 
+    // Try to mint trade rewards for both parties (optional - fails silently if reward system not set up)
+    let _ = try_mint_trade_rewards_for_completed_trade(
+        &offer.seller,
+        &buyer.key(),
+        escrow_balance,
+    );
+
+    Ok(())
+}
+
+// Helper function to mint trade rewards after trade completion
+fn try_mint_trade_rewards_for_completed_trade(
+    seller: &Pubkey,
+    buyer: &Pubkey,
+    trade_volume: u64,
+) -> Result<()> {
+    let clock = Clock::get()?;
+    
+    // Rate limiting: Only emit events for substantial trades (>= 0.01 SOL = 10M lamports)
+    // This prevents spamming from micro-trades while maintaining monitoring capability
+    const MIN_VOLUME_FOR_EVENT: u64 = 10_000_000; // 0.01 SOL in lamports
+    
+    if trade_volume >= MIN_VOLUME_FOR_EVENT {
+        let users = vec![*seller, *buyer];
+        
+        // Emit event indicating reward eligibility for monitoring
+        emit!(RewardEligible {
+            users: users.clone(),
+            trade_volume,
+            reward_type: "trade".to_string(),
+            timestamp: clock.unix_timestamp,
+        });
+        
+        msg!("Trade completed - eligible for rewards. Seller: {}, Buyer: {}, Volume: {}", 
+             seller, buyer, trade_volume);
+    } else {
+        msg!("Trade volume {} below event emission threshold", trade_volume);
+    }
+    
     Ok(())
 }

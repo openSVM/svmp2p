@@ -801,7 +801,7 @@ html, body {
 }
 
 .app-main-content {
-  background-color: var(--ascii-neutral-50);
+  /* background-color: var(--ascii-neutral-50); */ /* Removed to show underlying texture */
   padding: 8px;
   max-width: 100vw;
   overflow-x: hidden;

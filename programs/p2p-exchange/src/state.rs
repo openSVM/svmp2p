@@ -234,3 +234,107 @@ pub struct ReputationUpdated {
     pub successful_trades: u32,
     pub rating: u8,
 }
+
+#[account]
+pub struct RewardToken {
+    pub authority: Pubkey,
+    pub mint: Pubkey,                     // The SPL token mint
+    pub total_supply: u64,
+    pub reward_rate_per_trade: u64,      // Tokens per successful trade
+    pub reward_rate_per_vote: u64,       // Tokens per governance vote
+    pub min_trade_volume: u64,           // Minimum volume to qualify for rewards
+    pub created_at: i64,
+    pub last_updated: i64,               // Dedicated timestamp for rate limiting
+    pub bump: u8,
+}
+
+impl RewardToken {
+    pub const LEN: usize = 32 + // authority
+                           32 + // mint
+                           8 +  // total_supply
+                           8 +  // reward_rate_per_trade
+                           8 +  // reward_rate_per_vote
+                           8 +  // min_trade_volume
+                           8 +  // created_at
+                           8 +  // last_updated
+                           1;   // bump
+
+    pub const SEED: &'static str = "reward_token";
+}
+
+#[account]
+pub struct UserRewards {
+    pub user: Pubkey,
+    pub total_earned: u64,
+    pub total_claimed: u64,
+    pub unclaimed_balance: u64,
+    pub trading_volume: u64,             // Cumulative trading volume
+    pub governance_votes: u32,           // Total governance votes cast
+    pub last_trade_reward: i64,          // Timestamp of last trade reward
+    pub last_vote_reward: i64,           // Timestamp of last vote reward
+    pub bump: u8,
+}
+
+impl UserRewards {
+    pub const LEN: usize = 32 + // user
+                           8 +  // total_earned
+                           8 +  // total_claimed
+                           8 +  // unclaimed_balance
+                           8 +  // trading_volume
+                           4 +  // governance_votes
+                           8 +  // last_trade_reward
+                           8 +  // last_vote_reward
+                           1;   // bump
+
+    pub const SEED: &'static str = "user_rewards";
+}
+
+// New events for reward system
+#[event]
+pub struct RewardTokenCreated {
+    pub authority: Pubkey,
+    pub reward_rate_per_trade: u64,
+    pub reward_rate_per_vote: u64,
+}
+
+#[event]
+pub struct RewardsEarned {
+    pub user: Pubkey,
+    pub amount: u64,
+    pub reason: String, // "trade" or "vote"
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct RewardsClaimed {
+    pub user: Pubkey,
+    pub amount: u64,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct RewardTokenUpdated {
+    pub authority: Pubkey,
+    pub reward_rate_per_trade: u64,
+    pub reward_rate_per_vote: u64,
+    pub min_trade_volume: u64,
+    pub timestamp: i64,
+}
+
+// Events for monitoring reward system
+#[event]
+pub struct RewardEligible {
+    pub users: Vec<Pubkey>,
+    pub trade_volume: u64,
+    pub reward_type: String, // "trade" or "vote"
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct RewardSystemFailure {
+    pub users: Vec<Pubkey>,
+    pub trade_volume: u64,
+    pub reward_type: String,
+    pub error: String,
+    pub timestamp: i64,
+}
