@@ -1,4 +1,7 @@
 import React from 'react';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('ErrorBoundary');
 
 /**
  * Error boundary component to catch and handle React rendering errors
@@ -21,8 +24,13 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error in a controlled fashion to avoid sensitive data exposure
-    console.error("Error caught by ErrorBoundary:", error.message || "Unknown error");
+    // Log error using structured logging instead of console.error
+    logger.error('React component error caught by ErrorBoundary', {
+      error: error.message || 'Unknown error',
+      name: error.name,
+      stack: error.stack ? error.stack.slice(0, 500) : 'Not available',
+      componentStack: errorInfo.componentStack ? errorInfo.componentStack.slice(0, 500) : 'Not available'
+    });
     
     this.setState(prevState => ({ 
       errorInfo,
