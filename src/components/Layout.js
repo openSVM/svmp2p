@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
@@ -49,6 +49,44 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
       setCurrentLocale(savedLanguage);
     }
   }, [supportedLanguages]);
+
+  // Close mobile menu when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-menu-toggle')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('click', handleClickOutside);
+      
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, [isMobileMenuOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   // Register service worker for PWA
   useEffect(() => {
@@ -147,7 +185,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   ];
 
   // Supported languages
-  const supportedLanguages = [
+  const supportedLanguages = useMemo(() => [
     { code: 'en', name: 'English', country: '🇺🇸' },
     { code: 'es', name: 'Español', country: '🇪🇸' },
     { code: 'fr', name: 'Français', country: '🇫🇷' },
@@ -158,7 +196,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     { code: 'pt', name: 'Português', country: '🇵🇹' },
     { code: 'ru', name: 'Русский', country: '🇷🇺' },
     { code: 'ar', name: 'العربية', country: '🇸🇦' },
-  ];
+  ], []);
 
   return (
     <>
@@ -295,6 +333,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         </header>
 
         {/* Mobile Navigation - Collapsible below header */}
+        {isMobileMenuOpen && <div className="mobile-nav-backdrop" onClick={() => setIsMobileMenuOpen(false)} />}
         <nav className={`mobile-nav ${isMobileMenuOpen ? 'mobile-nav-open' : ''}`}>
           <div className="mobile-nav-buttons">
             {/* Primary navigation items */}
