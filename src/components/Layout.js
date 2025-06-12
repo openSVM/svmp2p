@@ -1,8 +1,10 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import PropTypes from 'prop-types';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useSafeWallet } from '@/contexts/WalletContextProvider';
+import { cn, conditional } from '@/utils/classNames';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
@@ -290,9 +292,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMobileMenuOpen}
             >
-              <span className={`hamburger-line ${isMobileMenuOpen ? 'active' : ''}`}></span>
-              <span className={`hamburger-line ${isMobileMenuOpen ? 'active' : ''}`}></span>
-              <span className={`hamburger-line ${isMobileMenuOpen ? 'active' : ''}`}></span>
+              <span className={conditional('hamburger-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line', 'active', isMobileMenuOpen)}></span>
             </button>
             
             {/* Desktop Navigation - Horizontal layout for desktop */}
@@ -301,9 +303,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               {primaryNavItems.map((item) => (
                 <button
                   key={item.key}
-                  className={`nav-tab ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
+                  className={conditional('nav-tab', 'active', activeTab === item.key)}
                   onClick={() => setActiveTab(item.key)}
                 >
                   <span className="nav-label">{item.label}</span>
@@ -330,7 +330,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 >
                   <span className="nav-label">ACCOUNT</span>
                   <svg 
-                    className={`dropdown-arrow ${isAccountDropdownOpen ? 'rotated' : ''}`} 
+                    className={conditional('dropdown-arrow', 'rotated', isAccountDropdownOpen)} 
                     width="12" 
                     height="12" 
                     viewBox="0 0 12 12" 
@@ -350,11 +350,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                       {accountNavItems.map((item, index) => (
                         <button
                           key={item.key}
-                          className={`account-dropdown-item ${
-                            activeTab === item.key ? 'active' : ''
-                          } ${
-                            accountFocusedIndex === index ? 'focused' : ''
-                          }`}
+                          className={cn(
+                            'account-dropdown-item',
+                            {
+                              'active': activeTab === item.key,
+                              'focused': accountFocusedIndex === index
+                            }
+                          )}
                           onClick={() => {
                             setActiveTab(item.key);
                             setIsAccountDropdownOpen(false);
@@ -432,15 +434,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
 
         {/* Mobile Navigation - Collapsible below header */}
         {isMobileMenuOpen && <div className="mobile-nav-backdrop" onClick={() => setIsMobileMenuOpen(false)} />}
-        <nav className={`mobile-nav ${isMobileMenuOpen ? 'mobile-nav-open' : ''}`}>
+        <nav className={conditional('mobile-nav', 'mobile-nav-open', isMobileMenuOpen)}>
           <div className="mobile-nav-buttons">
             {/* Primary navigation items */}
             {primaryNavItems.map((item) => (
               <button
                 key={item.key}
-                className={`mobile-nav-btn ${
-                  activeTab === item.key ? 'active' : ''
-                }`}
+                className={conditional('mobile-nav-btn', 'active', activeTab === item.key)}
                 onClick={() => {
                   setActiveTab(item.key);
                   setIsMobileMenuOpen(false); // Close menu after selection
@@ -456,9 +456,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               {accountNavItems.map((item) => (
                 <button
                   key={item.key}
-                  className={`mobile-nav-btn ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
+                  className={conditional('mobile-nav-btn', 'active', activeTab === item.key)}
                   onClick={() => {
                     setActiveTab(item.key);
                     setIsMobileMenuOpen(false); // Close menu after selection
@@ -522,3 +520,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     </>
   );
 }
+
+// PropTypes for Layout component
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
+  title: PropTypes.string,
+};
+
+Layout.defaultProps = {
+  title: 'OpenSVM P2P Exchange',
+};

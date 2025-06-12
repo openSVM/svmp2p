@@ -55,6 +55,7 @@
     "next": "15.2.4",
     "next-i18next": "^15.4.2",
     "process": "^0.11.10",
+    "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-i18next": "^15.5.2",

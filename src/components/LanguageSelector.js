@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { cn, conditional } from '@/utils/classNames';
 
 // Custom SVG Icon Component (replace with your actual SVG path data)
 const DropdownIcon = ({ className }) => (
@@ -178,7 +180,11 @@ const LanguageSelector = ({
           {currentLanguage.country} {currentLanguage.code.toUpperCase()}
         </span>
         <DropdownIcon 
-          className={`h-5 w-5 ml-1.5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+          className={conditional(
+            'h-5 w-5 ml-1.5 transition-transform duration-200',
+            'transform rotate-180',
+            isOpen
+          )}
         />
       </button>
       
@@ -189,20 +195,12 @@ const LanguageSelector = ({
             id="language-dropdown"
             className="language-dropdown dropdown-enter"
             style={{
-              position: 'fixed',
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
-              zIndex: 99999,
-              minWidth: '200px',
-              backgroundColor: 'var(--color-background)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-lg)',
-              animation: 'dropdownSlideIn 0.2s ease-out forwards'
             }}
           >
             <div 
-              className="py-1 max-h-60 overflow-auto"
+              className="dropdown-content"
               role="listbox"
               aria-label="Language options"
             >
@@ -211,26 +209,26 @@ const LanguageSelector = ({
                 <button
                   key={language.code}
                   ref={el => optionRefs.current[index] = el}
-                  className={`language-option w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors duration-150 ${
-                    language.code === currentLocale 
-                      ? 'bg-gray-800 text-white' 
-                      : 'text-gray-700'
-                  } ${
-                    focusedIndex === index ? 'bg-gray-100' : '' // Keep focus style separate
-                  }`}
+                  className={cn(
+                    'language-option',
+                    {
+                      'selected': language.code === currentLocale,
+                      'focused': focusedIndex === index
+                    }
+                  )}
                   onClick={() => handleLanguageSelect(language.code)}
                   onKeyDown={handleKeyDown}
                   role="option"
                   aria-selected={language.code === currentLocale}
                   tabIndex={focusedIndex === index ? 0 : -1}
                 >
-                  <span className="font-medium">
+                  <span className="country-flag">
                     {language.country}{language.code.toUpperCase()}
                   </span>
-                  <span className="ml-3">{language.name}</span>
+                  <span className="language-name">{language.name}</span>
                   {language.code === currentLocale && (
                     <svg 
-                      className="w-4 h-4 ml-auto text-white"
+                      className="check-icon"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -253,5 +251,32 @@ const LanguageSelector = ({
     </div>
   );
 };
+
+// PropTypes for better type safety and component documentation
+LanguageSelector.propTypes = {
+  languages: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    country: PropTypes.string.isRequired,
+  })),
+  currentLocale: PropTypes.string,
+  onLanguageChange: PropTypes.func,
+};
+
+LanguageSelector.defaultProps = {
+  languages: [],
+  currentLocale: 'en',
+  onLanguageChange: null,
+};
+
+// PropTypes for DropdownIcon component
+DropdownIcon.propTypes = {
+  className: PropTypes.string,
+};
+
+DropdownIcon.defaultProps = {
+  className: '',
+};
+
 export default LanguageSelector;
 
