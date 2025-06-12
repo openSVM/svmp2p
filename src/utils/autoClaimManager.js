@@ -7,6 +7,8 @@
 
 import { claimRewards, hasUserRewardsAccount, createUserRewardsAccount } from './rewardTransactions';
 import { fetchCompleteRewardData } from './rewardQueries';
+import { getStorageManager, STORAGE_BACKENDS } from './decentralizedStorage';
+import { getRateLimiter, RateLimitUtils } from './claimRateLimit';
 
 // Default configuration for auto-claim
 const DEFAULT_CONFIG = {
@@ -27,32 +29,71 @@ class AutoClaimManager {
     this.intervalId = null;
     this.isRunning = false;
     
-    // Load user preferences from local storage
+    // Initialize decentralized storage
+    this.storageManager = getStorageManager(connection, wallet, {
+      preferredBackend: STORAGE_BACKENDS.LOCAL_STORAGE, // Auto-claim preferences can use local storage
+      fallbackChain: [STORAGE_BACKENDS.LOCAL_STORAGE]
+    });
+    
+    // Load user preferences from decentralized storage
     this.loadUserPreferences();
   }
 
   /**
-   * Load user preferences from local storage
+   * Load user preferences from decentralized storage with fallback to localStorage
    */
-  loadUserPreferences() {
+  async loadUserPreferences() {
     try {
+      const storageKey = `autoClaim_config_${this.wallet?.publicKey?.toString() || 'default'}`;
+      const config = await this.storageManager.retrieve(storageKey);
+      
+      if (config) {
+        this.config = { ...DEFAULT_CONFIG, ...config };
+        console.log('Auto-claim preferences loaded from decentralized storage');
+        return;
+      }
+    } catch (error) {
+      console.warn('Failed to load from decentralized storage, trying localStorage:', error);
+    }
+    
+    // Fallback to localStorage
+    try {
+      if (typeof window === 'undefined') return;
+      
       const saved = localStorage.getItem('autoClaimConfig');
       if (saved) {
         this.config = { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
+        console.log('Auto-claim preferences loaded from localStorage fallback');
       }
     } catch (error) {
-      console.warn('Failed to load auto-claim preferences:', error);
+      console.warn('Failed to load auto-claim preferences from localStorage:', error);
     }
   }
 
   /**
-   * Save user preferences to local storage
+   * Save user preferences using decentralized storage with fallback to localStorage
    */
-  saveUserPreferences() {
+  async saveUserPreferences() {
     try {
-      localStorage.setItem('autoClaimConfig', JSON.stringify(this.config));
+      const storageKey = `autoClaim_config_${this.wallet?.publicKey?.toString() || 'default'}`;
+      
+      await this.storageManager.store(storageKey, this.config, {
+        permanence: 'medium',
+        accessFrequency: 'high'
+      });
+      
+      console.log('Auto-claim preferences saved to decentralized storage');
     } catch (error) {
-      console.warn('Failed to save auto-claim preferences:', error);
+      console.warn('Failed to save to decentralized storage, falling back to localStorage:', error);
+      
+      // Fallback to localStorage
+      try {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('autoClaimConfig', JSON.stringify(this.config));
+        }
+      } catch (fallbackError) {
+        console.error('Failed to save auto-claim preferences to localStorage:', fallbackError);
+      }
     }
   }
 
@@ -60,9 +101,9 @@ class AutoClaimManager {
    * Update auto-claim configuration
    * @param {Object} newConfig - Configuration updates
    */
-  updateConfig(newConfig) {
+  async updateConfig(newConfig) {
     this.config = { ...this.config, ...newConfig };
-    this.saveUserPreferences();
+    await this.saveUserPreferences();
 
     // Restart manager if enabled state changed
     if (newConfig.enabled !== undefined) {
@@ -167,12 +208,28 @@ class AutoClaimManager {
   }
 
   /**
-   * Perform auto-claim with retry logic
+   * Perform auto-claim with retry logic and rate limiting
    * @param {PublicKey} userPublicKey - User's public key
    * @param {string} userId - User ID string
    */
   async performAutoClaim(userPublicKey, userId) {
     this.lastClaimAttempt.set(userId, Date.now());
+
+    // Check rate limits before attempting claim
+    const rateLimitStatus = RateLimitUtils.getUserRateStatus(userId);
+    if (!rateLimitStatus.canClaim) {
+      console.warn(`Auto-claim rate limited for user ${userId}: ${rateLimitStatus.reason}. Wait time: ${rateLimitStatus.waitTimeFormatted}`);
+      
+      // Emit rate limited event
+      this.emitEvent('autoClaimRateLimited', {
+        userId,
+        reason: rateLimitStatus.reason,
+        waitTime: rateLimitStatus.waitTime,
+        waitTimeFormatted: rateLimitStatus.waitTimeFormatted
+      });
+      
+      return;
+    }
 
     let attempts = 0;
     let baseDelay = 1000; // Start with 1 second
@@ -187,8 +244,18 @@ class AutoClaimManager {
           await createUserRewardsAccount(this.wallet, this.connection, userPublicKey);
         }
 
-        // Attempt to claim rewards
-        const signature = await claimRewards(this.wallet, this.connection, userPublicKey);
+        // Attempt to claim rewards with rate limiting enabled
+        const signature = await claimRewards(
+          this.wallet,
+          this.connection,
+          userPublicKey,
+          { 
+            ...this.config.options,
+            bypassCooldown: false,
+            useQueue: true, // Use queue system for auto-claims
+            priority: 3 // Lower priority for auto-claims
+          }
+        );
         
         console.log(`Auto-claim successful for user ${userId}, transaction: ${signature}`);
         
@@ -196,7 +263,8 @@ class AutoClaimManager {
         this.emitEvent('autoClaimSuccess', {
           userId,
           signature,
-          attempt: attempts + 1
+          attempt: attempts + 1,
+          method: 'queue'
         });
         
         return signature;
@@ -205,6 +273,25 @@ class AutoClaimManager {
         
         console.warn(`Auto-claim attempt ${attempts} failed for user ${userId}:`, error.message);
 
+        // Check if it's a rate limiting error
+        if (error.message.includes('Rate limited') || error.message.includes('queue is full')) {
+          console.log(`Auto-claim rate limited for user ${userId}, will retry later`);
+          
+          this.emitEvent('autoClaimRateLimited', {
+            userId,
+            error: error.message,
+            attempt: attempts
+          });
+          
+          // Don't count rate limiting as a failed attempt for max attempts
+          attempts--;
+          
+          // Wait longer for rate limiting issues
+          const delay = this.addJitter(baseDelay * 5); // 5x longer delay for rate limits
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+
         if (attempts >= this.config.maxAutoClaimAttempts) {
           console.error(`Auto-claim failed after ${attempts} attempts for user ${userId}`);
           
@@ -212,7 +299,8 @@ class AutoClaimManager {
           this.emitEvent('autoClaimFailure', {
             userId,
             error: error.message,
-            attempts
+            attempts,
+            finalError: true
           });
           
           throw error;

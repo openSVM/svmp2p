@@ -11,28 +11,22 @@
 import { PROGRAM_CONFIG, COOLDOWN_CONFIG, UI_CONFIG } from '../constants/rewardConstants';
 import { createLogger } from './logger';
 import { getErrorMessage, getUIText } from './i18n';
+import { getRateLimiter } from './claimRateLimit';
+import { TransactionBuilder, TransactionExecutor, TransactionFactory, SignatureVerification } from './transactionCPI';
 
 // Initialize logger for this module
 const logger = createLogger('RewardTransactions');
 
 // Conditional imports to handle test environment
-let web3, PublicKey, Transaction, SystemProgram, Connection;
-let getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, TOKEN_PROGRAM_ID;
+let web3, PublicKey, Connection;
 
 if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
   try {
     const solanaWeb3 = require('@solana/web3.js');
-    const splToken = require('@solana/spl-token');
     
     web3 = solanaWeb3;
     PublicKey = solanaWeb3.PublicKey;
-    Transaction = solanaWeb3.Transaction;
-    SystemProgram = solanaWeb3.SystemProgram;
     Connection = solanaWeb3.Connection;
-    
-    getAssociatedTokenAddress = splToken.getAssociatedTokenAddress;
-    createAssociatedTokenAccountInstruction = splToken.createAssociatedTokenAccountInstruction;
-    TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
   } catch (error) {
     logger.warn('Solana libraries not available, using mock implementation', { error: error.message });
   }
@@ -231,15 +225,16 @@ export const getCooldownStats = () => {
 };
 
 /**
- * Claims accumulated rewards for a user with enhanced cooldown and retry logic
+ * Claims accumulated rewards for a user with enhanced cooldown, rate limiting, and retry logic
  * @param {Object} wallet - Wallet adapter instance
  * @param {Connection} connection - Solana connection
  * @param {PublicKey} userPublicKey - User's public key
- * @param {Object} options - Options for claiming (bypassCooldown, retryConfig)
+ * @param {Object} options - Options for claiming (bypassCooldown, retryConfig, useQueue, priority)
  * @returns {Promise<string>} Transaction signature
  */
 export const claimRewards = async (wallet, connection, userPublicKey, options = {}) => {
-  const { bypassCooldown = false, retryConfig = {} } = options;
+  const { bypassCooldown = false, retryConfig = {}, useQueue = true, priority = 5 } = options;
+  const userId = userPublicKey.toString();
   
   // Check successful claim cooldown unless bypassed
   if (!bypassCooldown && isUserOnClaimCooldown(userPublicKey)) {
@@ -253,6 +248,33 @@ export const claimRewards = async (wallet, connection, userPublicKey, options = 
     const remaining = getRemainingFailedClaimCooldown(userPublicKey);
     const remainingSeconds = Math.ceil(remaining / 1000);
     throw new Error(`${getErrorMessage('TOO_MANY_REQUESTS')} ${getUIText('WAIT_SECONDS', { seconds: remainingSeconds })}`);
+  }
+  
+  // Use queue system for rate limiting and abuse prevention
+  if (useQueue) {
+    const rateLimiter = getRateLimiter();
+    
+    try {
+      const queueId = await rateLimiter.queueClaim({
+        userId,
+        userPublicKey,
+        wallet,
+        connection,
+        options: { ...options, useQueue: false }, // Prevent infinite recursion
+        priority
+      });
+      
+      // Wait for queue processing with periodic status checks
+      return await waitForQueuedClaim(queueId, rateLimiter);
+    } catch (error) {
+      logger.error('Failed to queue claim request', { userId, error: error.message });
+      
+      // If queueing fails, fall back to direct processing (with rate limiting)
+      const rateLimitResult = rateLimiter.checkRateLimit(userId, priority);
+      if (!rateLimitResult.allowed) {
+        throw new Error(`Rate limited: ${rateLimitResult.reason}. ${rateLimitResult.waitTime ? `Wait ${Math.ceil(rateLimitResult.waitTime / 1000)}s` : ''}`);
+      }
+    }
   }
   
   if (!web3 || !PublicKey) {
@@ -273,64 +295,27 @@ export const claimRewards = async (wallet, connection, userPublicKey, options = 
   }
 
   const operation = async () => {
-    const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
-
-    // Derive PDAs
-    const [rewardTokenPda] = await PublicKey.findProgramAddress(
-      [Buffer.from(REWARD_TOKEN_SEED)],
-      PROGRAM_ID
+    // Use the new modular transaction factory
+    const transaction = await TransactionFactory.createClaimRewardsTransaction(
+      PROGRAM_ID_STRING,
+      userPublicKey,
+      connection
     );
 
-    const [userRewardsPda] = await PublicKey.findProgramAddress(
-      [Buffer.from(USER_REWARDS_SEED), userPublicKey.toBuffer()],
-      PROGRAM_ID
-    );
+    // Execute transaction with enhanced error handling
+    const executor = new TransactionExecutor(connection, wallet, {
+      maxRetries: finalRetryConfig.maxRetries,
+      retryDelay: finalRetryConfig.baseRetryDelay,
+      commitment: 'confirmed',
+      waitForConfirmation: true
+    });
 
-    const [rewardMintPda] = await PublicKey.findProgramAddress(
-      [Buffer.from(REWARD_MINT_SEED)],
-      PROGRAM_ID
-    );
-
-    // Get or create associated token account for user
-    const userTokenAccount = await getAssociatedTokenAddress(
-      rewardMintPda,
-      userPublicKey
-    );
-
-    // Check if token account exists
-    const tokenAccountInfo = await connection.getAccountInfo(userTokenAccount);
+    const signature = await executor.executeTransaction(transaction);
     
-    const transaction = new Transaction();
-
-    // Create associated token account if it doesn't exist
-    if (!tokenAccountInfo) {
-      const createTokenAccountIx = createAssociatedTokenAccountInstruction(
-        userPublicKey, // payer
-        userTokenAccount, // ata
-        userPublicKey, // owner
-        rewardMintPda // mint
-      );
-      transaction.add(createTokenAccountIx);
+    // Verify signature format
+    if (!SignatureVerification.isValidSignature(signature)) {
+      throw new Error(`Invalid transaction signature: ${signature}`);
     }
-
-    // Add claim rewards instruction using actual program CPI
-    const claimRewardsInstruction = {
-      keys: [
-        { pubkey: rewardTokenPda, isSigner: false, isWritable: false }, // reward_token
-        { pubkey: rewardMintPda, isSigner: false, isWritable: true },   // reward_mint
-        { pubkey: userRewardsPda, isSigner: false, isWritable: true },  // user_rewards
-        { pubkey: userTokenAccount, isSigner: false, isWritable: true }, // user_token_account
-        { pubkey: userPublicKey, isSigner: true, isWritable: true },    // user
-        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false }, // token_program
-      ],
-      programId: PROGRAM_ID,
-      data: Buffer.from([201, 153, 74, 35, 130, 181, 35, 180]) // claim_rewards instruction discriminator
-    };
-    
-    transaction.add(claimRewardsInstruction);
-
-    // Send transaction
-    const signature = await wallet.sendTransaction(transaction, connection);
     
     // Set cooldown on successful claim
     setClaimCooldown(userPublicKey);
@@ -374,37 +359,26 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
   }
 
   const operation = async () => {
-    const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
-
-    const [userRewardsPda] = await PublicKey.findProgramAddress(
-      [Buffer.from(USER_REWARDS_SEED), userPublicKey.toBuffer()],
-      PROGRAM_ID
+    // Use the new modular transaction factory
+    const transaction = await TransactionFactory.createUserRewardsAccountTransaction(
+      PROGRAM_ID_STRING,
+      userPublicKey
     );
 
-    // Check if account already exists
-    const accountInfo = await connection.getAccountInfo(userRewardsPda);
-    if (accountInfo) {
-      throw new Error('User rewards account already exists');
+    // Execute transaction with enhanced error handling
+    const executor = new TransactionExecutor(connection, wallet, {
+      maxRetries: finalRetryConfig.maxRetries,
+      retryDelay: finalRetryConfig.baseRetryDelay,
+      commitment: 'confirmed',
+      waitForConfirmation: true
+    });
+
+    const signature = await executor.executeTransaction(transaction);
+    
+    // Verify signature format
+    if (!SignatureVerification.isValidSignature(signature)) {
+      throw new Error(`Invalid transaction signature: ${signature}`);
     }
-
-    const transaction = new Transaction();
-
-    // Create user rewards account instruction
-    // Note: This would need to be built using the actual Anchor IDL
-    const createAccountIx = {
-      keys: [
-        { pubkey: userRewardsPda, isSigner: false, isWritable: true },
-        { pubkey: userPublicKey, isSigner: true, isWritable: true },
-        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      ],
-      programId: PROGRAM_ID,
-      data: Buffer.from([]) // Would contain serialized instruction data
-    };
-
-    transaction.add(createAccountIx);
-
-    // Send transaction
-    const signature = await wallet.sendTransaction(transaction, connection);
     
     return signature;
   };
@@ -440,8 +414,8 @@ export const hasUserRewardsAccount = async (
   }
 
   const operation = async () => {
+    // Use the new modular transaction builder for account checking
     const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
-
     const [userRewardsPda] = await PublicKey.findProgramAddress(
       [Buffer.from(USER_REWARDS_SEED), userPublicKey.toBuffer()],
       PROGRAM_ID
@@ -525,4 +499,57 @@ export const getRetryConfigOptions = () => ({
 export const updateCooldownConfig = (newConfig) => {
   Object.assign(ENHANCED_COOLDOWN_CONFIG, newConfig);
   logger.info('Cooldown configuration updated', { config: ENHANCED_COOLDOWN_CONFIG });
+};
+
+/**
+ * Wait for a queued claim to complete
+ * @param {string} queueId - Queue ID
+ * @param {Object} rateLimiter - Rate limiter instance
+ * @returns {Promise<string>} Transaction signature
+ */
+const waitForQueuedClaim = async (queueId, rateLimiter) => {
+  const maxWaitTime = 300000; // 5 minutes max wait
+  const checkInterval = 2000; // Check every 2 seconds
+  const startTime = Date.now();
+  
+  return new Promise((resolve, reject) => {
+    const checkStatus = () => {
+      const status = rateLimiter.getQueueStatus(queueId);
+      
+      if (!status) {
+        reject(new Error('Queue entry not found'));
+        return;
+      }
+      
+      if (status.status === 'completed') {
+        // Find the completed entry to get the signature
+        const entry = rateLimiter.claimQueue.find(e => e.queueId === queueId);
+        if (entry && entry.signature) {
+          resolve(entry.signature);
+        } else {
+          reject(new Error('Claim completed but no signature found'));
+        }
+        return;
+      }
+      
+      if (status.status === 'failed') {
+        const entry = rateLimiter.claimQueue.find(e => e.queueId === queueId);
+        const errorMessage = entry?.lastError || 'Claim failed in queue';
+        reject(new Error(errorMessage));
+        return;
+      }
+      
+      // Check timeout
+      if (Date.now() - startTime > maxWaitTime) {
+        reject(new Error('Queue wait timeout exceeded'));
+        return;
+      }
+      
+      // Continue waiting
+      setTimeout(checkStatus, checkInterval);
+    };
+    
+    // Start checking
+    setTimeout(checkStatus, checkInterval);
+  });
 };

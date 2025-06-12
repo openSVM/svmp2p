@@ -6,6 +6,7 @@
  */
 
 import { Connection, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
+import { getStorageManager, STORAGE_BACKENDS } from './decentralizedStorage';
 
 // Default configuration for multi-sig governance
 const DEFAULT_GOVERNANCE_CONFIG = {
@@ -100,12 +101,20 @@ class KeyRotationProposal {
  * Multi-Signature Governance Manager
  */
 class MultiSigGovernanceManager {
-  constructor(config = {}) {
+  constructor(connection, wallet, config = {}) {
+    this.connection = connection;
+    this.wallet = wallet;
     this.config = { ...DEFAULT_GOVERNANCE_CONFIG, ...config };
     this.proposals = new Map(); // proposalId -> KeyRotationProposal
     this.authorizedSigners = new Set(); // Set of authorized signer public keys
     this.currentGovernanceKey = null;
     this.lastRotation = null;
+    
+    // Initialize decentralized storage
+    this.storageManager = getStorageManager(connection, wallet, {
+      preferredBackend: config.storageBackend || STORAGE_BACKENDS.ON_CHAIN,
+      fallbackChain: [STORAGE_BACKENDS.ON_CHAIN, STORAGE_BACKENDS.LOCAL_STORAGE]
+    });
     
     // Load persisted state
     this.loadState();
@@ -116,10 +125,10 @@ class MultiSigGovernanceManager {
    * @param {PublicKey[]} signers - Array of authorized signer public keys
    * @param {PublicKey} currentKey - Current governance key
    */
-  initialize(signers, currentKey) {
+  async initialize(signers, currentKey) {
     this.authorizedSigners = new Set(signers.map(s => s.toString()));
     this.currentGovernanceKey = currentKey;
-    this.saveState();
+    await this.saveState();
     
     console.log(`Governance initialized with ${signers.length} signers and key: ${currentKey.toString()}`);
   }
@@ -163,7 +172,7 @@ class MultiSigGovernanceManager {
    * @param {string} reason - Reason for rotation
    * @param {boolean} isEmergency - Whether this is an emergency rotation
    */
-  proposeKeyRotation(proposer, newKey, reason, isEmergency = false) {
+  async proposeKeyRotation(proposer, newKey, reason, isEmergency = false) {
     // Validate proposer is authorized
     if (!this.authorizedSigners.has(proposer.toString())) {
       throw new Error('Proposer is not an authorized signer');
@@ -196,7 +205,7 @@ class MultiSigGovernanceManager {
     proposal.addSignature(proposer, 'auto-approved-by-proposer', true);
     
     this.proposals.set(proposalId, proposal);
-    this.saveState();
+    await this.saveState();
     
     console.log(`Key rotation proposal created: ${proposalId}`);
     
@@ -210,7 +219,7 @@ class MultiSigGovernanceManager {
    * @param {boolean} approve - Whether to approve or reject
    * @param {string} signature - Cryptographic signature
    */
-  signProposal(proposalId, signer, approve, signature) {
+  async signProposal(proposalId, signer, approve, signature) {
     const proposal = this.proposals.get(proposalId);
     if (!proposal) {
       throw new Error('Proposal not found');
@@ -229,7 +238,7 @@ class MultiSigGovernanceManager {
     // Check if proposal is expired
     if (proposal.isExpired(this.config.proposalTimeout)) {
       proposal.status = 'expired';
-      this.saveState();
+      await this.saveState();
       throw new Error('Proposal has expired');
     }
 
@@ -249,7 +258,7 @@ class MultiSigGovernanceManager {
       console.log(`Proposal ${proposalId} rejected`);
     }
 
-    this.saveState();
+    await this.saveState();
     return proposal.status;
   }
 
@@ -277,7 +286,7 @@ class MultiSigGovernanceManager {
       this.lastRotation = Date.now();
       proposal.status = 'executed';
       
-      this.saveState();
+      await this.saveState();
       
       console.log(`Key rotation executed: ${proposal.currentKey.toString()} -> ${proposal.newKey.toString()}`);
       
@@ -313,7 +322,7 @@ class MultiSigGovernanceManager {
   /**
    * Clean up expired proposals
    */
-  cleanupExpiredProposals() {
+  async cleanupExpiredProposals() {
     const now = Date.now();
     let cleanedCount = 0;
     
@@ -325,7 +334,7 @@ class MultiSigGovernanceManager {
     }
     
     if (cleanedCount > 0) {
-      this.saveState();
+      await this.saveState();
       console.log(`Cleaned up ${cleanedCount} expired proposals`);
     }
     
@@ -360,29 +369,99 @@ class MultiSigGovernanceManager {
   }
 
   /**
-   * Save state to local storage
+   * Save state using decentralized storage with fallback to localStorage
    */
-  saveState() {
+  async saveState() {
     try {
       const state = {
         config: this.config,
         authorizedSigners: Array.from(this.authorizedSigners),
         currentGovernanceKey: this.currentGovernanceKey?.toString(),
         lastRotation: this.lastRotation,
-        proposals: Array.from(this.proposals.entries()).map(([id, proposal]) => [id, proposal.getSummary()])
+        proposals: Array.from(this.proposals.entries()).map(([id, proposal]) => [id, proposal.getSummary()]),
+        version: 2, // Version for future migrations
+        savedAt: Date.now()
       };
       
-      localStorage.setItem('multiSigGovernanceState', JSON.stringify(state));
+      const storageKey = `governance_state_${this.wallet?.publicKey?.toString() || 'default'}`;
+      
+      await this.storageManager.store(storageKey, state, {
+        permanence: 'high',
+        accessFrequency: 'medium'
+      });
+      
+      console.log('Governance state saved to decentralized storage');
     } catch (error) {
-      console.warn('Failed to save governance state:', error);
+      console.warn('Failed to save governance state to decentralized storage, falling back to localStorage:', error);
+      
+      // Fallback to original localStorage method
+      try {
+        const state = {
+          config: this.config,
+          authorizedSigners: Array.from(this.authorizedSigners),
+          currentGovernanceKey: this.currentGovernanceKey?.toString(),
+          lastRotation: this.lastRotation,
+          proposals: Array.from(this.proposals.entries()).map(([id, proposal]) => [id, proposal.getSummary()])
+        };
+        
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('multiSigGovernanceState', JSON.stringify(state));
+        }
+      } catch (fallbackError) {
+        console.error('Failed to save governance state to localStorage:', fallbackError);
+      }
     }
   }
 
   /**
-   * Load state from local storage
+   * Load state from decentralized storage with fallback to localStorage
    */
-  loadState() {
+  async loadState() {
     try {
+      const storageKey = `governance_state_${this.wallet?.publicKey?.toString() || 'default'}`;
+      const state = await this.storageManager.retrieve(storageKey);
+      
+      if (state) {
+        this.config = { ...DEFAULT_GOVERNANCE_CONFIG, ...state.config };
+        this.authorizedSigners = new Set(state.authorizedSigners || []);
+        this.currentGovernanceKey = state.currentGovernanceKey ? new PublicKey(state.currentGovernanceKey) : null;
+        this.lastRotation = state.lastRotation;
+        
+        // Reconstruct proposals 
+        this.proposals = new Map();
+        if (state.proposals) {
+          for (const [id, proposalData] of state.proposals) {
+            const proposal = new KeyRotationProposal(
+              proposalData.id,
+              new PublicKey(proposalData.proposer),
+              new PublicKey(proposalData.currentKey),
+              new PublicKey(proposalData.newKey),
+              proposalData.reason,
+              proposalData.timestamp
+            );
+            proposal.status = proposalData.status;
+            proposal.isEmergency = proposalData.isEmergency;
+            
+            // Reconstruct signatures
+            for (const [signerKey, sigData] of Object.entries(proposalData.signatures)) {
+              proposal.signatures.set(signerKey, sigData);
+            }
+            
+            this.proposals.set(id, proposal);
+          }
+        }
+        
+        console.log('Governance state loaded from decentralized storage');
+        return;
+      }
+    } catch (error) {
+      console.warn('Failed to load from decentralized storage, trying localStorage:', error);
+    }
+    
+    // Fallback to localStorage
+    try {
+      if (typeof window === 'undefined') return;
+      
       const saved = localStorage.getItem('multiSigGovernanceState');
       if (saved) {
         const state = JSON.parse(saved);
@@ -415,21 +494,23 @@ class MultiSigGovernanceManager {
             this.proposals.set(id, proposal);
           }
         }
+        
+        console.log('Governance state loaded from localStorage fallback');
       }
     } catch (error) {
-      console.warn('Failed to load governance state:', error);
+      console.warn('Failed to load governance state from localStorage:', error);
     }
   }
 
   /**
    * Reset governance state (admin function)
    */
-  reset() {
+  async reset() {
     this.proposals.clear();
     this.authorizedSigners.clear();
     this.currentGovernanceKey = null;
     this.lastRotation = null;
-    this.saveState();
+    await this.saveState();
     console.log('Governance state reset');
   }
 }
