@@ -1,8 +1,23 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
+use anchor_lang::solana_program::{program::invoke, program::invoke_signed, system_instruction};
 use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
 use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased};
 use crate::errors::ErrorCode;
+
+/// Validates that a string is valid UTF-8 and trims whitespace
+fn validate_and_trim_string(input: &str) -> Result<String> {
+    // Check if string is valid UTF-8 (Rust strings are UTF-8 by default, but extra safety)
+    if !input.is_ascii() && !input.chars().all(|c| c.is_ascii() || c.len_utf8() <= 4) {
+        return Err(error!(ErrorCode::InvalidUtf8));
+    }
+    
+    let trimmed = input.trim().to_string();
+    if trimmed.is_empty() {
+        return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
+    }
+    
+    Ok(trimmed)
+}
 
 #[derive(Accounts)]
 pub struct CreateOffer<'info> {
@@ -86,7 +101,10 @@ pub fn create_offer(
     payment_method: String,
     created_at: i64,
 ) -> Result<()> {
-    // Input validation
+    // Input validation and sanitization
+    let fiat_currency = validate_and_trim_string(&fiat_currency)?;
+    let payment_method = validate_and_trim_string(&payment_method)?;
+    
     if fiat_currency.len() > MAX_FIAT_CURRENCY_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }
@@ -115,21 +133,20 @@ pub fn create_offer(
     offer.updated_at = created_at;
     offer.dispute_id = None;
 
-    // Transfer SOL to escrow account using CPI
+    // Transfer SOL to escrow account using regular invoke (user-to-escrow)
     let transfer_instruction = system_instruction::transfer(
         &seller.key(),
         &escrow_account.key(),
         amount,
     );
     
-    invoke_signed(
+    invoke(
         &transfer_instruction,
         &[
             seller.to_account_info(),
             escrow_account.to_account_info(),
             ctx.accounts.system_program.to_account_info(),
         ],
-        &[],
     )?;
 
     // Emit event
@@ -138,7 +155,7 @@ pub fn create_offer(
         seller: seller.key(),
         amount,
         fiat_amount,
-        fiat_currency,
+        fiat_currency: fiat_currency.clone(),
     });
 
     Ok(())
@@ -177,7 +194,7 @@ pub fn accept_offer(ctx: Context<AcceptOffer>, security_bond: u64) -> Result<()>
     offer.status = OfferStatus::Accepted as u8;
     offer.updated_at = clock.unix_timestamp;
 
-    // Transfer security bond to escrow account using CPI
+    // Transfer security bond to escrow account using regular invoke (user-to-escrow)
     if security_bond > 0 {
         let transfer_instruction = system_instruction::transfer(
             &buyer.key(),
@@ -185,14 +202,13 @@ pub fn accept_offer(ctx: Context<AcceptOffer>, security_bond: u64) -> Result<()>
             security_bond,
         );
         
-        invoke_signed(
+        invoke(
             &transfer_instruction,
             &[
                 buyer.to_account_info(),
                 escrow_account.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
             ],
-            &[],
         )?;
     }
 

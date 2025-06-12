@@ -22,4 +22,10 @@ pub enum ErrorCode {
     InputTooLong,
     #[msg("Admin authority required")]
     AdminRequired,
+    #[msg("Too many evidence items")]
+    TooManyEvidenceItems,
+    #[msg("Invalid UTF-8 string")]
+    InvalidUtf8,
+    #[msg("Vote is tied, cannot execute verdict")]
+    TiedVote,
 }

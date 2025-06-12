@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
-use crate::state::{Reputation, ReputationUpdated};
+use crate::state::{Admin, Reputation, ReputationUpdated};
+use crate::errors::ErrorCode;
 
 #[derive(Accounts)]
 pub struct CreateReputation<'info> {
@@ -16,6 +17,12 @@ pub struct UpdateReputation<'info> {
     pub reputation: Account<'info, Reputation>,
     /// CHECK: This is the user whose reputation is being updated
     pub user: AccountInfo<'info>,
+    #[account(
+        seeds = [Admin::SEED.as_bytes()],
+        bump,
+        constraint = admin.authority == authority.key() @ ErrorCode::AdminRequired
+    )]
+    pub admin: Account<'info, Admin>,
     #[account(mut)]
     pub authority: Signer<'info>,
 }

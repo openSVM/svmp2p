@@ -65,8 +65,10 @@ pub struct Dispute {
     pub reason: String,
     pub status: u8,
     pub jurors: [Pubkey; 3],
-    pub evidence_buyer: Vec<String>,
-    pub evidence_seller: Vec<String>,
+    pub evidence_buyer: [String; MAX_EVIDENCE_ITEMS],
+    pub evidence_buyer_count: u8,
+    pub evidence_seller: [String; MAX_EVIDENCE_ITEMS],
+    pub evidence_seller_count: u8,
     pub votes_for_buyer: u8,
     pub votes_for_seller: u8,
     pub created_at: i64,
@@ -80,8 +82,10 @@ impl Dispute {
                            4 + MAX_DISPUTE_REASON_LEN + // reason (with length prefix)
                            1 +  // status
                            96 + // jurors (3 * 32)
-                           4 + (4 + MAX_EVIDENCE_URL_LEN) * 5 + // evidence_buyer (max 5 items with length prefixes)
-                           4 + (4 + MAX_EVIDENCE_URL_LEN) * 5 + // evidence_seller (max 5 items with length prefixes)
+                           (4 + MAX_EVIDENCE_URL_LEN) * MAX_EVIDENCE_ITEMS + // evidence_buyer (fixed array with length prefixes)
+                           1 +  // evidence_buyer_count
+                           (4 + MAX_EVIDENCE_URL_LEN) * MAX_EVIDENCE_ITEMS + // evidence_seller (fixed array with length prefixes)
+                           1 +  // evidence_seller_count
                            1 +  // votes_for_buyer
                            1 +  // votes_for_seller
                            8 +  // created_at
@@ -129,7 +133,6 @@ pub enum OfferStatus {
     Created,
     Listed,
     Accepted,
-    AwaitingFiatPayment,
     FiatSent,
     SolReleased,
     DisputeOpened,
@@ -152,6 +155,7 @@ pub const MAX_FIAT_CURRENCY_LEN: usize = 10;  // e.g., "USD", "EUR"
 pub const MAX_PAYMENT_METHOD_LEN: usize = 50; // e.g., "Bank Transfer"
 pub const MAX_DISPUTE_REASON_LEN: usize = 200;
 pub const MAX_EVIDENCE_URL_LEN: usize = 300;
+pub const MAX_EVIDENCE_ITEMS: usize = 5; // Maximum evidence items per party
 
 // Events
 #[event]

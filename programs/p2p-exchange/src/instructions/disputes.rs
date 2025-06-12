@@ -1,8 +1,23 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
-use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN};
+use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
 use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted};
 use crate::errors::ErrorCode;
+
+/// Validates that a string is valid UTF-8 and trims whitespace
+fn validate_and_trim_string(input: &str) -> Result<String> {
+    // Check if string is valid UTF-8 (Rust strings are UTF-8 by default, but extra safety)
+    if !input.is_ascii() && !input.chars().all(|c| c.is_ascii() || c.len_utf8() <= 4) {
+        return Err(error!(ErrorCode::InvalidUtf8));
+    }
+    
+    let trimmed = input.trim().to_string();
+    if trimmed.is_empty() {
+        return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
+    }
+    
+    Ok(trimmed)
+}
 
 #[derive(Accounts)]
 pub struct OpenDispute<'info> {
@@ -93,7 +108,8 @@ pub struct ExecuteVerdict<'info> {
 }
 
 pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
-    // Input validation
+    // Input validation and sanitization
+    let reason = validate_and_trim_string(&reason)?;
     if reason.len() > MAX_DISPUTE_REASON_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }
@@ -132,8 +148,13 @@ pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
     dispute.reason = reason.clone();
     dispute.status = DisputeStatus::Opened as u8;
     dispute.jurors = [Pubkey::default(); 3];
-    dispute.evidence_buyer = Vec::new();
-    dispute.evidence_seller = Vec::new();
+    // Initialize evidence arrays with empty strings
+    for i in 0..MAX_EVIDENCE_ITEMS {
+        dispute.evidence_buyer[i] = String::new();
+        dispute.evidence_seller[i] = String::new();
+    }
+    dispute.evidence_buyer_count = 0;
+    dispute.evidence_seller_count = 0;
     dispute.votes_for_buyer = 0;
     dispute.votes_for_seller = 0;
     dispute.created_at = clock.unix_timestamp;
@@ -182,7 +203,8 @@ pub fn assign_jurors(ctx: Context<AssignJurors>) -> Result<()> {
 }
 
 pub fn submit_evidence(ctx: Context<SubmitEvidence>, evidence_url: String) -> Result<()> {
-    // Input validation
+    // Input validation and sanitization
+    let evidence_url = validate_and_trim_string(&evidence_url)?;
     if evidence_url.len() > MAX_EVIDENCE_URL_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }
@@ -202,9 +224,19 @@ pub fn submit_evidence(ctx: Context<SubmitEvidence>, evidence_url: String) -> Re
 
     // Add evidence to appropriate list
     if dispute.initiator == submitter.key() {
-        dispute.evidence_buyer.push(evidence_url.clone());
+        if dispute.evidence_buyer_count >= MAX_EVIDENCE_ITEMS as u8 {
+            return Err(error!(ErrorCode::TooManyEvidenceItems));
+        }
+        let index = dispute.evidence_buyer_count as usize;
+        dispute.evidence_buyer[index] = evidence_url.clone();
+        dispute.evidence_buyer_count += 1;
     } else {
-        dispute.evidence_seller.push(evidence_url.clone());
+        if dispute.evidence_seller_count >= MAX_EVIDENCE_ITEMS as u8 {
+            return Err(error!(ErrorCode::TooManyEvidenceItems));
+        }
+        let index = dispute.evidence_seller_count as usize;
+        dispute.evidence_seller[index] = evidence_url.clone();
+        dispute.evidence_seller_count += 1;
     }
 
     // Update status if first evidence submission
@@ -240,7 +272,7 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
 
     // Additional check: ensure this vote doesn't exceed our vote limits per voter
     // This is a safeguard in addition to the PDA-based duplicate prevention
-    let juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
+    let _juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
         .ok_or(ErrorCode::NotAJuror)?;
     
     // Validate that we haven't exceeded vote counts (should be impossible with PDAs, but extra safety)
@@ -298,10 +330,14 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
     let escrow_balance = escrow_account.to_account_info().lamports();
     
     if escrow_balance > 0 {
+        // Explicit tie-breaking logic: ties are rejected
         let recipient = if dispute.votes_for_buyer > dispute.votes_for_seller {
             buyer // Buyer wins
-        } else {
+        } else if dispute.votes_for_seller > dispute.votes_for_buyer {
             seller // Seller wins
+        } else {
+            // Tie case: reject the verdict execution
+            return Err(error!(ErrorCode::TiedVote));
         };
 
         let transfer_instruction = system_instruction::transfer(
