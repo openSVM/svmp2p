@@ -1,0 +1,705 @@
+/* Wallet Connection Guide Styles */
+
+/* Enhanced Connect Wallet Prompt Styles */
+.connect-wallet-cta {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.connect-wallet-cta:hover {
+  transform: translateY(-1px);
+}
+
+.guided-connection-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.guided-connection-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.wallet-help-link {
+  background: none;
+  border: 1px solid #3b82f6;
+  color: #3b82f6;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.wallet-help-link:hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Enhanced Wallet Not Connected Styles */
+.guided-setup-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  width: 100%;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.guided-setup-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.wallet-connect-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Modal overlay and container */
+.wallet-guide-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.wallet-guide-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Guide container */
+.wallet-connection-guide {
+  padding: 24px;
+}
+
+/* Header */
+.guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.guide-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.guide-close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.guide-close-button:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* Progress indicator */
+.guide-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  gap: 8px;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.progress-step.completed .step-number {
+  background-color: #10b981;
+  color: white;
+}
+
+.progress-step.current .step-number {
+  background-color: #3b82f6;
+  color: white;
+  transform: scale(1.1);
+}
+
+.step-connector {
+  width: 40px;
+  height: 2px;
+  background-color: #e5e7eb;
+  transition: background-color 0.3s ease;
+}
+
+.progress-step.completed .step-connector {
+  background-color: #10b981;
+}
+
+/* Step content */
+.guide-content {
+  margin-bottom: 24px;
+}
+
+.step-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.step-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.step-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Step body content */
+.step-body {
+  margin-top: 24px;
+}
+
+/* Install Wallet Step */
+.browser-warning {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.browser-warning h4 {
+  margin: 0 0 8px 0;
+  color: #92400e;
+  font-size: 16px;
+}
+
+.browser-warning p {
+  margin: 0 0 12px 0;
+  color: #92400e;
+}
+
+.browser-warning ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #92400e;
+}
+
+.wallet-recommendations h4 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.wallet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wallet-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.wallet-option:hover {
+  border-color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+.wallet-option.installed {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.wallet-icon {
+  font-size: 24px;
+}
+
+.wallet-details h5 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.wallet-details p {
+  margin: 0 0 4px 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.recommendation-reason {
+  color: #3b82f6;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.wallet-status.installed {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.install-wallet-button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.install-wallet-button:hover {
+  background-color: #2563eb;
+}
+
+.ready-to-connect {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f0fdf4;
+  border: 1px solid #10b981;
+  border-radius: 8px;
+}
+
+.success-message {
+  margin: 0;
+  color: #059669;
+  font-weight: 500;
+}
+
+/* Connect Wallet Step */
+.detected-wallets h4 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.wallet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.detected-wallet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #f8fafc;
+  border-radius: 6px;
+}
+
+.detected-wallet .wallet-name {
+  flex: 1;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.detected-wallet .wallet-status {
+  color: #10b981;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.no-wallets-detected {
+  padding: 16px;
+  background-color: #fef2f2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.no-wallets-detected p {
+  margin: 0;
+  color: #dc2626;
+}
+
+.connection-action {
+  text-align: center;
+}
+
+.connection-action p {
+  margin: 0 0 16px 0;
+  color: #6b7280;
+}
+
+.wallet-button-wrapper {
+  margin-bottom: 16px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+/* Approve Connection Step */
+.approve-connection-step {
+  text-align: center;
+}
+
+.instruction-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.approval-instructions h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.approval-instructions p {
+  margin: 0 0 16px 0;
+  color: #6b7280;
+}
+
+.approval-steps {
+  margin: 24px 0;
+}
+
+.approval-steps ol {
+  text-align: left;
+  display: inline-block;
+  margin: 0;
+  padding-left: 20px;
+  color: #374151;
+}
+
+.approval-steps li {
+  margin-bottom: 8px;
+}
+
+.waiting-approval {
+  margin: 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.help-text {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+}
+
+.help-text p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Success Step */
+.success-step {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.success-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.success-content p {
+  margin: 0 0 24px 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.wallet-info {
+  margin: 24px 0;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+}
+
+.wallet-info p {
+  margin: 0 0 8px 0;
+  color: #374151;
+  font-weight: 500;
+}
+
+.wallet-address {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+/* Error handling */
+.guide-error {
+  margin: 24px 0;
+  padding: 16px;
+  background-color: #fef2f2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+}
+
+.error-message {
+  margin-bottom: 12px;
+  color: #dc2626;
+}
+
+.show-troubleshooting-button {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.troubleshooting-steps {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 6px;
+}
+
+.troubleshooting-steps h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.troubleshooting-steps ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.troubleshooting-steps li {
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.troubleshooting-steps li.priority-high {
+  font-weight: 500;
+}
+
+.troubleshooting-steps li.priority-medium {
+  font-weight: normal;
+}
+
+.troubleshooting-steps li.priority-low {
+  color: #6b7280;
+}
+
+/* Action buttons */
+.guide-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.guide-button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.guide-button.primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.guide-button.primary:hover {
+  background-color: #2563eb;
+}
+
+.guide-button.secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.guide-button.secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.guide-button.retry {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.guide-button.retry:hover {
+  background-color: #d97706;
+}
+
+.success-actions {
+  margin-top: 24px;
+}
+
+/* Loading states */
+.wallet-guide-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .wallet-guide-modal {
+    width: 95vw;
+    max-height: 90vh;
+    margin: 20px;
+  }
+
+  .wallet-connection-guide {
+    padding: 20px;
+  }
+
+  .guide-header h2 {
+    font-size: 20px;
+  }
+
+  .step-header h3 {
+    font-size: 18px;
+  }
+
+  .wallet-option {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .wallet-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .guide-actions {
+    flex-direction: column;
+  }
+
+  .guide-button {
+    width: 100%;
+  }
+
+  .success-icon {
+    font-size: 48px;
+  }
+
+  .instruction-icon {
+    font-size: 36px;
+  }
+}

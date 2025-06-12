@@ -18,6 +18,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 // Import styles
 import '@solana/wallet-adapter-react-ui/styles.css';
 import './styles/guided-workflow.css';
+import './styles/wallet-connection-guide.css';
 
 // Import components
 import { AppContext } from './AppContext';
