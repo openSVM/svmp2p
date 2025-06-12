@@ -3,6 +3,7 @@
  * 
  * Functions for executing reward-related transactions on the Solana blockchain
  * including claiming rewards, creating user reward accounts, and checking balances.
+ * Enhanced with cooldown logic and jitter-based retry mechanisms.
  */
 
 // Conditional imports to handle test environment
@@ -36,29 +37,162 @@ const REWARD_TOKEN_SEED = 'reward_token';
 const USER_REWARDS_SEED = 'user_rewards';
 const REWARD_MINT_SEED = 'reward_mint';
 
+// Cooldown and retry configuration
+const COOLDOWN_CONFIG = {
+  claimCooldown: 60000, // 1 minute between claims
+  maxRetries: 5,
+  baseRetryDelay: 1000, // 1 second
+  maxRetryDelay: 30000, // 30 seconds
+  jitterFactor: 0.3, // 30% jitter
+  backoffMultiplier: 2,
+};
+
+// In-memory cooldown tracking (you might want to persist this)
+const claimCooldowns = new Map(); // userKey -> timestamp
+
 /**
- * Claims accumulated rewards for a user
+ * Enhanced retry logic with exponential backoff and jitter
+ * @param {Function} operation - The operation to retry
+ * @param {number} maxRetries - Maximum number of retries
+ * @param {number} baseDelay - Base delay in milliseconds
+ * @param {number} jitterFactor - Jitter factor (0-1)
+ * @returns {Promise} Result of the operation
+ */
+const retryWithJitter = async (operation, maxRetries = COOLDOWN_CONFIG.maxRetries, baseDelay = COOLDOWN_CONFIG.baseRetryDelay, jitterFactor = COOLDOWN_CONFIG.jitterFactor) => {
+  let lastError;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      
+      // Don't retry on user rejection or certain error types
+      if (error.message?.includes('User rejected') || 
+          error.message?.includes('insufficient funds') ||
+          attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Calculate delay with exponential backoff and jitter
+      const exponentialDelay = baseDelay * Math.pow(COOLDOWN_CONFIG.backoffMultiplier, attempt);
+      const maxDelay = Math.min(exponentialDelay, COOLDOWN_CONFIG.maxRetryDelay);
+      
+      // Add jitter to prevent thundering herd
+      const jitter = maxDelay * jitterFactor * (Math.random() - 0.5);
+      const delayWithJitter = Math.max(0, maxDelay + jitter);
+      
+      console.warn(`Attempt ${attempt + 1} failed, retrying in ${Math.round(delayWithJitter)}ms:`, error.message);
+      
+      await new Promise(resolve => setTimeout(resolve, delayWithJitter));
+    }
+  }
+  
+  throw lastError;
+};
+
+/**
+ * Check if user is on cooldown for claims
+ * @param {PublicKey} userPublicKey - User's public key
+ * @returns {boolean} True if user is on cooldown
+ */
+export const isUserOnClaimCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  const lastClaim = claimCooldowns.get(userKey);
+  
+  if (!lastClaim) return false;
+  
+  const timeSinceLastClaim = Date.now() - lastClaim;
+  return timeSinceLastClaim < COOLDOWN_CONFIG.claimCooldown;
+};
+
+/**
+ * Get remaining cooldown time for user
+ * @param {PublicKey} userPublicKey - User's public key  
+ * @returns {number} Remaining cooldown time in milliseconds (0 if no cooldown)
+ */
+export const getRemainingCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  const lastClaim = claimCooldowns.get(userKey);
+  
+  if (!lastClaim) return 0;
+  
+  const timeSinceLastClaim = Date.now() - lastClaim;
+  const remaining = COOLDOWN_CONFIG.claimCooldown - timeSinceLastClaim;
+  
+  return Math.max(0, remaining);
+};
+
+/**
+ * Set claim cooldown for user
+ * @param {PublicKey} userPublicKey - User's public key
+ */
+const setClaimCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  claimCooldowns.set(userKey, Date.now());
+};
+
+/**
+ * Clear claim cooldown for user (admin function)
+ * @param {PublicKey} userPublicKey - User's public key
+ */
+export const clearClaimCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  claimCooldowns.delete(userKey);
+};
+
+/**
+ * Get cooldown statistics
+ * @returns {Object} Cooldown statistics
+ */
+export const getCooldownStats = () => {
+  const now = Date.now();
+  const activeUsers = Array.from(claimCooldowns.entries())
+    .filter(([_, timestamp]) => now - timestamp < COOLDOWN_CONFIG.claimCooldown);
+  
+  return {
+    totalTrackedUsers: claimCooldowns.size,
+    usersOnCooldown: activeUsers.length,
+    cooldownDuration: COOLDOWN_CONFIG.claimCooldown,
+    config: COOLDOWN_CONFIG
+  };
+};
+
+/**
+ * Claims accumulated rewards for a user with cooldown and retry logic
  * @param {Object} wallet - Wallet adapter instance
  * @param {Connection} connection - Solana connection
  * @param {PublicKey} userPublicKey - User's public key
+ * @param {Object} options - Options for claiming (bypassCooldown, retryConfig)
  * @returns {Promise<string>} Transaction signature
  */
-export const claimRewards = async (wallet, connection, userPublicKey) => {
+export const claimRewards = async (wallet, connection, userPublicKey, options = {}) => {
+  const { bypassCooldown = false, retryConfig = {} } = options;
+  
+  // Check cooldown unless bypassed
+  if (!bypassCooldown && isUserOnClaimCooldown(userPublicKey)) {
+    const remaining = getRemainingCooldown(userPublicKey);
+    const remainingSeconds = Math.ceil(remaining / 1000);
+    throw new Error(`Claim cooldown active. Please wait ${remainingSeconds} seconds before claiming again.`);
+  }
+  
   if (!web3 || !PublicKey) {
-    // Mock implementation for test environment
+    // Mock implementation for test environment with cooldown
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         // Simulate 10% chance of failure for demonstration
         if (Math.random() < 0.1) {
           reject(new Error('Simulated transaction failure: Network congestion'));
         } else {
+          // Set cooldown for mock as well
+          setClaimCooldown(userPublicKey);
           resolve('mock_transaction_signature_' + Date.now());
         }
       }, 2000);
     });
   }
 
-  try {
+  const operation = async () => {
     const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
 
     // Derive PDAs
@@ -99,57 +233,53 @@ export const claimRewards = async (wallet, connection, userPublicKey) => {
       transaction.add(createTokenAccountIx);
     }
 
-    // Create claim rewards instruction
-    // Note: This would need to be built using the actual Anchor IDL
-    // For now, this is a placeholder showing the structure
-    const claimRewardsIx = {
-      keys: [
-        { pubkey: rewardTokenPda, isSigner: false, isWritable: false },
-        { pubkey: rewardMintPda, isSigner: false, isWritable: true },
-        { pubkey: userRewardsPda, isSigner: false, isWritable: true },
-        { pubkey: userTokenAccount, isSigner: false, isWritable: true },
-        { pubkey: userPublicKey, isSigner: true, isWritable: true },
-        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
-      ],
-      programId: PROGRAM_ID,
-      data: Buffer.from([]) // Would contain serialized instruction data
-    };
+    // Add claim rewards instruction
+    // Note: This would need to be replaced with actual program instruction
+    const claimInstruction = SystemProgram.transfer({
+      fromPubkey: userPublicKey,
+      toPubkey: userPublicKey, // Placeholder
+      lamports: 0, // Placeholder
+    });
+    
+    transaction.add(claimInstruction);
 
-    transaction.add(claimRewardsIx);
-
-    // Get recent blockhash
-    const { blockhash } = await connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = userPublicKey;
-
-    // Sign and send transaction
-    const signedTransaction = await wallet.signTransaction(transaction);
-    const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-
-    // Confirm transaction
-    await connection.confirmTransaction(signature, 'confirmed');
-
+    // Send transaction
+    const signature = await wallet.sendTransaction(transaction, connection);
+    
+    // Set cooldown on successful claim
+    setClaimCooldown(userPublicKey);
+    
     return signature;
-  } catch (error) {
-    console.error('Error claiming rewards:', error);
-    throw new Error(`Failed to claim rewards: ${error.message}`);
-  }
+  };
+
+  // Apply retry logic with custom config if provided
+  const finalRetryConfig = { ...COOLDOWN_CONFIG, ...retryConfig };
+  
+  return retryWithJitter(
+    operation,
+    finalRetryConfig.maxRetries,
+    finalRetryConfig.baseRetryDelay,
+    finalRetryConfig.jitterFactor
+  );
 };
 
 /**
- * Creates a user rewards account if it doesn't exist
+ * Creates a user rewards account if it doesn't exist with retry logic
  * @param {Object} wallet - Wallet adapter instance
  * @param {Connection} connection - Solana connection
  * @param {PublicKey} userPublicKey - User's public key
+ * @param {Object} options - Options for creation (retryConfig)
  * @returns {Promise<string>} Transaction signature
  */
-export const createUserRewardsAccount = async (wallet, connection, userPublicKey) => {
+export const createUserRewardsAccount = async (wallet, connection, userPublicKey, options = {}) => {
+  const { retryConfig = {} } = options;
+  
   if (!web3 || !PublicKey) {
     // Mock implementation
     return Promise.resolve('mock_create_account_signature_' + Date.now());
   }
 
-  try {
+  const operation = async () => {
     const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
 
     const [userRewardsPda] = await PublicKey.findProgramAddress(
@@ -166,7 +296,8 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
     const transaction = new Transaction();
 
     // Create user rewards account instruction
-    const createUserRewardsIx = {
+    // Note: This would need to be built using the actual Anchor IDL
+    const createAccountIx = {
       keys: [
         { pubkey: userRewardsPda, isSigner: false, isWritable: true },
         { pubkey: userPublicKey, isSigner: true, isWritable: true },
@@ -176,40 +307,39 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
       data: Buffer.from([]) // Would contain serialized instruction data
     };
 
-    transaction.add(createUserRewardsIx);
+    transaction.add(createAccountIx);
 
-    // Get recent blockhash
-    const { blockhash } = await connection.getLatestBlockhash();
-    transaction.recentBlockhash = blockhash;
-    transaction.feePayer = userPublicKey;
-
-    // Sign and send transaction
-    const signedTransaction = await wallet.signTransaction(transaction);
-    const signature = await connection.sendRawTransaction(signedTransaction.serialize());
-
-    // Confirm transaction
-    await connection.confirmTransaction(signature, 'confirmed');
-
+    // Send transaction
+    const signature = await wallet.sendTransaction(transaction, connection);
+    
     return signature;
-  } catch (error) {
-    console.error('Error creating user rewards account:', error);
-    throw new Error(`Failed to create user rewards account: ${error.message}`);
-  }
-};
+  };
 
+  // Apply retry logic
+  const finalRetryConfig = { ...COOLDOWN_CONFIG, ...retryConfig };
+  
+  return retryWithJitter(
+    operation,
+    finalRetryConfig.maxRetries,
+    finalRetryConfig.baseRetryDelay,
+    finalRetryConfig.jitterFactor
+  );
 /**
- * Checks if the user has an existing rewards account
+ * Checks if the user has an existing rewards account with retry logic
  * @param {Connection} connection - Solana connection
  * @param {PublicKey} userPublicKey - User's public key
+ * @param {Object} options - Options for checking (retryConfig)
  * @returns {Promise<boolean>} True if account exists
  */
-export const hasUserRewardsAccount = async (connection, userPublicKey) => {
+export const hasUserRewardsAccount = async (connection, userPublicKey, options = {}) => {
+  const { retryConfig = {} } = options;
+  
   if (!web3 || !PublicKey) {
     // Mock implementation - randomly return true/false
     return Math.random() > 0.5;
   }
 
-  try {
+  const operation = async () => {
     const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
 
     const [userRewardsPda] = await PublicKey.findProgramAddress(
@@ -219,6 +349,22 @@ export const hasUserRewardsAccount = async (connection, userPublicKey) => {
 
     const accountInfo = await connection.getAccountInfo(userRewardsPda);
     return accountInfo !== null;
+  };
+
+  try {
+    // Apply retry logic with reduced retries for read operations
+    const finalRetryConfig = { 
+      ...COOLDOWN_CONFIG, 
+      maxRetries: 2, // Fewer retries for read operations
+      ...retryConfig 
+    };
+    
+    return await retryWithJitter(
+      operation,
+      finalRetryConfig.maxRetries,
+      finalRetryConfig.baseRetryDelay,
+      finalRetryConfig.jitterFactor
+    );
   } catch (error) {
     console.error('Error checking user rewards account:', error);
     return false;
@@ -226,33 +372,57 @@ export const hasUserRewardsAccount = async (connection, userPublicKey) => {
 };
 
 /**
- * Enhanced retry logic for transactions
+ * Enhanced retry logic for transactions (legacy function - use retryWithJitter for new code)
  * @param {Function} transactionFn - Function that returns a promise
- * @param {number} maxRetries - Maximum number of retry attempts
+ * @param {number} maxRetries - Maximum number of retry attempts  
  * @param {number} delayMs - Initial delay between retries in milliseconds
  * @returns {Promise} Result of the transaction function
  */
 export const retryTransaction = async (transactionFn, maxRetries = 3, delayMs = 1000) => {
-  let lastError;
+  console.warn('retryTransaction is deprecated, use retryWithJitter for better retry logic');
   
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await transactionFn();
-    } catch (error) {
-      lastError = error;
-      
-      // Don't retry on user-cancelled transactions
-      if (error.message?.includes('User rejected') || error.message?.includes('cancelled')) {
-        throw error;
-      }
-      
-      if (attempt < maxRetries) {
-        console.warn(`Transaction attempt ${attempt} failed, retrying in ${delayMs}ms:`, error.message);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
-        delayMs *= 2; // Exponential backoff
-      }
-    }
+  // Use the new enhanced retry logic for consistency
+  return retryWithJitter(
+    transactionFn, 
+    maxRetries, 
+    delayMs, 
+    COOLDOWN_CONFIG.jitterFactor
+  );
+};
+
+/**
+ * Get enhanced retry configuration options
+ * @returns {Object} Available retry configuration options
+ */
+export const getRetryConfigOptions = () => ({
+  default: COOLDOWN_CONFIG,
+  fast: {
+    ...COOLDOWN_CONFIG,
+    maxRetries: 2,
+    baseRetryDelay: 500,
+    maxRetryDelay: 5000,
+  },
+  robust: {
+    ...COOLDOWN_CONFIG,
+    maxRetries: 8,
+    baseRetryDelay: 2000,
+    maxRetryDelay: 60000,
+    jitterFactor: 0.5,
+  },
+  readOnly: {
+    ...COOLDOWN_CONFIG,
+    maxRetries: 2,
+    baseRetryDelay: 200,
+    maxRetryDelay: 2000,
+    jitterFactor: 0.1,
   }
-  
-  throw new Error(`Transaction failed after ${maxRetries} attempts: ${lastError.message}`);
+});
+
+/**
+ * Update cooldown configuration (admin function)
+ * @param {Object} newConfig - New cooldown configuration
+ */
+export const updateCooldownConfig = (newConfig) => {
+  Object.assign(COOLDOWN_CONFIG, newConfig);
+  console.log('Cooldown configuration updated:', COOLDOWN_CONFIG);
 };

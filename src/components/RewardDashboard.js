@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { fetchCompleteRewardData } from '../utils/rewardQueries';
-import { claimRewards, retryTransaction, hasUserRewardsAccount, createUserRewardsAccount } from '../utils/rewardTransactions';
+import { claimRewards, retryTransaction, hasUserRewardsAccount, createUserRewardsAccount, isUserOnClaimCooldown, getRemainingCooldown, getCooldownStats } from '../utils/rewardTransactions';
+import { useAutoClaimManager } from '../utils/autoClaimManager';
 
 const RewardDashboard = () => {
     const { publicKey, connected, wallet } = useWallet();
+    const autoClaimManager = useAutoClaimManager(wallet, null); // connection would be passed in real implementation
     const [rewards, setRewards] = useState({
         totalEarned: 0,
         totalClaimed: 0,
@@ -25,6 +27,9 @@ const RewardDashboard = () => {
     const [claimError, setClaimError] = useState(null);
     const [hasRewardsAccount, setHasRewardsAccount] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
+    const [cooldownRemaining, setCooldownRemaining] = useState(0);
+    const [autoClaimEnabled, setAutoClaimEnabled] = useState(false);
+    const [autoClaimConfig, setAutoClaimConfig] = useState({});
 
     // Fetch real data from blockchain
     useEffect(() => {
@@ -73,6 +78,14 @@ const RewardDashboard = () => {
                     rewardRatePerVote: rewardData.rewardToken.rewardRatePerVote,
                     minTradeVolume: rewardData.rewardToken.minTradeVolume
                 });
+                
+                // Check cooldown status
+                if (isUserOnClaimCooldown(publicKey)) {
+                    setCooldownRemaining(getRemainingCooldown(publicKey));
+                } else {
+                    setCooldownRemaining(0);
+                }
+                
             } catch (err) {
                 console.error('Failed to fetch reward data:', err);
                 setError(`Failed to load reward data: ${err.message}`);
@@ -100,8 +113,41 @@ const RewardDashboard = () => {
         fetchData();
     }, [connected, publicKey]);
 
+    // Update auto-claim configuration
+    useEffect(() => {
+        if (autoClaimManager) {
+            const config = autoClaimManager.getConfig();
+            setAutoClaimConfig(config);
+            setAutoClaimEnabled(config.enabled);
+        }
+    }, [autoClaimManager]);
+
+    // Update cooldown countdown
+    useEffect(() => {
+        if (cooldownRemaining > 0) {
+            const interval = setInterval(() => {
+                const remaining = publicKey ? getRemainingCooldown(publicKey) : 0;
+                setCooldownRemaining(remaining);
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [cooldownRemaining, publicKey]);
+
     const handleClaimRewards = async () => {
         if (!connected || !wallet || rewards.unclaimedBalance === 0) return;
+        
+        // Check cooldown
+        if (isUserOnClaimCooldown(publicKey)) {
+            const remaining = getRemainingCooldown(publicKey);
+            const remainingSeconds = Math.ceil(remaining / 1000);
+            setClaimError(`Claim cooldown active. Please wait ${remainingSeconds} seconds before claiming again.`);
+            return;
+        }
         
         setClaimLoading(true);
         setClaimError(null);
@@ -120,12 +166,14 @@ const RewardDashboard = () => {
                 }
             }
 
-            // Execute claim transaction with retry logic
-            const signature = await retryTransaction(() => 
-                claimRewards(wallet, null, publicKey), // connection would be passed in real implementation
-                3, // max retries
-                1000 // initial delay
-            );
+            // Execute claim transaction with enhanced retry logic
+            const signature = await claimRewards(wallet, null, publicKey, {
+                retryConfig: {
+                    maxRetries: 5,
+                    baseRetryDelay: 1500,
+                    jitterFactor: 0.3
+                }
+            });
             
             console.log('Rewards claimed successfully! Transaction:', signature);
             
@@ -135,6 +183,9 @@ const RewardDashboard = () => {
                 totalClaimed: prev.totalClaimed + prev.unclaimedBalance,
                 unclaimedBalance: 0
             }));
+            
+            // Update cooldown status
+            setCooldownRemaining(getRemainingCooldown(publicKey));
             
             // Reset retry count on success
             setRetryCount(0);
@@ -154,6 +205,8 @@ const RewardDashboard = () => {
                 errorMessage = 'Insufficient SOL for transaction fees. Please ensure you have enough SOL in your wallet.';
             } else if (error.message?.includes('Network')) {
                 errorMessage = 'Network error. Please check your connection and try again.';
+            } else if (error.message?.includes('cooldown')) {
+                errorMessage = error.message; // Use the cooldown message as-is
             } else if (retryCount >= 2) {
                 errorMessage = `Transaction failed after multiple attempts. Please try again later. Last error: ${error.message}`;
             }
@@ -161,6 +214,33 @@ const RewardDashboard = () => {
             setClaimError(errorMessage);
         } finally {
             setClaimLoading(false);
+        }
+    };
+
+    const handleAutoClaimToggle = () => {
+        if (autoClaimManager) {
+            const newConfig = { enabled: !autoClaimEnabled };
+            autoClaimManager.updateConfig(newConfig);
+            setAutoClaimEnabled(!autoClaimEnabled);
+        }
+    };
+
+    const handleAutoClaimThresholdChange = (newThreshold) => {
+        if (autoClaimManager) {
+            autoClaimManager.updateConfig({ autoClaimThreshold: newThreshold });
+            setAutoClaimConfig(prev => ({ ...prev, autoClaimThreshold: newThreshold }));
+        }
+    };
+
+    const triggerManualAutoClaimCheck = async () => {
+        if (autoClaimManager && autoClaimEnabled) {
+            try {
+                await autoClaimManager.triggerCheck();
+                console.log('Manual auto-claim check triggered');
+            } catch (error) {
+                console.error('Failed to trigger auto-claim check:', error);
+                setClaimError(`Auto-claim check failed: ${error.message}`);
+            }
         }
     };
 
@@ -366,6 +446,92 @@ const RewardDashboard = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Auto-Claim Configuration Card */}
+                <div className="reward-card auto-claim-card">
+                    <div className="card-header">
+                        <h3 className="text-lg font-semibold">Auto-Claim Settings</h3>
+                        <div className="reward-icon">🤖</div>
+                    </div>
+                    
+                    <div className="auto-claim-content">
+                        <div className="setting-row">
+                            <span className="setting-label">Enable Auto-Claim</span>
+                            <label className="toggle-switch">
+                                <input 
+                                    type="checkbox" 
+                                    checked={autoClaimEnabled}
+                                    onChange={handleAutoClaimToggle}
+                                />
+                                <span className="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        {autoClaimEnabled && (
+                            <>
+                                <div className="setting-row">
+                                    <span className="setting-label">Auto-Claim Threshold</span>
+                                    <div className="threshold-input">
+                                        <input
+                                            type="number"
+                                            value={autoClaimConfig.autoClaimThreshold || 1000}
+                                            onChange={(e) => handleAutoClaimThresholdChange(parseInt(e.target.value))}
+                                            min="100"
+                                            max="10000"
+                                            step="100"
+                                        />
+                                        <span className="input-suffix">tokens</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="setting-row">
+                                    <span className="setting-label">Status</span>
+                                    <span className="status-value">
+                                        {autoClaimManager?.isRunning ? '🟢 Active' : '🔴 Inactive'}
+                                    </span>
+                                </div>
+                                
+                                <button 
+                                    className="manual-check-button"
+                                    onClick={triggerManualAutoClaimCheck}
+                                    disabled={!autoClaimEnabled || claimLoading}
+                                >
+                                    {claimLoading ? 'Checking...' : 'Check Now'}
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* Cooldown Status Card */}
+                {cooldownRemaining > 0 && (
+                    <div className="reward-card cooldown-card">
+                        <div className="card-header">
+                            <h3 className="text-lg font-semibold">Claim Cooldown</h3>
+                            <div className="reward-icon">⏰</div>
+                        </div>
+                        
+                        <div className="cooldown-content">
+                            <div className="cooldown-timer">
+                                <span className="timer-value">
+                                    {Math.ceil(cooldownRemaining / 1000)}
+                                </span>
+                                <span className="timer-label">seconds remaining</span>
+                            </div>
+                            <div className="cooldown-progress">
+                                <div 
+                                    className="cooldown-fill"
+                                    style={{ 
+                                        width: `${((60000 - cooldownRemaining) / 60000) * 100}%` 
+                                    }}
+                                ></div>
+                            </div>
+                            <p className="cooldown-hint">
+                                Claims are rate-limited to prevent spam and ensure network stability.
+                            </p>
+                        </div>
+                    </div>
+                )}
                 </>
                 )}
             </div>
@@ -404,6 +570,162 @@ const RewardDashboard = () => {
 
                 .reward-icon {
                     font-size: 24px;
+                }
+
+                /* Auto-Claim Styles */
+                .auto-claim-content {
+                    display: grid;
+                    gap: 16px;
+                }
+
+                .setting-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 0;
+                }
+
+                .setting-label {
+                    font-weight: 500;
+                    color: #374151;
+                }
+
+                .toggle-switch {
+                    position: relative;
+                    display: inline-block;
+                    width: 50px;
+                    height: 24px;
+                }
+
+                .toggle-switch input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+
+                .toggle-slider {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: #ccc;
+                    transition: .4s;
+                    border-radius: 24px;
+                }
+
+                .toggle-slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 18px;
+                    width: 18px;
+                    left: 3px;
+                    bottom: 3px;
+                    background-color: white;
+                    transition: .4s;
+                    border-radius: 50%;
+                }
+
+                input:checked + .toggle-slider {
+                    background-color: #7c3aed;
+                }
+
+                input:checked + .toggle-slider:before {
+                    transform: translateX(26px);
+                }
+
+                .threshold-input {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .threshold-input input {
+                    width: 80px;
+                    padding: 4px 8px;
+                    border: 1px solid #d1d5db;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+
+                .input-suffix {
+                    font-size: 12px;
+                    color: #6b7280;
+                }
+
+                .status-value {
+                    font-weight: 600;
+                    font-size: 14px;
+                }
+
+                .manual-check-button {
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    justify-self: start;
+                }
+
+                .manual-check-button:hover:not(:disabled) {
+                    background: #2563eb;
+                }
+
+                .manual-check-button:disabled {
+                    background: #9ca3af;
+                    cursor: not-allowed;
+                }
+
+                /* Cooldown Styles */
+                .cooldown-content {
+                    text-align: center;
+                }
+
+                .cooldown-timer {
+                    margin-bottom: 16px;
+                }
+
+                .timer-value {
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #dc2626;
+                    display: block;
+                }
+
+                .timer-label {
+                    font-size: 14px;
+                    color: #6b7280;
+                }
+
+                .cooldown-progress {
+                    width: 100%;
+                    height: 6px;
+                    background: #f3f4f6;
+                    border-radius: 3px;
+                    overflow: hidden;
+                    margin-bottom: 12px;
+                }
+
+                .cooldown-fill {
+                    height: 100%;
+                    background: linear-gradient(90deg, #dc2626, #f97316);
+                    transition: width 0.3s ease;
+                }
+
+                .cooldown-hint {
+                    font-size: 12px;
+                    color: #6b7280;
+                    margin: 0;
+                }
+
+                .cooldown-card {
+                    border-color: #fecaca;
+                    background: #fef2f2;
                 }
 
                 .balance-stats {
