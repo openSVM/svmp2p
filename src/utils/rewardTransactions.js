@@ -4,6 +4,8 @@
  * Functions for executing reward-related transactions on the Solana blockchain
  * including claiming rewards, creating user reward accounts, and checking balances.
  * Enhanced with cooldown logic and jitter-based retry mechanisms.
+ * 
+ * Fixed for Netlify deployment compatibility.
  */
 
 import { PROGRAM_CONFIG, COOLDOWN_CONFIG, UI_CONFIG } from '../constants/rewardConstants';
@@ -410,7 +412,11 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
  * @param {Object} options - Options for checking (retryConfig)
  * @returns {Promise<boolean>} True if account exists
  */
-export const hasUserRewardsAccount = async (connection, userPublicKey, options = {}) => {
+export const hasUserRewardsAccount = async (
+  connection, 
+  userPublicKey, 
+  options = {}
+) => {
   const { retryConfig = {} } = options;
   
   if (!web3 || !PublicKey) {
