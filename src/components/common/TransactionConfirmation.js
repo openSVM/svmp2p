@@ -88,12 +88,13 @@ const TransactionConfirmation = ({
       
       <style jsx>{`
         .transaction-confirmation {
-          border-radius: 8px;
+          border-radius: 0;
           margin: 1rem 0;
           overflow: hidden;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          background-color: white;
-          border-left: 4px solid #6b7280;
+          /* Glass effect applied via glass-effects.css */
+          /* background-color: white; */
+          border-left: 4px solid var(--color-border);
         }
         
         .status-pending {
@@ -117,8 +118,9 @@ const TransactionConfirmation = ({
           justify-content: space-between;
           align-items: center;
           padding: 0.75rem 1rem;
-          background-color: #f9fafb;
-          border-bottom: 1px solid #e5e7eb;
+          /* Glass effect applied via glass-effects.css */
+          /* background-color: #f9fafb; */
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .confirmation-header h3 {
@@ -150,8 +152,8 @@ const TransactionConfirmation = ({
         .pulse-animation {
           width: 40px;
           height: 40px;
-          border-radius: 50%;
-          background-color: #f59e0b;
+          border-radius: 0;
+          background-color: var(--color-warning);
           margin-bottom: 0.5rem;
           animation: pulse 1.5s infinite;
         }
@@ -159,8 +161,8 @@ const TransactionConfirmation = ({
         .success-checkmark {
           width: 40px;
           height: 40px;
-          border-radius: 50%;
-          background-color: #10b981;
+          border-radius: 0;
+          background-color: var(--color-success);
           color: white;
           display: flex;
           align-items: center;
@@ -172,8 +174,8 @@ const TransactionConfirmation = ({
         .error-icon {
           width: 40px;
           height: 40px;
-          border-radius: 50%;
-          background-color: #ef4444;
+          border-radius: 0;
+          background-color: var(--color-error);
           color: white;
           display: flex;
           align-items: center;
@@ -185,8 +187,8 @@ const TransactionConfirmation = ({
         .warning-icon {
           width: 40px;
           height: 40px;
-          border-radius: 50%;
-          background-color: #f59e0b;
+          border-radius: 0;
+          background-color: var(--color-warning);
           color: white;
           display: flex;
           align-items: center;
@@ -201,10 +203,15 @@ const TransactionConfirmation = ({
         }
         
         .transaction-details {
-          background-color: #f9fafb;
+          /* Glass effect will be applied via glass-effects.css to form elements */
+          /* background-color: #f9fafb; */
           padding: 0.75rem;
-          border-radius: 4px;
+          border-radius: 0;
           font-size: 0.875rem;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .tx-hash {

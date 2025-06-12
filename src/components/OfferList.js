@@ -1008,13 +1008,14 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         </>
       )}
       
-      <div className="network-info" style={{ 
+      <div className="network-info glass-effect" style={{ 
         fontSize: '10px', 
         color: 'var(--color-foreground-muted)', 
         marginTop: '8px',
         padding: '4px',
-        backgroundColor: 'var(--color-background-alt)',
-        border: '1px solid var(--color-border)'
+        /* Use glass effect instead of solid background */
+        /* backgroundColor: 'var(--color-background-alt)', */
+        border: '1px solid rgba(255, 255, 255, 0.2)'
       }}>
         <p style={{ margin: '0 0 2px 0' }}>Network: {network.name}</p>
         <p style={{ margin: 0 }}>Smart contract secured trades with decentralized dispute resolution.</p>

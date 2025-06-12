@@ -12,8 +12,9 @@
 }
 
 .confirmation-dialog {
-  background-color: #fff;
-  border-radius: 8px;
+  /* Use glass effect instead of solid background */
+  /* background-color: #fff; */
+  border-radius: 0; /* Follow ASCII theme with no border radius */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 90%;
   max-width: 450px;
@@ -65,17 +66,18 @@
 
 .cancel-button {
   padding: 8px 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  color: #333;
+  border: 1px solid var(--color-border);
+  border-radius: 0; /* Follow ASCII theme */
+  /* Use glass effect instead of solid background */
+  /* background-color: #fff; */
+  color: var(--color-foreground);
   cursor: pointer;
 }
 
 .confirm-button {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 0; /* Follow ASCII theme */
   color: #fff;
   cursor: pointer;
 }
