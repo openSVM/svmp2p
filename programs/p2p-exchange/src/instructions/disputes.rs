@@ -275,10 +275,8 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     let _juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
         .ok_or(ErrorCode::NotAJuror)?;
     
-    // Validate that the juror has not already voted
-    if dispute.votes.iter().any(|v| v.juror == juror.key()) {
-        return Err(error!(ErrorCode::AlreadyVoted)); // Juror has already cast a vote
-    }
+    // Note: PDA-based duplicate prevention ensures jurors can't vote twice
+    // The vote account PDA will fail to initialize if the juror already voted
 
     // Initialize vote data (PDA prevents duplicate votes)
     vote.dispute = dispute.key();
