@@ -21,7 +21,7 @@
  * @fileoverview Enhanced wallet context with comprehensive security measures
  */
 
-import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 
 // Create a safe wallet context that wraps the Solana wallet adapter
@@ -236,7 +236,6 @@ export const SafeWalletProvider = ({ children }) => {
         isReady: false,
         error: err.message || 'Wallet initialization error',
         reconnect: () => {},
-        cancelReconnection: () => {},
         cancelReconnection: () => {},
         connectionState: 'error'
       };
