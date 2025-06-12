@@ -25,8 +25,10 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   } = useContext(AppContext);
   
   const { connected, publicKey } = useSafeWallet();
+  const wallet = useSafeWallet(); // Get the full wallet object for enhanced status
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -39,6 +41,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
       return () => clearTimeout(timer);
     }
   }, [connected]);
+
+  // Load saved language preference
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferred-language');
+    if (savedLanguage && supportedLanguages.some(lang => lang.code === savedLanguage)) {
+      setCurrentLocale(savedLanguage);
+    }
+  }, [supportedLanguages]);
 
   // Register service worker for PWA
   useEffect(() => {
@@ -70,6 +80,59 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     console.log('Language changed to:', locale);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Enhanced wallet status renderer with better UX feedback
+  const renderWalletStatus = () => {
+    if (wallet.error) {
+      return (
+        <div className="wallet-status error" title={wallet.error}>
+          <span className="status-dot error" aria-hidden="true"></span>
+          <span>Error</span>
+          {wallet.reconnect && (
+            <button 
+              className="wallet-retry-button" 
+              onClick={() => wallet.reconnect()}
+              title="Retry connection"
+              aria-label="Retry wallet connection"
+            >
+              ↻
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    if (wallet.connecting || wallet.connectionState === 'connecting') {
+      return (
+        <div className="wallet-status connecting">
+          <span className="status-dot connecting pulsing" aria-hidden="true"></span>
+          <span>Connecting...</span>
+        </div>
+      );
+    }
+
+    if (wallet.connected && wallet.publicKey) {
+      return (
+        <div className="wallet-status connected">
+          <span className="status-dot connected" aria-hidden="true"></span>
+          <span className="connection-address">
+            {wallet.publicKey.toString().slice(0, 4)}...{wallet.publicKey.toString().slice(-4)}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="wallet-status disconnected">
+        <span className="status-dot disconnected" aria-hidden="true"></span>
+        <span>Not Connected</span>
+      </div>
+    );
+  };
+
   // Top navbar items (most important sections)
   const topNavItems = [
     { key: 'buy', label: 'BUY', icon: 'B' },
@@ -81,6 +144,20 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const sidebarNavItems = [
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D' },
+  ];
+
+  // Supported languages
+  const supportedLanguages = [
+    { code: 'en', name: 'English', country: '🇺🇸' },
+    { code: 'es', name: 'Español', country: '🇪🇸' },
+    { code: 'fr', name: 'Français', country: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+    { code: 'ja', name: '日本語', country: '🇯🇵' },
+    { code: 'ko', name: '한국어', country: '🇰🇷' },
+    { code: 'zh', name: '中文', country: '🇨🇳' },
+    { code: 'pt', name: 'Português', country: '🇵🇹' },
+    { code: 'ru', name: 'Русский', country: '🇷🇺' },
+    { code: 'ar', name: 'العربية', country: '🇸🇦' },
   ];
 
   return (
@@ -112,6 +189,18 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               />
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
+            
+            {/* Mobile Menu Button */}
+            <button 
+              className="mobile-menu-toggle"
+              onClick={toggleMobileMenu}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+            >
+              <span className={`hamburger-line ${isMobileMenuOpen ? 'active' : ''}`}></span>
+              <span className={`hamburger-line ${isMobileMenuOpen ? 'active' : ''}`}></span>
+              <span className={`hamburger-line ${isMobileMenuOpen ? 'active' : ''}`}></span>
+            </button>
             
             {/* Desktop Navigation - Horizontal layout for desktop */}
             <nav className="desktop-nav">
@@ -166,6 +255,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               
               {/* Language selector */}
               <LanguageSelector
+                languages={supportedLanguages}
                 currentLocale={currentLocale}
                 onLanguageChange={handleLanguageChange}
               />
@@ -186,28 +276,26 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               {/* Install App button with proper prominence */}
               <PWAInstallButton className="header-prominent-action" />
               
-              {/* Connected wallet info */}
-              {connected && publicKey && (
-                <span className="connection-status">
-                  Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
-                </span>
-              )}
-              
-              {/* Wallet connection button */}
-              {!connected && (
-                <div className="header-wallet-container">
-                  <WalletMultiButton />
-                </div>
-              )}
-              
-              {/* Disconnect button for connected users */}
-              {connected && <WalletDisconnectButton />}
+              {/* Wallet connection area with enhanced status */}
+              <div className="wallet-connection-area">
+                {renderWalletStatus()}
+                
+                {/* Wallet connection button */}
+                {!connected && (
+                  <div className="header-wallet-container">
+                    <WalletMultiButton />
+                  </div>
+                )}
+                
+                {/* Disconnect button for connected users */}
+                {connected && <WalletDisconnectButton />}
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Mobile Navigation - Stacked below header */}
-        <nav className="mobile-nav">
+        {/* Mobile Navigation - Collapsible below header */}
+        <nav className={`mobile-nav ${isMobileMenuOpen ? 'mobile-nav-open' : ''}`}>
           <div className="mobile-nav-buttons">
             {/* Primary navigation items */}
             {topNavItems.map((item) => (
@@ -216,7 +304,10 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 className={`mobile-nav-btn ${
                   activeTab === item.key ? 'active' : ''
                 }`}
-                onClick={() => setActiveTab(item.key)}
+                onClick={() => {
+                  setActiveTab(item.key);
+                  setIsMobileMenuOpen(false); // Close menu after selection
+                }}
               >
                 <span className="nav-label">{item.label}</span>
               </button>
@@ -229,11 +320,33 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 className={`mobile-nav-btn ${
                   activeTab === item.key ? 'active' : ''
                 }`}
-                onClick={() => setActiveTab(item.key)}
+                onClick={() => {
+                  setActiveTab(item.key);
+                  setIsMobileMenuOpen(false); // Close menu after selection
+                }}
               >
                 <span className="nav-label">{item.label}</span>
               </button>
             ))}
+            
+            {/* Mobile wallet controls */}
+            <div className="mobile-wallet-controls">
+              {/* Enhanced wallet status for mobile */}
+              <div className="mobile-wallet-status">
+                {renderWalletStatus()}
+              </div>
+              
+              {!connected && (
+                <div className="mobile-wallet-container">
+                  <WalletMultiButton />
+                </div>
+              )}
+              {connected && (
+                <div className="mobile-wallet-disconnect">
+                  <WalletDisconnectButton />
+                </div>
+              )}
+            </div>
           </div>
         </nav>
         

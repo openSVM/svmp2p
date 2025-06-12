@@ -1,0 +1,390 @@
+/* 
+ * HEADER MOBILE IMPROVEMENTS
+ * Enhanced responsive design for header menu, hamburger navigation, and mobile wallet controls
+ */
+
+/* ===== MOBILE MENU TOGGLE BUTTON (HAMBURGER) ===== */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast) ease;
+}
+
+.mobile-menu-toggle:hover {
+  background-color: var(--color-background-alt);
+}
+
+.mobile-menu-toggle:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.hamburger-line {
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-foreground);
+  margin: 2px 0;
+  transition: all var(--transition-fast) ease;
+  transform-origin: center;
+}
+
+/* Hamburger animation when active */
+.hamburger-line.active:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-line.active:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-line.active:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* ===== MOBILE NAVIGATION IMPROVEMENTS ===== */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 48px; /* Below the header */
+  left: 0;
+  right: 0;
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  z-index: 9998;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-normal) ease;
+}
+
+.mobile-nav.mobile-nav-open {
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.mobile-nav-buttons {
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.mobile-nav-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+}
+
+.mobile-nav-btn:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-primary);
+}
+
+.mobile-nav-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border-color: var(--color-primary);
+}
+
+.mobile-nav-btn:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== MOBILE WALLET CONTROLS ===== */
+.mobile-wallet-controls {
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  align-items: stretch;
+}
+
+.mobile-wallet-container {
+  width: 100%;
+}
+
+.mobile-wallet-container .wallet-adapter-button {
+  width: 100% !important;
+  justify-content: center;
+  min-height: 44px; /* Better touch target */
+}
+
+.mobile-wallet-status,
+.mobile-wallet-disconnect {
+  width: 100%;
+}
+
+.mobile-wallet-disconnect .wallet-adapter-button {
+  width: 100% !important;
+  justify-content: center;
+}
+
+/* ===== ENHANCED WALLET STATUS STYLES ===== */
+.wallet-connection-area {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.wallet-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast) ease;
+}
+
+.wallet-status.connected {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+  color: rgb(21, 128, 61);
+}
+
+.wallet-status.connecting {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+  color: rgb(37, 99, 235);
+}
+
+.wallet-status.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: rgb(185, 28, 28);
+}
+
+.wallet-status.disconnected {
+  background-color: rgba(107, 114, 128, 0.1);
+  border-color: rgba(107, 114, 128, 0.2);
+  color: rgb(75, 85, 99);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.connected {
+  background-color: rgb(34, 197, 94);
+}
+
+.status-dot.connecting {
+  background-color: rgb(59, 130, 246);
+}
+
+.status-dot.error {
+  background-color: rgb(239, 68, 68);
+}
+
+.status-dot.disconnected {
+  background-color: rgb(107, 114, 128);
+}
+
+.status-dot.pulsing {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.wallet-retry-button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-1);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast) ease;
+  margin-left: var(--spacing-1);
+}
+
+.wallet-retry-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.wallet-retry-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.connection-address {
+  font-family: monospace;
+  font-size: var(--font-size-xs);
+}
+
+/* Mobile wallet status adjustments */
+.mobile-wallet-status .wallet-status {
+  width: 100%;
+  justify-content: center;
+  background-color: var(--color-background-alt);
+  border-color: var(--color-border);
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media (max-width: 768px) {
+  /* Show mobile menu toggle button */
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  
+  /* Hide desktop navigation */
+  .desktop-nav {
+    display: none;
+  }
+  
+  /* Show mobile navigation */
+  .mobile-nav {
+    display: block;
+  }
+  
+  /* Adjust header controls for mobile */
+  .header-controls {
+    display: none; /* Hide on mobile, show in mobile menu instead */
+  }
+  
+  /* Keep only essential items in mobile header */
+  .header-content {
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Ensure main content doesn't overlap with mobile nav when open */
+  .app-main {
+    transition: padding-top var(--transition-normal) ease;
+  }
+  
+  .mobile-nav.mobile-nav-open ~ .app-main {
+    padding-top: var(--spacing-2);
+  }
+}
+
+@media (min-width: 769px) {
+  /* Hide mobile menu toggle on desktop */
+  .mobile-menu-toggle {
+    display: none;
+  }
+  
+  /* Show desktop navigation */
+  .desktop-nav {
+    display: flex;
+  }
+  
+  /* Hide mobile navigation on desktop */
+  .mobile-nav {
+    display: none;
+  }
+  
+  /* Show header controls on desktop */
+  .header-controls {
+    display: flex;
+  }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav,
+  .hamburger-line,
+  .mobile-nav-btn,
+  .app-main {
+    transition: none;
+  }
+}
+
+/* ===== FOCUS IMPROVEMENTS ===== */
+.mobile-nav-btn:focus-visible,
+.mobile-menu-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Ensure focus is visible in high contrast mode */
+@media (forced-colors: active) {
+  .mobile-nav-btn:focus,
+  .mobile-menu-toggle:focus {
+    outline: 2px solid ButtonText;
+  }
+}
+
+/* ===== LANGUAGE DROPDOWN ANIMATIONS ===== */
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 99998;
+  animation: backdropFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.language-dropdown {
+  transform-origin: top center;
+}
+
+.language-option {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.language-option:hover {
+  background-color: var(--color-background-alt) !important;
+}
+
+.language-option:focus {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+}

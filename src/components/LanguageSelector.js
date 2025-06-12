@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // Custom SVG Icon Component (replace with your actual SVG path data)
 const DropdownIcon = ({ className }) => (
@@ -38,7 +38,7 @@ const LanguageSelector = ({
     { code: 'en', name: 'English', country: 'US' }; // Fallback default
 
   // Calculate dropdown position
-  const calculateDropdownPosition = () => {
+  const calculateDropdownPosition = useCallback(() => {
     if (triggerRef.current) {
       const buttonRect = triggerRef.current.getBoundingClientRect();
       const dropdownWidth = 200; // Approximate dropdown width
@@ -58,7 +58,7 @@ const LanguageSelector = ({
       
       setDropdownPosition({ top, left });
     }
-  };
+  }, [safeLanguages.length]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -93,7 +93,7 @@ const LanguageSelector = ({
         window.removeEventListener('scroll', calculateDropdownPosition);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, calculateDropdownPosition]);
   
   // Keyboard navigation
   const handleKeyDown = (event) => {
@@ -187,7 +187,7 @@ const LanguageSelector = ({
           <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} />
           <div 
             id="language-dropdown"
-            className="language-dropdown"
+            className="language-dropdown dropdown-enter"
             style={{
               position: 'fixed',
               top: `${dropdownPosition.top}px`,
@@ -197,7 +197,8 @@ const LanguageSelector = ({
               backgroundColor: 'var(--color-background)',
               border: '1px solid var(--color-border)',
               borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-lg)'
+              boxShadow: 'var(--shadow-lg)',
+              animation: 'dropdownSlideIn 0.2s ease-out forwards'
             }}
           >
             <div 
