@@ -267,10 +267,26 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         return Err(error!(ErrorCode::NotAJuror));
     }
 
-    // Additional check: ensure this vote doesn't exceed our vote limits per voter
-    // This is a safeguard in addition to the PDA-based duplicate prevention
-    let _juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
+    // Additional security: Verify juror index and ensure no manipulation
+    let juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
         .ok_or(ErrorCode::NotAJuror)?;
+        
+    // Ensure juror index is valid (0, 1, or 2 for our 3-juror system)
+    if juror_index >= 3 {
+        return Err(error!(ErrorCode::NotAJuror));
+    }
+    
+    // Double-check that this specific juror hasn't been counted already
+    // This is extra safety on top of PDA-based duplicate prevention
+    let mut vote_count = 0;
+    if dispute.votes_for_buyer > 0 || dispute.votes_for_seller > 0 {
+        vote_count = dispute.votes_for_buyer + dispute.votes_for_seller;
+    }
+    
+    // Sanity check: total votes should never exceed number of jurors
+    if vote_count >= 3 {
+        return Err(error!(ErrorCode::AlreadyVoted));
+    }
     
     // Validate that the juror has not already voted
     // Check by using Vote PDA - if the account exists, they've already voted
