@@ -19,8 +19,11 @@ import {
   MOCK_SOL_PRICES, 
   SUPPORTED_CURRENCIES, 
   SUPPORTED_PAYMENT_METHODS,
-  VALIDATION_CONSTRAINTS 
+  VALIDATION_CONSTRAINTS,
+  DEMO_MODE 
 } from '../constants/tradingConstants';
+import ConnectWalletPrompt from './ConnectWalletPrompt';
+import DemoIndicator from './DemoIndicator';
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = useSafeWallet();
@@ -209,6 +212,16 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         )}
       </div>
       
+      {/* Demo mode banner for non-connected users */}
+      {!wallet.connected && DEMO_MODE.enabled && (
+        <DemoIndicator
+          type="banner"
+          message="Connect Wallet to Create Real Offers"
+          tooltip={DEMO_MODE.educationalMessages.createOffer}
+          className="demo-banner-main"
+        />
+      )}
+      
       <p>Create an offer to sell SOL for fiat currency</p>
       
       {error && <div className="error-message">{error}</div>}
@@ -318,17 +331,25 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           </select>
         </div>
         
-        <ButtonLoader
-          type="submit"
-          isLoading={isCreating}
-          disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
-          loadingText="Creating Offer..."
-          variant="primary"
-          size="medium"
-          className="create-offer-button"
-        >
-          Create Offer
-        </ButtonLoader>
+        {/* Submit button or connect wallet prompt */}
+        {!wallet.connected ? (
+          <ConnectWalletPrompt
+            action="create sell offers"
+            className="create-offer-button connect-wallet-button"
+          />
+        ) : (
+          <ButtonLoader
+            type="submit"
+            isLoading={isCreating}
+            disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
+            loadingText="Creating Offer..."
+            variant="primary"
+            size="medium"
+            className="create-offer-button"
+          >
+            Create Offer
+          </ButtonLoader>
+        )}
       </form>
       
       <div className="network-info">

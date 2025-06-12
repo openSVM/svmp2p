@@ -4,24 +4,45 @@ import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationD
 import { useSafeWallet } from '../contexts/WalletContextProvider';
 import { useDebounce, VirtualizedList } from '../utils/performance';
 import { useActionDebounce } from '../hooks/useActionDebounce';
-import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
+import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS, DEMO_MODE, DEMO_OFFERS } from '../constants/tradingConstants';
+import ConnectWalletPrompt from './ConnectWalletPrompt';
+import DemoIndicator from './DemoIndicator';
 
 // Component for rendering a single offer row
-const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction, network }) => {
+const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction, network, isWalletConnected, onConnectWalletClick }) => {
   const isProcessing = processingAction.offerId === offer.id;
   const currentAction = processingAction.action;
+  const [showConnectModal, setShowConnectModal] = useState(false);
   
   // Debounced action handlers
   const { debouncedCallback: debouncedAccept, isDisabled: isAcceptDisabled } = useActionDebounce(
-    () => handleOfferAction(offer.id, 'accept'),
+    () => {
+      if (!isWalletConnected) {
+        setShowConnectModal(true);
+        return;
+      }
+      handleOfferAction(offer.id, 'accept');
+    },
     1000
   );
   const { debouncedCallback: debouncedCancel, isDisabled: isCancelDisabled } = useActionDebounce(
-    () => handleOfferAction(offer.id, 'cancel'),
+    () => {
+      if (!isWalletConnected) {
+        setShowConnectModal(true);
+        return;
+      }
+      handleOfferAction(offer.id, 'cancel');
+    },
     1000
   );
   const { debouncedCallback: debouncedConfirm, isDisabled: isConfirmDisabled } = useActionDebounce(
-    () => handleOfferAction(offer.id, 'confirm'),
+    () => {
+      if (!isWalletConnected) {
+        setShowConnectModal(true);
+        return;
+      }
+      handleOfferAction(offer.id, 'confirm');
+    },
     1000
   );
   
@@ -54,6 +75,15 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
   // Render action buttons based on offer status and user role
   const renderActionButtons = () => {
     if (type === 'buy' && offer.status === 'Listed') {
+      if (offer.isDemo && !isWalletConnected) {
+        return (
+          <ConnectWalletPrompt
+            action="buy SOL from real traders"
+            className="offer-action-button connect-wallet-button"
+          />
+        );
+      }
+      
       return (
         <ButtonLoader
           onClick={debouncedAccept}
@@ -70,6 +100,15 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     }
     
     if (type === 'my' && offer.status === 'Listed') {
+      if (!isWalletConnected) {
+        return (
+          <ConnectWalletPrompt
+            action="manage your offers"
+            className="offer-action-button connect-wallet-button"
+          />
+        );
+      }
+      
       return (
         <ButtonLoader
           onClick={debouncedCancel}
@@ -86,6 +125,15 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     }
     
     if (type === 'my' && offer.status === 'Accepted') {
+      if (!isWalletConnected) {
+        return (
+          <ConnectWalletPrompt
+            action="confirm your trades"
+            className="offer-action-button connect-wallet-button"
+          />
+        );
+      }
+      
       return (
         <ButtonLoader
           onClick={debouncedConfirm}
@@ -105,49 +153,67 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
   };
 
   return (
-    <div className="offer-card">
-      <div className="offer-card-header">
-        <div className="seller-info">
-          <span className="seller-name">
-            {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
-          </span>
-        </div>
-        <div className="time-info">
-          <span className="time-posted">{timeSincePosted}</span>
-        </div>
-      </div>
-      
-      <div className="offer-card-body">
-        <div className="amount-info">
-          <span className="sol-amount">{offer.solAmount.toFixed(1)} SOL</span>
-        </div>
-        
-        <div className="price-info">
-          <span className="fiat-amount">
-            {offer.fiatAmount.toFixed(0)} {offer.fiatCurrency}
-          </span>
-          <span className={`price-per-sol ${isGoodRate ? 'good-rate' : ''}`}>
-            {rate} {offer.fiatCurrency}/SOL
-          </span>
+    <>
+      <div className={`offer-card ${offer.isDemo ? 'demo-offer' : ''}`}>
+        <div className="offer-card-header">
+          <div className="seller-info">
+            <span className="seller-name">
+              {offer.isDemo ? offer.seller : `${offer.seller.substring(0, 4)}...${offer.seller.substring(offer.seller.length - 4)}`}
+            </span>
+            {offer.isDemo && (
+              <DemoIndicator 
+                type="inline" 
+                message="Demo" 
+                tooltip="This is sample data for demonstration"
+              />
+            )}
+          </div>
+          <div className="time-info">
+            <span className="time-posted">{timeSincePosted}</span>
+          </div>
         </div>
         
-        <div className="payment-method-container">
-          <span className="payment-method">
-            {offer.paymentMethod}
-          </span>
-        </div>
-      </div>
-      
-      <div className="offer-card-footer">
-        <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}>
-          {offer.status}
+        <div className="offer-card-body">
+          <div className="amount-info">
+            <span className="sol-amount">{offer.solAmount.toFixed(1)} SOL</span>
+          </div>
+          
+          <div className="price-info">
+            <span className="fiat-amount">
+              {offer.fiatAmount.toFixed(0)} {offer.fiatCurrency}
+            </span>
+            <span className={`price-per-sol ${isGoodRate ? 'good-rate' : ''}`}>
+              {rate} {offer.fiatCurrency}/SOL
+            </span>
+          </div>
+          
+          <div className="payment-method-container">
+            <span className="payment-method">
+              {offer.paymentMethod}
+            </span>
+          </div>
         </div>
         
-        <div className="action-button-container">
-          {renderActionButtons()}
+        <div className="offer-card-footer">
+          <div className={`status-badge status-${offer.status.toLowerCase().replace(/\s+/g, '-')}`}>
+            {offer.status}
+          </div>
+          
+          <div className="action-button-container">
+            {renderActionButtons()}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Connect wallet modal */}
+      {showConnectModal && (
+        <ConnectWalletPrompt
+          showAsModal={true}
+          action="perform this action"
+          onClose={() => setShowConnectModal(false)}
+        />
+      )}
+    </>
   );
 });
 
@@ -272,7 +338,13 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock data for demonstration
+      // If wallet is not connected, show demo data
+      if (!wallet.connected && DEMO_MODE.enabled) {
+        setOffers(DEMO_OFFERS);
+        return;
+      }
+      
+      // Mock data for demonstration (real offers for connected users)
       const mockOffers = [
         {
           id: '58JrMFgW3NHLtYnU2vEv9rGBZGNpJhRVQQnKvYVZZdmG',
@@ -283,7 +355,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'USD',
           paymentMethod: 'Bank Transfer',
           status: 'Listed',
-          createdAt: Date.now() - 3600000
+          createdAt: Date.now() - 3600000,
+          isDemo: false
         },
         {
           id: '7UX2i7SucgLMQcfZ75s3VXmZZY4YRUyJN9X1RgfMoDUi',
@@ -294,7 +367,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'USD',
           paymentMethod: 'PayPal',
           status: 'Listed',
-          createdAt: Date.now() - 7200000
+          createdAt: Date.now() - 7200000,
+          isDemo: false
         },
         {
           id: '3pRNuDKxwVMgTJAHUZ6SgxMm9iSfaAzKtdKxVbVKsw2U',
@@ -305,7 +379,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'USD',
           paymentMethod: 'Zelle',
           status: 'Listed',
-          createdAt: Date.now() - 10800000
+          createdAt: Date.now() - 10800000,
+          isDemo: false
         },
         {
           id: '9sTxzFK2GpJzVGJje3oDqC2QNFpAMvYh1qUQpsCoUsS',
@@ -316,7 +391,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'EUR',
           paymentMethod: 'Bank Transfer',
           status: 'Listed',
-          createdAt: Date.now() - 21600000
+          createdAt: Date.now() - 21600000,
+          isDemo: false
         },
         {
           id: '5KDV2s93SRvinJTjVeYzsHPMrsvpTPJVj4i41zJWxUs8',
@@ -327,7 +403,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'USD',
           paymentMethod: 'Cash App',
           status: 'Listed',
-          createdAt: Date.now() - 36000000
+          createdAt: Date.now() - 36000000,
+          isDemo: false
         },
         {
           id: '6wRuMi8VJMHx8dCKQ3wPvBjwEwRKAXNhEGp8CMeBvVXV',
@@ -338,7 +415,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'GBP',
           paymentMethod: 'Revolut',
           status: 'Listed',
-          createdAt: Date.now() - 43200000
+          createdAt: Date.now() - 43200000,
+          isDemo: false
         },
         {
           id: '2rW9EXyaSjY8ETgpV6KYcPK2WvRJGbDELKZjZtpB24ri',
@@ -349,7 +427,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           fiatCurrency: 'USD',
           paymentMethod: 'Venmo',
           status: 'Listed',
-          createdAt: Date.now() - 86400000
+          createdAt: Date.now() - 86400000,
+          isDemo: false
         }
       ];
       
@@ -364,7 +443,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [wallet.connected]);
   
   // Use effect with proper dependencies
   useEffect(() => {
@@ -761,6 +840,18 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         )}
       </div>
 
+      {/* Demo mode banner for non-connected users */}
+      {!wallet.connected && DEMO_MODE.enabled && (
+        <DemoIndicator
+          type="banner"
+          message={DEMO_MODE.sampleDataLabel}
+          tooltip={type === 'buy' ? DEMO_MODE.educationalMessages.browseOnly : 
+                   type === 'my' ? DEMO_MODE.educationalMessages.myOffers :
+                   DEMO_MODE.educationalMessages.createOffer}
+          className="demo-banner-main"
+        />
+      )}
+
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}
       
@@ -908,6 +999,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
                 processingAction={processingAction} 
                 handleOfferAction={handleOfferAction}
                 network={network}
+                isWalletConnected={wallet.connected}
               />
             ))}
           </div>
