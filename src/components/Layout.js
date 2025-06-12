@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useSafeWallet } from '@/contexts/WalletContextProvider';
+import { createLogger } from '@/utils/logger';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
@@ -13,6 +14,8 @@ import LanguageSelector from '@/components/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
+
+const logger = createLogger('Layout');
 
 export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const { 
@@ -45,10 +48,10 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('SW registered: ', registration);
+          logger.info('Service Worker registered successfully', { registration });
         })
         .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+          logger.error('Service Worker registration failed', { error: registrationError.message });
         });
     }
   }, []);
@@ -67,7 +70,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     setCurrentLocale(locale);
     localStorage.setItem('preferred-language', locale);
     // In a real app, you'd use next-i18next router here
-    console.log('Language changed to:', locale);
+    logger.debug('Language changed', { locale });
   };
 
   // Top navbar items (most important sections)

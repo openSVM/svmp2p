@@ -183,6 +183,7 @@ pub fn create_reward_token(
     reward_token.reward_rate_per_vote = reward_rate_per_vote;
     reward_token.min_trade_volume = min_trade_volume;
     reward_token.created_at = clock.unix_timestamp;
+    reward_token.last_updated = clock.unix_timestamp;
     reward_token.bump = *ctx.bumps.get("reward_token").unwrap();
     
     emit!(RewardTokenCreated {
@@ -338,12 +339,12 @@ pub fn update_reward_token(
     let reward_token = &mut ctx.accounts.reward_token;
     let clock = Clock::get()?;
     
-    // Rate limiting: Prevent excessive parameter updates
+    // Rate limiting: Prevent excessive parameter updates using dedicated last_updated field
     // Allow updates at most once per hour (3600 seconds)
     const MIN_UPDATE_INTERVAL: i64 = 3600;
     
-    if reward_token.created_at > 0 && 
-       clock.unix_timestamp - reward_token.created_at < MIN_UPDATE_INTERVAL {
+    if reward_token.last_updated > 0 && 
+       clock.unix_timestamp - reward_token.last_updated < MIN_UPDATE_INTERVAL {
         return Err(P2PExchangeError::TooManyRequests.into());
     }
     
@@ -369,7 +370,7 @@ pub fn update_reward_token(
     reward_token.reward_rate_per_trade = reward_rate_per_trade;
     reward_token.reward_rate_per_vote = reward_rate_per_vote;
     reward_token.min_trade_volume = min_trade_volume;
-    reward_token.created_at = clock.unix_timestamp; // Update timestamp for rate limiting
+    reward_token.last_updated = clock.unix_timestamp; // Update last_updated for rate limiting
     
     emit!(RewardTokenUpdated {
         authority: ctx.accounts.authority.key(),

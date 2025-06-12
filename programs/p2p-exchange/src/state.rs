@@ -244,6 +244,7 @@ pub struct RewardToken {
     pub reward_rate_per_vote: u64,       // Tokens per governance vote
     pub min_trade_volume: u64,           // Minimum volume to qualify for rewards
     pub created_at: i64,
+    pub last_updated: i64,               // Dedicated timestamp for rate limiting
     pub bump: u8,
 }
 
@@ -255,6 +256,7 @@ impl RewardToken {
                            8 +  // reward_rate_per_vote
                            8 +  // min_trade_volume
                            8 +  // created_at
+                           8 +  // last_updated
                            1;   // bump
 
     pub const SEED: &'static str = "reward_token";

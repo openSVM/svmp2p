@@ -3,18 +3,9 @@ use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
 use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
 use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted, RewardEligible};
 use crate::errors::ErrorCode;
+use crate::utils::validate_and_process_string;
 
-/// Validates and trims input string for safety
-fn validate_and_trim_string(input: &str) -> Result<String> {
-    // Rust strings are UTF-8 by default - no additional validation needed
-    // Just validate that the input is non-empty after trimming
-    let trimmed = input.trim().to_string();
-    if trimmed.is_empty() {
-        return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
-    }
-    
-    Ok(trimmed)
-}
+// Remove the duplicated validate_and_trim_string function - now using common utility
 
 #[derive(Accounts)]
 pub struct OpenDispute<'info> {
@@ -106,7 +97,7 @@ pub struct ExecuteVerdict<'info> {
 
 pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
     // Input validation and sanitization
-    let reason = validate_and_trim_string(&reason)?;
+    let reason = validate_and_process_string(&reason, MAX_DISPUTE_REASON_LEN)?;
     if reason.len() > MAX_DISPUTE_REASON_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }
@@ -201,7 +192,7 @@ pub fn assign_jurors(ctx: Context<AssignJurors>) -> Result<()> {
 
 pub fn submit_evidence(ctx: Context<SubmitEvidence>, evidence_url: String) -> Result<()> {
     // Input validation and sanitization
-    let evidence_url = validate_and_trim_string(&evidence_url)?;
+    let evidence_url = validate_and_process_string(&evidence_url, MAX_EVIDENCE_URL_LEN)?;
     if evidence_url.len() > MAX_EVIDENCE_URL_LEN {
         return Err(error!(ErrorCode::InputTooLong));
     }

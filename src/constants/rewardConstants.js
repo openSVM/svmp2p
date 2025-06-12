@@ -60,12 +60,21 @@ export const UI_CONFIG = {
     CHECKING_AUTOCLAIM: 'Checking auto-claim...',
   },
   ERROR_MESSAGES: {
-    NETWORK_ERROR: 'Network error. Please check your connection and try again.',
-    INSUFFICIENT_FUNDS: 'Insufficient SOL for transaction fees. Please ensure you have enough SOL in your wallet.',
-    USER_REJECTED: 'Transaction was cancelled by user.',
-    ACCOUNT_CREATION_FAILED: 'Failed to create rewards account. Please try again.',
-    CLAIM_FAILED: 'Failed to claim rewards. Please try again.',
-    AUTO_CLAIM_FAILED: 'Auto-claim check failed. Please try manual claim.',
+    CLAIM_FAILED: 'CLAIM_FAILED',
+    INSUFFICIENT_BALANCE: 'INSUFFICIENT_BALANCE', 
+    NETWORK_ERROR: 'NETWORK_ERROR',
+    WALLET_NOT_CONNECTED: 'WALLET_NOT_CONNECTED',
+    NO_REWARDS_TO_CLAIM: 'NO_REWARDS_TO_CLAIM',
+    TRANSACTION_FAILED: 'TRANSACTION_FAILED',
+    ACCOUNT_NOT_FOUND: 'ACCOUNT_NOT_FOUND',
+    INVALID_AMOUNT: 'INVALID_AMOUNT',
+    TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
+    USER_REJECTED: 'USER_REJECTED',
+    RATE_LIMITED: 'RATE_LIMITED',
+    NETWORK_ERROR: 'NETWORK_ERROR',
+    INSUFFICIENT_FUNDS: 'INSUFFICIENT_BALANCE',
+    ACCOUNT_CREATION_FAILED: 'ACCOUNT_NOT_FOUND',
+    AUTO_CLAIM_FAILED: 'TRANSACTION_FAILED'
   }
 };
 

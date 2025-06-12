@@ -1,23 +1,24 @@
-import React from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import React, { useState, useEffect } from 'react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useRewardData } from '../hooks/useRewardData';
+import { getUIText } from '../utils/i18n';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('RewardWidget');
 
 const RewardWidget = ({ compact = false }) => {
-    const { connected } = useWallet();
+    const { connected, publicKey } = useWallet();
+    const { connection } = useConnection();
+    const { rewardData, isLoading, error } = useRewardData(connection, publicKey);
     
-    // Mock reward data - in production this would come from blockchain state
-    const mockRewards = {
-        unclaimedBalance: 450,
-        totalEarned: 1250
-    };
-
     if (!connected) {
         return (
             <div className={`reward-widget ${compact ? 'compact' : ''}`}>
                 <div className="widget-content">
                     <span className="widget-icon">🎁</span>
                     <div className="widget-text">
-                        <span className="widget-label">Rewards</span>
-                        <span className="widget-value">Connect wallet</span>
+                        <span className="widget-label">{getUIText('REWARDS')}</span>
+                        <span className="widget-value">{getUIText('CONNECT_WALLET')}</span>
                     </div>
                 </div>
                 <style jsx>{`
@@ -75,26 +76,74 @@ const RewardWidget = ({ compact = false }) => {
         );
     }
 
+    // Handle loading state
+    if (isLoading) {
+        return (
+            <div className={`reward-widget ${compact ? 'compact' : ''}`}>
+                <div className="widget-content">
+                    <span className="widget-icon">⏳</span>
+                    <div className="widget-text">
+                        <span className="widget-label">{getUIText('REWARDS')}</span>
+                        <span className="widget-value">{getUIText('LOADING')}</span>
+                    </div>
+                </div>
+                <style jsx>{getWidgetStyles(compact)}</style>
+            </div>
+        );
+    }
+
+    // Handle error state
+    if (error) {
+        logger.warn('RewardWidget error state', { error: error.message });
+        return (
+            <div className={`reward-widget ${compact ? 'compact' : ''} error`}>
+                <div className="widget-content">
+                    <span className="widget-icon">⚠️</span>
+                    <div className="widget-text">
+                        <span className="widget-label">{getUIText('REWARDS')}</span>
+                        <span className="widget-value">Error</span>
+                    </div>
+                </div>
+                <style jsx>{getWidgetStyles(compact)}</style>
+            </div>
+        );
+    }
+
+    // Use real reward data
+    const unclaimedBalance = rewardData?.userRewards?.unclaimedBalance || 0;
+    const totalEarned = rewardData?.userRewards?.totalEarned || 0;
+    const tradingVolume = rewardData?.userRewards?.tradingVolume || 0;
+    
+    // Calculate progress to next reward milestone
+    const nextMilestone = 1000; // 1000 tokens
+    const progress = totalEarned > 0 ? Math.min((unclaimedBalance / nextMilestone) * 100, 100) : 0;
+
     return (
         <div className={`reward-widget ${compact ? 'compact' : ''}`}>
             <div className="widget-content">
                 <span className="widget-icon">💎</span>
                 <div className="widget-text">
-                    <span className="widget-label">Unclaimed</span>
-                    <span className="widget-value">{mockRewards.unclaimedBalance} tokens</span>
+                    <span className="widget-label">{getUIText('UNCLAIMED')}</span>
+                    <span className="widget-value">{unclaimedBalance} {getUIText('TOKENS')}</span>
                 </div>
             </div>
             
             {!compact && (
                 <div className="widget-progress">
                     <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: '75%' }}></div>
+                        <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                     </div>
-                    <span className="progress-text">75% to next reward</span>
+                    <span className="progress-text">{Math.round(progress)}% to next milestone</span>
                 </div>
             )}
 
-            <style jsx>{`
+            <style jsx>{getWidgetStyles(compact)}</style>
+        </div>
+    );
+};
+
+// Extract styles into a separate function for reusability
+const getWidgetStyles = (compact) => `
                 .reward-widget {
                     background: var(--ascii-neutral-700);
                     color: var(--ascii-white);
@@ -171,6 +220,12 @@ const RewardWidget = ({ compact = false }) => {
                     text-align: center;
                     text-transform: uppercase;
                 }
+
+                .reward-widget.error {
+                    border-color: var(--ascii-red);
+                    background: rgba(220, 38, 127, 0.1);
+                }
+            `;
             `}</style>
         </div>
     );

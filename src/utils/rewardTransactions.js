@@ -9,6 +9,11 @@
  */
 
 import { PROGRAM_CONFIG, COOLDOWN_CONFIG, UI_CONFIG } from '../constants/rewardConstants';
+import { createLogger } from './logger';
+import { getErrorMessage, getUIText } from './i18n';
+
+// Initialize logger for this module
+const logger = createLogger('RewardTransactions');
 
 // Conditional imports to handle test environment
 let web3, PublicKey, Transaction, SystemProgram, Connection;
@@ -29,7 +34,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
     createAssociatedTokenAccountInstruction = splToken.createAssociatedTokenAccountInstruction;
     TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
   } catch (error) {
-    console.warn('Solana libraries not available, using mock implementation');
+    logger.warn('Solana libraries not available, using mock implementation', { error: error.message });
   }
 }
 
@@ -88,7 +93,11 @@ const retryWithJitter = async (operation, maxRetries = ENHANCED_COOLDOWN_CONFIG.
       const jitter = maxDelay * jitterFactor * (Math.random() - 0.5);
       const delayWithJitter = Math.max(0, maxDelay + jitter);
       
-      console.warn(`Attempt ${attempt + 1} failed, retrying in ${Math.round(delayWithJitter)}ms:`, error.message);
+      logger.warn(`Retry attempt ${attempt + 1}/${maxRetries + 1} failed, retrying in ${Math.round(delayWithJitter)}ms`, { 
+        error: error.message,
+        attempt: attempt + 1,
+        delay: delayWithJitter
+      });
       
       await new Promise(resolve => setTimeout(resolve, delayWithJitter));
     }
@@ -236,14 +245,14 @@ export const claimRewards = async (wallet, connection, userPublicKey, options = 
   if (!bypassCooldown && isUserOnClaimCooldown(userPublicKey)) {
     const remaining = getRemainingCooldown(userPublicKey);
     const remainingSeconds = Math.ceil(remaining / 1000);
-    throw new Error(`${UI_CONFIG.ERROR_MESSAGES.CLAIM_FAILED} Please wait ${remainingSeconds} seconds before claiming again.`);
+    throw new Error(`${getErrorMessage(UI_CONFIG.ERROR_MESSAGES.CLAIM_FAILED)} ${getUIText('WAIT_SECONDS', { seconds: remainingSeconds })}`);
   }
   
   // Check failed claim cooldown
   if (!bypassCooldown && isUserOnFailedClaimCooldown(userPublicKey)) {
     const remaining = getRemainingFailedClaimCooldown(userPublicKey);
     const remainingSeconds = Math.ceil(remaining / 1000);
-    throw new Error(`Too many failed attempts. Please wait ${remainingSeconds} seconds before trying again.`);
+    throw new Error(`${getErrorMessage('TOO_MANY_REQUESTS')} ${getUIText('WAIT_SECONDS', { seconds: remainingSeconds })}`);
   }
   
   if (!web3 || !PublicKey) {
@@ -304,15 +313,21 @@ export const claimRewards = async (wallet, connection, userPublicKey, options = 
       transaction.add(createTokenAccountIx);
     }
 
-    // Add claim rewards instruction
-    // Note: This would need to be replaced with actual program instruction
-    const claimInstruction = SystemProgram.transfer({
-      fromPubkey: userPublicKey,
-      toPubkey: userPublicKey, // Placeholder
-      lamports: 0, // Placeholder
-    });
+    // Add claim rewards instruction using actual program CPI
+    const claimRewardsInstruction = {
+      keys: [
+        { pubkey: rewardTokenPda, isSigner: false, isWritable: false }, // reward_token
+        { pubkey: rewardMintPda, isSigner: false, isWritable: true },   // reward_mint
+        { pubkey: userRewardsPda, isSigner: false, isWritable: true },  // user_rewards
+        { pubkey: userTokenAccount, isSigner: false, isWritable: true }, // user_token_account
+        { pubkey: userPublicKey, isSigner: true, isWritable: true },    // user
+        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false }, // token_program
+      ],
+      programId: PROGRAM_ID,
+      data: Buffer.from([201, 153, 74, 35, 130, 181, 35, 180]) // claim_rewards instruction discriminator
+    };
     
-    transaction.add(claimInstruction);
+    transaction.add(claimRewardsInstruction);
 
     // Send transaction
     const signature = await wallet.sendTransaction(transaction, connection);
@@ -451,7 +466,7 @@ export const hasUserRewardsAccount = async (
       finalRetryConfig.jitterFactor
     );
   } catch (error) {
-    console.error('Error checking user rewards account:', error);
+    logger.error('Error checking user rewards account', { error: error.message, userPublicKey: userPublicKey.toString() });
     return false;
   }
 };
@@ -464,7 +479,7 @@ export const hasUserRewardsAccount = async (
  * @returns {Promise} Result of the transaction function
  */
 export const retryTransaction = async (transactionFn, maxRetries = 3, delayMs = 1000) => {
-  console.warn('retryTransaction is deprecated, use retryWithJitter for better retry logic');
+  logger.warn('retryTransaction is deprecated, use retryWithJitter for better retry logic');
   
   // Use the new enhanced retry logic for consistency
   return retryWithJitter(
@@ -509,5 +524,5 @@ export const getRetryConfigOptions = () => ({
  */
 export const updateCooldownConfig = (newConfig) => {
   Object.assign(ENHANCED_COOLDOWN_CONFIG, newConfig);
-  console.log('Cooldown configuration updated:', ENHANCED_COOLDOWN_CONFIG);
+  logger.info('Cooldown configuration updated', { config: ENHANCED_COOLDOWN_CONFIG });
 };

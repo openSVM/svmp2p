@@ -3,18 +3,9 @@ use anchor_lang::solana_program::{program::invoke, program::invoke_signed, syste
 use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
 use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased, RewardEligible};
 use crate::errors::ErrorCode;
+use crate::utils::validate_and_process_string;
 
-/// Validates and trims input string for safety
-fn validate_and_trim_string(input: &str) -> Result<String> {
-    // Rust strings are UTF-8 by default - no additional validation needed
-    // Just validate that the input is non-empty after trimming
-    let trimmed = input.trim().to_string();
-    if trimmed.is_empty() {
-        return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
-    }
-    
-    Ok(trimmed)
-}
+// Remove the duplicated validate_and_trim_string function - now using common utility
 
 #[derive(Accounts)]
 pub struct CreateOffer<'info> {
@@ -99,8 +90,8 @@ pub fn create_offer(
     created_at: i64,
 ) -> Result<()> {
     // Input validation and sanitization
-    let fiat_currency = validate_and_trim_string(&fiat_currency)?;
-    let payment_method = validate_and_trim_string(&payment_method)?;
+    let fiat_currency = validate_and_process_string(&fiat_currency, MAX_FIAT_CURRENCY_LEN)?;
+    let payment_method = validate_and_process_string(&payment_method, MAX_PAYMENT_METHOD_LEN)?;
     
     if fiat_currency.len() > MAX_FIAT_CURRENCY_LEN {
         return Err(error!(ErrorCode::InputTooLong));
