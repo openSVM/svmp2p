@@ -25,6 +25,7 @@ import '@solana/wallet-adapter-react-ui/styles.css'; // Third-party component st
 import '@/styles/globals.css'; // Global styles and overrides
 import '@/styles/header-mobile-improvements.css'; // Header mobile improvements
 import '@/styles/dropdown-fixes.css'; // Dropdown functionality fixes
+import '@/styles/hamburger-improvements.css'; // Hamburger menu line differentiation
 import '@/styles/tech-debt-fixes.css'; // Tech debt fixes and improvements
 import '@/styles/language-selector.css'; // Language selector styles
 

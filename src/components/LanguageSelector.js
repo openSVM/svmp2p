@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { cn, conditional } from '@/utils/classNames';
 
@@ -30,8 +30,10 @@ const LanguageSelector = ({
   const triggerRef = useRef(null);
   const optionRefs = useRef([]);
 
-  // Ensure languages is always an array
-  const safeLanguages = Array.isArray(languages) ? languages : [];
+  // Ensure languages is always an array - memoized for performance
+  const safeLanguages = useMemo(() => 
+    Array.isArray(languages) ? languages : []
+  , [languages]);
 
   // Find current language safely, provide a fallback default
   const currentLanguage = 
@@ -39,12 +41,15 @@ const LanguageSelector = ({
     safeLanguages[0] || 
     { code: 'en', name: 'English', country: 'US' }; // Fallback default
 
-  // Calculate dropdown position
+  // Memoized languages length for performance (static array optimization)
+  const languagesLength = useMemo(() => safeLanguages.length, [safeLanguages]);
+
+  // Calculate dropdown position - optimized callback dependencies
   const calculateDropdownPosition = useCallback(() => {
     if (triggerRef.current) {
       const buttonRect = triggerRef.current.getBoundingClientRect();
       const dropdownWidth = 200; // Approximate dropdown width
-      const dropdownHeight = Math.min(300, safeLanguages.length * 48 + 16); // Dynamic height based on options
+      const dropdownHeight = Math.min(300, languagesLength * 48 + 16); // Dynamic height based on options
       
       let top = buttonRect.bottom + 4;
       let left = buttonRect.right - dropdownWidth;
@@ -60,7 +65,7 @@ const LanguageSelector = ({
       
       setDropdownPosition({ top, left });
     }
-  }, [safeLanguages.length]);
+  }, [languagesLength]); // More stable dependency
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -174,6 +179,7 @@ const LanguageSelector = ({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls="language-dropdown"
+        aria-activedescendant={isOpen && focusedIndex >= 0 ? `language-option-${focusedIndex}` : undefined}
         role="combobox"
       >
         <span className="text-sm font-medium">
@@ -204,10 +210,15 @@ const LanguageSelector = ({
               role="listbox"
               aria-label="Language options"
             >
-              {/* Map over safeLanguages */} 
+              {/* Map over safeLanguages with roving tabindex pattern:
+                  - Only the currently focused option has tabIndex={0}
+                  - All other options have tabIndex={-1} to remove them from tab sequence
+                  - This allows arrow key navigation while maintaining single tab stop
+                  - Screen readers use aria-activedescendant to track focused option */} 
               {safeLanguages.map((language, index) => (
                 <button
                   key={language.code}
+                  id={`language-option-${index}`}
                   ref={el => optionRefs.current[index] = el}
                   className={cn(
                     'language-option',

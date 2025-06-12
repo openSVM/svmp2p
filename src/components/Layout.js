@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+import React, { useContext, useState, useEffect, useMemo, useTransition, startTransition, useCallback } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
@@ -34,6 +34,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [accountFocusedIndex, setAccountFocusedIndex] = useState(-1);
+  const [isPending, startTransition] = useTransition();
+
+  // Enhanced tab switching with transition for better UX
+  const handleTabSwitch = useCallback((tabKey) => {
+    startTransition(() => {
+      setActiveTab(tabKey);
+    });
+  }, [setActiveTab]);
 
   // Primary navigation items (main actions)
   const primaryNavItems = useMemo(() => [
@@ -122,7 +130,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           case ' ':
             event.preventDefault();
             if (accountFocusedIndex >= 0 && accountNavItems[accountFocusedIndex]) {
-              setActiveTab(accountNavItems[accountFocusedIndex].key);
+              handleTabSwitch(accountNavItems[accountFocusedIndex].key);
               setIsAccountDropdownOpen(false);
               setAccountFocusedIndex(-1);
             }
@@ -149,7 +157,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [isMobileMenuOpen, isAccountDropdownOpen, accountFocusedIndex, accountNavItems]);
+  }, [isMobileMenuOpen, isAccountDropdownOpen, accountFocusedIndex, accountNavItems, handleTabSwitch]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -204,54 +212,88 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Enhanced wallet status renderer with better UX feedback
-  const renderWalletStatus = () => {
-    if (wallet.error) {
-      return (
-        <div className="wallet-status error" title={wallet.error}>
-          <span className="status-dot error" aria-hidden="true"></span>
-          <span>Error</span>
-          {wallet.reconnect && (
-            <button 
-              className="wallet-retry-button" 
-              onClick={() => wallet.reconnect?.()}
-              title="Retry connection"
-              aria-label="Retry wallet connection"
-            >
-              ↻
-            </button>
-          )}
-        </div>
-      );
-    }
+  // Unified wallet connection state for better UX tracking
+  const getWalletConnectionState = useMemo(() => {
+    if (wallet.error) return 'error';
+    if (wallet.connecting || wallet.connectionState === 'connecting') return 'connecting';
+    if (wallet.connected && wallet.publicKey) return 'connected';
+    return 'disconnected';
+  }, [wallet.error, wallet.connecting, wallet.connectionState, wallet.connected, wallet.publicKey]);
 
-    if (wallet.connecting || wallet.connectionState === 'connecting') {
-      return (
-        <div className="wallet-status connecting">
-          <span className="status-dot connecting pulsing" aria-hidden="true"></span>
-          <span>Connecting...</span>
-        </div>
-      );
-    }
-
-    if (wallet.connected && wallet.publicKey) {
-      return (
-        <div className="wallet-status connected">
-          <span className="status-dot connected" aria-hidden="true"></span>
-          <span className="connection-address">
-            {wallet.publicKey.toString().slice(0, 4)}...{wallet.publicKey.toString().slice(-4)}
-          </span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="wallet-status disconnected">
-        <span className="status-dot disconnected" aria-hidden="true"></span>
-        <span>Not Connected</span>
-      </div>
-    );
+  // URL sanitization helper for explorer links
+  const sanitizeNetworkForUrl = (network) => {
+    if (!network || typeof network !== 'string') return 'solana';
+    // Allow only alphanumeric characters, hyphens, and underscores
+    return network.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase() || 'solana';
   };
+
+  // Enhanced wallet status renderer with unified state management
+  const renderWalletStatus = useMemo(() => {
+    const connectionState = getWalletConnectionState;
+    
+    switch (connectionState) {
+      case 'error':
+        return (
+          <div className="wallet-status error" title={wallet.error}>
+            <span className="status-dot error" aria-hidden="true"></span>
+            <span>Error</span>
+            {wallet.reconnect && (
+              <button 
+                className="wallet-retry-button" 
+                onClick={() => wallet.reconnect?.()}
+                title="Retry connection"
+                aria-label="Retry wallet connection"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="retry-icon"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M8 2.5a5.5 5.5 0 0 1 5.5 5.5 0.5 0.5 0 0 1-1 0A4.5 4.5 0 1 0 8 12.5a0.5 0.5 0 0 1 0 1A5.5 5.5 0 1 1 8 2.5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M10.5 5.5L8 8l2.5 2.5a0.5 0.5 0 0 1-0.707 0.707L7.646 8.854a0.5 0.5 0 0 1 0-0.708l2.147-2.146a0.5 0.5 0 0 1 0.707 0.707z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        );
+      
+      case 'connecting':
+        return (
+          <div className="wallet-status connecting">
+            <span className="status-dot connecting pulsing" aria-hidden="true"></span>
+            <span>Connecting...</span>
+          </div>
+        );
+      
+      case 'connected':
+        return (
+          <div className="wallet-status connected">
+            <span className="status-dot connected" aria-hidden="true"></span>
+            <span className="connection-address">
+              {wallet.publicKey.toString().slice(0, 4)}...{wallet.publicKey.toString().slice(-4)}
+            </span>
+          </div>
+        );
+      
+      default: // disconnected
+        return (
+          <div className="wallet-status disconnected">
+            <span className="status-dot disconnected" aria-hidden="true"></span>
+            <span>Not Connected</span>
+          </div>
+        );
+    }
+  }, [getWalletConnectionState, wallet]);
 
 
 
@@ -285,16 +327,16 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
             
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Differentiated hamburger lines for better animation */}
             <button 
               className="mobile-menu-toggle"
               onClick={toggleMobileMenu}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMobileMenuOpen}
             >
-              <span className={conditional('hamburger-line', 'active', isMobileMenuOpen)}></span>
-              <span className={conditional('hamburger-line', 'active', isMobileMenuOpen)}></span>
-              <span className={conditional('hamburger-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line top-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line middle-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line bottom-line', 'active', isMobileMenuOpen)}></span>
             </button>
             
             {/* Desktop Navigation - Horizontal layout for desktop */}
@@ -304,7 +346,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 <button
                   key={item.key}
                   className={conditional('nav-tab', 'active', activeTab === item.key)}
-                  onClick={() => setActiveTab(item.key)}
+                  onClick={() => handleTabSwitch(item.key)}
                 >
                   <span className="nav-label">{item.label}</span>
                 </button>
@@ -358,7 +400,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                             }
                           )}
                           onClick={() => {
-                            setActiveTab(item.key);
+                            handleTabSwitch(item.key);
                             setIsAccountDropdownOpen(false);
                             setAccountFocusedIndex(-1);
                           }}
@@ -398,9 +440,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 <ThemeToggle />
               </div>
               
-              {/* Explorer link - simplified */}
+              {/* Explorer link - URL sanitized for security */}
               <a 
-                href={`https://opensvm.com/${selectedNetwork}`} 
+                href={`https://opensvm.com/${sanitizeNetworkForUrl(selectedNetwork)}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="explorer-link"
@@ -414,7 +456,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               
               {/* Wallet connection area with enhanced status */}
               <div className="wallet-connection-area">
-                {renderWalletStatus()}
+                {renderWalletStatus}
                 
                 {/* Wallet connection button - renamed to Login/Signup */}
                 {!connected && (
@@ -442,7 +484,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 key={item.key}
                 className={conditional('mobile-nav-btn', 'active', activeTab === item.key)}
                 onClick={() => {
-                  setActiveTab(item.key);
+                  handleTabSwitch(item.key);
                   setIsMobileMenuOpen(false); // Close menu after selection
                 }}
               >
@@ -458,7 +500,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                   key={item.key}
                   className={conditional('mobile-nav-btn', 'active', activeTab === item.key)}
                   onClick={() => {
-                    setActiveTab(item.key);
+                    handleTabSwitch(item.key);
                     setIsMobileMenuOpen(false); // Close menu after selection
                   }}
                 >
@@ -471,7 +513,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             <div className="mobile-wallet-controls">
               {/* Enhanced wallet status for mobile */}
               <div className="mobile-wallet-status">
-                {renderWalletStatus()}
+                {renderWalletStatus}
               </div>
               
               {!connected && (
@@ -493,7 +535,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         {/* Main Content */}
         <main id="main-content" className="app-main">
           <div className="container content-container">
-            <div className="content-transition-wrapper fade-in">
+            <div className={conditional('content-transition-wrapper fade-in', 'pending', isPending)}>
               {children}
             </div>
           </div>
