@@ -238,6 +238,7 @@ pub struct ReputationUpdated {
 #[account]
 pub struct RewardToken {
     pub authority: Pubkey,
+    pub mint: Pubkey,                     // The SPL token mint
     pub total_supply: u64,
     pub reward_rate_per_trade: u64,      // Tokens per successful trade
     pub reward_rate_per_vote: u64,       // Tokens per governance vote
@@ -248,6 +249,7 @@ pub struct RewardToken {
 
 impl RewardToken {
     pub const LEN: usize = 32 + // authority
+                           32 + // mint
                            8 +  // total_supply
                            8 +  // reward_rate_per_trade
                            8 +  // reward_rate_per_vote

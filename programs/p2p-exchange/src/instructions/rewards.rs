@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{self, Mint, Token, TokenAccount, MintTo};
 use crate::state::*;
 use crate::errors::*;
 
@@ -15,6 +16,16 @@ pub struct CreateRewardToken<'info> {
     pub reward_token: Account<'info, RewardToken>,
     
     #[account(
+        init,
+        payer = authority,
+        mint::decimals = 9,
+        mint::authority = reward_token,
+        seeds = [b"reward_mint"],
+        bump
+    )]
+    pub reward_mint: Account<'info, Mint>,
+    
+    #[account(
         seeds = [Admin::SEED.as_bytes()],
         bump = admin.bump,
         has_one = authority
@@ -24,6 +35,7 @@ pub struct CreateRewardToken<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
     
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
 
@@ -56,6 +68,12 @@ pub struct MintTradeRewards<'info> {
     
     #[account(
         mut,
+        address = reward_token.mint
+    )]
+    pub reward_mint: Account<'info, Mint>,
+    
+    #[account(
+        mut,
         seeds = [UserRewards::SEED.as_bytes(), user.key().as_ref()],
         bump = user_rewards.bump
     )]
@@ -63,6 +81,9 @@ pub struct MintTradeRewards<'info> {
     
     /// CHECK: This account is validated through PDA seeds
     pub user: AccountInfo<'info>,
+    
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
 }
 
 /// Mint rewards for governance activity (internal function) 
@@ -76,6 +97,12 @@ pub struct MintVoteRewards<'info> {
     
     #[account(
         mut,
+        address = reward_token.mint
+    )]
+    pub reward_mint: Account<'info, Mint>,
+    
+    #[account(
+        mut,
         seeds = [UserRewards::SEED.as_bytes(), user.key().as_ref()],
         bump = user_rewards.bump
     )]
@@ -83,6 +110,9 @@ pub struct MintVoteRewards<'info> {
     
     /// CHECK: This account is validated through PDA seeds
     pub user: AccountInfo<'info>,
+    
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
 }
 
 /// Claim accumulated rewards
@@ -96,13 +126,24 @@ pub struct ClaimRewards<'info> {
     
     #[account(
         mut,
+        address = reward_token.mint
+    )]
+    pub reward_mint: Account<'info, Mint>,
+    
+    #[account(
+        mut,
         seeds = [UserRewards::SEED.as_bytes(), user.key().as_ref()],
         bump = user_rewards.bump
     )]
     pub user_rewards: Account<'info, UserRewards>,
     
     #[account(mut)]
+    pub user_token_account: Account<'info, TokenAccount>,
+    
+    #[account(mut)]
     pub user: Signer<'info>,
+    
+    pub token_program: Program<'info, Token>,
 }
 
 pub fn create_reward_token(
@@ -115,6 +156,7 @@ pub fn create_reward_token(
     let clock = Clock::get()?;
     
     reward_token.authority = ctx.accounts.authority.key();
+    reward_token.mint = ctx.accounts.reward_mint.key();
     reward_token.total_supply = 0;
     reward_token.reward_rate_per_trade = reward_rate_per_trade;
     reward_token.reward_rate_per_vote = reward_rate_per_vote;
@@ -163,7 +205,7 @@ pub fn mint_trade_rewards(
     // Calculate reward amount
     let reward_amount = reward_token.reward_rate_per_trade;
     
-    // Update user rewards
+    // Update user rewards tracking (actual minting happens during claim)
     user_rewards.total_earned = user_rewards.total_earned
         .checked_add(reward_amount)
         .ok_or(P2PExchangeError::MathOverflow)?;
@@ -196,7 +238,7 @@ pub fn mint_vote_rewards(ctx: Context<MintVoteRewards>) -> Result<()> {
     // Calculate reward amount
     let reward_amount = reward_token.reward_rate_per_vote;
     
-    // Update user rewards
+    // Update user rewards tracking (actual minting happens during claim)
     user_rewards.total_earned = user_rewards.total_earned
         .checked_add(reward_amount)
         .ok_or(P2PExchangeError::MathOverflow)?;
@@ -222,6 +264,7 @@ pub fn mint_vote_rewards(ctx: Context<MintVoteRewards>) -> Result<()> {
 }
 
 pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
+    let reward_token = &ctx.accounts.reward_token;
     let user_rewards = &mut ctx.accounts.user_rewards;
     let clock = Clock::get()?;
     
@@ -232,15 +275,29 @@ pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
     
     let claim_amount = user_rewards.unclaimed_balance;
     
-    // Update balances
+    // Mint SPL tokens to user's token account
+    let seeds = &[
+        RewardToken::SEED.as_bytes(),
+        &[reward_token.bump],
+    ];
+    let signer = &[&seeds[..]];
+    
+    let cpi_accounts = MintTo {
+        mint: ctx.accounts.reward_mint.to_account_info(),
+        to: ctx.accounts.user_token_account.to_account_info(),
+        authority: ctx.accounts.reward_token.to_account_info(),
+    };
+    let cpi_program = ctx.accounts.token_program.to_account_info();
+    let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
+    
+    token::mint_to(cpi_ctx, claim_amount)?;
+    
+    // Update balances after successful minting
     user_rewards.total_claimed = user_rewards.total_claimed
         .checked_add(claim_amount)
         .ok_or(P2PExchangeError::MathOverflow)?;
         
     user_rewards.unclaimed_balance = 0;
-    
-    // For simplicity, we're not transferring actual tokens here
-    // In a full implementation, this would mint SPL tokens to the user's wallet
     
     emit!(RewardsClaimed {
         user: ctx.accounts.user.key(),

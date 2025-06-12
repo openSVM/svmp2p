@@ -168,6 +168,19 @@ pub mod p2p_exchange {
         instructions::rewards::create_user_rewards(ctx)
     }
 
+    /// Mint trade rewards for completed trade
+    /// 
+    /// # Arguments
+    /// * `trade_volume` - Volume of the completed trade
+    pub fn mint_trade_rewards(ctx: Context<MintTradeRewards>, trade_volume: u64) -> Result<()> {
+        instructions::rewards::mint_trade_rewards(ctx, trade_volume)
+    }
+
+    /// Mint governance rewards for voting participation
+    pub fn mint_vote_rewards(ctx: Context<MintVoteRewards>) -> Result<()> {
+        instructions::rewards::mint_vote_rewards(ctx)
+    }
+
     /// Claim accumulated rewards
     pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
         instructions::rewards::claim_rewards(ctx)
