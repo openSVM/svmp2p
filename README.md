@@ -54,6 +54,29 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 3. Run the development server: `npm run dev`
 4. Connect your wallet to start trading
 
+## 📚 Documentation
+
+### API Documentation
+Comprehensive API and smart contract documentation is available:
+
+- **[Complete API Reference](docs/api/README.md)** - Main API documentation hub
+- **[Smart Contract API](docs/api/smart-contracts.md)** - Detailed smart contract instructions
+- **[Wallet Operations](docs/api/wallet-operations.md)** - Wallet integration patterns
+- **[Account Structures](docs/api/account-structures.md)** - Data structure specifications
+- **[Error Codes](docs/api/error-codes.md)** - Error handling reference
+- **[Transaction Flows](docs/api/transaction-flows.md)** - Implementation examples
+- **[API Changelog](docs/api/CHANGELOG.md)** - Version history and updates
+
+### Quick Start Guides
+- **[Examples Directory](docs/api/examples/)** - Ready-to-use code examples
+- **[Installation Guide](docs/installation-guide.md)** - Detailed setup instructions
+- **[Contributing Guide](docs/contributing.md)** - Development workflow
+
+### Developer Resources
+- **Program ID**: `FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9`
+- **Documentation Version**: 1.0.0
+- **API Support**: Full smart contract and wallet integration coverage
+
 ## Requirements
 
 - Node.js >= 18.17.0 (required by Next.js 14)
