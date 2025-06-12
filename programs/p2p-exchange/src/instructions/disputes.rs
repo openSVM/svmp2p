@@ -275,9 +275,9 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     let _juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
         .ok_or(ErrorCode::NotAJuror)?;
     
-    // Validate that we haven't exceeded vote counts (should be impossible with PDAs, but extra safety)
-    if dispute.votes_for_buyer + dispute.votes_for_seller >= 3 {
-        return Err(error!(ErrorCode::AlreadyVoted)); // All votes already cast
+    // Validate that the juror has not already voted
+    if dispute.votes.iter().any(|v| v.juror == juror.key()) {
+        return Err(error!(ErrorCode::AlreadyVoted)); // Juror has already cast a vote
     }
 
     // Initialize vote data (PDA prevents duplicate votes)
