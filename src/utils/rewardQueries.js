@@ -5,6 +5,9 @@
  * including user rewards, token balances, and reward token information.
  */
 
+import { PROGRAM_CONFIG, REWARD_RATES, DEFAULT_REWARD_DATA, CONVERSION_HELPERS } from '../constants/rewardConstants';
+import rewardDataCache from './rewardDataCache';
+
 // Conditional imports to handle test environment
 let PublicKey, getConnection;
 
@@ -19,20 +22,13 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
   }
 }
 
-// Program ID - should match the deployed program
-const PROGRAM_ID_STRING = 'FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9';
-
-// PDA seeds
-const REWARD_TOKEN_SEED = 'reward_token';
-const USER_REWARDS_SEED = 'user_rewards';
-
 // Mock implementation for test environments
 const createMockPublicKey = (keyString) => ({
   toBuffer: () => Buffer.from(keyString),
   toString: () => keyString,
 });
 
-const mockPublicKey = createMockPublicKey(PROGRAM_ID_STRING);
+const mockPublicKey = createMockPublicKey(PROGRAM_CONFIG.PROGRAM_ID);
 
 /**
  * Derives the reward token PDA
@@ -43,9 +39,9 @@ export const getRewardTokenAddress = async () => {
     return mockPublicKey;
   }
   
-  const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
+  const PROGRAM_ID = new PublicKey(PROGRAM_CONFIG.PROGRAM_ID);
   const [rewardTokenPda] = await PublicKey.findProgramAddress(
-    [Buffer.from(REWARD_TOKEN_SEED)],
+    [Buffer.from(PROGRAM_CONFIG.PDA_SEEDS.REWARD_TOKEN)],
     PROGRAM_ID
   );
   return rewardTokenPda;
@@ -61,9 +57,9 @@ export const getUserRewardsAddress = async (userPublicKey) => {
     return mockPublicKey;
   }
   
-  const PROGRAM_ID = new PublicKey(PROGRAM_ID_STRING);
+  const PROGRAM_ID = new PublicKey(PROGRAM_CONFIG.PROGRAM_ID);
   const [userRewardsPda] = await PublicKey.findProgramAddress(
-    [Buffer.from(USER_REWARDS_SEED), userPublicKey.toBuffer()],
+    [Buffer.from(PROGRAM_CONFIG.PDA_SEEDS.USER_REWARDS), userPublicKey.toBuffer()],
     PROGRAM_ID
   );
   return userRewardsPda;
@@ -76,11 +72,11 @@ export const getUserRewardsAddress = async (userPublicKey) => {
 export const fetchRewardTokenConfig = async () => {
   try {
     if (!getConnection) {
-      // Mock data for test environment
+      // Mock data for test environment using centralized constants
       return {
-        rewardRatePerTrade: 100,
-        rewardRatePerVote: 50,
-        minTradeVolume: 100000000, // 0.1 SOL in lamports
+        rewardRatePerTrade: REWARD_RATES.PER_TRADE,
+        rewardRatePerVote: REWARD_RATES.PER_VOTE,
+        minTradeVolume: REWARD_RATES.MIN_TRADE_VOLUME,
         totalSupply: 0,
         mint: null,
       };
@@ -97,9 +93,9 @@ export const fetchRewardTokenConfig = async () => {
     // Parse the account data (simplified - in reality would use Anchor IDL)
     // For now, return mock data structure that matches the smart contract
     return {
-      rewardRatePerTrade: 100,
-      rewardRatePerVote: 50,
-      minTradeVolume: 100000000, // 0.1 SOL in lamports
+      rewardRatePerTrade: REWARD_RATES.PER_TRADE,
+      rewardRatePerVote: REWARD_RATES.PER_VOTE,
+      minTradeVolume: REWARD_RATES.MIN_TRADE_VOLUME,
       totalSupply: 0,
       mint: null, // Would parse from account data
     };
@@ -117,12 +113,12 @@ export const fetchRewardTokenConfig = async () => {
 export const fetchUserRewards = async (userPublicKey) => {
   try {
     if (!getConnection) {
-      // Mock data for test environment
+      // Mock data for test environment with proper date objects
       return {
         totalEarned: 1250,
         totalClaimed: 800,
         unclaimedBalance: 450,
-        tradingVolume: 12500000000, // 12.5 SOL in lamports
+        tradingVolume: 12.5 * CONVERSION_HELPERS.solToLamports(1), // 12.5 SOL in lamports
         governanceVotes: 3,
         lastTradeReward: new Date(Date.now() - 86400000), // 1 day ago
         lastVoteReward: new Date(Date.now() - 172800000), // 2 days ago
@@ -147,12 +143,12 @@ export const fetchUserRewards = async (userPublicKey) => {
     }
     
     // Parse the account data (simplified - in reality would use Anchor IDL)
-    // For now, return mock data that represents realistic values
+    // For now, return mock data that represents realistic values with proper Date objects
     const mockData = {
       totalEarned: Math.floor(Math.random() * 2000) + 500,
       totalClaimed: Math.floor(Math.random() * 1000) + 200,
       unclaimedBalance: Math.floor(Math.random() * 500) + 50,
-      tradingVolume: Math.floor((Math.random() * 20 + 5) * 1000000000), // SOL to lamports
+      tradingVolume: Math.floor((Math.random() * 20 + 5) * CONVERSION_HELPERS.solToLamports(1)), // SOL to lamports
       governanceVotes: Math.floor(Math.random() * 10) + 1,
       lastTradeReward: new Date(Date.now() - Math.random() * 86400000 * 7), // Last week
       lastVoteReward: new Date(Date.now() - Math.random() * 86400000 * 14), // Last 2 weeks
@@ -212,36 +208,60 @@ export const isRewardSystemInitialized = async () => {
 
 /**
  * Comprehensive reward data fetcher that combines all reward information
+ * Uses caching and debouncing for performance optimization
  * @param {PublicKey|Object} userPublicKey - The user's public key
+ * @param {boolean} immediate - If true, bypasses debouncing for immediate fetch
  * @returns {Promise<Object>} Complete reward data object
  */
-export const fetchCompleteRewardData = async (userPublicKey) => {
-  try {
-    const [rewardTokenConfig, userRewards, systemInitialized] = await Promise.all([
-      fetchRewardTokenConfig(),
-      fetchUserRewards(userPublicKey),
-      isRewardSystemInitialized(),
-    ]);
-    
-    return {
-      rewardToken: rewardTokenConfig || {
-        rewardRatePerTrade: 100,
-        rewardRatePerVote: 50,
-        minTradeVolume: 100000000, // 0.1 SOL in lamports
-      },
-      userRewards: userRewards || {
-        totalEarned: 0,
-        totalClaimed: 0,
-        unclaimedBalance: 0,
-        tradingVolume: 0,
-        governanceVotes: 0,
-        lastTradeReward: null,
-        lastVoteReward: null,
-      },
-      systemInitialized,
-    };
-  } catch (error) {
-    console.error('Error fetching complete reward data:', error);
-    throw error;
+export const fetchCompleteRewardData = async (userPublicKey, immediate = false) => {
+  if (!userPublicKey) {
+    return DEFAULT_REWARD_DATA;
   }
+  
+  const userKey = userPublicKey.toString();
+  
+  const fetchOperation = async () => {
+    try {
+      const [rewardTokenConfig, userRewards, systemInitialized] = await Promise.all([
+        fetchRewardTokenConfig(),
+        fetchUserRewards(userPublicKey),
+        isRewardSystemInitialized(),
+      ]);
+      
+      return {
+        rewardToken: rewardTokenConfig || DEFAULT_REWARD_DATA.rewardToken,
+        userRewards: userRewards || DEFAULT_REWARD_DATA.userRewards,
+        systemInitialized,
+      };
+    } catch (error) {
+      console.error('Error fetching complete reward data:', error);
+      throw error;
+    }
+  };
+  
+  // Use immediate fetch for user actions, debounced fetch for automatic updates
+  if (immediate) {
+    return rewardDataCache.immediateFetch(userKey, fetchOperation);
+  } else {
+    return rewardDataCache.debouncedFetch(userKey, fetchOperation);
+  }
+};
+
+/**
+ * Clear cached data for a user (call when user disconnects or changes)
+ * @param {PublicKey|Object} userPublicKey - The user's public key
+ */
+export const clearUserCache = (userPublicKey) => {
+  if (userPublicKey) {
+    const userKey = userPublicKey.toString();
+    rewardDataCache.clearUserCache(userKey);
+  }
+};
+
+/**
+ * Get cache statistics for debugging
+ * @returns {Object} Cache statistics
+ */
+export const getCacheStats = () => {
+  return rewardDataCache.getStats();
 };

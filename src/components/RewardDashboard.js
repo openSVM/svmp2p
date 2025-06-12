@@ -1,26 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { fetchCompleteRewardData } from '../utils/rewardQueries';
-import { claimRewards, retryTransaction, hasUserRewardsAccount, createUserRewardsAccount, isUserOnClaimCooldown, getRemainingCooldown, getCooldownStats } from '../utils/rewardTransactions';
+import { fetchCompleteRewardData, clearUserCache } from '../utils/rewardQueries';
+import { 
+    claimRewards, 
+    retryTransaction, 
+    hasUserRewardsAccount, 
+    createUserRewardsAccount, 
+    isUserOnClaimCooldown, 
+    isUserOnFailedClaimCooldown,
+    getRemainingCooldown, 
+    getRemainingFailedClaimCooldown,
+    getCooldownStats 
+} from '../utils/rewardTransactions';
 import { useAutoClaimManager } from '../utils/autoClaimManager';
+import { 
+    REWARD_CONSTANTS, 
+    CONVERSION_HELPERS, 
+    UI_CONFIG, 
+    AUTO_CLAIM_CONFIG,
+    DEFAULT_REWARD_DATA 
+} from '../constants/rewardConstants';
 
 const RewardDashboard = () => {
     const { publicKey, connected, wallet } = useWallet();
     const autoClaimManager = useAutoClaimManager(wallet, null); // connection would be passed in real implementation
-    const [rewards, setRewards] = useState({
-        totalEarned: 0,
-        totalClaimed: 0,
-        unclaimedBalance: 0,
-        tradingVolume: 0,
-        governanceVotes: 0,
-        lastTradeReward: null,
-        lastVoteReward: null
-    });
-    const [rewardToken, setRewardToken] = useState({
-        rewardRatePerTrade: 100,
-        rewardRatePerVote: 50,
-        minTradeVolume: 100000000 // 0.1 SOL in lamports
-    });
+    const [rewards, setRewards] = useState(DEFAULT_REWARD_DATA.userRewards);
+    const [rewardToken, setRewardToken] = useState(DEFAULT_REWARD_DATA.rewardToken);
     const [loading, setLoading] = useState(false);
     const [claimLoading, setClaimLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -28,90 +33,85 @@ const RewardDashboard = () => {
     const [hasRewardsAccount, setHasRewardsAccount] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
     const [cooldownRemaining, setCooldownRemaining] = useState(0);
-    const [autoClaimEnabled, setAutoClaimEnabled] = useState(false);
-    const [autoClaimConfig, setAutoClaimConfig] = useState({});
+    const [failedClaimCooldownRemaining, setFailedClaimCooldownRemaining] = useState(0);
+    const [autoClaimEnabled, setAutoClaimEnabled] = useState(AUTO_CLAIM_CONFIG.DEFAULT_ENABLED);
+    const [autoClaimConfig, setAutoClaimConfig] = useState({
+        autoClaimThreshold: AUTO_CLAIM_CONFIG.DEFAULT_THRESHOLD
+    });
 
-    // Fetch real data from blockchain
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!connected || !publicKey) {
-                setRewards({
-                    totalEarned: 0,
-                    totalClaimed: 0,
-                    unclaimedBalance: 0,
-                    tradingVolume: 0,
-                    governanceVotes: 0,
-                    lastTradeReward: null,
-                    lastVoteReward: null
-                });
-                setRewardToken({
-                    rewardRatePerTrade: 100,
-                    rewardRatePerVote: 50,
-                    minTradeVolume: 100000000 // 0.1 SOL in lamports
-                });
-                return;
-            }
+    // Debounced data fetching to optimize performance
+    const fetchData = useCallback(async (immediate = false) => {
+        if (!connected || !publicKey) {
+            setRewards(DEFAULT_REWARD_DATA.userRewards);
+            setRewardToken(DEFAULT_REWARD_DATA.rewardToken);
+            setHasRewardsAccount(false);
+            return;
+        }
 
-            setLoading(true);
-            setError(null);
+        setLoading(true);
+        setError(null);
+        
+        try {
+            const [rewardData, accountExists] = await Promise.all([
+                fetchCompleteRewardData(publicKey, immediate),
+                hasUserRewardsAccount(null, publicKey) // connection would be passed in real implementation
+            ]);
             
-            try {
-                const [rewardData, accountExists] = await Promise.all([
-                    fetchCompleteRewardData(publicKey),
-                    hasUserRewardsAccount(null, publicKey) // connection would be passed in real implementation
-                ]);
-                
-                setHasRewardsAccount(accountExists);
-                
-                setRewards({
-                    totalEarned: rewardData.userRewards.totalEarned,
-                    totalClaimed: rewardData.userRewards.totalClaimed,
-                    unclaimedBalance: rewardData.userRewards.unclaimedBalance,
-                    tradingVolume: rewardData.userRewards.tradingVolume,
-                    governanceVotes: rewardData.userRewards.governanceVotes,
-                    lastTradeReward: rewardData.userRewards.lastTradeReward,
-                    lastVoteReward: rewardData.userRewards.lastVoteReward
-                });
-                
-                setRewardToken({
-                    rewardRatePerTrade: rewardData.rewardToken.rewardRatePerTrade,
-                    rewardRatePerVote: rewardData.rewardToken.rewardRatePerVote,
-                    minTradeVolume: rewardData.rewardToken.minTradeVolume
-                });
-                
-                // Check cooldown status
-                if (isUserOnClaimCooldown(publicKey)) {
-                    setCooldownRemaining(getRemainingCooldown(publicKey));
-                } else {
-                    setCooldownRemaining(0);
-                }
-                
-            } catch (err) {
-                console.error('Failed to fetch reward data:', err);
-                setError(`Failed to load reward data: ${err.message}`);
-                
-                // Fallback to default values on error
-                setRewards({
-                    totalEarned: 0,
-                    totalClaimed: 0,
-                    unclaimedBalance: 0,
-                    tradingVolume: 0,
-                    governanceVotes: 0,
-                    lastTradeReward: null,
-                    lastVoteReward: null
-                });
-                setRewardToken({
-                    rewardRatePerTrade: 100,
-                    rewardRatePerVote: 50,
-                    minTradeVolume: 100000000 // 0.1 SOL in lamports
-                });
-            } finally {
-                setLoading(false);
+            setHasRewardsAccount(accountExists);
+            
+            setRewards({
+                totalEarned: rewardData.userRewards.totalEarned,
+                totalClaimed: rewardData.userRewards.totalClaimed,
+                unclaimedBalance: rewardData.userRewards.unclaimedBalance,
+                tradingVolume: rewardData.userRewards.tradingVolume,
+                governanceVotes: rewardData.userRewards.governanceVotes,
+                lastTradeReward: rewardData.userRewards.lastTradeReward,
+                lastVoteReward: rewardData.userRewards.lastVoteReward
+            });
+            
+            setRewardToken({
+                rewardRatePerTrade: rewardData.rewardToken.rewardRatePerTrade,
+                rewardRatePerVote: rewardData.rewardToken.rewardRatePerVote,
+                minTradeVolume: rewardData.rewardToken.minTradeVolume
+            });
+            
+            // Check cooldown status
+            if (isUserOnClaimCooldown(publicKey)) {
+                setCooldownRemaining(getRemainingCooldown(publicKey));
+            } else {
+                setCooldownRemaining(0);
+            }
+            
+            // Check failed claim cooldown status
+            if (isUserOnFailedClaimCooldown(publicKey)) {
+                setFailedClaimCooldownRemaining(getRemainingFailedClaimCooldown(publicKey));
+            } else {
+                setFailedClaimCooldownRemaining(0);
+            }
+            
+        } catch (err) {
+            console.error('Failed to fetch reward data:', err);
+            setError(`Failed to load reward data: ${err.message}`);
+            
+            // Fallback to default values on error
+            setRewards(DEFAULT_REWARD_DATA.userRewards);
+            setRewardToken(DEFAULT_REWARD_DATA.rewardToken);
+        } finally {
+            setLoading(false);
+        }
+    }, [connected, publicKey]);
+
+    // Fetch real data from blockchain with debouncing
+    useEffect(() => {
+        fetchData();
+        
+        // Clear cache when wallet changes
+        return () => {
+            if (publicKey) {
+                clearUserCache(publicKey);
             }
         };
-
-        fetchData();
-    }, [connected, publicKey]);
+    }, [fetchData]);
 
     // Update auto-claim configuration
     useEffect(() => {
@@ -122,30 +122,42 @@ const RewardDashboard = () => {
         }
     }, [autoClaimManager]);
 
-    // Update cooldown countdown
+    // Update cooldown countdown for both success and failed claim cooldowns
     useEffect(() => {
-        if (cooldownRemaining > 0) {
+        if (cooldownRemaining > 0 || failedClaimCooldownRemaining > 0) {
             const interval = setInterval(() => {
-                const remaining = publicKey ? getRemainingCooldown(publicKey) : 0;
-                setCooldownRemaining(remaining);
-                
-                if (remaining <= 0) {
-                    clearInterval(interval);
+                if (publicKey) {
+                    const successRemaining = getRemainingCooldown(publicKey);
+                    const failedRemaining = getRemainingFailedClaimCooldown(publicKey);
+                    
+                    setCooldownRemaining(successRemaining);
+                    setFailedClaimCooldownRemaining(failedRemaining);
+                    
+                    if (successRemaining <= 0 && failedRemaining <= 0) {
+                        clearInterval(interval);
+                    }
                 }
             }, 1000);
 
             return () => clearInterval(interval);
         }
-    }, [cooldownRemaining, publicKey]);
+    }, [cooldownRemaining, failedClaimCooldownRemaining, publicKey]);
 
     const handleClaimRewards = async () => {
         if (!connected || !wallet || rewards.unclaimedBalance === 0) return;
         
-        // Check cooldown
+        // Check both types of cooldowns
         if (isUserOnClaimCooldown(publicKey)) {
             const remaining = getRemainingCooldown(publicKey);
             const remainingSeconds = Math.ceil(remaining / 1000);
             setClaimError(`Claim cooldown active. Please wait ${remainingSeconds} seconds before claiming again.`);
+            return;
+        }
+        
+        if (isUserOnFailedClaimCooldown(publicKey)) {
+            const remaining = getRemainingFailedClaimCooldown(publicKey);
+            const remainingSeconds = Math.ceil(remaining / 1000);
+            setClaimError(`Too many failed attempts. Please wait ${remainingSeconds} seconds before trying again.`);
             return;
         }
         
@@ -162,7 +174,7 @@ const RewardDashboard = () => {
                     );
                     setHasRewardsAccount(true);
                 } catch (accountError) {
-                    throw new Error(`Failed to create rewards account: ${accountError.message}`);
+                    throw new Error(`${UI_CONFIG.ERROR_MESSAGES.ACCOUNT_CREATION_FAILED}: ${accountError.message}`);
                 }
             }
 
@@ -184,11 +196,15 @@ const RewardDashboard = () => {
                 unclaimedBalance: 0
             }));
             
-            // Update cooldown status
+            // Update cooldown status (success cooldowns are set in the claimRewards function)
             setCooldownRemaining(getRemainingCooldown(publicKey));
+            setFailedClaimCooldownRemaining(0); // Clear failed claim cooldown on success
             
             // Reset retry count on success
             setRetryCount(0);
+            
+            // Refresh data immediately after successful claim
+            fetchData(true);
             
             // Show success notification
             console.log('Rewards claimed successfully!');
@@ -196,15 +212,18 @@ const RewardDashboard = () => {
             console.error('Failed to claim rewards:', error);
             setRetryCount(prev => prev + 1);
             
+            // Check if failed claim cooldown was set
+            setFailedClaimCooldownRemaining(getRemainingFailedClaimCooldown(publicKey));
+            
             // Provide user-friendly error messages
-            let errorMessage = error.message || 'Failed to claim rewards. Please try again.';
+            let errorMessage = error.message || UI_CONFIG.ERROR_MESSAGES.CLAIM_FAILED;
             
             if (error.message?.includes('User rejected')) {
-                errorMessage = 'Transaction was cancelled by user.';
+                errorMessage = UI_CONFIG.ERROR_MESSAGES.USER_REJECTED;
             } else if (error.message?.includes('Insufficient')) {
-                errorMessage = 'Insufficient SOL for transaction fees. Please ensure you have enough SOL in your wallet.';
+                errorMessage = UI_CONFIG.ERROR_MESSAGES.INSUFFICIENT_FUNDS;
             } else if (error.message?.includes('Network')) {
-                errorMessage = 'Network error. Please check your connection and try again.';
+                errorMessage = UI_CONFIG.ERROR_MESSAGES.NETWORK_ERROR;
             } else if (error.message?.includes('cooldown')) {
                 errorMessage = error.message; // Use the cooldown message as-is
             } else if (retryCount >= 2) {
@@ -226,36 +245,50 @@ const RewardDashboard = () => {
     };
 
     const handleAutoClaimThresholdChange = (newThreshold) => {
+        // Validate threshold within allowed range
+        const validatedThreshold = Math.max(
+            AUTO_CLAIM_CONFIG.MIN_THRESHOLD,
+            Math.min(AUTO_CLAIM_CONFIG.MAX_THRESHOLD, newThreshold)
+        );
+        
         if (autoClaimManager) {
-            autoClaimManager.updateConfig({ autoClaimThreshold: newThreshold });
-            setAutoClaimConfig(prev => ({ ...prev, autoClaimThreshold: newThreshold }));
+            autoClaimManager.updateConfig({ autoClaimThreshold: validatedThreshold });
+            setAutoClaimConfig(prev => ({ ...prev, autoClaimThreshold: validatedThreshold }));
         }
     };
 
     const triggerManualAutoClaimCheck = async () => {
         if (autoClaimManager && autoClaimEnabled) {
             try {
+                setClaimLoading(true);
                 await autoClaimManager.triggerCheck();
                 console.log('Manual auto-claim check triggered');
+                
+                // Refresh data after auto-claim check
+                await fetchData(true);
             } catch (error) {
                 console.error('Failed to trigger auto-claim check:', error);
-                setClaimError(`Auto-claim check failed: ${error.message}`);
+                setClaimError(`${UI_CONFIG.ERROR_MESSAGES.AUTO_CLAIM_FAILED}: ${error.message}`);
+            } finally {
+                setClaimLoading(false);
             }
         }
     };
 
     const progressToNextReward = () => {
-        // Convert lamports to SOL for display (1 SOL = 1e9 lamports)
-        const LAMPORTS_PER_SOL = 1000000000;
-        const tradingVolumeSOL = rewards.tradingVolume / LAMPORTS_PER_SOL;
-        const minTradeVolumeSOL = rewardToken.minTradeVolume / LAMPORTS_PER_SOL;
+        // Use centralized conversion helpers
+        const tradingVolumeSOL = CONVERSION_HELPERS.lamportsToSol(rewards.tradingVolume);
+        const minTradeVolumeSOL = CONVERSION_HELPERS.lamportsToSol(rewardToken.minTradeVolume);
         
         // Calculate progress toward next reward threshold
         const nextThreshold = Math.ceil(tradingVolumeSOL / minTradeVolumeSOL) * minTradeVolumeSOL;
         const currentProgress = tradingVolumeSOL % minTradeVolumeSOL;
         const progress = (currentProgress / minTradeVolumeSOL) * 100;
         
-        return { nextThreshold, progress: Math.max(0, Math.min(100, progress)) };
+        return { 
+            nextThreshold, 
+            progress: parseFloat(CONVERSION_HELPERS.formatProgress(progress))
+        };
     };
 
     if (!connected) {
@@ -343,24 +376,27 @@ const RewardDashboard = () => {
                     <div className="balance-stats">
                         <div className="stat-item">
                             <span className="stat-label">Unclaimed Balance</span>
-                            <span className="stat-value primary">{rewards.unclaimedBalance} tokens</span>
+                            <span className="stat-value primary">{CONVERSION_HELPERS.formatTokens(rewards.unclaimedBalance)} tokens</span>
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Total Earned</span>
-                            <span className="stat-value">{rewards.totalEarned} tokens</span>
+                            <span className="stat-value">{CONVERSION_HELPERS.formatTokens(rewards.totalEarned)} tokens</span>
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Total Claimed</span>
-                            <span className="stat-value">{rewards.totalClaimed} tokens</span>
+                            <span className="stat-value">{CONVERSION_HELPERS.formatTokens(rewards.totalClaimed)} tokens</span>
                         </div>
                     </div>
 
                     <button 
                         className={`claim-button ${rewards.unclaimedBalance === 0 ? 'disabled' : ''}`}
                         onClick={handleClaimRewards}
-                        disabled={rewards.unclaimedBalance === 0 || claimLoading}
+                        disabled={rewards.unclaimedBalance === 0 || claimLoading || cooldownRemaining > 0 || failedClaimCooldownRemaining > 0}
                     >
-                        {claimLoading ? 'Claiming...' : `Claim ${rewards.unclaimedBalance} Tokens`}
+                        {claimLoading ? 
+                            UI_CONFIG.LOADING_MESSAGES.CLAIMING_REWARDS : 
+                            `Claim ${CONVERSION_HELPERS.formatTokens(rewards.unclaimedBalance)} Tokens`
+                        }
                     </button>
                 </div>
 
@@ -374,7 +410,7 @@ const RewardDashboard = () => {
                     <div className="activity-stats">
                         <div className="stat-row">
                             <span className="stat-label">Trading Volume</span>
-                            <span className="stat-value">{(rewards.tradingVolume / 1000000000).toFixed(2)} SOL</span>
+                            <span className="stat-value">{CONVERSION_HELPERS.formatSol(rewards.tradingVolume)} SOL</span>
                         </div>
                         <div className="stat-row">
                             <span className="stat-label">Governance Votes</span>
@@ -383,19 +419,13 @@ const RewardDashboard = () => {
                         <div className="stat-row">
                             <span className="stat-label">Last Trade Reward</span>
                             <span className="stat-value">
-                                {rewards.lastTradeReward ? 
-                                    rewards.lastTradeReward.toLocaleDateString() : 
-                                    'Never'
-                                }
+                                {CONVERSION_HELPERS.formatDate(rewards.lastTradeReward)}
                             </span>
                         </div>
                         <div className="stat-row">
                             <span className="stat-label">Last Vote Reward</span>
                             <span className="stat-value">
-                                {rewards.lastVoteReward ? 
-                                    rewards.lastVoteReward.toLocaleDateString() : 
-                                    'Never'
-                                }
+                                {CONVERSION_HELPERS.formatDate(rewards.lastVoteReward)}
                             </span>
                         </div>
                     </div>
@@ -416,10 +446,10 @@ const RewardDashboard = () => {
                             ></div>
                         </div>
                         <p className="progress-text">
-                            {progress.toFixed(1)}% to next {rewardToken.rewardRatePerTrade} token reward
+                            {progress.toFixed(UI_CONFIG.PROGRESS_BAR_PRECISION)}% to next {CONVERSION_HELPERS.formatTokens(rewardToken.rewardRatePerTrade)} token reward
                         </p>
                         <p className="progress-hint">
-                            Complete trades worth {(rewardToken.minTradeVolume / 1000000000).toFixed(1)}+ SOL to earn rewards
+                            Complete trades worth {CONVERSION_HELPERS.formatSol(rewardToken.minTradeVolume)}+ SOL to earn rewards
                         </p>
                     </div>
                 </div>
@@ -434,15 +464,15 @@ const RewardDashboard = () => {
                     <div className="rates-content">
                         <div className="rate-item">
                             <span className="rate-label">Per Trade</span>
-                            <span className="rate-value">{rewardToken.rewardRatePerTrade} tokens</span>
+                            <span className="rate-value">{CONVERSION_HELPERS.formatTokens(rewardToken.rewardRatePerTrade)} tokens</span>
                         </div>
                         <div className="rate-item">
                             <span className="rate-label">Per Vote</span>
-                            <span className="rate-value">{rewardToken.rewardRatePerVote} tokens</span>
+                            <span className="rate-value">{CONVERSION_HELPERS.formatTokens(rewardToken.rewardRatePerVote)} tokens</span>
                         </div>
                         <div className="rate-item">
                             <span className="rate-label">Min Trade Volume</span>
-                            <span className="rate-value">{(rewardToken.minTradeVolume / 1000000000).toFixed(1)} SOL</span>
+                            <span className="rate-value">{CONVERSION_HELPERS.formatSol(rewardToken.minTradeVolume)} SOL</span>
                         </div>
                     </div>
                 </div>
@@ -474,11 +504,11 @@ const RewardDashboard = () => {
                                     <div className="threshold-input">
                                         <input
                                             type="number"
-                                            value={autoClaimConfig.autoClaimThreshold || 1000}
+                                            value={autoClaimConfig.autoClaimThreshold || AUTO_CLAIM_CONFIG.DEFAULT_THRESHOLD}
                                             onChange={(e) => handleAutoClaimThresholdChange(parseInt(e.target.value))}
-                                            min="100"
-                                            max="10000"
-                                            step="100"
+                                            min={AUTO_CLAIM_CONFIG.MIN_THRESHOLD}
+                                            max={AUTO_CLAIM_CONFIG.MAX_THRESHOLD}
+                                            step={AUTO_CLAIM_CONFIG.THRESHOLD_STEP}
                                         />
                                         <span className="input-suffix">tokens</span>
                                     </div>
@@ -491,30 +521,61 @@ const RewardDashboard = () => {
                                     </span>
                                 </div>
                                 
+                                {/* Enhanced Auto-Claim Progress Indicator */}
+                                <div className="setting-row">
+                                    <span className="setting-label">Progress to Auto-Claim</span>
+                                    <div className="auto-claim-progress">
+                                        <div className="progress-bar-small">
+                                            <div 
+                                                className="progress-fill-small"
+                                                style={{ 
+                                                    width: `${Math.min(100, (rewards.unclaimedBalance / (autoClaimConfig.autoClaimThreshold || AUTO_CLAIM_CONFIG.DEFAULT_THRESHOLD)) * 100)}%` 
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <span className="progress-text-small">
+                                            {CONVERSION_HELPERS.formatTokens(rewards.unclaimedBalance)} / {CONVERSION_HELPERS.formatTokens(autoClaimConfig.autoClaimThreshold || AUTO_CLAIM_CONFIG.DEFAULT_THRESHOLD)}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                {/* Auto-Claim Strategy Hint */}
+                                <div className="auto-claim-hint">
+                                    <span className="hint-icon">💡</span>
+                                    <span className="hint-text">
+                                        {rewards.unclaimedBalance >= (autoClaimConfig.autoClaimThreshold || AUTO_CLAIM_CONFIG.DEFAULT_THRESHOLD)
+                                            ? "Ready for auto-claim! Check will trigger soon."
+                                            : `Earn ${CONVERSION_HELPERS.formatTokens((autoClaimConfig.autoClaimThreshold || AUTO_CLAIM_CONFIG.DEFAULT_THRESHOLD) - rewards.unclaimedBalance)} more tokens for auto-claim.`
+                                        }
+                                    </span>
+                                </div>
+                                
                                 <button 
                                     className="manual-check-button"
                                     onClick={triggerManualAutoClaimCheck}
                                     disabled={!autoClaimEnabled || claimLoading}
                                 >
-                                    {claimLoading ? 'Checking...' : 'Check Now'}
+                                    {claimLoading ? UI_CONFIG.LOADING_MESSAGES.CHECKING_AUTOCLAIM : 'Check Now'}
                                 </button>
                             </>
                         )}
                     </div>
                 </div>
 
-                {/* Cooldown Status Card */}
-                {cooldownRemaining > 0 && (
+                {/* Enhanced Cooldown Status Card */}
+                {(cooldownRemaining > 0 || failedClaimCooldownRemaining > 0) && (
                     <div className="reward-card cooldown-card">
                         <div className="card-header">
-                            <h3 className="text-lg font-semibold">Claim Cooldown</h3>
+                            <h3 className="text-lg font-semibold">
+                                {failedClaimCooldownRemaining > 0 ? 'Failed Claim Cooldown' : 'Claim Cooldown'}
+                            </h3>
                             <div className="reward-icon">⏰</div>
                         </div>
                         
                         <div className="cooldown-content">
                             <div className="cooldown-timer">
                                 <span className="timer-value">
-                                    {Math.ceil(cooldownRemaining / 1000)}
+                                    {Math.ceil((failedClaimCooldownRemaining || cooldownRemaining) / 1000)}
                                 </span>
                                 <span className="timer-label">seconds remaining</span>
                             </div>
@@ -522,12 +583,17 @@ const RewardDashboard = () => {
                                 <div 
                                     className="cooldown-fill"
                                     style={{ 
-                                        width: `${((60000 - cooldownRemaining) / 60000) * 100}%` 
+                                        width: failedClaimCooldownRemaining > 0 
+                                            ? `${((30000 - failedClaimCooldownRemaining) / 30000) * 100}%`
+                                            : `${((60000 - cooldownRemaining) / 60000) * 100}%`
                                     }}
                                 ></div>
                             </div>
                             <p className="cooldown-hint">
-                                Claims are rate-limited to prevent spam and ensure network stability.
+                                {failedClaimCooldownRemaining > 0 
+                                    ? "Multiple failed attempts detected. Please wait before trying again."
+                                    : "Claims are rate-limited to prevent spam and ensure network stability."
+                                }
                             </p>
                         </div>
                     </div>
@@ -681,6 +747,54 @@ const RewardDashboard = () => {
                     cursor: not-allowed;
                 }
 
+                /* Auto-Claim Progress Styles */
+                .auto-claim-progress {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    align-items: flex-end;
+                }
+
+                .progress-bar-small {
+                    width: 120px;
+                    height: 4px;
+                    background: #e5e7eb;
+                    border-radius: 2px;
+                    overflow: hidden;
+                }
+
+                .progress-fill-small {
+                    height: 100%;
+                    background: linear-gradient(90deg, #7c3aed, #a855f7);
+                    transition: width 0.3s ease;
+                }
+
+                .progress-text-small {
+                    font-size: 11px;
+                    color: #6b7280;
+                    font-weight: 500;
+                }
+
+                .auto-claim-hint {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px;
+                    background: #f9fafb;
+                    border-radius: 6px;
+                    border: 1px solid #e5e7eb;
+                }
+
+                .hint-icon {
+                    font-size: 16px;
+                }
+
+                .hint-text {
+                    font-size: 12px;
+                    color: #374151;
+                    line-height: 1.4;
+                }
+
                 /* Cooldown Styles */
                 .cooldown-content {
                     text-align: center;
@@ -726,6 +840,19 @@ const RewardDashboard = () => {
                 .cooldown-card {
                     border-color: #fecaca;
                     background: #fef2f2;
+                }
+                
+                .cooldown-card:has(.card-header h3:contains("Failed")) {
+                    border-color: #fed7d7;
+                    background: #fff5f5;
+                }
+                
+                .cooldown-card .cooldown-fill {
+                    background: linear-gradient(90deg, #dc2626, #f97316);
+                }
+                
+                .cooldown-card:has(.card-header h3:contains("Failed")) .cooldown-fill {
+                    background: linear-gradient(90deg, #b91c1c, #dc2626);
                 }
 
                 .balance-stats {

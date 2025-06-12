@@ -6,6 +6,8 @@
  * Enhanced with cooldown logic and jitter-based retry mechanisms.
  */
 
+import { PROGRAM_CONFIG, COOLDOWN_CONFIG, UI_CONFIG } from '../constants/rewardConstants';
+
 // Conditional imports to handle test environment
 let web3, PublicKey, Transaction, SystemProgram, Connection;
 let getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, TOKEN_PROGRAM_ID;
@@ -30,25 +32,27 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
 }
 
 // Program ID - should match the deployed program
-const PROGRAM_ID_STRING = 'FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9';
+const PROGRAM_ID_STRING = PROGRAM_CONFIG.PROGRAM_ID;
 
 // PDA seeds
-const REWARD_TOKEN_SEED = 'reward_token';
-const USER_REWARDS_SEED = 'user_rewards';
-const REWARD_MINT_SEED = 'reward_mint';
+const REWARD_TOKEN_SEED = PROGRAM_CONFIG.PDA_SEEDS.REWARD_TOKEN;
+const USER_REWARDS_SEED = PROGRAM_CONFIG.PDA_SEEDS.USER_REWARDS;
+const REWARD_MINT_SEED = PROGRAM_CONFIG.PDA_SEEDS.REWARD_MINT;
 
-// Cooldown and retry configuration
-const COOLDOWN_CONFIG = {
-  claimCooldown: 60000, // 1 minute between claims
-  maxRetries: 5,
-  baseRetryDelay: 1000, // 1 second
-  maxRetryDelay: 30000, // 30 seconds
-  jitterFactor: 0.3, // 30% jitter
-  backoffMultiplier: 2,
+// Enhanced cooldown and retry configuration
+const ENHANCED_COOLDOWN_CONFIG = {
+  claimCooldown: COOLDOWN_CONFIG.CLAIM_COOLDOWN,
+  failedClaimCooldown: COOLDOWN_CONFIG.FAILED_CLAIM_COOLDOWN, // New: cooldown for failed attempts
+  maxRetries: COOLDOWN_CONFIG.MAX_RETRIES,
+  baseRetryDelay: COOLDOWN_CONFIG.BASE_RETRY_DELAY,
+  maxRetryDelay: COOLDOWN_CONFIG.MAX_RETRY_DELAY,
+  jitterFactor: COOLDOWN_CONFIG.JITTER_FACTOR,
+  backoffMultiplier: COOLDOWN_CONFIG.BACKOFF_MULTIPLIER,
 };
 
-// In-memory cooldown tracking (you might want to persist this)
+// Enhanced cooldown tracking
 const claimCooldowns = new Map(); // userKey -> timestamp
+const failedClaimCooldowns = new Map(); // userKey -> { timestamp, attemptCount }
 
 /**
  * Enhanced retry logic with exponential backoff and jitter
@@ -58,7 +62,7 @@ const claimCooldowns = new Map(); // userKey -> timestamp
  * @param {number} jitterFactor - Jitter factor (0-1)
  * @returns {Promise} Result of the operation
  */
-const retryWithJitter = async (operation, maxRetries = COOLDOWN_CONFIG.maxRetries, baseDelay = COOLDOWN_CONFIG.baseRetryDelay, jitterFactor = COOLDOWN_CONFIG.jitterFactor) => {
+const retryWithJitter = async (operation, maxRetries = ENHANCED_COOLDOWN_CONFIG.maxRetries, baseDelay = ENHANCED_COOLDOWN_CONFIG.baseRetryDelay, jitterFactor = ENHANCED_COOLDOWN_CONFIG.jitterFactor) => {
   let lastError;
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -75,8 +79,8 @@ const retryWithJitter = async (operation, maxRetries = COOLDOWN_CONFIG.maxRetrie
       }
       
       // Calculate delay with exponential backoff and jitter
-      const exponentialDelay = baseDelay * Math.pow(COOLDOWN_CONFIG.backoffMultiplier, attempt);
-      const maxDelay = Math.min(exponentialDelay, COOLDOWN_CONFIG.maxRetryDelay);
+      const exponentialDelay = baseDelay * Math.pow(ENHANCED_COOLDOWN_CONFIG.backoffMultiplier, attempt);
+      const maxDelay = Math.min(exponentialDelay, ENHANCED_COOLDOWN_CONFIG.maxRetryDelay);
       
       // Add jitter to prevent thundering herd
       const jitter = maxDelay * jitterFactor * (Math.random() - 0.5);
@@ -92,7 +96,7 @@ const retryWithJitter = async (operation, maxRetries = COOLDOWN_CONFIG.maxRetrie
 };
 
 /**
- * Check if user is on cooldown for claims
+ * Check if user is on cooldown for claims (successful claims)
  * @param {PublicKey} userPublicKey - User's public key
  * @returns {boolean} True if user is on cooldown
  */
@@ -103,11 +107,26 @@ export const isUserOnClaimCooldown = (userPublicKey) => {
   if (!lastClaim) return false;
   
   const timeSinceLastClaim = Date.now() - lastClaim;
-  return timeSinceLastClaim < COOLDOWN_CONFIG.claimCooldown;
+  return timeSinceLastClaim < ENHANCED_COOLDOWN_CONFIG.claimCooldown;
 };
 
 /**
- * Get remaining cooldown time for user
+ * Check if user is on cooldown for failed claims  
+ * @param {PublicKey} userPublicKey - User's public key
+ * @returns {boolean} True if user is on failed claim cooldown
+ */
+export const isUserOnFailedClaimCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  const failedClaim = failedClaimCooldowns.get(userKey);
+  
+  if (!failedClaim) return false;
+  
+  const timeSinceFailedClaim = Date.now() - failedClaim.timestamp;
+  return timeSinceFailedClaim < ENHANCED_COOLDOWN_CONFIG.failedClaimCooldown;
+};
+
+/**
+ * Get remaining cooldown time for user (successful claims)
  * @param {PublicKey} userPublicKey - User's public key  
  * @returns {number} Remaining cooldown time in milliseconds (0 if no cooldown)
  */
@@ -118,18 +137,53 @@ export const getRemainingCooldown = (userPublicKey) => {
   if (!lastClaim) return 0;
   
   const timeSinceLastClaim = Date.now() - lastClaim;
-  const remaining = COOLDOWN_CONFIG.claimCooldown - timeSinceLastClaim;
+  const remaining = ENHANCED_COOLDOWN_CONFIG.claimCooldown - timeSinceLastClaim;
   
   return Math.max(0, remaining);
 };
 
 /**
- * Set claim cooldown for user
+ * Get remaining cooldown time for failed claims
+ * @param {PublicKey} userPublicKey - User's public key
+ * @returns {number} Remaining failed claim cooldown time in milliseconds (0 if no cooldown)
+ */
+export const getRemainingFailedClaimCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  const failedClaim = failedClaimCooldowns.get(userKey);
+  
+  if (!failedClaim) return 0;
+  
+  const timeSinceFailedClaim = Date.now() - failedClaim.timestamp;
+  const remaining = ENHANCED_COOLDOWN_CONFIG.failedClaimCooldown - timeSinceFailedClaim;
+  
+  return Math.max(0, remaining);
+};
+
+/**
+ * Set claim cooldown for user (successful claim)
  * @param {PublicKey} userPublicKey - User's public key
  */
 const setClaimCooldown = (userPublicKey) => {
   const userKey = userPublicKey.toString();
   claimCooldowns.set(userKey, Date.now());
+  
+  // Clear failed claim cooldown on successful claim
+  failedClaimCooldowns.delete(userKey);
+};
+
+/**
+ * Set failed claim cooldown for user
+ * @param {PublicKey} userPublicKey - User's public key
+ */
+const setFailedClaimCooldown = (userPublicKey) => {
+  const userKey = userPublicKey.toString();
+  const existingFailure = failedClaimCooldowns.get(userKey);
+  const attemptCount = existingFailure ? existingFailure.attemptCount + 1 : 1;
+  
+  failedClaimCooldowns.set(userKey, {
+    timestamp: Date.now(),
+    attemptCount
+  });
 };
 
 /**
@@ -139,27 +193,34 @@ const setClaimCooldown = (userPublicKey) => {
 export const clearClaimCooldown = (userPublicKey) => {
   const userKey = userPublicKey.toString();
   claimCooldowns.delete(userKey);
+  failedClaimCooldowns.delete(userKey);
 };
 
 /**
- * Get cooldown statistics
+ * Get enhanced cooldown statistics
  * @returns {Object} Cooldown statistics
  */
 export const getCooldownStats = () => {
   const now = Date.now();
-  const activeUsers = Array.from(claimCooldowns.entries())
-    .filter(([_, timestamp]) => now - timestamp < COOLDOWN_CONFIG.claimCooldown);
+  const successCooldownUsers = Array.from(claimCooldowns.entries())
+    .filter(([_, timestamp]) => now - timestamp < ENHANCED_COOLDOWN_CONFIG.claimCooldown);
+  
+  const failedCooldownUsers = Array.from(failedClaimCooldowns.entries())
+    .filter(([_, data]) => now - data.timestamp < ENHANCED_COOLDOWN_CONFIG.failedClaimCooldown);
   
   return {
     totalTrackedUsers: claimCooldowns.size,
-    usersOnCooldown: activeUsers.length,
-    cooldownDuration: COOLDOWN_CONFIG.claimCooldown,
-    config: COOLDOWN_CONFIG
+    usersOnSuccessCooldown: successCooldownUsers.length,
+    usersOnFailedCooldown: failedCooldownUsers.length,
+    totalFailedAttempts: Array.from(failedClaimCooldowns.values()).reduce((sum, data) => sum + data.attemptCount, 0),
+    cooldownDuration: ENHANCED_COOLDOWN_CONFIG.claimCooldown,
+    failedClaimCooldown: ENHANCED_COOLDOWN_CONFIG.failedClaimCooldown,
+    config: ENHANCED_COOLDOWN_CONFIG
   };
 };
 
 /**
- * Claims accumulated rewards for a user with cooldown and retry logic
+ * Claims accumulated rewards for a user with enhanced cooldown and retry logic
  * @param {Object} wallet - Wallet adapter instance
  * @param {Connection} connection - Solana connection
  * @param {PublicKey} userPublicKey - User's public key
@@ -169,22 +230,30 @@ export const getCooldownStats = () => {
 export const claimRewards = async (wallet, connection, userPublicKey, options = {}) => {
   const { bypassCooldown = false, retryConfig = {} } = options;
   
-  // Check cooldown unless bypassed
+  // Check successful claim cooldown unless bypassed
   if (!bypassCooldown && isUserOnClaimCooldown(userPublicKey)) {
     const remaining = getRemainingCooldown(userPublicKey);
     const remainingSeconds = Math.ceil(remaining / 1000);
-    throw new Error(`Claim cooldown active. Please wait ${remainingSeconds} seconds before claiming again.`);
+    throw new Error(`${UI_CONFIG.ERROR_MESSAGES.CLAIM_FAILED} Please wait ${remainingSeconds} seconds before claiming again.`);
+  }
+  
+  // Check failed claim cooldown
+  if (!bypassCooldown && isUserOnFailedClaimCooldown(userPublicKey)) {
+    const remaining = getRemainingFailedClaimCooldown(userPublicKey);
+    const remainingSeconds = Math.ceil(remaining / 1000);
+    throw new Error(`Too many failed attempts. Please wait ${remainingSeconds} seconds before trying again.`);
   }
   
   if (!web3 || !PublicKey) {
-    // Mock implementation for test environment with cooldown
+    // Mock implementation for test environment with enhanced cooldown
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         // Simulate 10% chance of failure for demonstration
         if (Math.random() < 0.1) {
+          setFailedClaimCooldown(userPublicKey);
           reject(new Error('Simulated transaction failure: Network congestion'));
         } else {
-          // Set cooldown for mock as well
+          // Set cooldown for successful mock claim
           setClaimCooldown(userPublicKey);
           resolve('mock_transaction_signature_' + Date.now());
         }
@@ -252,15 +321,23 @@ export const claimRewards = async (wallet, connection, userPublicKey, options = 
     return signature;
   };
 
-  // Apply retry logic with custom config if provided
-  const finalRetryConfig = { ...COOLDOWN_CONFIG, ...retryConfig };
-  
-  return retryWithJitter(
-    operation,
-    finalRetryConfig.maxRetries,
-    finalRetryConfig.baseRetryDelay,
-    finalRetryConfig.jitterFactor
-  );
+  try {
+    // Apply retry logic with custom config if provided
+    const finalRetryConfig = { ...ENHANCED_COOLDOWN_CONFIG, ...retryConfig };
+    
+    return await retryWithJitter(
+      operation,
+      finalRetryConfig.maxRetries,
+      finalRetryConfig.baseRetryDelay,
+      finalRetryConfig.jitterFactor
+    );
+  } catch (error) {
+    // Set failed claim cooldown on failure (unless it's a user rejection)
+    if (!error.message?.includes('User rejected')) {
+      setFailedClaimCooldown(userPublicKey);
+    }
+    throw error;
+  }
 };
 
 /**
@@ -316,7 +393,7 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
   };
 
   // Apply retry logic
-  const finalRetryConfig = { ...COOLDOWN_CONFIG, ...retryConfig };
+  const finalRetryConfig = { ...ENHANCED_COOLDOWN_CONFIG, ...retryConfig };
   
   return retryWithJitter(
     operation,
@@ -324,6 +401,8 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
     finalRetryConfig.baseRetryDelay,
     finalRetryConfig.jitterFactor
   );
+};
+
 /**
  * Checks if the user has an existing rewards account with retry logic
  * @param {Connection} connection - Solana connection
@@ -354,7 +433,7 @@ export const hasUserRewardsAccount = async (connection, userPublicKey, options =
   try {
     // Apply retry logic with reduced retries for read operations
     const finalRetryConfig = { 
-      ...COOLDOWN_CONFIG, 
+      ...ENHANCED_COOLDOWN_CONFIG, 
       maxRetries: 2, // Fewer retries for read operations
       ...retryConfig 
     };
@@ -386,7 +465,7 @@ export const retryTransaction = async (transactionFn, maxRetries = 3, delayMs = 
     transactionFn, 
     maxRetries, 
     delayMs, 
-    COOLDOWN_CONFIG.jitterFactor
+    ENHANCED_COOLDOWN_CONFIG.jitterFactor
   );
 };
 
@@ -395,22 +474,22 @@ export const retryTransaction = async (transactionFn, maxRetries = 3, delayMs = 
  * @returns {Object} Available retry configuration options
  */
 export const getRetryConfigOptions = () => ({
-  default: COOLDOWN_CONFIG,
+  default: ENHANCED_COOLDOWN_CONFIG,
   fast: {
-    ...COOLDOWN_CONFIG,
+    ...ENHANCED_COOLDOWN_CONFIG,
     maxRetries: 2,
     baseRetryDelay: 500,
     maxRetryDelay: 5000,
   },
   robust: {
-    ...COOLDOWN_CONFIG,
+    ...ENHANCED_COOLDOWN_CONFIG,
     maxRetries: 8,
     baseRetryDelay: 2000,
     maxRetryDelay: 60000,
     jitterFactor: 0.5,
   },
   readOnly: {
-    ...COOLDOWN_CONFIG,
+    ...ENHANCED_COOLDOWN_CONFIG,
     maxRetries: 2,
     baseRetryDelay: 200,
     maxRetryDelay: 2000,
@@ -423,6 +502,6 @@ export const getRetryConfigOptions = () => ({
  * @param {Object} newConfig - New cooldown configuration
  */
 export const updateCooldownConfig = (newConfig) => {
-  Object.assign(COOLDOWN_CONFIG, newConfig);
-  console.log('Cooldown configuration updated:', COOLDOWN_CONFIG);
+  Object.assign(ENHANCED_COOLDOWN_CONFIG, newConfig);
+  console.log('Cooldown configuration updated:', ENHANCED_COOLDOWN_CONFIG);
 };
