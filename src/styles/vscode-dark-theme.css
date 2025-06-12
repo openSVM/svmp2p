@@ -1,0 +1,356 @@
+/* 
+ * HIGH-CONTRAST DARK THEME (VSCode inspired)
+ * Provides excellent contrast ratios and accessibility
+ */
+
+/* ===== DARK THEME COLOR PALETTE ===== */
+:root.dark {
+  /* VSCode Dark+ theme inspired colors */
+  --color-background: #1e1e1e;           /* VSCode editor background */
+  --color-background-alt: #252526;       /* VSCode sidebar background */
+  --color-background-tertiary: #2d2d30;  /* VSCode tab background */
+  --color-foreground: #d4d4d4;           /* VSCode editor text */
+  --color-foreground-muted: #969696;     /* VSCode comment text */
+  --color-foreground-bright: #ffffff;    /* VSCode keyword text */
+  
+  /* Border and structure colors */
+  --color-border: #3e3e42;               /* VSCode border color */
+  --color-border-hover: #007acc;         /* VSCode focus border */
+  --color-border-active: #0078d4;        /* VSCode active border */
+  
+  /* Primary colors (blue theme from VSCode) */
+  --color-primary: #007acc;              /* VSCode link color */
+  --color-primary-dark: #005a9e;         /* VSCode link hover */
+  --color-primary-light: #0098ff;        /* VSCode selection background */
+  
+  /* Secondary colors */
+  --color-secondary: #6e6e6e;            /* VSCode disabled text */
+  --color-accent: #f9f871;               /* VSCode warning color */
+  
+  /* Status colors with high contrast */
+  --color-success: #73c991;              /* VSCode green */
+  --color-success-light: #2d5016;        /* VSCode green background */
+  --color-warning: #ffcc02;              /* VSCode yellow */
+  --color-warning-light: #332b00;        /* VSCode yellow background */
+  --color-error: #f14c4c;                /* VSCode red */
+  --color-error-light: #5a1d1d;          /* VSCode red background */
+  --color-info: #3794ff;                 /* VSCode blue info */
+  --color-info-light: #1e3a8a;           /* VSCode blue background */
+  
+  /* Card and component backgrounds */
+  --color-card: #252526;                 /* Card background */
+  --color-card-header: #2d2d30;          /* Card header background */
+  --color-card-hover: #2a2d2e;           /* Card hover background */
+  
+  /* Input and form colors */
+  --color-input-background: #3c3c3c;     /* VSCode input background */
+  --color-input-border: #3e3e42;         /* VSCode input border */
+  --color-input-focus: #007acc;          /* VSCode input focus */
+  
+  /* Button colors */
+  --color-button-primary: #0e639c;       /* VSCode primary button */
+  --color-button-primary-hover: #1177bb; /* VSCode primary button hover */
+  --color-button-secondary: #5f6a79;     /* VSCode secondary button */
+  --color-button-secondary-hover: #687080; /* VSCode secondary button hover */
+  
+  /* Shadows for dark theme */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  
+  /* Update ASCII theme colors for dark mode */
+  --ascii-white: #1e1e1e;
+  --ascii-black: #ffffff;
+  --ascii-neutral-50: #1e1e1e;           /* Darkest background */
+  --ascii-neutral-100: #252526;          /* Dark background */
+  --ascii-neutral-200: #2d2d30;          /* Slightly lighter background */
+  --ascii-neutral-300: #3e3e42;          /* Border color */
+  --ascii-neutral-400: #5a5a5a;          /* Medium border */
+  --ascii-neutral-500: #6e6e6e;          /* Muted text */
+  --ascii-neutral-600: #969696;          /* Secondary text */
+  --ascii-neutral-700: #c5c5c5;          /* Primary text light */
+  --ascii-neutral-800: #d4d4d4;          /* Primary text */
+  --ascii-neutral-900: #ffffff;          /* Brightest text */
+}
+
+/* ===== DARK THEME COMPONENT OVERRIDES ===== */
+.dark {
+  /* Global text color */
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+}
+
+/* Header styling for dark theme */
+.dark .app-header {
+  background-color: var(--color-background-alt) !important;
+  border-bottom-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark .header-content {
+  background-color: transparent !important;
+}
+
+/* Logo styling for dark theme */
+.dark .logo-text {
+  color: var(--color-foreground-bright) !important;
+}
+
+/* Navigation styling for dark theme */
+.dark .nav-tab {
+  background-color: transparent !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .nav-tab:hover {
+  background-color: var(--color-background-tertiary) !important;
+  border-color: var(--color-border-hover) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark .nav-tab.active {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-foreground-bright) !important;
+}
+
+/* Button styling for dark theme */
+.dark button,
+.dark .btn {
+  background-color: var(--color-input-background) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark button:hover,
+.dark .btn:hover {
+  background-color: var(--color-background-tertiary) !important;
+  border-color: var(--color-border-hover) !important;
+}
+
+.dark button.primary,
+.dark .btn.primary {
+  background-color: var(--color-button-primary) !important;
+  border-color: var(--color-button-primary) !important;
+  color: var(--color-foreground-bright) !important;
+}
+
+.dark button.primary:hover,
+.dark .btn.primary:hover {
+  background-color: var(--color-button-primary-hover) !important;
+  border-color: var(--color-button-primary-hover) !important;
+}
+
+/* Input styling for dark theme */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--color-input-background) !important;
+  border-color: var(--color-input-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: var(--color-input-focus) !important;
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.3) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-foreground-muted) !important;
+}
+
+/* Card styling for dark theme */
+.dark .offer-card,
+.dark .card {
+  background-color: var(--color-card) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark .offer-card:hover,
+.dark .card:hover {
+  background-color: var(--color-card-hover) !important;
+  border-color: var(--color-border-hover) !important;
+}
+
+.dark .offer-card-header,
+.dark .card-header {
+  background-color: var(--color-card-header) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Dropdown styling for dark theme */
+.dark .network-selector-dropdown,
+.dark .language-dropdown,
+.dark .dropdown,
+.dark [role="listbox"] {
+  background-color: var(--color-card) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.dark .network-option,
+.dark .language-option,
+.dark .dropdown-item {
+  color: var(--color-foreground) !important;
+}
+
+.dark .network-option:hover,
+.dark .language-option:hover,
+.dark .dropdown-item:hover {
+  background-color: var(--color-background-tertiary) !important;
+  color: var(--color-foreground-bright) !important;
+}
+
+.dark .network-option.active,
+.dark .language-option.active,
+.dark .dropdown-item.active {
+  background-color: var(--color-primary) !important;
+  color: var(--color-foreground-bright) !important;
+}
+
+/* Theme toggle styling for dark theme */
+.dark .theme-toggle {
+  background-color: var(--color-input-background) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark .theme-toggle:hover {
+  background-color: var(--color-background-tertiary) !important;
+  border-color: var(--color-border-hover) !important;
+}
+
+.dark .theme-icon {
+  background-color: var(--color-primary) !important;
+  color: var(--color-foreground-bright) !important;
+}
+
+/* Control button styling for dark theme */
+.dark .network-selector-button,
+.dark .language-trigger {
+  background-color: var(--color-input-background) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.dark .network-selector-button:hover,
+.dark .language-trigger:hover {
+  background-color: var(--color-background-tertiary) !important;
+  border-color: var(--color-border-hover) !important;
+}
+
+/* Main content styling for dark theme */
+.dark .app-main {
+  background-color: var(--color-background) !important;
+  color: var(--color-foreground) !important;
+}
+
+/* Footer styling for dark theme */
+.dark .app-footer {
+  background-color: var(--color-background-alt) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground-muted) !important;
+}
+
+/* Status colors for dark theme */
+.dark .status-success {
+  background-color: var(--color-success-light) !important;
+  color: var(--color-success) !important;
+}
+
+.dark .status-warning {
+  background-color: var(--color-warning-light) !important;
+  color: var(--color-warning) !important;
+}
+
+.dark .status-error {
+  background-color: var(--color-error-light) !important;
+  color: var(--color-error) !important;
+}
+
+.dark .status-info {
+  background-color: var(--color-info-light) !important;
+  color: var(--color-info) !important;
+}
+
+/* Link styling for dark theme */
+.dark a {
+  color: var(--color-primary-light) !important;
+}
+
+.dark a:hover {
+  color: var(--color-foreground-bright) !important;
+}
+
+/* Wallet adapter styling for dark theme */
+.dark .wallet-adapter-button {
+  background-color: var(--color-button-primary) !important;
+  color: var(--color-foreground-bright) !important;
+  border-color: var(--color-button-primary) !important;
+}
+
+.dark .wallet-adapter-button:hover {
+  background-color: var(--color-button-primary-hover) !important;
+  border-color: var(--color-button-primary-hover) !important;
+}
+
+.dark .wallet-adapter-dropdown-list {
+  background-color: var(--color-card) !important;
+  border-color: var(--color-border) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.dark .wallet-adapter-dropdown-list-item {
+  color: var(--color-foreground) !important;
+}
+
+.dark .wallet-adapter-dropdown-list-item:hover {
+  background-color: var(--color-background-tertiary) !important;
+  color: var(--color-foreground-bright) !important;
+}
+
+/* Muted text styling for dark theme */
+.dark .text-foreground-muted {
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .text-muted {
+  color: var(--color-foreground-muted) !important;
+}
+
+/* Border utilities for dark theme */
+.dark .border {
+  border-color: var(--color-border) !important;
+}
+
+.dark .border-hover:hover {
+  border-color: var(--color-border-hover) !important;
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+  .dark {
+    --color-background: #000000;
+    --color-background-alt: #1a1a1a;
+    --color-foreground: #ffffff;
+    --color-foreground-muted: #cccccc;
+    --color-border: #666666;
+    --color-primary: #0099ff;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .dark * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

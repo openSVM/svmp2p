@@ -17,6 +17,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 
 // Import styles
 import '@solana/wallet-adapter-react-ui/styles.css';
+import './styles/guided-workflow.css';
 
 // Import components
 import { AppContext } from './AppContext';
@@ -25,6 +26,7 @@ import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
 import { DisputeResolution } from './components/DisputeResolution';
 import { UserProfile } from './components/UserProfile';
+import TradingGuidedWorkflow from './components/guided-workflow/TradingGuidedWorkflow';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Import wallet safety utilities
@@ -97,6 +99,8 @@ const AppContent = () => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
+  const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
+  const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -111,6 +115,17 @@ const AppContent = () => {
     networks: SVM_NETWORKS,
   }), [network, selectedNetwork, activeTab]);
   
+  // Handle starting guided workflow
+  const handleStartGuidedWorkflow = (type) => {
+    setGuidedWorkflowType(type);
+    setIsGuidedWorkflow(true);
+  };
+  
+  // Handle completing guided workflow
+  const handleCompleteGuidedWorkflow = () => {
+    setIsGuidedWorkflow(false);
+    setGuidedWorkflowType(null);
+  };
   // Initialize wallet conflict prevention
   useEffect(() => {
     initializeWalletConflictPrevention();
@@ -261,25 +276,109 @@ const AppContent = () => {
           </div>
         </header>
 
+        {/* Mobile Navigation - Visible only on mobile */}
+        <nav className="mobile-nav">
+          <div className="mobile-nav-buttons">
+            <button
+              className={`mobile-nav-btn ${activeTab === 'buy' ? 'active' : ''}`}
+              onClick={() => handleNavClick('buy')}
+            >
+              BUY
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'sell' ? 'active' : ''}`}
+              onClick={() => handleNavClick('sell')}
+            >
+              SELL
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'myoffers' ? 'active' : ''}`}
+              onClick={() => handleNavClick('myoffers')}
+            >
+              MY OFFERS
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'disputes' ? 'active' : ''}`}
+              onClick={() => handleNavClick('disputes')}
+            >
+              DISPUTES
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => handleNavClick('profile')}
+            >
+              PROFILE
+            </button>
+          </div>
+        </nav>
+
         <main className="app-main">
-          <div className="container content-container">
-            <ErrorBoundary>
-              <div key={activeTab} className="content-transition-wrapper fade-in">
-                {activeTab === 'buy' && <OfferList type="buy" />}
-                {activeTab === 'sell' && (
-                  <>
-                    <OfferCreation />
-                    <OfferList type="sell" />
-                  </>
-                )}
-                {activeTab === 'myoffers' && <OfferList type="my" />}
-                {activeTab === 'disputes' && <DisputeResolution />}
-                {activeTab === 'profile' && (
-                  <UserProfile wallet={wallet} network={network} />
-                )}
+          {isGuidedWorkflow ? (
+            <ErrorBoundary fallback={
+              <div className="guided-workflow-error">
+                <h2>Guided Workflow Error</h2>
+                <p>Something went wrong with the guided workflow. Please try again or use the manual interface.</p>
+                <button 
+                  className="error-recovery-button"
+                  onClick={handleCompleteGuidedWorkflow}
+                >
+                  Exit to Manual Interface
+                </button>
+              </div>
+            }>
+              <div 
+                className="guided-workflow-container"
+                role="region" 
+                aria-label="Guided trading workflow"
+                tabIndex="-1"
+                ref={(el) => {
+                  // Focus management: focus the container when workflow starts
+                  if (el && isGuidedWorkflow) {
+                    setTimeout(() => el.focus(), 100);
+                  }
+                }}
+              >
+                <div className="guided-workflow-header">
+                  <h2>{guidedWorkflowType === 'buy' ? 'Buy SOL' : 'Sell SOL'} - Guided Workflow</h2>
+                  <button 
+                    className="exit-workflow-button"
+                    onClick={handleCompleteGuidedWorkflow}
+                    aria-label="Exit guided workflow and return to manual interface"
+                  >
+                    Exit Workflow
+                  </button>
+                </div>
+                <TradingGuidedWorkflow 
+                  tradingType={guidedWorkflowType} 
+                  onComplete={handleCompleteGuidedWorkflow}
+                />
               </div>
             </ErrorBoundary>
-          </div>
+          ) : (
+            <div className="container content-container">
+              <ErrorBoundary>
+                <div key={activeTab} className="content-transition-wrapper fade-in">
+                  {activeTab === 'buy' && (
+                    <OfferList 
+                      type="buy" 
+                      onStartGuidedWorkflow={handleStartGuidedWorkflow} 
+                    />
+                  )}
+                  {activeTab === 'sell' && (
+                    <>
+                      <OfferCreation onStartGuidedWorkflow={handleStartGuidedWorkflow} />
+                      <OfferList type="sell" onStartGuidedWorkflow={handleStartGuidedWorkflow} />
+                    </>
+                  )}
+                  {activeTab === 'myoffers' && <OfferList type="my" />}
+                  {activeTab === 'disputes' && <DisputeResolution />}
+                  {activeTab === 'profile' && (
+                    <UserProfile wallet={wallet} network={network} />
+                  )}
+                </div>
+              </ErrorBoundary>
+            </div>
+          )}
         </main>
         
         <footer className="bg-gray-50 border-t border-gray-200 py-4">

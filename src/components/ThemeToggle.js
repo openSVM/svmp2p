@@ -28,20 +28,30 @@ const ThemeToggle = () => {
     if (selectedTheme === 'dark') {
       root.classList.add('dark');
       root.classList.remove('light');
+      // Also add to body for better coverage
+      document.body.classList.add('dark');
+      document.body.classList.remove('light');
       setActualTheme('dark');
     } else if (selectedTheme === 'light') {
       root.classList.add('light');
       root.classList.remove('dark');
+      // Also add to body for better coverage
+      document.body.classList.add('light');
+      document.body.classList.remove('dark');
       setActualTheme('light');
     } else { // system
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDark) {
         root.classList.add('dark');
         root.classList.remove('light');
+        document.body.classList.add('dark');
+        document.body.classList.remove('light');
         setActualTheme('dark');
       } else {
         root.classList.add('light');
         root.classList.remove('dark');
+        document.body.classList.add('light');
+        document.body.classList.remove('dark');
         setActualTheme('light');
       }
     }

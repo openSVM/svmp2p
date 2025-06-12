@@ -4,10 +4,25 @@ import { SystemProgram, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
 // Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
 import { BN } from '@coral-xyz/anchor';
 import { AppContext } from '../contexts/AppContext';
-import { useSafeWallet } from '../contexts/WalletContextProvider';
-import { ButtonLoader, TransactionConfirmation, TransactionStatus } from './common';
+import { 
+  ButtonLoader, 
+  TransactionConfirmation, 
+  TransactionStatus, 
+  Tooltip, 
+  ConfirmationDialog 
+} from './common';
 
-const OfferCreation = () => {
+import { useSafeWallet } from '../contexts/WalletContextProvider';
+import { useActionDebounce, useInputValidation } from '../hooks/useActionDebounce';
+import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../utils/validation';
+import { 
+  MOCK_SOL_PRICES, 
+  SUPPORTED_CURRENCIES, 
+  SUPPORTED_PAYMENT_METHODS,
+  VALIDATION_CONSTRAINTS 
+} from '../constants/tradingConstants';
+
+const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = useSafeWallet();
   const { connection } = useConnection();
   const { program, network } = useContext(AppContext);
@@ -21,9 +36,21 @@ const OfferCreation = () => {
   const [success, setSuccess] = useState('');
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   
-  const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
-  const paymentMethods = ['Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'];
+  // Validation states
+  const solValidation = useInputValidation(solAmount, validateSolAmount);
+  const fiatValidation = useInputValidation(fiatAmount, (value) => validateFiatAmount(value, fiatCurrency));
+  const rateValidation = useInputValidation(
+    `${solAmount}-${fiatAmount}-${fiatCurrency}`, 
+    () => validateMarketRate(parseFloat(solAmount), parseFloat(fiatAmount), fiatCurrency)
+  );
+  
+  // Debounced action handler
+  const { debouncedCallback: debouncedCreateOffer, isDisabled: isActionDisabled } = useActionDebounce(
+    processCreateOffer,
+    1000
+  );
   
   const handleCreateOffer = async (e) => {
     e.preventDefault();
@@ -33,6 +60,23 @@ const OfferCreation = () => {
       return;
     }
     
+    // Validate inputs before proceeding
+    if (!solValidation.isValid) {
+      setError(solValidation.error);
+      return;
+    }
+    
+    if (!fiatValidation.isValid) {
+      setError(fiatValidation.error);
+      return;
+    }
+    
+    // Show confirmation dialog
+    setShowConfirmation(true);
+  };
+  
+  // Actual offer creation after confirmation
+  async function processCreateOffer() {
     setError('');
     setSuccess('');
     setIsCreating(true);
@@ -116,25 +160,15 @@ const OfferCreation = () => {
     } finally {
       setIsCreating(false);
     }
-  };
+  }
   
   // Calculate fiat amount based on SOL amount (simple conversion for demo)
   const handleSolAmountChange = (e) => {
     const sol = e.target.value;
     setSolAmount(sol);
     
-    // Mock price calculation - in a real app, you'd use an oracle or price feed
-    const mockSolPrice = {
-      'USD': 150,
-      'EUR': 140,
-      'GBP': 120,
-      'JPY': 16500,
-      'CAD': 200,
-      'AUD': 220
-    };
-    
     if (sol && !isNaN(sol)) {
-      const calculatedFiat = (parseFloat(sol) * mockSolPrice[fiatCurrency]).toFixed(2);
+      const calculatedFiat = (parseFloat(sol) * MOCK_SOL_PRICES[fiatCurrency]).toFixed(2);
       setFiatAmount(calculatedFiat);
     }
   };
@@ -144,15 +178,7 @@ const OfferCreation = () => {
     setFiatCurrency(e.target.value);
     if (solAmount && !isNaN(solAmount)) {
       // Recalculate fiat amount with new currency
-      const mockSolPrice = {
-        'USD': 150,
-        'EUR': 140,
-        'GBP': 120,
-        'JPY': 16500,
-        'CAD': 200,
-        'AUD': 220
-      };
-      const calculatedFiat = (parseFloat(solAmount) * mockSolPrice[e.target.value]).toFixed(2);
+      const calculatedFiat = (parseFloat(solAmount) * MOCK_SOL_PRICES[e.target.value]).toFixed(2);
       setFiatAmount(calculatedFiat);
     }
   };
@@ -164,7 +190,25 @@ const OfferCreation = () => {
   
   return (
     <div className="offer-creation-container">
-      <h2>Create a Sell Offer</h2>
+      <div className="offer-creation-header">
+        <h2>Create a Sell Offer</h2>
+        
+        {/* Guided workflow option */}
+        {onStartGuidedWorkflow && (
+          <Tooltip 
+            content="Start a guided selling process with step-by-step instructions" 
+            position="bottom"
+          >
+            <button 
+              className="guided-workflow-button"
+              onClick={() => onStartGuidedWorkflow('sell')}
+            >
+              Need help? Use guided workflow
+            </button>
+          </Tooltip>
+        )}
+      </div>
+      
       <p>Create an offer to sell SOL for fiat currency</p>
       
       {error && <div className="error-message">{error}</div>}
@@ -190,56 +234,85 @@ const OfferCreation = () => {
       
       <form onSubmit={handleCreateOffer}>
         <div className="form-group">
-          <label htmlFor="solAmount">SOL Amount</label>
+          <label htmlFor="solAmount">
+            <Tooltip content="Enter the amount of SOL you want to sell">
+              <span>SOL Amount</span>
+            </Tooltip>
+          </label>
           <input
             id="solAmount"
             type="number"
             value={solAmount}
             onChange={handleSolAmountChange}
             placeholder="Enter SOL amount"
-            min="0.01"
-            step="0.01"
+            min={VALIDATION_CONSTRAINTS.SOL_AMOUNT.min}
+            max={VALIDATION_CONSTRAINTS.SOL_AMOUNT.max}
+            step={VALIDATION_CONSTRAINTS.SOL_AMOUNT.step}
             required
+            className={!solValidation.isValid ? 'input-error' : ''}
           />
+          {!solValidation.isValid && (
+            <div className="validation-error">{solValidation.error}</div>
+          )}
         </div>
         
         <div className="form-group">
-          <label htmlFor="fiatCurrency">Fiat Currency</label>
+          <label htmlFor="fiatCurrency">
+            <Tooltip content="Select the currency you want to receive">
+              <span>Fiat Currency</span>
+            </Tooltip>
+          </label>
           <select
             id="fiatCurrency"
             value={fiatCurrency}
             onChange={handleCurrencyChange}
             required
           >
-            {currencies.map(currency => (
+            {SUPPORTED_CURRENCIES.map(currency => (
               <option key={currency} value={currency}>{currency}</option>
             ))}
           </select>
         </div>
         
         <div className="form-group">
-          <label htmlFor="fiatAmount">Fiat Amount</label>
+          <label htmlFor="fiatAmount">
+            <Tooltip content="The amount in fiat currency you will receive">
+              <span>Fiat Amount</span>
+            </Tooltip>
+          </label>
           <input
             id="fiatAmount"
             type="number"
             value={fiatAmount}
             onChange={(e) => setFiatAmount(e.target.value)}
             placeholder="Enter fiat amount"
-            min="0.01"
-            step="0.01"
+            min={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.min}
+            max={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.max}
+            step={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.step}
             required
+            className={!fiatValidation.isValid ? 'input-error' : ''}
           />
+          {!fiatValidation.isValid && (
+            <div className="validation-error">{fiatValidation.error}</div>
+          )}
+          {rateValidation.error && (
+            <div className="validation-warning">{rateValidation.error}</div>
+          )}
         </div>
         
         <div className="form-group">
-          <label htmlFor="paymentMethod">Payment Method</label>
+          <label htmlFor="paymentMethod">
+            <Tooltip content="Select how you want to receive payment">
+              <span>Payment Method</span>
+            </Tooltip>
+          </label>
           <select
             id="paymentMethod"
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
             required
           >
-            {paymentMethods.map(method => (
+            {SUPPORTED_PAYMENT_METHODS.map(method => (
               <option key={method} value={method}>{method}</option>
             ))}
           </select>
@@ -248,7 +321,7 @@ const OfferCreation = () => {
         <ButtonLoader
           type="submit"
           isLoading={isCreating}
-          disabled={!wallet.connected || !wallet.publicKey}
+          disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
           loadingText="Creating Offer..."
           variant="primary"
           size="medium"
@@ -263,6 +336,72 @@ const OfferCreation = () => {
         <p>Current SOL price is estimated based on market rates.</p>
         <p>Your SOL will be held in escrow until the trade is completed.</p>
       </div>
+      
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={debouncedCreateOffer}
+        title="Confirm Offer Creation"
+        message={`Are you sure you want to create an offer to sell ${solAmount} SOL for ${fiatAmount} ${fiatCurrency}? This will lock your SOL in an escrow contract.`}
+        variant="default"
+      />
+      
+      <style jsx>{`
+        .offer-creation-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .guided-workflow-button {
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .guided-workflow-button::before {
+          content: "?";
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+          background-color: rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          font-size: 0.8rem;
+          font-weight: bold;
+        }
+
+        .guided-workflow-button:hover {
+          background-color: #2563eb;
+        }
+
+        .input-error {
+          border-color: #ef4444 !important;
+          box-shadow: 0 0 0 1px #ef4444;
+        }
+
+        .validation-error {
+          color: #ef4444;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+        }
+
+        .validation-warning {
+          color: #f59e0b;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+        }
+      `}</style>
     </div>
   );
 };

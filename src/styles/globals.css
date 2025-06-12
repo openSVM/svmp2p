@@ -15,6 +15,19 @@
 /* Import responsive grid layout system */
 @import './responsive-grid.css';
 
+/* Import component styles */
+@import './confirmation-dialog.css';
+@import './tooltip.css';
+
+/* Import header fixes */
+@import './header-fixes.css';
+
+/* Import header dropdown fixes */
+@import './header-dropdown-fixes.css';
+
+/* Import VSCode dark theme */
+@import './vscode-dark-theme.css';
+
 /* Additional Next.js specific styles */
 :root {
   --max-width: 1200px;

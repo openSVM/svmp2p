@@ -1,13 +1,29 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { AppContext } from '../contexts/AppContext';
+import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationDialog } from './common';
 import { useSafeWallet } from '../contexts/WalletContextProvider';
-import { LoadingSpinner, ButtonLoader, TransactionStatus } from './common';
 import { useDebounce, VirtualizedList } from '../utils/performance';
+import { useActionDebounce } from '../hooks/useActionDebounce';
+import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
 
 // Component for rendering a single offer row
 const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction, network }) => {
   const isProcessing = processingAction.offerId === offer.id;
   const currentAction = processingAction.action;
+  
+  // Debounced action handlers
+  const { debouncedCallback: debouncedAccept, isDisabled: isAcceptDisabled } = useActionDebounce(
+    () => handleOfferAction(offer.id, 'accept'),
+    1000
+  );
+  const { debouncedCallback: debouncedCancel, isDisabled: isCancelDisabled } = useActionDebounce(
+    () => handleOfferAction(offer.id, 'cancel'),
+    1000
+  );
+  const { debouncedCallback: debouncedConfirm, isDisabled: isConfirmDisabled } = useActionDebounce(
+    () => handleOfferAction(offer.id, 'confirm'),
+    1000
+  );
   
   // Calculate the rate and determine if it's a good rate
   const rate = (offer.fiatAmount / offer.solAmount).toFixed(2);
@@ -40,8 +56,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     if (type === 'buy' && offer.status === 'Listed') {
       return (
         <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'accept')}
+          onClick={debouncedAccept}
           isLoading={isProcessing && currentAction === 'accept'}
+          disabled={isAcceptDisabled}
           loadingText="..."
           variant="primary"
           size="small"
@@ -55,8 +72,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     if (type === 'my' && offer.status === 'Listed') {
       return (
         <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'cancel')}
+          onClick={debouncedCancel}
           isLoading={isProcessing && currentAction === 'cancel'}
+          disabled={isCancelDisabled}
           loadingText="..."
           variant="danger"
           size="small"
@@ -70,8 +88,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     if (type === 'my' && offer.status === 'Accepted') {
       return (
         <ButtonLoader
-          onClick={() => handleOfferAction(offer.id, 'confirm')}
+          onClick={debouncedConfirm}
           isLoading={isProcessing && currentAction === 'confirm'}
+          disabled={isConfirmDisabled}
           loadingText="..."
           variant="success"
           size="small"
@@ -133,7 +152,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
 });
 
 // Optimized OfferList component
-const OfferList = ({ type = 'buy' }) => {
+const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
   const wallet = useSafeWallet();
   const { program, network } = useContext(AppContext);
   
@@ -168,9 +187,19 @@ const OfferList = ({ type = 'buy' }) => {
     action: null
   });
   
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    variant: 'default'
+  });
+  
+  
   // Memoize static data
-  const currencies = useMemo(() => ['', 'USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'], []);
-  const paymentMethods = useMemo(() => ['', 'Bank Transfer', 'PayPal', 'Venmo', 'Cash App', 'Zelle', 'Revolut'], []);
+  const currencies = useMemo(() => ['', ...SUPPORTED_CURRENCIES], []);
+  const paymentMethods = useMemo(() => ['', ...SUPPORTED_PAYMENT_METHODS], []);
   const sortOptions = useMemo(() => [
     { value: 'createdAt', label: 'Date Posted' },
     { value: 'solAmount', label: 'SOL Amount' },
@@ -510,6 +539,39 @@ const OfferList = ({ type = 'buy' }) => {
       return;
     }
     
+    // Show confirmation dialog based on action
+    if (action === 'accept') {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Accept Offer',
+        message: 'Are you sure you want to accept this offer? This will lock the funds in escrow until the transaction is completed.',
+        onConfirm: () => processOfferAction(offerId, action),
+        variant: 'default'
+      });
+    } else if (action === 'cancel') {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Cancel Offer',
+        message: 'Are you sure you want to cancel this offer? This action cannot be undone.',
+        onConfirm: () => processOfferAction(offerId, action),
+        variant: 'warning'
+      });
+    } else if (action === 'confirm') {
+      setConfirmDialog({
+        isOpen: true,
+        title: 'Confirm Payment',
+        message: 'Please confirm that you have received the payment. This will release funds from escrow and cannot be undone.',
+        onConfirm: () => processOfferAction(offerId, action),
+        variant: 'danger'
+      });
+    } else {
+      // For other actions without confirmation
+      processOfferAction(offerId, action);
+    }
+  }, [wallet.publicKey]);
+
+  // Actual implementation of the offer action after confirmation
+  const processOfferAction = useCallback(async (offerId, action) => {
     setProcessingAction({
       offerId,
       action
@@ -546,7 +608,7 @@ const OfferList = ({ type = 'buy' }) => {
         action: null
       });
     }
-  }, [wallet.publicKey, fetchOffers]);
+  }, [fetchOffers]);
   
   // Clear transaction status - useCallback to prevent recreation on each render
   const handleClearTxStatus = useCallback(() => {
@@ -680,8 +742,25 @@ const OfferList = ({ type = 'buy' }) => {
 
   return (
     <div className="offer-list-container">
-      <h2 className="offer-list-heading">{listTitle}</h2>
-      
+      <div className="offer-list-header">
+        <h2>{listTitle}</h2>
+        
+        {/* Guided workflow option */}
+        {onStartGuidedWorkflow && (
+          <Tooltip 
+            content={`Start a guided ${type === 'buy' ? 'buying' : 'selling'} process with step-by-step instructions`} 
+            position="bottom"
+          >
+            <button 
+              className="guided-workflow-button"
+              onClick={() => onStartGuidedWorkflow(type)}
+            >
+              Need help? Use guided workflow
+            </button>
+          </Tooltip>
+        )}
+      </div>
+
       {error && <div className="error-message">{error}</div>}
       {statusMessage && <div className="status-message">{statusMessage}</div>}
       
@@ -723,12 +802,16 @@ const OfferList = ({ type = 'buy' }) => {
             </button>
           </div>
         </div>
-        
+
         {showAdvancedFilters && (
           <>
             <div className="filters">
               <div className="filter-group">
-                <label htmlFor={inputIds.minAmount}>SOL Amount:</label>
+                <label htmlFor={inputIds.minAmount}>
+                  <Tooltip content="Enter minimum amount of SOL you want to trade">
+                    <span>SOL Amount:</span>
+                  </Tooltip>
+                </label>
                 <input
                   id={inputIds.minAmount}
                   type="number"
@@ -753,7 +836,11 @@ const OfferList = ({ type = 'buy' }) => {
               </div>
               
               <div className="filter-group">
-                <label htmlFor={inputIds.currency}>Currency:</label>
+                <label htmlFor={inputIds.currency}>
+                  <Tooltip content="Select the currency you want to trade in">
+                    <span>Currency:</span>
+                  </Tooltip>
+                </label>
                 <select
                   id={inputIds.currency}
                   value={selectedCurrency}
@@ -767,7 +854,11 @@ const OfferList = ({ type = 'buy' }) => {
               </div>
               
               <div className="filter-group">
-                <label htmlFor={inputIds.paymentMethod}>Payment Method:</label>
+                <label htmlFor={inputIds.paymentMethod}>
+                  <Tooltip content="Select your preferred payment method">
+                    <span>Payment Method:</span>
+                  </Tooltip>
+                </label>
                 <select
                   id={inputIds.paymentMethod}
                   value={selectedPaymentMethod}
@@ -836,6 +927,55 @@ const OfferList = ({ type = 'buy' }) => {
         <p style={{ margin: '0 0 2px 0' }}>Network: {network.name}</p>
         <p style={{ margin: 0 }}>Smart contract secured trades with decentralized dispute resolution.</p>
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({...confirmDialog, isOpen: false})}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        variant={confirmDialog.variant}
+      />
+      
+      <style jsx>{`
+        .offer-list-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+
+        .guided-workflow-button {
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .guided-workflow-button::before {
+          content: "?";
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+          background-color: rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          font-size: 0.8rem;
+          font-weight: bold;
+        }
+
+        .guided-workflow-button:hover {
+          background-color: #2563eb;
+        }
+      `}</style>
     </div>
   );
 };
