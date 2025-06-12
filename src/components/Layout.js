@@ -24,13 +24,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     networks 
   } = useContext(AppContext);
   
-  const { connected, publicKey } = useSafeWallet();
   const wallet = useSafeWallet(); // Get the full wallet object for enhanced status
+  const { connected, publicKey } = wallet;
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
   // State for mobile menu and account dropdown
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [accountFocusedIndex, setAccountFocusedIndex] = useState(-1);
 
   // Primary navigation items (main actions)
   const primaryNavItems = useMemo(() => [
@@ -72,13 +73,19 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     }
   }, [connected]);
 
-  // Load saved language preference
+  // Load saved language preference and set RTL direction
   useEffect(() => {
     const savedLanguage = localStorage.getItem('preferred-language');
     if (savedLanguage && supportedLanguages.some(lang => lang.code === savedLanguage)) {
       setCurrentLocale(savedLanguage);
     }
-  }, [supportedLanguages]);
+    
+    // Set RTL direction for Arabic and other RTL languages
+    const rtlLanguages = ['ar', 'fa', 'he', 'ur'];
+    const isRTL = rtlLanguages.includes(currentLocale);
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    document.documentElement.lang = currentLocale;
+  }, [supportedLanguages, currentLocale]);
 
   // Close account dropdown when clicking outside or pressing Escape
   useEffect(() => {
@@ -89,6 +96,35 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         }
         if (isAccountDropdownOpen) {
           setIsAccountDropdownOpen(false);
+          setAccountFocusedIndex(-1);
+        }
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (isAccountDropdownOpen) {
+        switch (event.key) {
+          case 'ArrowDown':
+            event.preventDefault();
+            setAccountFocusedIndex(prev => 
+              prev < accountNavItems.length - 1 ? prev + 1 : 0
+            );
+            break;
+          case 'ArrowUp':
+            event.preventDefault();
+            setAccountFocusedIndex(prev => 
+              prev > 0 ? prev - 1 : accountNavItems.length - 1
+            );
+            break;
+          case 'Enter':
+          case ' ':
+            event.preventDefault();
+            if (accountFocusedIndex >= 0 && accountNavItems[accountFocusedIndex]) {
+              setActiveTab(accountNavItems[accountFocusedIndex].key);
+              setIsAccountDropdownOpen(false);
+              setAccountFocusedIndex(-1);
+            }
+            break;
         }
       }
     };
@@ -103,13 +139,15 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     };
 
     document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('click', handleClickOutside);
     
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [isMobileMenuOpen, isAccountDropdownOpen]);
+  }, [isMobileMenuOpen, isAccountDropdownOpen, accountFocusedIndex, accountNavItems]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -129,10 +167,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('SW registered: ', registration);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SW registered: ', registration);
+          }
         })
         .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SW registration failed: ', registrationError);
+          }
         });
     }
   }, []);
@@ -151,7 +193,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     setCurrentLocale(locale);
     localStorage.setItem('preferred-language', locale);
     // In a real app, you'd use next-i18next router here
-    console.log('Language changed to:', locale);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Language changed to:', locale);
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -168,7 +212,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           {wallet.reconnect && (
             <button 
               className="wallet-retry-button" 
-              onClick={() => wallet.reconnect()}
+              onClick={() => wallet.reconnect?.()}
               title="Retry connection"
               aria-label="Retry wallet connection"
             >
@@ -267,14 +311,22 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               ))}
               
               {/* Account dropdown for secondary items */}
-              <div className="account-dropdown">
+              <div className="account-dropdown" role="menu">
                 <button
                   className={`nav-tab account-dropdown-trigger ${
                     accountNavItems.some(item => item.key === activeTab) ? 'active' : ''
                   }`}
-                  onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
+                  onClick={() => {
+                    setIsAccountDropdownOpen(!isAccountDropdownOpen);
+                    if (!isAccountDropdownOpen) {
+                      setAccountFocusedIndex(0);
+                    } else {
+                      setAccountFocusedIndex(-1);
+                    }
+                  }}
                   aria-expanded={isAccountDropdownOpen}
-                  aria-haspopup="true"
+                  aria-haspopup="menu"
+                  aria-label="Account menu"
                 >
                   <span className="nav-label">ACCOUNT</span>
                   <svg 
@@ -290,18 +342,27 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 
                 {isAccountDropdownOpen && (
                   <>
-                    <div className="dropdown-backdrop" onClick={() => setIsAccountDropdownOpen(false)} />
+                    <div className="dropdown-backdrop" onClick={() => {
+                      setIsAccountDropdownOpen(false);
+                      setAccountFocusedIndex(-1);
+                    }} />
                     <div className="account-dropdown-menu">
-                      {accountNavItems.map((item) => (
+                      {accountNavItems.map((item, index) => (
                         <button
                           key={item.key}
                           className={`account-dropdown-item ${
                             activeTab === item.key ? 'active' : ''
+                          } ${
+                            accountFocusedIndex === index ? 'focused' : ''
                           }`}
                           onClick={() => {
                             setActiveTab(item.key);
                             setIsAccountDropdownOpen(false);
+                            setAccountFocusedIndex(-1);
                           }}
+                          onMouseEnter={() => setAccountFocusedIndex(index)}
+                          tabIndex={accountFocusedIndex === index ? 0 : -1}
+                          role="menuitem"
                         >
                           <span className="nav-label">{item.label}</span>
                         </button>

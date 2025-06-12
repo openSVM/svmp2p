@@ -222,7 +222,7 @@ const LanguageSelector = ({
                   onKeyDown={handleKeyDown}
                   role="option"
                   aria-selected={language.code === currentLocale}
-                  tabIndex={-1}
+                  tabIndex={focusedIndex === index ? 0 : -1}
                 >
                   <span className="font-medium">
                     {language.country}{language.code.toUpperCase()}
