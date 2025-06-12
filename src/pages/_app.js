@@ -7,11 +7,6 @@ import {
   TorusWalletAdapter,
   LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import dynamic from 'next/dynamic';
-
-// Import performance monitoring
-import { initWebVitals } from '@/utils/webVitals';
-import { analyzeBundleSize } from '@/utils/lazyLoading';
 
 // Import styles - order matters for CSS
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
@@ -28,6 +23,11 @@ import { analyzeBundleSize } from '@/utils/lazyLoading';
 import '../index.css'; // Main CSS file with Tailwind directives (must be first)
 import '@solana/wallet-adapter-react-ui/styles.css'; // Third-party component styles
 import '@/styles/globals.css'; // Global styles and overrides
+import '@/styles/header-mobile-improvements.css'; // Header mobile improvements
+import '@/styles/dropdown-fixes.css'; // Dropdown functionality fixes
+import '@/styles/hamburger-improvements.css'; // Hamburger menu line differentiation
+import '@/styles/tech-debt-fixes.css'; // Tech debt fixes and improvements
+import '@/styles/language-selector.css'; // Language selector styles
 
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';
@@ -35,8 +35,8 @@ import { AppContextProvider } from '@/contexts/AppContext';
 // Import Layout
 import Layout from '@/components/Layout';
 
-// Dynamically import ErrorBoundary to prevent SSR issues
-const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary'), { ssr: false });
+// Import ErrorBoundary directly instead of dynamically to avoid initialization issues
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function App({ Component, pageProps }) {
   // Set up wallet adapters
@@ -50,17 +50,9 @@ export default function App({ Component, pageProps }) {
     []
   );
 
-  // Initialize performance monitoring
+  // Initialize basic performance monitoring
   useEffect(() => {
-    // Initialize Web Vitals monitoring
-    initWebVitals();
-    
-    // Analyze bundle size in development
-    if (process.env.NODE_ENV === 'development') {
-      analyzeBundleSize();
-    }
-
-    // Preload critical resources
+    // Simple font preloading without complex utilities
     if (typeof window !== 'undefined') {
       // Preload important fonts
       const linkPreload = document.createElement('link');

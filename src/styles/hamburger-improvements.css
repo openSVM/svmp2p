@@ -1,0 +1,108 @@
+/* Hamburger Menu Line Differentiation for Better Animations */
+
+.mobile-menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.mobile-menu-toggle:focus {
+  outline: 2px solid var(--color-primary, #0066cc);
+  outline-offset: 2px;
+}
+
+/* Base hamburger line styles */
+.hamburger-line {
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text, #333);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+  margin: 2px 0;
+}
+
+/* Individual line transformations for smoother X animation */
+.hamburger-line.top-line.active {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.hamburger-line.middle-line.active {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger-line.bottom-line.active {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Enhanced transition effects */
+.hamburger-line.top-line {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hamburger-line.middle-line {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.hamburger-line.bottom-line {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Content transition pending state */
+.content-transition-wrapper.pending {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+/* Retry button SVG styling */
+.wallet-retry-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--color-error, #dc2626);
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.wallet-retry-button:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+  transform: rotate(180deg);
+}
+
+.wallet-retry-button:focus {
+  outline: 2px solid var(--color-error, #dc2626);
+  outline-offset: 2px;
+}
+
+.retry-icon {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* RTL Support for hamburger menu */
+[dir="rtl"] .mobile-menu-toggle {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .hamburger-line.top-line.active {
+  transform: translateY(6px) rotate(-45deg);
+}
+
+[dir="rtl"] .hamburger-line.bottom-line.active {
+  transform: translateY(-6px) rotate(45deg);
+}

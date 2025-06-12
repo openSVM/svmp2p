@@ -1,8 +1,10 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo, useTransition, startTransition, useCallback } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import PropTypes from 'prop-types';
 import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
 import { useSafeWallet } from '@/contexts/WalletContextProvider';
+import { cn, conditional } from '@/utils/classNames';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
@@ -24,9 +26,50 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     networks 
   } = useContext(AppContext);
   
-  const { connected, publicKey } = useSafeWallet();
+  const wallet = useSafeWallet(); // Get the full wallet object for enhanced status
+  const { connected, publicKey } = wallet;
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
+  // State for mobile menu and account dropdown
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [accountFocusedIndex, setAccountFocusedIndex] = useState(-1);
+  const [isPending, startTransition] = useTransition();
+
+  // Enhanced tab switching with transition for better UX
+  const handleTabSwitch = useCallback((tabKey) => {
+    startTransition(() => {
+      setActiveTab(tabKey);
+    });
+  }, [setActiveTab]);
+
+  // Primary navigation items (main actions)
+  const primaryNavItems = useMemo(() => [
+    { key: 'buy', label: 'BUY', icon: 'B' },
+    { key: 'sell', label: 'SELL', icon: 'S' },
+    { key: 'help', label: 'HELP', icon: '?' },
+  ], []);
+
+  // Secondary navigation items (grouped under Account dropdown)
+  const accountNavItems = useMemo(() => [
+    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
+    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
+    { key: 'profile', label: 'PROFILE', icon: 'P' },
+  ], []);
+
+  // Supported languages - moved up to avoid initialization issues
+  const supportedLanguages = useMemo(() => [
+    { code: 'en', name: 'English', country: '🇺🇸' },
+    { code: 'es', name: 'Español', country: '🇪🇸' },
+    { code: 'fr', name: 'Français', country: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+    { code: 'ja', name: '日本語', country: '🇯🇵' },
+    { code: 'ko', name: '한국어', country: '🇰🇷' },
+    { code: 'zh', name: '中文', country: '🇨🇳' },
+    { code: 'pt', name: 'Português', country: '🇵🇹' },
+    { code: 'ru', name: 'Русский', country: '🇷🇺' },
+    { code: 'ar', name: 'العربية', country: '🇸🇦' },
+  ], []);
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -40,15 +83,108 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     }
   }, [connected]);
 
+  // Load saved language preference and set RTL direction
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferred-language');
+    if (savedLanguage && supportedLanguages.some(lang => lang.code === savedLanguage)) {
+      setCurrentLocale(savedLanguage);
+    }
+    
+    // Set RTL direction for Arabic and other RTL languages
+    const rtlLanguages = ['ar', 'fa', 'he', 'ur'];
+    const isRTL = rtlLanguages.includes(currentLocale);
+    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    document.documentElement.lang = currentLocale;
+  }, [supportedLanguages, currentLocale]);
+
+  // Close account dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        if (isMobileMenuOpen) {
+          setIsMobileMenuOpen(false);
+        }
+        if (isAccountDropdownOpen) {
+          setIsAccountDropdownOpen(false);
+          setAccountFocusedIndex(-1);
+        }
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (isAccountDropdownOpen) {
+        switch (event.key) {
+          case 'ArrowDown':
+            event.preventDefault();
+            setAccountFocusedIndex(prev => 
+              prev < accountNavItems.length - 1 ? prev + 1 : 0
+            );
+            break;
+          case 'ArrowUp':
+            event.preventDefault();
+            setAccountFocusedIndex(prev => 
+              prev > 0 ? prev - 1 : accountNavItems.length - 1
+            );
+            break;
+          case 'Enter':
+          case ' ':
+            event.preventDefault();
+            if (accountFocusedIndex >= 0 && accountNavItems[accountFocusedIndex]) {
+              handleTabSwitch(accountNavItems[accountFocusedIndex].key);
+              setIsAccountDropdownOpen(false);
+              setAccountFocusedIndex(-1);
+            }
+            break;
+        }
+      }
+    };
+
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-menu-toggle')) {
+        setIsMobileMenuOpen(false);
+      }
+      if (isAccountDropdownOpen && !event.target.closest('.account-dropdown') && !event.target.closest('.account-dropdown-trigger')) {
+        setIsAccountDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('click', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMobileMenuOpen, isAccountDropdownOpen, accountFocusedIndex, accountNavItems, handleTabSwitch]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
   // Register service worker for PWA
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('SW registered: ', registration);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SW registered: ', registration);
+          }
         })
         .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SW registration failed: ', registrationError);
+          }
         });
     }
   }, []);
@@ -67,21 +203,99 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     setCurrentLocale(locale);
     localStorage.setItem('preferred-language', locale);
     // In a real app, you'd use next-i18next router here
-    console.log('Language changed to:', locale);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Language changed to:', locale);
+    }
   };
 
-  // Top navbar items (most important sections)
-  const topNavItems = [
-    { key: 'buy', label: 'BUY', icon: 'B' },
-    { key: 'sell', label: 'SELL', icon: 'S' },
-    { key: 'help', label: 'HELP', icon: '?' },
-  ];
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-  // Sidebar navigation items (secondary sections)
-  const sidebarNavItems = [
-    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
-    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
-  ];
+  // Unified wallet connection state for better UX tracking
+  const getWalletConnectionState = useMemo(() => {
+    if (wallet.error) return 'error';
+    if (wallet.connecting || wallet.connectionState === 'connecting') return 'connecting';
+    if (wallet.connected && wallet.publicKey) return 'connected';
+    return 'disconnected';
+  }, [wallet.error, wallet.connecting, wallet.connectionState, wallet.connected, wallet.publicKey]);
+
+  // URL sanitization helper for explorer links
+  const sanitizeNetworkForUrl = (network) => {
+    if (!network || typeof network !== 'string') return 'solana';
+    // Allow only alphanumeric characters, hyphens, and underscores
+    return network.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase() || 'solana';
+  };
+
+  // Enhanced wallet status renderer with unified state management
+  const renderWalletStatus = useMemo(() => {
+    const connectionState = getWalletConnectionState;
+    
+    switch (connectionState) {
+      case 'error':
+        return (
+          <div className="wallet-status error" title={wallet.error}>
+            <span className="status-dot error" aria-hidden="true"></span>
+            <span>Error</span>
+            {wallet.reconnect && (
+              <button 
+                className="wallet-retry-button" 
+                onClick={() => wallet.reconnect?.()}
+                title="Retry connection"
+                aria-label="Retry wallet connection"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="retry-icon"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M8 2.5a5.5 5.5 0 0 1 5.5 5.5 0.5 0.5 0 0 1-1 0A4.5 4.5 0 1 0 8 12.5a0.5 0.5 0 0 1 0 1A5.5 5.5 0 1 1 8 2.5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M10.5 5.5L8 8l2.5 2.5a0.5 0.5 0 0 1-0.707 0.707L7.646 8.854a0.5 0.5 0 0 1 0-0.708l2.147-2.146a0.5 0.5 0 0 1 0.707 0.707z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+        );
+      
+      case 'connecting':
+        return (
+          <div className="wallet-status connecting">
+            <span className="status-dot connecting pulsing" aria-hidden="true"></span>
+            <span>Connecting...</span>
+          </div>
+        );
+      
+      case 'connected':
+        return (
+          <div className="wallet-status connected">
+            <span className="status-dot connected" aria-hidden="true"></span>
+            <span className="connection-address">
+              {wallet.publicKey.toString().slice(0, 4)}...{wallet.publicKey.toString().slice(-4)}
+            </span>
+          </div>
+        );
+      
+      default: // disconnected
+        return (
+          <div className="wallet-status disconnected">
+            <span className="status-dot disconnected" aria-hidden="true"></span>
+            <span>Not Connected</span>
+          </div>
+        );
+    }
+  }, [getWalletConnectionState, wallet]);
+
+
 
   return (
     <>
@@ -113,134 +327,215 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               <h1 className="logo-text">OpenSVM P2P</h1>
             </div>
             
+            {/* Mobile Menu Button - Differentiated hamburger lines for better animation */}
+            <button 
+              className="mobile-menu-toggle"
+              onClick={toggleMobileMenu}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+            >
+              <span className={conditional('hamburger-line top-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line middle-line', 'active', isMobileMenuOpen)}></span>
+              <span className={conditional('hamburger-line bottom-line', 'active', isMobileMenuOpen)}></span>
+            </button>
+            
             {/* Desktop Navigation - Horizontal layout for desktop */}
             <nav className="desktop-nav">
               {/* Primary navigation items */}
-              {topNavItems.map((item) => (
+              {primaryNavItems.map((item) => (
                 <button
                   key={item.key}
-                  className={`nav-tab ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
-                  onClick={() => setActiveTab(item.key)}
+                  className={conditional('nav-tab', 'active', activeTab === item.key)}
+                  onClick={() => handleTabSwitch(item.key)}
                 >
                   <span className="nav-label">{item.label}</span>
                 </button>
               ))}
               
-              {/* Secondary navigation items (previously in sidebar) */}
-              {sidebarNavItems.map((item) => (
+              {/* Account dropdown for secondary items */}
+              <div className="account-dropdown" role="menu">
                 <button
-                  key={item.key}
-                  className={`nav-tab ${
-                    activeTab === item.key ? 'active' : ''
+                  className={`nav-tab account-dropdown-trigger ${
+                    accountNavItems.some(item => item.key === activeTab) ? 'active' : ''
                   }`}
-                  onClick={() => setActiveTab(item.key)}
+                  onClick={() => {
+                    setIsAccountDropdownOpen(!isAccountDropdownOpen);
+                    if (!isAccountDropdownOpen) {
+                      setAccountFocusedIndex(0);
+                    } else {
+                      setAccountFocusedIndex(-1);
+                    }
+                  }}
+                  aria-expanded={isAccountDropdownOpen}
+                  aria-haspopup="menu"
+                  aria-label="Account menu"
                 >
-                  <span className="nav-label">{item.label}</span>
+                  <span className="nav-label">ACCOUNT</span>
+                  <svg 
+                    className={conditional('dropdown-arrow', 'rotated', isAccountDropdownOpen)} 
+                    width="12" 
+                    height="12" 
+                    viewBox="0 0 12 12" 
+                    fill="currentColor"
+                  >
+                    <path d="M6 8L2 4h8l-4 4z"/>
+                  </svg>
                 </button>
-              ))}
+                
+                {isAccountDropdownOpen && (
+                  <>
+                    <div className="dropdown-backdrop" onClick={() => {
+                      setIsAccountDropdownOpen(false);
+                      setAccountFocusedIndex(-1);
+                    }} />
+                    <div className="account-dropdown-menu">
+                      {accountNavItems.map((item, index) => (
+                        <button
+                          key={item.key}
+                          className={cn(
+                            'account-dropdown-item',
+                            {
+                              'active': activeTab === item.key,
+                              'focused': accountFocusedIndex === index
+                            }
+                          )}
+                          onClick={() => {
+                            handleTabSwitch(item.key);
+                            setIsAccountDropdownOpen(false);
+                            setAccountFocusedIndex(-1);
+                          }}
+                          onMouseEnter={() => setAccountFocusedIndex(index)}
+                          tabIndex={accountFocusedIndex === index ? 0 : -1}
+                          role="menuitem"
+                        >
+                          <span className="nav-label">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </nav>
             
             {/* RIGHT SIDE: ALL HEADER CONTROLS */}
             <div className="header-controls">
-              {/* PROFILE element - now properly in the flex container */}
-              <div className="profile-nav">
-                <a 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveTab('profile');
-                  }}
-                >
-                  PROFILE
-                </a>
+              {/* Network selector - less prominent */}
+              <div className="network-selector-container">
+                <NetworkSelector 
+                  networks={networks} 
+                  selectedNetwork={selectedNetwork} 
+                  onSelectNetwork={setSelectedNetwork} 
+                />
               </div>
-              
-              {/* Network selector */}
-              <NetworkSelector 
-                networks={networks} 
-                selectedNetwork={selectedNetwork} 
-                onSelectNetwork={setSelectedNetwork} 
-              />
               
               {/* Language selector */}
               <LanguageSelector
+                languages={supportedLanguages}
                 currentLocale={currentLocale}
                 onLanguageChange={handleLanguageChange}
               />
               
-              {/* Theme toggle */}
-              <ThemeToggle />
+              {/* Theme toggle - simplified */}
+              <div className="theme-toggle-container">
+                <ThemeToggle />
+              </div>
               
-              {/* Explorer link */}
+              {/* Explorer link - URL sanitized for security */}
               <a 
-                href={network.explorerUrl} 
+                href={`https://opensvm.com/${sanitizeNetworkForUrl(selectedNetwork)}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="explorer-link"
+                title={`View ${networks[selectedNetwork]?.name || 'Network'} Explorer`}
               >
-                SOLANA EXPLORER
+                Explorer
               </a>
               
-              {/* Install App button with proper prominence */}
-              <PWAInstallButton className="header-prominent-action" />
+              {/* Install App button - icon only */}
+              <PWAInstallButton className="header-install-app" />
               
-              {/* Connected wallet info */}
-              {connected && publicKey && (
-                <span className="connection-status">
-                  Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
-                </span>
-              )}
-              
-              {/* Wallet connection button */}
-              {!connected && (
-                <div className="header-wallet-container">
-                  <WalletMultiButton />
-                </div>
-              )}
-              
-              {/* Disconnect button for connected users */}
-              {connected && <WalletDisconnectButton />}
+              {/* Wallet connection area with enhanced status */}
+              <div className="wallet-connection-area">
+                {renderWalletStatus}
+                
+                {/* Wallet connection button - renamed to Login/Signup */}
+                {!connected && (
+                  <div className="header-wallet-container">
+                    <WalletMultiButton className="login-signup-button">
+                      Login/Signup
+                    </WalletMultiButton>
+                  </div>
+                )}
+                
+                {/* Disconnect button for connected users */}
+                {connected && <WalletDisconnectButton />}
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Mobile Navigation - Stacked below header */}
-        <nav className="mobile-nav">
+        {/* Mobile Navigation - Collapsible below header */}
+        {isMobileMenuOpen && <div className="mobile-nav-backdrop" onClick={() => setIsMobileMenuOpen(false)} />}
+        <nav className={conditional('mobile-nav', 'mobile-nav-open', isMobileMenuOpen)}>
           <div className="mobile-nav-buttons">
             {/* Primary navigation items */}
-            {topNavItems.map((item) => (
+            {primaryNavItems.map((item) => (
               <button
                 key={item.key}
-                className={`mobile-nav-btn ${
-                  activeTab === item.key ? 'active' : ''
-                }`}
-                onClick={() => setActiveTab(item.key)}
+                className={conditional('mobile-nav-btn', 'active', activeTab === item.key)}
+                onClick={() => {
+                  handleTabSwitch(item.key);
+                  setIsMobileMenuOpen(false); // Close menu after selection
+                }}
               >
                 <span className="nav-label">{item.label}</span>
               </button>
             ))}
             
-            {/* Secondary navigation items */}
-            {sidebarNavItems.map((item) => (
-              <button
-                key={item.key}
-                className={`mobile-nav-btn ${
-                  activeTab === item.key ? 'active' : ''
-                }`}
-                onClick={() => setActiveTab(item.key)}
-              >
-                <span className="nav-label">{item.label}</span>
-              </button>
-            ))}
+            {/* Account navigation items */}
+            <div className="mobile-account-section">
+              <div className="mobile-account-header">Account</div>
+              {accountNavItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={conditional('mobile-nav-btn', 'active', activeTab === item.key)}
+                  onClick={() => {
+                    handleTabSwitch(item.key);
+                    setIsMobileMenuOpen(false); // Close menu after selection
+                  }}
+                >
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Mobile wallet controls */}
+            <div className="mobile-wallet-controls">
+              {/* Enhanced wallet status for mobile */}
+              <div className="mobile-wallet-status">
+                {renderWalletStatus}
+              </div>
+              
+              {!connected && (
+                <div className="mobile-wallet-container">
+                  <WalletMultiButton className="mobile-login-signup-button">
+                    Login/Signup
+                  </WalletMultiButton>
+                </div>
+              )}
+              {connected && (
+                <div className="mobile-wallet-disconnect">
+                  <WalletDisconnectButton />
+                </div>
+              )}
+            </div>
           </div>
         </nav>
         
         {/* Main Content */}
         <main id="main-content" className="app-main">
           <div className="container content-container">
-            <div className="content-transition-wrapper fade-in">
+            <div className={conditional('content-transition-wrapper fade-in', 'pending', isPending)}>
               {children}
             </div>
           </div>
@@ -267,3 +562,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     </>
   );
 }
+
+// PropTypes for Layout component
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
+  title: PropTypes.string,
+};
+
+Layout.defaultProps = {
+  title: 'OpenSVM P2P Exchange',
+};

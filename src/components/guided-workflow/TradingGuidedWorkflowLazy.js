@@ -8,7 +8,7 @@
 import React, { lazy, Suspense } from 'react';
 
 // Lazy load the main guided workflow component
-const TradingGuidedWorkflowLazy = lazy(() => 
+const TradingGuidedWorkflowComponent = lazy(() => 
   import('./TradingGuidedWorkflow').then(module => ({
     default: module.default
   }))
@@ -35,7 +35,7 @@ const WorkflowLoadingFallback = ({ message = "Loading guided workflow..." }) => 
 );
 
 // Error boundary for lazy loading failures
-class LazyLoadErrorBoundary extends React.Component {
+export class LazyLoadErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -93,7 +93,7 @@ export const TradingGuidedWorkflowLazy = ({ tradingType, onComplete, preload = f
   return (
     <LazyLoadErrorBoundary>
       <Suspense fallback={<WorkflowLoadingFallback message="Loading trading workflow..." />}>
-        <TradingGuidedWorkflowLazy 
+        <TradingGuidedWorkflowComponent 
           tradingType={tradingType}
           onComplete={onComplete}
           {...props}

@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { cn, conditional } from '@/utils/classNames';
 
 // Custom SVG Icon Component (replace with your actual SVG path data)
 const DropdownIcon = ({ className }) => (
@@ -28,8 +30,10 @@ const LanguageSelector = ({
   const triggerRef = useRef(null);
   const optionRefs = useRef([]);
 
-  // Ensure languages is always an array
-  const safeLanguages = Array.isArray(languages) ? languages : [];
+  // Ensure languages is always an array - memoized for performance
+  const safeLanguages = useMemo(() => 
+    Array.isArray(languages) ? languages : []
+  , [languages]);
 
   // Find current language safely, provide a fallback default
   const currentLanguage = 
@@ -37,12 +41,15 @@ const LanguageSelector = ({
     safeLanguages[0] || 
     { code: 'en', name: 'English', country: 'US' }; // Fallback default
 
-  // Calculate dropdown position
-  const calculateDropdownPosition = () => {
+  // Memoized languages length for performance (static array optimization)
+  const languagesLength = useMemo(() => safeLanguages.length, [safeLanguages]);
+
+  // Calculate dropdown position - optimized callback dependencies
+  const calculateDropdownPosition = useCallback(() => {
     if (triggerRef.current) {
       const buttonRect = triggerRef.current.getBoundingClientRect();
       const dropdownWidth = 200; // Approximate dropdown width
-      const dropdownHeight = Math.min(300, safeLanguages.length * 48 + 16); // Dynamic height based on options
+      const dropdownHeight = Math.min(300, languagesLength * 48 + 16); // Dynamic height based on options
       
       let top = buttonRect.bottom + 4;
       let left = buttonRect.right - dropdownWidth;
@@ -58,7 +65,7 @@ const LanguageSelector = ({
       
       setDropdownPosition({ top, left });
     }
-  };
+  }, [languagesLength]); // More stable dependency
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -93,7 +100,7 @@ const LanguageSelector = ({
         window.removeEventListener('scroll', calculateDropdownPosition);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, calculateDropdownPosition]);
   
   // Keyboard navigation
   const handleKeyDown = (event) => {
@@ -172,13 +179,18 @@ const LanguageSelector = ({
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-controls="language-dropdown"
+        aria-activedescendant={isOpen && focusedIndex >= 0 ? `language-option-${focusedIndex}` : undefined}
         role="combobox"
       >
         <span className="text-sm font-medium">
           {currentLanguage.country} {currentLanguage.code.toUpperCase()}
         </span>
         <DropdownIcon 
-          className={`h-5 w-5 ml-1.5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+          className={conditional(
+            'h-5 w-5 ml-1.5 transition-transform duration-200',
+            'transform rotate-180',
+            isOpen
+          )}
         />
       </button>
       
@@ -187,49 +199,47 @@ const LanguageSelector = ({
           <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} />
           <div 
             id="language-dropdown"
-            className="language-dropdown"
+            className="language-dropdown dropdown-enter"
             style={{
-              position: 'fixed',
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
-              zIndex: 99999,
-              minWidth: '200px',
-              backgroundColor: 'var(--color-background)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-lg)'
             }}
           >
             <div 
-              className="py-1 max-h-60 overflow-auto"
+              className="dropdown-content"
               role="listbox"
               aria-label="Language options"
             >
-              {/* Map over safeLanguages */} 
+              {/* Map over safeLanguages with roving tabindex pattern:
+                  - Only the currently focused option has tabIndex={0}
+                  - All other options have tabIndex={-1} to remove them from tab sequence
+                  - This allows arrow key navigation while maintaining single tab stop
+                  - Screen readers use aria-activedescendant to track focused option */} 
               {safeLanguages.map((language, index) => (
                 <button
                   key={language.code}
+                  id={`language-option-${index}`}
                   ref={el => optionRefs.current[index] = el}
-                  className={`language-option w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors duration-150 ${
-                    language.code === currentLocale 
-                      ? 'bg-gray-800 text-white' 
-                      : 'text-gray-700'
-                  } ${
-                    focusedIndex === index ? 'bg-gray-100' : '' // Keep focus style separate
-                  }`}
+                  className={cn(
+                    'language-option',
+                    {
+                      'selected': language.code === currentLocale,
+                      'focused': focusedIndex === index
+                    }
+                  )}
                   onClick={() => handleLanguageSelect(language.code)}
                   onKeyDown={handleKeyDown}
                   role="option"
                   aria-selected={language.code === currentLocale}
-                  tabIndex={-1}
+                  tabIndex={focusedIndex === index ? 0 : -1}
                 >
-                  <span className="font-medium">
+                  <span className="country-flag">
                     {language.country}{language.code.toUpperCase()}
                   </span>
-                  <span className="ml-3">{language.name}</span>
+                  <span className="language-name">{language.name}</span>
                   {language.code === currentLocale && (
                     <svg 
-                      className="w-4 h-4 ml-auto text-white"
+                      className="check-icon"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -252,5 +262,32 @@ const LanguageSelector = ({
     </div>
   );
 };
+
+// PropTypes for better type safety and component documentation
+LanguageSelector.propTypes = {
+  languages: PropTypes.arrayOf(PropTypes.shape({
+    code: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    country: PropTypes.string.isRequired,
+  })),
+  currentLocale: PropTypes.string,
+  onLanguageChange: PropTypes.func,
+};
+
+LanguageSelector.defaultProps = {
+  languages: [],
+  currentLocale: 'en',
+  onLanguageChange: null,
+};
+
+// PropTypes for DropdownIcon component
+DropdownIcon.propTypes = {
+  className: PropTypes.string,
+};
+
+DropdownIcon.defaultProps = {
+  className: '',
+};
+
 export default LanguageSelector;
 
