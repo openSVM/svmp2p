@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { fetchCompleteRewardData } from '../utils/rewardQueries';
 
 const RewardDashboard = () => {
     const { publicKey, connected } = useWallet();
@@ -19,31 +20,99 @@ const RewardDashboard = () => {
     });
     const [loading, setLoading] = useState(false);
     const [claimLoading, setClaimLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [claimError, setClaimError] = useState(null);
 
-    // Mock data for demonstration
+    // Fetch real data from blockchain
     useEffect(() => {
-        if (connected && publicKey) {
-            // In a real implementation, this would fetch from the blockchain
-            setRewards({
-                totalEarned: 1250,
-                totalClaimed: 800,
-                unclaimedBalance: 450,
-                tradingVolume: 12.5,
-                governanceVotes: 3,
-                lastTradeReward: new Date(Date.now() - 86400000), // 1 day ago
-                lastVoteReward: new Date(Date.now() - 172800000)  // 2 days ago
-            });
-        }
+        const fetchData = async () => {
+            if (!connected || !publicKey) {
+                setRewards({
+                    totalEarned: 0,
+                    totalClaimed: 0,
+                    unclaimedBalance: 0,
+                    tradingVolume: 0,
+                    governanceVotes: 0,
+                    lastTradeReward: null,
+                    lastVoteReward: null
+                });
+                setRewardToken({
+                    rewardRatePerTrade: 100,
+                    rewardRatePerVote: 50,
+                    minTradeVolume: 0.1
+                });
+                return;
+            }
+
+            setLoading(true);
+            setError(null);
+            
+            try {
+                const rewardData = await fetchCompleteRewardData(publicKey);
+                
+                setRewards({
+                    totalEarned: rewardData.userRewards.totalEarned,
+                    totalClaimed: rewardData.userRewards.totalClaimed,
+                    unclaimedBalance: rewardData.userRewards.unclaimedBalance,
+                    tradingVolume: rewardData.userRewards.tradingVolume,
+                    governanceVotes: rewardData.userRewards.governanceVotes,
+                    lastTradeReward: rewardData.userRewards.lastTradeReward,
+                    lastVoteReward: rewardData.userRewards.lastVoteReward
+                });
+                
+                setRewardToken({
+                    rewardRatePerTrade: rewardData.rewardToken.rewardRatePerTrade,
+                    rewardRatePerVote: rewardData.rewardToken.rewardRatePerVote,
+                    minTradeVolume: rewardData.rewardToken.minTradeVolume
+                });
+            } catch (err) {
+                console.error('Failed to fetch reward data:', err);
+                setError(`Failed to load reward data: ${err.message}`);
+                
+                // Fallback to default values on error
+                setRewards({
+                    totalEarned: 0,
+                    totalClaimed: 0,
+                    unclaimedBalance: 0,
+                    tradingVolume: 0,
+                    governanceVotes: 0,
+                    lastTradeReward: null,
+                    lastVoteReward: null
+                });
+                setRewardToken({
+                    rewardRatePerTrade: 100,
+                    rewardRatePerVote: 50,
+                    minTradeVolume: 0.1
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [connected, publicKey]);
 
     const handleClaimRewards = async () => {
         if (!connected || rewards.unclaimedBalance === 0) return;
         
         setClaimLoading(true);
+        setClaimError(null);
+        
         try {
             // In a real implementation, this would call the claim_rewards instruction
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate transaction
+            // For now, simulate the transaction with potential for errors
+            await new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    // Simulate 10% chance of failure for demonstration
+                    if (Math.random() < 0.1) {
+                        reject(new Error('Transaction failed: Insufficient funds for gas fees'));
+                    } else {
+                        resolve();
+                    }
+                }, 2000);
+            });
             
+            // Update local state on success
             setRewards(prev => ({
                 ...prev,
                 totalClaimed: prev.totalClaimed + prev.unclaimedBalance,
@@ -54,6 +123,7 @@ const RewardDashboard = () => {
             console.log('Rewards claimed successfully!');
         } catch (error) {
             console.error('Failed to claim rewards:', error);
+            setClaimError(error.message || 'Failed to claim rewards. Please try again.');
         } finally {
             setClaimLoading(false);
         }
@@ -85,6 +155,51 @@ const RewardDashboard = () => {
                     <h2 className="text-2xl font-bold mb-2">🎁 Loyalty Rewards</h2>
                     <p className="text-gray-600">Earn tokens through trading and governance participation</p>
                 </div>
+
+                {/* Loading State */}
+                {loading && (
+                    <div className="loading-card">
+                        <div className="loading-spinner"></div>
+                        <p>Loading your reward data...</p>
+                    </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                    <div className="error-card">
+                        <div className="error-icon">⚠️</div>
+                        <h3>Failed to Load Rewards</h3>
+                        <p>{error}</p>
+                        <button 
+                            className="retry-button"
+                            onClick={() => window.location.reload()}
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
+
+                {/* Main Content - only show when not loading and no error */}
+                {!loading && !error && (
+                    <>
+                        {/* Claim Error Alert */}
+                        {claimError && (
+                            <div className="claim-error-alert">
+                                <div className="alert-content">
+                                    <span className="alert-icon">❌</span>
+                                    <div className="alert-text">
+                                        <strong>Claim Failed</strong>
+                                        <p>{claimError}</p>
+                                    </div>
+                                    <button 
+                                        className="alert-close"
+                                        onClick={() => setClaimError(null)}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                 {/* Reward Balance Card */}
                 <div className="reward-card balance-card">
@@ -199,6 +314,8 @@ const RewardDashboard = () => {
                         </div>
                     </div>
                 </div>
+                </>
+                )}
             </div>
 
             <style jsx>{`
@@ -340,6 +457,121 @@ const RewardDashboard = () => {
                 .rate-value {
                     color: #059669;
                     font-weight: 600;
+                }
+
+                /* Loading and Error States */
+                .loading-card {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 40px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    border: 1px solid #e5e7eb;
+                    text-align: center;
+                }
+
+                .loading-spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #f3f4f6;
+                    border-top: 4px solid #7c3aed;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 16px;
+                }
+
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+
+                .error-card {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 40px;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    border: 1px solid #fecaca;
+                    text-align: center;
+                }
+
+                .error-icon {
+                    font-size: 48px;
+                    margin-bottom: 16px;
+                }
+
+                .retry-button {
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    margin-top: 16px;
+                    transition: background 0.2s;
+                }
+
+                .retry-button:hover {
+                    background: #dc2626;
+                }
+
+                .claim-error-alert {
+                    background: #fef2f2;
+                    border: 1px solid #fecaca;
+                    border-radius: 8px;
+                    padding: 16px;
+                    margin-bottom: 20px;
+                }
+
+                .alert-content {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+
+                .alert-icon {
+                    font-size: 20px;
+                    margin-top: 2px;
+                }
+
+                .alert-text {
+                    flex: 1;
+                }
+
+                .alert-text strong {
+                    color: #dc2626;
+                    font-weight: 600;
+                }
+
+                .alert-text p {
+                    color: #6b7280;
+                    font-size: 14px;
+                    margin: 4px 0 0 0;
+                }
+
+                .alert-close {
+                    background: none;
+                    border: none;
+                    font-size: 20px;
+                    color: #9ca3af;
+                    cursor: pointer;
+                    padding: 0;
+                    width: 24px;
+                    height: 24px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .alert-close:hover {
+                    color: #6b7280;
                 }
 
                 @media (max-width: 768px) {
