@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -194,31 +194,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -287,7 +282,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -320,26 +320,26 @@
 /**
  * SellWorkflowReviewEscrow component - Step for reviewing escrow details in the sell workflow
  */
-const SellWorkflowReviewEscrow = ({ offerDetails, onConfirm, onBack }) =&gt; {
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isAgreed, setIsAgreed] = useState(false);
+const SellWorkflowReviewEscrow = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >({</span> offerDetails, onConfirm, onBack }) =&gt; {</span>
+  const [isConfirming, setIsConfirming] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [isAgreed, setIsAgreed] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
   
   // Calculate fees
-  const networkFee = 0.000005; // SOL
-  const serviceFee = offerDetails.solAmount * 0.01; // 1% service fee
-  const totalSolLocked = offerDetails.solAmount + networkFee + serviceFee;
+  const networkFee = <span class="cstat-no" title="statement not covered" >0.000005;</span> // SOL
+  const serviceFee = <span class="cstat-no" title="statement not covered" >offerDetails.solAmount * 0.01;</span> // 1% service fee
+  const totalSolLocked = <span class="cstat-no" title="statement not covered" >offerDetails.solAmount + networkFee + serviceFee;</span>
   
-  const handleConfirm = () =&gt; {
-    setIsConfirming(true);
+  const handleConfirm = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setIsConfirming(true);</span>
     
     // Simulate blockchain interaction
-    setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >      setIsConfirming(false);</span>
 <span class="cstat-no" title="statement not covered" >      onConfirm();</span>
     }, 2000);
   };
   
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className="sell-workflow-review-escrow"&gt;
       &lt;div className="review-header"&gt;
         &lt;h3&gt;Review Escrow Details&lt;/h3&gt;
@@ -413,7 +413,7 @@ const SellWorkflowReviewEscrow = ({ offerDetails, onConfirm, onBack }) =&gt; {
           &lt;input 
             type="checkbox" 
             checked={isAgreed} 
-            onChange={() =&gt; setIsAgreed(!isAgreed)}
+            onChange={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setIsAgreed(!isAgreed)}</span>
           /&gt;
           &lt;span className="checkmark"&gt;&lt;/span&gt;
           I understand that my SOL will be locked in escrow until the trade is completed
@@ -448,7 +448,7 @@ export default SellWorkflowReviewEscrow;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-12T02:14:25.897Z
+                at 2025-06-12T02:25:06.646Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

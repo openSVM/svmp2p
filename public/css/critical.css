@@ -1,0 +1,105 @@
+/* Critical CSS for faster First Contentful Paint */
+
+/* Loading state management */
+html {
+  --loading-opacity: 0;
+  font-display: swap;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  opacity: var(--loading-opacity);
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Critical app structure */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+/* Loading states */
+.loading-placeholder,
+.loading-offer-creation,
+.loading-offer-list,
+.loading-disputes,
+.loading-profile,
+.loading-error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin: 1rem 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Prevent layout shifts */
+.lazy-image-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.logo-image,
+.nav-icon,
+.wallet-icon svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+/* Animation performance */
+* {
+  box-sizing: border-box;
+}
+
+.transition-gpu {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.placeholder-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}

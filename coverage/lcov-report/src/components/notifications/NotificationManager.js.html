@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">47.36% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/19</span>
+                <span class='fraction'>0/19</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/6</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">56.25% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/16</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -124,21 +124,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -146,20 +139,27 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -177,15 +177,15 @@ import ToastContainer from './ToastContainer';
  * NotificationManager component integrates the notification system with the application
  * It renders the toast notifications and handles their lifecycle
  */
-const NotificationManager = () =&gt; {
-  const [toasts, setToasts] = useState([]);
-  const { notifications, removeNotification } = useNotifications();
+const NotificationManager = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+  const [toasts, setToasts] = <span class="cstat-no" title="statement not covered" >useState([]);</span>
+  const { notifications, removeNotification } = <span class="cstat-no" title="statement not covered" >useNotifications();</span>
   
   // Extract toast notifications from all notifications
-  useEffect(() =&gt; {
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
     // Find notifications that should be displayed as toasts (recent success, error, warning)
-    const now = new Date();
-    const recentToasts = notifications
+    const now = <span class="cstat-no" title="statement not covered" >new Date();</span>
+    const recentToasts = <span class="cstat-no" title="statement not covered" >notifications</span>
       .filter(<span class="fstat-no" title="function not covered" >no</span>tification =&gt; {
         // Only show notifications from the last 5 seconds as toasts
         const notificationTime = <span class="cstat-no" title="statement not covered" >new Date(notification.timestamp);</span>
@@ -204,15 +204,15 @@ const NotificationManager = () =&gt; {
       })
       .slice(0, 5); // Limit to 5 toasts at a time
     
-    setToasts(recentToasts);
+<span class="cstat-no" title="statement not covered" >    setToasts(recentToasts);</span>
   }, [notifications]);
   
   // Handle closing a toast
-  const handleCloseToast = <span class="fstat-no" title="function not covered" >(i</span>d) =&gt; {
+  const handleCloseToast = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    setToasts(<span class="fstat-no" title="function not covered" >pr</span>evToasts =&gt; <span class="cstat-no" title="statement not covered" >prevToasts.filter(<span class="fstat-no" title="function not covered" >to</span>ast =&gt; <span class="cstat-no" title="statement not covered" >toast.id !== id)</span>)</span>;</span>
   };
   
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;ToastContainer
       toasts={toasts}
       position="top-right"
@@ -229,7 +229,7 @@ export default NotificationManager;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-12T02:14:25.897Z
+                at 2025-06-12T02:25:06.646Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
