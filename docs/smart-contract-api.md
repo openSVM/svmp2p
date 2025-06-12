@@ -1,14 +1,30 @@
 # Smart Contract API Documentation
 
+> **📚 New Comprehensive Documentation Available**
+> 
+> This document has been superseded by our new comprehensive API documentation. For the most up-to-date and detailed information, please visit:
+>
+> **[Complete API Documentation](api/README.md)**
+>
+> ### Quick Links:
+> - **[Smart Contract Instructions](api/smart-contracts.md)** - Complete instruction reference
+> - **[Account Structures](api/account-structures.md)** - Detailed account specifications  
+> - **[Error Codes](api/error-codes.md)** - Error handling reference
+> - **[Events](api/events.md)** - Event monitoring and handling
+> - **[Transaction Flows](api/transaction-flows.md)** - Implementation examples
+> - **[Wallet Operations](api/wallet-operations.md)** - Wallet integration patterns
+
+---
+
 ## Overview
-This document provides detailed information about the Solana smart contract API for the SVMP2P platform. It covers all available functions, their parameters, return values, and error conditions.
+This document provides basic information about the Solana smart contract API for the SVMP2P platform. For comprehensive documentation with TypeScript examples, error handling patterns, and security guidelines, please refer to the new API documentation linked above.
 
 ## Table of Contents
-- [Account Structures](#account-structures)
-- [Instructions](#instructions)
-- [Error Codes](#error-codes)
-- [Usage Examples](#usage-examples)
-- [Security Considerations](#security-considerations)
+- [Account Structures](#account-structures) *(Basic - see [detailed version](api/account-structures.md))*
+- [Instructions](#instructions) *(Basic - see [detailed version](api/smart-contracts.md))*
+- [Error Codes](#error-codes) *(Basic - see [detailed version](api/error-codes.md))*
+- [Usage Examples](#usage-examples) *(Basic - see [examples directory](api/examples/))*
+- [Security Considerations](#security-considerations) *(Basic - see detailed security guides)*
 
 ## Account Structures
 

@@ -224,94 +224,64 @@ The Solana program consists of several key components:
 
 ## API Reference
 
-### Frontend Components API
+### 📚 Comprehensive API Documentation
 
-#### NotificationContext
-```javascript
-// Import
-import { useNotifications } from './components/notifications/NotificationContext';
+We provide extensive API documentation for developers integrating with SVMP2P:
 
-// Usage
-const { 
-  notifications,
-  notifySuccess,
-  notifyError,
-  markAsRead,
-  removeNotification
-} = useNotifications();
+#### **[Complete API Documentation Hub](api/README.md)**
+Central hub for all API documentation with version information and navigation.
 
-// Methods
-notifySuccess(title, message, options);
-notifyError(title, message, options);
-markAsRead(notificationId);
-removeNotification(notificationId);
-```
+#### Core API References
+- **[Smart Contract API](api/smart-contracts.md)** - Complete instruction reference with parameters, behaviors, and examples
+- **[Account Structures](api/account-structures.md)** - Detailed account specifications and TypeScript interfaces
+- **[Wallet Operations](api/wallet-operations.md)** - Wallet connection, transaction signing, and security patterns
+- **[Error Codes](api/error-codes.md)** - Complete error reference with recovery strategies
+- **[Events](api/events.md)** - Smart contract event monitoring and handling
+- **[Transaction Flows](api/transaction-flows.md)** - End-to-end implementation examples
 
-#### OfferCreation
-```javascript
-// Import
-import OfferCreation from './components/OfferCreation';
+#### Developer Resources
+- **[Code Examples](api/examples/)** - Ready-to-use TypeScript examples
+- **[API Changelog](api/CHANGELOG.md)** - Version history and migration guides
+- **Program ID**: `FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9`
+- **Current API Version**: 1.0.0
 
-// Props
-<OfferCreation
-  onSubmit={handleSubmit}
-  initialValues={initialValues}
-  isLoading={isLoading}
-/>
-```
+### Legacy Documentation
+- **[Basic Smart Contract API](smart-contract-api.md)** - Basic API overview (see comprehensive docs above)
+- **[Frontend Components](frontend-components.md)** - UI component documentation
+- **[Enhanced Reward System](enhanced-reward-system.md)** - Reward system details
 
-#### UserProfile
-```javascript
-// Import
-import UserProfile from './components/UserProfile';
+### Quick Start Examples
 
-// Props
-<UserProfile
-  userId={userId}
-  isCurrentUser={isCurrentUser}
-/>
-```
+#### Creating an Offer (TypeScript)
+```typescript
+import { Program, BN } from '@coral-xyz/anchor';
+import { createAndListOffer } from './api/examples/basic-trading/create-offer';
 
-### Smart Contract API
-
-#### Creating an Offer
-```javascript
-// Import
-import { createOffer } from './api/solana';
-
-// Usage
-const result = await createOffer({
-  assetType: 'SOL',
-  amount: 1.5,
-  price: 100,
-  paymentMethods: ['USDC', 'Bank Transfer'],
-  terms: 'Payment must be completed within 30 minutes'
+const result = await createAndListOffer(program, seller, {
+  amount: new BN(1 * LAMPORTS_PER_SOL), // 1 SOL
+  fiatAmount: new BN(50000), // $500.00 in cents
+  currency: 'USD',
+  paymentMethod: 'Bank transfer - Chase Bank'
 });
 ```
 
-#### Accepting an Offer
-```javascript
-// Import
-import { acceptOffer } from './api/solana';
+#### Wallet Connection
+```typescript
+import { useWallet } from '@solana/wallet-adapter-react';
 
-// Usage
-const result = await acceptOffer({
-  offerId: 'offer123',
-  buyerWallet: 'buyer_wallet_address'
-});
+const { connect, connected, publicKey } = useWallet();
+
+const handleConnect = async () => {
+  try {
+    await connect();
+    console.log('Connected:', publicKey?.toString());
+  } catch (error) {
+    console.error('Connection failed:', error);
+  }
+};
 ```
 
-#### Completing a Trade
-```javascript
-// Import
-import { completeTrade } from './api/solana';
-
-// Usage
-const result = await completeTrade({
-  tradeId: 'trade123',
-  feedback: 'Smooth transaction, great trader!'
-});
-```
+For complete examples and advanced patterns, see the [examples directory](api/examples/).
 
 ## Troubleshooting
 
