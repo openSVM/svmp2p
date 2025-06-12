@@ -28,7 +28,23 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const wallet = useSafeWallet(); // Get the full wallet object for enhanced status
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
+  // State for mobile menu and account dropdown
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+
+  // Primary navigation items (main actions)
+  const primaryNavItems = useMemo(() => [
+    { key: 'buy', label: 'BUY', icon: 'B' },
+    { key: 'sell', label: 'SELL', icon: 'S' },
+    { key: 'help', label: 'HELP', icon: '?' },
+  ], []);
+
+  // Secondary navigation items (grouped under Account dropdown)
+  const accountNavItems = useMemo(() => [
+    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
+    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
+    { key: 'profile', label: 'PROFILE', icon: 'P' },
+  ], []);
 
   // Supported languages - moved up to avoid initialization issues
   const supportedLanguages = useMemo(() => [
@@ -64,11 +80,16 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     }
   }, [supportedLanguages]);
 
-  // Close mobile menu when clicking outside or pressing Escape
+  // Close account dropdown when clicking outside or pressing Escape
   useEffect(() => {
     const handleEscape = (event) => {
-      if (event.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
+      if (event.key === 'Escape') {
+        if (isMobileMenuOpen) {
+          setIsMobileMenuOpen(false);
+        }
+        if (isAccountDropdownOpen) {
+          setIsAccountDropdownOpen(false);
+        }
       }
     };
 
@@ -76,18 +97,19 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
       if (isMobileMenuOpen && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-menu-toggle')) {
         setIsMobileMenuOpen(false);
       }
+      if (isAccountDropdownOpen && !event.target.closest('.account-dropdown') && !event.target.closest('.account-dropdown-trigger')) {
+        setIsAccountDropdownOpen(false);
+      }
     };
 
-    if (isMobileMenuOpen) {
-      document.addEventListener('keydown', handleEscape);
-      document.addEventListener('click', handleClickOutside);
-      
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-        document.removeEventListener('click', handleClickOutside);
-      };
-    }
-  }, [isMobileMenuOpen]);
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('click', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMobileMenuOpen, isAccountDropdownOpen]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -185,18 +207,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     );
   };
 
-  // Top navbar items (most important sections)
-  const topNavItems = [
-    { key: 'buy', label: 'BUY', icon: 'B' },
-    { key: 'sell', label: 'SELL', icon: 'S' },
-    { key: 'help', label: 'HELP', icon: '?' },
-  ];
 
-  // Sidebar navigation items (secondary sections)
-  const sidebarNavItems = [
-    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
-    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
-  ];
 
   return (
     <>
@@ -243,7 +254,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             {/* Desktop Navigation - Horizontal layout for desktop */}
             <nav className="desktop-nav">
               {/* Primary navigation items */}
-              {topNavItems.map((item) => (
+              {primaryNavItems.map((item) => (
                 <button
                   key={item.key}
                   className={`nav-tab ${
@@ -255,41 +266,62 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 </button>
               ))}
               
-              {/* Secondary navigation items (previously in sidebar) */}
-              {sidebarNavItems.map((item) => (
+              {/* Account dropdown for secondary items */}
+              <div className="account-dropdown">
                 <button
-                  key={item.key}
-                  className={`nav-tab ${
-                    activeTab === item.key ? 'active' : ''
+                  className={`nav-tab account-dropdown-trigger ${
+                    accountNavItems.some(item => item.key === activeTab) ? 'active' : ''
                   }`}
-                  onClick={() => setActiveTab(item.key)}
+                  onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
+                  aria-expanded={isAccountDropdownOpen}
+                  aria-haspopup="true"
                 >
-                  <span className="nav-label">{item.label}</span>
+                  <span className="nav-label">ACCOUNT</span>
+                  <svg 
+                    className={`dropdown-arrow ${isAccountDropdownOpen ? 'rotated' : ''}`} 
+                    width="12" 
+                    height="12" 
+                    viewBox="0 0 12 12" 
+                    fill="currentColor"
+                  >
+                    <path d="M6 8L2 4h8l-4 4z"/>
+                  </svg>
                 </button>
-              ))}
+                
+                {isAccountDropdownOpen && (
+                  <>
+                    <div className="dropdown-backdrop" onClick={() => setIsAccountDropdownOpen(false)} />
+                    <div className="account-dropdown-menu">
+                      {accountNavItems.map((item) => (
+                        <button
+                          key={item.key}
+                          className={`account-dropdown-item ${
+                            activeTab === item.key ? 'active' : ''
+                          }`}
+                          onClick={() => {
+                            setActiveTab(item.key);
+                            setIsAccountDropdownOpen(false);
+                          }}
+                        >
+                          <span className="nav-label">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </nav>
             
             {/* RIGHT SIDE: ALL HEADER CONTROLS */}
             <div className="header-controls">
-              {/* PROFILE element - now properly in the flex container */}
-              <div className="profile-nav">
-                <a 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveTab('profile');
-                  }}
-                >
-                  PROFILE
-                </a>
+              {/* Network selector - less prominent */}
+              <div className="network-selector-container">
+                <NetworkSelector 
+                  networks={networks} 
+                  selectedNetwork={selectedNetwork} 
+                  onSelectNetwork={setSelectedNetwork} 
+                />
               </div>
-              
-              {/* Network selector */}
-              <NetworkSelector 
-                networks={networks} 
-                selectedNetwork={selectedNetwork} 
-                onSelectNetwork={setSelectedNetwork} 
-              />
               
               {/* Language selector */}
               <LanguageSelector
@@ -298,30 +330,35 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 onLanguageChange={handleLanguageChange}
               />
               
-              {/* Theme toggle */}
-              <ThemeToggle />
+              {/* Theme toggle - simplified */}
+              <div className="theme-toggle-container">
+                <ThemeToggle />
+              </div>
               
-              {/* Explorer link */}
+              {/* Explorer link - simplified */}
               <a 
-                href={network.explorerUrl} 
+                href={`https://opensvm.com/${selectedNetwork}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="explorer-link"
+                title={`View ${networks[selectedNetwork]?.name || 'Network'} Explorer`}
               >
-                SOLANA EXPLORER
+                Explorer
               </a>
               
-              {/* Install App button with proper prominence */}
-              <PWAInstallButton className="header-prominent-action" />
+              {/* Install App button - icon only */}
+              <PWAInstallButton className="header-install-app" />
               
               {/* Wallet connection area with enhanced status */}
               <div className="wallet-connection-area">
                 {renderWalletStatus()}
                 
-                {/* Wallet connection button */}
+                {/* Wallet connection button - renamed to Login/Signup */}
                 {!connected && (
                   <div className="header-wallet-container">
-                    <WalletMultiButton />
+                    <WalletMultiButton className="login-signup-button">
+                      Login/Signup
+                    </WalletMultiButton>
                   </div>
                 )}
                 
@@ -337,7 +374,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         <nav className={`mobile-nav ${isMobileMenuOpen ? 'mobile-nav-open' : ''}`}>
           <div className="mobile-nav-buttons">
             {/* Primary navigation items */}
-            {topNavItems.map((item) => (
+            {primaryNavItems.map((item) => (
               <button
                 key={item.key}
                 className={`mobile-nav-btn ${
@@ -352,21 +389,24 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               </button>
             ))}
             
-            {/* Secondary navigation items */}
-            {sidebarNavItems.map((item) => (
-              <button
-                key={item.key}
-                className={`mobile-nav-btn ${
-                  activeTab === item.key ? 'active' : ''
-                }`}
-                onClick={() => {
-                  setActiveTab(item.key);
-                  setIsMobileMenuOpen(false); // Close menu after selection
-                }}
-              >
-                <span className="nav-label">{item.label}</span>
-              </button>
-            ))}
+            {/* Account navigation items */}
+            <div className="mobile-account-section">
+              <div className="mobile-account-header">Account</div>
+              {accountNavItems.map((item) => (
+                <button
+                  key={item.key}
+                  className={`mobile-nav-btn ${
+                    activeTab === item.key ? 'active' : ''
+                  }`}
+                  onClick={() => {
+                    setActiveTab(item.key);
+                    setIsMobileMenuOpen(false); // Close menu after selection
+                  }}
+                >
+                  <span className="nav-label">{item.label}</span>
+                </button>
+              ))}
+            </div>
             
             {/* Mobile wallet controls */}
             <div className="mobile-wallet-controls">
@@ -377,7 +417,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               
               {!connected && (
                 <div className="mobile-wallet-container">
-                  <WalletMultiButton />
+                  <WalletMultiButton className="mobile-login-signup-button">
+                    Login/Signup
+                  </WalletMultiButton>
                 </div>
               )}
               {connected && (

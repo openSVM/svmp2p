@@ -266,6 +266,181 @@
   border-color: var(--color-border);
 }
 
+/* ===== NAVBAR IMPROVEMENTS - ACCOUNT DROPDOWN ===== */
+.account-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.account-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.dropdown-arrow {
+  transition: transform var(--transition-fast) ease;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.account-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  min-width: 160px;
+  animation: dropdownSlideIn 0.2s ease-out forwards;
+}
+
+.account-dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: transparent;
+  border: none;
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  border-radius: var(--radius-sm);
+  margin: var(--spacing-1);
+}
+
+.account-dropdown-item:hover {
+  background-color: var(--color-background-alt);
+}
+
+.account-dropdown-item.active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+.account-dropdown-item:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== VISUAL HIERARCHY IMPROVEMENTS ===== */
+
+/* Reduce prominence of network selector */
+.network-selector-container .network-selector-button {
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground-muted);
+}
+
+/* Theme toggle - icon only, less prominent */
+.theme-toggle-container .theme-toggle {
+  background: none;
+  border: none;
+  padding: var(--spacing-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast) ease;
+  color: var(--color-foreground-muted);
+}
+
+.theme-toggle-container .theme-toggle:hover {
+  background-color: var(--color-background-alt);
+}
+
+.theme-toggle-container .theme-toggle .theme-icon {
+  font-size: 16px;
+}
+
+.theme-toggle-container .theme-toggle .theme-label {
+  display: none; /* Hide text label for cleaner look */
+}
+
+/* Explorer link - simplified */
+.explorer-link {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+  text-decoration: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) ease;
+}
+
+.explorer-link:hover {
+  color: var(--color-primary);
+  background-color: var(--color-background-alt);
+}
+
+/* Install app button - icon only */
+.header-install-app {
+  padding: var(--spacing-2);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-foreground-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+}
+
+.header-install-app:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Login/Signup button styling */
+.login-signup-button {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border: none !important;
+  font-weight: var(--font-weight-medium) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.login-signup-button:hover {
+  background-color: var(--color-primary-hover) !important;
+}
+
+/* Mobile account section */
+.mobile-account-section {
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.mobile-account-header {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-2);
+  padding: 0 var(--spacing-4);
+}
+
+.mobile-login-signup-button {
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border: none !important;
+  font-weight: var(--font-weight-medium) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.mobile-login-signup-button:hover {
+  background-color: var(--color-primary-hover) !important;
+}
+
 /* ===== RESPONSIVE BREAKPOINTS ===== */
 @media (max-width: 768px) {
   /* Show mobile menu toggle button */

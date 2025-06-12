@@ -18,7 +18,7 @@ const PWAInstallButton = ({ className = '' }) => {
   return (
     <button
       onClick={handleInstall}
-      className={`pwa-install-button ${className} pulse-attention`}
+      className={`pwa-install-button ${className}`}
       aria-label="Install app for offline use"
       title="Install OpenSVM P2P Exchange for faster access and offline features"
     >
@@ -29,7 +29,6 @@ const PWAInstallButton = ({ className = '' }) => {
           <line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
       </span>
-      <span className="pwa-install-text hidden sm:inline">Install App</span>
     </button>
   );
 };

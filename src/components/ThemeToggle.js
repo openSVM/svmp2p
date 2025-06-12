@@ -64,9 +64,9 @@ const ThemeToggle = () => {
   };
 
   const getThemeIcon = () => {
-    if (theme === 'light') return '[L]';
-    if (theme === 'dark') return '[D]';
-    return '[S]'; // system
+    if (theme === 'light') return '☀️';
+    if (theme === 'dark') return '🌙';
+    return '🔄'; // system
   };
 
   const getNextTheme = () => {
@@ -78,7 +78,7 @@ const ThemeToggle = () => {
   const getThemeLabel = () => {
     if (theme === 'light') return 'Light';
     if (theme === 'dark') return 'Dark';
-    return 'System';
+    return 'Auto';
   };
 
   return (
@@ -86,10 +86,9 @@ const ThemeToggle = () => {
       className="theme-toggle"
       onClick={() => handleThemeChange(getNextTheme())}
       aria-label={`Switch to ${getNextTheme()} theme`}
-      title={`Current: ${getThemeLabel()}. Click to switch to ${getNextTheme()}`}
+      title={`Theme: ${getThemeLabel()}. Click to switch to ${getNextTheme()}`}
     >
       <span className="theme-icon">{getThemeIcon()}</span>
-      <span className="theme-label">{getThemeLabel()}</span>
     </button>
   );
 };
