@@ -22,9 +22,14 @@ const RewardWidget = ({ compact = false }) => {
                 </div>
                 <style jsx>{`
                     .reward-widget {
-                        background: linear-gradient(135deg, #7c3aed, #a855f7);
-                        color: white;
-                        border-radius: 8px;
+                        /* Use glass effect instead of gradient */
+                        /* background: linear-gradient(135deg, #7c3aed, #a855f7); */
+                        background: rgba(124, 58, 237, 0.15);
+                        backdrop-filter: blur(10px);
+                        -webkit-backdrop-filter: blur(10px);
+                        border: 1px solid rgba(124, 58, 237, 0.2);
+                        color: var(--color-foreground);
+                        border-radius: 0;
                         padding: ${compact ? '8px 12px' : '12px 16px'};
                         cursor: pointer;
                         transition: all 0.2s;
@@ -33,7 +38,10 @@ const RewardWidget = ({ compact = false }) => {
 
                     .reward-widget:hover {
                         transform: translateY(-1px);
-                        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+                        background: rgba(124, 58, 237, 0.2);
+                        backdrop-filter: blur(12px);
+                        -webkit-backdrop-filter: blur(12px);
+                        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
                     }
 
                     .widget-content {

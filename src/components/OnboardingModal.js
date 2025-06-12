@@ -477,13 +477,19 @@ export default OnboardingModal;
   }
 
   .setup-status.checking {
-    background: #f3f4f6;
-    color: #6b7280;
+    background: rgba(243, 244, 246, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+    color: var(--color-foreground-muted);
   }
 
   .setup-status.exists {
-    background: #dcfce7;
-    color: #166534;
+    background: rgba(220, 252, 231, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(22, 101, 52, 0.2);
+    color: var(--color-success);
   }
 
   .setup-status.needed {
@@ -492,27 +498,39 @@ export default OnboardingModal;
   }
 
   .setup-status.creating {
-    background: #dbeafe;
-    color: #1e40af;
+    background: rgba(219, 234, 254, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(30, 64, 175, 0.2);
+    color: var(--color-info);
   }
 
   .setup-status.created {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(254, 243, 199, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(146, 64, 14, 0.2);
+    color: var(--color-warning);
   }
 
   .setup-status.error {
-    background: #fee2e2;
-    color: #dc2626;
+    background: rgba(254, 226, 226, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    color: var(--color-error);
     flex-direction: column;
     gap: 12px;
   }
 
   .setup-rewards-button {
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    color: white;
-    border: none;
-    border-radius: 8px;
+    /* Use glass effect instead of gradient */
+    background: rgba(124, 58, 237, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    color: var(--color-foreground);
+    border-radius: 0;
     padding: 12px 24px;
     font-size: 16px;
     font-weight: 600;
@@ -522,22 +540,28 @@ export default OnboardingModal;
 
   .setup-rewards-button:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    background: rgba(124, 58, 237, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
   }
 
   .setup-rewards-button:disabled {
-    background: #e5e7eb;
-    color: #9ca3af;
+    background: rgba(229, 231, 235, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(156, 163, 175, 0.2);
+    color: var(--color-foreground-muted);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
   }
 
   .retry-button {
-    background: #3b82f6;
+    background-color: var(--color-primary);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 0;
     padding: 8px 16px;
     font-size: 14px;
     cursor: pointer;
@@ -545,11 +569,11 @@ export default OnboardingModal;
   }
 
   .retry-button:hover:not(:disabled) {
-    background: #2563eb;
+    background-color: var(--color-primary-dark);
   }
 
   .retry-button:disabled {
-    background: #9ca3af;
+    background-color: var(--color-foreground-muted);
     cursor: not-allowed;
   }
 

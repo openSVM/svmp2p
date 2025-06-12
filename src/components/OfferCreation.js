@@ -383,11 +383,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .guided-workflow-button {
-          background-color: #3b82f6;
+          background-color: var(--color-primary);
           color: white;
           border: none;
           padding: 8px 16px;
-          border-radius: 4px;
+          border-radius: 0;
           cursor: pointer;
           font-size: 0.9rem;
           display: flex;
@@ -403,13 +403,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           width: 18px;
           height: 18px;
           background-color: rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
+          border-radius: 0;
           font-size: 0.8rem;
           font-weight: bold;
         }
 
         .guided-workflow-button:hover {
-          background-color: #2563eb;
+          background-color: var(--color-primary-dark);
         }
 
         .input-error {
