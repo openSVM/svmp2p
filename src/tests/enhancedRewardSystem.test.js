@@ -11,10 +11,10 @@ import {
   clearClaimCooldown,
   getCooldownStats,
   getRetryConfigOptions
-} from '../src/utils/rewardTransactions';
+} from '../utils/rewardTransactions';
 
-import { getAutoClaimManager } from '../src/utils/autoClaimManager';
-import MultiSigGovernanceManager, { GovernanceUtils } from '../src/utils/multiSigGovernance';
+import { getAutoClaimManager } from '../utils/autoClaimManager';
+import MultiSigGovernanceManager, { GovernanceUtils } from '../utils/multiSigGovernance';
 
 // Mock PublicKey for testing
 class MockPublicKey {
