@@ -12,8 +12,14 @@ const nextConfig = {
   images: {
     domains: [],
     unoptimized: true,
+    // Optimize image loading
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp'],
   },
-  webpack: (config) => {
+  // Enable compression
+  compress: true,
+  webpack: (config, { dev, isServer }) => {
     // Polyfills for blockchain compatibility
     config.resolve.fallback = {
       ...config.resolve.fallback,
@@ -33,6 +39,49 @@ const nextConfig = {
         Buffer: ['buffer', 'Buffer']
       })
     );
+
+    // Fix for Solana web3.js module parsing issues
+    config.module.rules.push({
+      test: /\.m?js$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
+    // Performance optimizations
+    if (!dev && !isServer) {
+      // Bundle splitting optimizations
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all',
+          },
+          solana: {
+            test: /[\\/]node_modules[\\/]@solana[\\/]/,
+            name: 'solana',
+            priority: 10,
+            chunks: 'all',
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            priority: 20,
+            chunks: 'all',
+          },
+        },
+      };
+    }
 
     return config;
   },

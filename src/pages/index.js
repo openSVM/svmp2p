@@ -1,22 +1,63 @@
 import React, { useContext } from 'react';
 import dynamic from 'next/dynamic';
 import { useSafeWallet } from '@/contexts/WalletContextProvider';
+import { createLazyComponent, useIdlePreloader } from '@/utils/lazyLoading';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
 
-// Import ErrorBoundary
-const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary'), { ssr: false });
+// Create optimized lazy components with enhanced loading
+const ErrorBoundary = createLazyComponent(
+  () => import('@/components/ErrorBoundary'),
+  { 
+    fallback: <div className="loading-error-boundary">Loading...</div>,
+    preload: true 
+  }
+);
 
-// Dynamically import components that need client-side only rendering
-const OfferCreation = dynamic(() => import('@/components/OfferCreation'), { ssr: false });
-const OfferList = dynamic(() => import('@/components/OfferList'), { ssr: false });
-const DisputeResolution = dynamic(() => import('@/components/DisputeResolution'), { ssr: false });
-const UserProfile = dynamic(() => import('@/components/UserProfile'), { ssr: false });
+// Lazy load components with intersection observer for better performance
+const OfferCreation = createLazyComponent(
+  () => import('@/components/OfferCreation'),
+  {
+    fallback: <div className="loading-offer-creation">Loading offer creation...</div>,
+    retryDelay: 1000,
+    maxRetries: 3
+  }
+);
+
+const OfferList = createLazyComponent(
+  () => import('@/components/OfferList'),
+  {
+    fallback: <div className="loading-offer-list">Loading offers...</div>,
+    retryDelay: 1000,
+    maxRetries: 3
+  }
+);
+
+const DisputeResolution = createLazyComponent(
+  () => import('@/components/DisputeResolution'),
+  {
+    fallback: <div className="loading-disputes">Loading disputes...</div>
+  }
+);
+
+const UserProfile = createLazyComponent(
+  () => import('@/components/UserProfile'),
+  {
+    fallback: <div className="loading-profile">Loading profile...</div>
+  }
+);
 
 export default function Home() {
   const { activeTab, network } = useContext(AppContext);
   const wallet = useSafeWallet();
+
+  // Preload components during idle time
+  useIdlePreloader([
+    () => import('@/components/OfferCreation'),
+    () => import('@/components/DisputeResolution'),
+    () => import('@/components/UserProfile'),
+  ]);
 
   // Used to render components conditionally
   const content = () => {

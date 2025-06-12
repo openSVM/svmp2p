@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
@@ -8,6 +8,10 @@ import {
   LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import dynamic from 'next/dynamic';
+
+// Import performance monitoring
+import { initWebVitals } from '@/utils/webVitals';
+import { analyzeBundleSize } from '@/utils/lazyLoading';
 
 // Import styles - order matters for CSS
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
@@ -45,6 +49,29 @@ export default function App({ Component, pageProps }) {
     ],
     []
   );
+
+  // Initialize performance monitoring
+  useEffect(() => {
+    // Initialize Web Vitals monitoring
+    initWebVitals();
+    
+    // Analyze bundle size in development
+    if (process.env.NODE_ENV === 'development') {
+      analyzeBundleSize();
+    }
+
+    // Preload critical resources
+    if (typeof window !== 'undefined') {
+      // Preload important fonts
+      const linkPreload = document.createElement('link');
+      linkPreload.rel = 'preload';
+      linkPreload.as = 'font';
+      linkPreload.type = 'font/woff2';
+      linkPreload.crossOrigin = 'anonymous';
+      linkPreload.href = '/fonts/inter-var-latin.woff2';
+      document.head.appendChild(linkPreload);
+    }
+  }, []);
 
   return (
     <ErrorBoundary
