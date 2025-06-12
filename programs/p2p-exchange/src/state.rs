@@ -310,6 +310,15 @@ pub struct RewardsClaimed {
     pub timestamp: i64,
 }
 
+#[event]
+pub struct RewardTokenUpdated {
+    pub authority: Pubkey,
+    pub reward_rate_per_trade: u64,
+    pub reward_rate_per_vote: u64,
+    pub min_trade_volume: u64,
+    pub timestamp: i64,
+}
+
 // Events for monitoring reward system
 #[event]
 pub struct RewardEligible {

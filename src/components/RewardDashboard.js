@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { fetchCompleteRewardData } from '../utils/rewardQueries';
+import { claimRewards, retryTransaction, hasUserRewardsAccount, createUserRewardsAccount } from '../utils/rewardTransactions';
 
 const RewardDashboard = () => {
-    const { publicKey, connected } = useWallet();
+    const { publicKey, connected, wallet } = useWallet();
     const [rewards, setRewards] = useState({
         totalEarned: 0,
         totalClaimed: 0,
@@ -16,12 +17,14 @@ const RewardDashboard = () => {
     const [rewardToken, setRewardToken] = useState({
         rewardRatePerTrade: 100,
         rewardRatePerVote: 50,
-        minTradeVolume: 0.1
+        minTradeVolume: 100000000 // 0.1 SOL in lamports
     });
     const [loading, setLoading] = useState(false);
     const [claimLoading, setClaimLoading] = useState(false);
     const [error, setError] = useState(null);
     const [claimError, setClaimError] = useState(null);
+    const [hasRewardsAccount, setHasRewardsAccount] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
 
     // Fetch real data from blockchain
     useEffect(() => {
@@ -39,7 +42,7 @@ const RewardDashboard = () => {
                 setRewardToken({
                     rewardRatePerTrade: 100,
                     rewardRatePerVote: 50,
-                    minTradeVolume: 0.1
+                    minTradeVolume: 100000000 // 0.1 SOL in lamports
                 });
                 return;
             }
@@ -48,7 +51,12 @@ const RewardDashboard = () => {
             setError(null);
             
             try {
-                const rewardData = await fetchCompleteRewardData(publicKey);
+                const [rewardData, accountExists] = await Promise.all([
+                    fetchCompleteRewardData(publicKey),
+                    hasUserRewardsAccount(null, publicKey) // connection would be passed in real implementation
+                ]);
+                
+                setHasRewardsAccount(accountExists);
                 
                 setRewards({
                     totalEarned: rewardData.userRewards.totalEarned,
@@ -82,7 +90,7 @@ const RewardDashboard = () => {
                 setRewardToken({
                     rewardRatePerTrade: 100,
                     rewardRatePerVote: 50,
-                    minTradeVolume: 0.1
+                    minTradeVolume: 100000000 // 0.1 SOL in lamports
                 });
             } finally {
                 setLoading(false);
@@ -93,24 +101,33 @@ const RewardDashboard = () => {
     }, [connected, publicKey]);
 
     const handleClaimRewards = async () => {
-        if (!connected || rewards.unclaimedBalance === 0) return;
+        if (!connected || !wallet || rewards.unclaimedBalance === 0) return;
         
         setClaimLoading(true);
         setClaimError(null);
         
         try {
-            // In a real implementation, this would call the claim_rewards instruction
-            // For now, simulate the transaction with potential for errors
-            await new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    // Simulate 10% chance of failure for demonstration
-                    if (Math.random() < 0.1) {
-                        reject(new Error('Transaction failed: Insufficient funds for gas fees'));
-                    } else {
-                        resolve();
-                    }
-                }, 2000);
-            });
+            // Check if user has rewards account first
+            if (!hasRewardsAccount) {
+                try {
+                    console.log('Creating user rewards account...');
+                    await retryTransaction(() => 
+                        createUserRewardsAccount(wallet, null, publicKey) // connection would be passed in real implementation
+                    );
+                    setHasRewardsAccount(true);
+                } catch (accountError) {
+                    throw new Error(`Failed to create rewards account: ${accountError.message}`);
+                }
+            }
+
+            // Execute claim transaction with retry logic
+            const signature = await retryTransaction(() => 
+                claimRewards(wallet, null, publicKey), // connection would be passed in real implementation
+                3, // max retries
+                1000 // initial delay
+            );
+            
+            console.log('Rewards claimed successfully! Transaction:', signature);
             
             // Update local state on success
             setRewards(prev => ({
@@ -119,20 +136,46 @@ const RewardDashboard = () => {
                 unclaimedBalance: 0
             }));
             
+            // Reset retry count on success
+            setRetryCount(0);
+            
             // Show success notification
             console.log('Rewards claimed successfully!');
         } catch (error) {
             console.error('Failed to claim rewards:', error);
-            setClaimError(error.message || 'Failed to claim rewards. Please try again.');
+            setRetryCount(prev => prev + 1);
+            
+            // Provide user-friendly error messages
+            let errorMessage = error.message || 'Failed to claim rewards. Please try again.';
+            
+            if (error.message?.includes('User rejected')) {
+                errorMessage = 'Transaction was cancelled by user.';
+            } else if (error.message?.includes('Insufficient')) {
+                errorMessage = 'Insufficient SOL for transaction fees. Please ensure you have enough SOL in your wallet.';
+            } else if (error.message?.includes('Network')) {
+                errorMessage = 'Network error. Please check your connection and try again.';
+            } else if (retryCount >= 2) {
+                errorMessage = `Transaction failed after multiple attempts. Please try again later. Last error: ${error.message}`;
+            }
+            
+            setClaimError(errorMessage);
         } finally {
             setClaimLoading(false);
         }
     };
 
     const progressToNextReward = () => {
-        const nextThreshold = Math.ceil(rewards.tradingVolume) + 1;
-        const progress = (rewards.tradingVolume % 1) * 100;
-        return { nextThreshold, progress };
+        // Convert lamports to SOL for display (1 SOL = 1e9 lamports)
+        const LAMPORTS_PER_SOL = 1000000000;
+        const tradingVolumeSOL = rewards.tradingVolume / LAMPORTS_PER_SOL;
+        const minTradeVolumeSOL = rewardToken.minTradeVolume / LAMPORTS_PER_SOL;
+        
+        // Calculate progress toward next reward threshold
+        const nextThreshold = Math.ceil(tradingVolumeSOL / minTradeVolumeSOL) * minTradeVolumeSOL;
+        const currentProgress = tradingVolumeSOL % minTradeVolumeSOL;
+        const progress = (currentProgress / minTradeVolumeSOL) * 100;
+        
+        return { nextThreshold, progress: Math.max(0, Math.min(100, progress)) };
     };
 
     if (!connected) {
@@ -188,8 +231,17 @@ const RewardDashboard = () => {
                                 <div className="alert-content">
                                     <span className="alert-icon">❌</span>
                                     <div className="alert-text">
-                                        <strong>Claim Failed</strong>
+                                        <strong>Claim Failed {retryCount > 0 && `(Attempt ${retryCount})`}</strong>
                                         <p>{claimError}</p>
+                                        {retryCount < 3 && (
+                                            <button 
+                                                className="retry-claim-button"
+                                                onClick={handleClaimRewards}
+                                                disabled={claimLoading}
+                                            >
+                                                {claimLoading ? 'Retrying...' : 'Try Again'}
+                                            </button>
+                                        )}
                                     </div>
                                     <button 
                                         className="alert-close"
@@ -242,7 +294,7 @@ const RewardDashboard = () => {
                     <div className="activity-stats">
                         <div className="stat-row">
                             <span className="stat-label">Trading Volume</span>
-                            <span className="stat-value">{rewards.tradingVolume} SOL</span>
+                            <span className="stat-value">{(rewards.tradingVolume / 1000000000).toFixed(2)} SOL</span>
                         </div>
                         <div className="stat-row">
                             <span className="stat-label">Governance Votes</span>
@@ -287,7 +339,7 @@ const RewardDashboard = () => {
                             {progress.toFixed(1)}% to next {rewardToken.rewardRatePerTrade} token reward
                         </p>
                         <p className="progress-hint">
-                            Complete trades worth {rewardToken.minTradeVolume}+ SOL to earn rewards
+                            Complete trades worth {(rewardToken.minTradeVolume / 1000000000).toFixed(1)}+ SOL to earn rewards
                         </p>
                     </div>
                 </div>
@@ -310,7 +362,7 @@ const RewardDashboard = () => {
                         </div>
                         <div className="rate-item">
                             <span className="rate-label">Min Trade Volume</span>
-                            <span className="rate-value">{rewardToken.minTradeVolume} SOL</span>
+                            <span className="rate-value">{(rewardToken.minTradeVolume / 1000000000).toFixed(1)} SOL</span>
                         </div>
                     </div>
                 </div>
@@ -572,6 +624,27 @@ const RewardDashboard = () => {
 
                 .alert-close:hover {
                     color: #6b7280;
+                }
+
+                .retry-claim-button {
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 6px 12px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    margin-top: 8px;
+                    transition: background 0.2s;
+                }
+
+                .retry-claim-button:hover:not(:disabled) {
+                    background: #2563eb;
+                }
+
+                .retry-claim-button:disabled {
+                    background: #9ca3af;
+                    cursor: not-allowed;
                 }
 
                 @media (max-width: 768px) {

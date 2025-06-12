@@ -80,7 +80,7 @@ export const fetchRewardTokenConfig = async () => {
       return {
         rewardRatePerTrade: 100,
         rewardRatePerVote: 50,
-        minTradeVolume: 0.1,
+        minTradeVolume: 100000000, // 0.1 SOL in lamports
         totalSupply: 0,
         mint: null,
       };
@@ -99,7 +99,7 @@ export const fetchRewardTokenConfig = async () => {
     return {
       rewardRatePerTrade: 100,
       rewardRatePerVote: 50,
-      minTradeVolume: 0.1,
+      minTradeVolume: 100000000, // 0.1 SOL in lamports
       totalSupply: 0,
       mint: null, // Would parse from account data
     };
@@ -122,7 +122,7 @@ export const fetchUserRewards = async (userPublicKey) => {
         totalEarned: 1250,
         totalClaimed: 800,
         unclaimedBalance: 450,
-        tradingVolume: 12.5,
+        tradingVolume: 12500000000, // 12.5 SOL in lamports
         governanceVotes: 3,
         lastTradeReward: new Date(Date.now() - 86400000), // 1 day ago
         lastVoteReward: new Date(Date.now() - 172800000), // 2 days ago
@@ -152,7 +152,7 @@ export const fetchUserRewards = async (userPublicKey) => {
       totalEarned: Math.floor(Math.random() * 2000) + 500,
       totalClaimed: Math.floor(Math.random() * 1000) + 200,
       unclaimedBalance: Math.floor(Math.random() * 500) + 50,
-      tradingVolume: Math.random() * 20 + 5,
+      tradingVolume: Math.floor((Math.random() * 20 + 5) * 1000000000), // SOL to lamports
       governanceVotes: Math.floor(Math.random() * 10) + 1,
       lastTradeReward: new Date(Date.now() - Math.random() * 86400000 * 7), // Last week
       lastVoteReward: new Date(Date.now() - Math.random() * 86400000 * 14), // Last 2 weeks
@@ -227,7 +227,7 @@ export const fetchCompleteRewardData = async (userPublicKey) => {
       rewardToken: rewardTokenConfig || {
         rewardRatePerTrade: 100,
         rewardRatePerVote: 50,
-        minTradeVolume: 0.1,
+        minTradeVolume: 100000000, // 0.1 SOL in lamports
       },
       userRewards: userRewards || {
         totalEarned: 0,

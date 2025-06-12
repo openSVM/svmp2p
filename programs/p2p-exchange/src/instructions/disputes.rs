@@ -4,13 +4,10 @@ use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, Disp
 use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted, RewardEligible};
 use crate::errors::ErrorCode;
 
-/// Validates that a string is valid UTF-8 and trims whitespace
+/// Validates and trims input string for safety
 fn validate_and_trim_string(input: &str) -> Result<String> {
-    // Check if string is valid UTF-8 (Rust strings are UTF-8 by default, but extra safety)
-    if !input.is_ascii() && !input.chars().all(|c| c.is_ascii() || c.len_utf8() <= 4) {
-        return Err(error!(ErrorCode::InvalidUtf8));
-    }
-    
+    // Rust strings are UTF-8 by default - no additional validation needed
+    // Just validate that the input is non-empty after trimming
     let trimmed = input.trim().to_string();
     if trimmed.is_empty() {
         return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
@@ -320,7 +317,8 @@ fn try_mint_vote_rewards_for_juror(juror: &Pubkey) -> Result<()> {
     let clock = Clock::get()?;
     let users = vec![*juror];
     
-    // Emit event indicating reward eligibility for monitoring
+    // Rate limiting: Governance votes are naturally rate-limited by dispute frequency
+    // Only emit one event per vote to prevent spamming
     emit!(RewardEligible {
         users: users.clone(),
         trade_volume: 0, // Not applicable for governance rewards

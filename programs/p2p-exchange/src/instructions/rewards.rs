@@ -146,6 +146,27 @@ pub struct ClaimRewards<'info> {
     pub token_program: Program<'info, Token>,
 }
 
+/// Update reward token parameters (admin-only, rate limited)
+#[derive(Accounts)]
+pub struct UpdateRewardToken<'info> {
+    #[account(
+        mut,
+        seeds = [RewardToken::SEED.as_bytes()],
+        bump = reward_token.bump
+    )]
+    pub reward_token: Account<'info, RewardToken>,
+    
+    #[account(
+        seeds = [Admin::SEED.as_bytes()],
+        bump = admin.bump,
+        has_one = authority
+    )]
+    pub admin: Account<'info, Admin>,
+    
+    #[account(mut)]
+    pub authority: Signer<'info>,
+}
+
 pub fn create_reward_token(
     ctx: Context<CreateRewardToken>,
     reward_rate_per_trade: u64,
@@ -302,6 +323,59 @@ pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
     emit!(RewardsClaimed {
         user: ctx.accounts.user.key(),
         amount: claim_amount,
+        timestamp: clock.unix_timestamp,
+    });
+    
+    Ok(())
+}
+
+pub fn update_reward_token(
+    ctx: Context<UpdateRewardToken>,
+    reward_rate_per_trade: u64,
+    reward_rate_per_vote: u64,
+    min_trade_volume: u64,
+) -> Result<()> {
+    let reward_token = &mut ctx.accounts.reward_token;
+    let clock = Clock::get()?;
+    
+    // Rate limiting: Prevent excessive parameter updates
+    // Allow updates at most once per hour (3600 seconds)
+    const MIN_UPDATE_INTERVAL: i64 = 3600;
+    
+    if reward_token.created_at > 0 && 
+       clock.unix_timestamp - reward_token.created_at < MIN_UPDATE_INTERVAL {
+        return Err(P2PExchangeError::TooManyRequests.into());
+    }
+    
+    // Validate parameter bounds to prevent governance attacks
+    const MAX_REWARD_RATE_PER_TRADE: u64 = 10_000; // 10,000 tokens max
+    const MAX_REWARD_RATE_PER_VOTE: u64 = 5_000;   // 5,000 tokens max
+    const MIN_TRADE_VOLUME_LIMIT: u64 = 1_000_000; // 0.001 SOL minimum
+    const MAX_TRADE_VOLUME_LIMIT: u64 = 100_000_000_000; // 100 SOL maximum
+    
+    if reward_rate_per_trade > MAX_REWARD_RATE_PER_TRADE {
+        return Err(P2PExchangeError::InvalidAmount.into());
+    }
+    
+    if reward_rate_per_vote > MAX_REWARD_RATE_PER_VOTE {
+        return Err(P2PExchangeError::InvalidAmount.into());
+    }
+    
+    if min_trade_volume < MIN_TRADE_VOLUME_LIMIT || min_trade_volume > MAX_TRADE_VOLUME_LIMIT {
+        return Err(P2PExchangeError::InvalidAmount.into());
+    }
+    
+    // Update parameters
+    reward_token.reward_rate_per_trade = reward_rate_per_trade;
+    reward_token.reward_rate_per_vote = reward_rate_per_vote;
+    reward_token.min_trade_volume = min_trade_volume;
+    reward_token.created_at = clock.unix_timestamp; // Update timestamp for rate limiting
+    
+    emit!(RewardTokenUpdated {
+        authority: ctx.accounts.authority.key(),
+        reward_rate_per_trade,
+        reward_rate_per_vote,
+        min_trade_volume,
         timestamp: clock.unix_timestamp,
     });
     

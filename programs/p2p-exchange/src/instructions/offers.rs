@@ -4,13 +4,10 @@ use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX
 use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased, RewardEligible};
 use crate::errors::ErrorCode;
 
-/// Validates that a string is valid UTF-8 and trims whitespace
+/// Validates and trims input string for safety
 fn validate_and_trim_string(input: &str) -> Result<String> {
-    // Check if string is valid UTF-8 (Rust strings are UTF-8 by default, but extra safety)
-    if !input.is_ascii() && !input.chars().all(|c| c.is_ascii() || c.len_utf8() <= 4) {
-        return Err(error!(ErrorCode::InvalidUtf8));
-    }
-    
+    // Rust strings are UTF-8 by default - no additional validation needed
+    // Just validate that the input is non-empty after trimming
     let trimmed = input.trim().to_string();
     if trimmed.is_empty() {
         return Err(error!(ErrorCode::InputTooLong)); // Reuse existing error for empty strings
@@ -343,20 +340,27 @@ fn try_mint_trade_rewards_for_completed_trade(
     trade_volume: u64,
 ) -> Result<()> {
     let clock = Clock::get()?;
-    let users = vec![*seller, *buyer];
     
-    // Emit event indicating reward eligibility for monitoring
-    emit!(RewardEligible {
-        users: users.clone(),
-        trade_volume,
-        reward_type: "trade".to_string(),
-        timestamp: clock.unix_timestamp,
-    });
+    // Rate limiting: Only emit events for substantial trades (>= 0.01 SOL = 10M lamports)
+    // This prevents spamming from micro-trades while maintaining monitoring capability
+    const MIN_VOLUME_FOR_EVENT: u64 = 10_000_000; // 0.01 SOL in lamports
     
-    // Note: Actual reward minting should be done via separate instructions
-    // This maintains backward compatibility while enabling monitoring
-    msg!("Trade completed - eligible for rewards. Seller: {}, Buyer: {}, Volume: {}", 
-         seller, buyer, trade_volume);
+    if trade_volume >= MIN_VOLUME_FOR_EVENT {
+        let users = vec![*seller, *buyer];
+        
+        // Emit event indicating reward eligibility for monitoring
+        emit!(RewardEligible {
+            users: users.clone(),
+            trade_volume,
+            reward_type: "trade".to_string(),
+            timestamp: clock.unix_timestamp,
+        });
+        
+        msg!("Trade completed - eligible for rewards. Seller: {}, Buyer: {}, Volume: {}", 
+             seller, buyer, trade_volume);
+    } else {
+        msg!("Trade volume {} below event emission threshold", trade_volume);
+    }
     
     Ok(())
 }

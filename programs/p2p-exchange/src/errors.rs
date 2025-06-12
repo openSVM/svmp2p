@@ -34,6 +34,8 @@ pub enum P2PExchangeError {
     NoRewardsToClaim,
     #[msg("Reward token not initialized")]
     RewardTokenNotInitialized,
+    #[msg("Too many requests - rate limit exceeded")]
+    TooManyRequests,
 }
 
 // Maintain backward compatibility
