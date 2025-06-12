@@ -9,10 +9,6 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import dynamic from 'next/dynamic';
 
-// Import performance monitoring
-import { initWebVitals } from '@/utils/webVitals';
-import { analyzeBundleSize } from '@/utils/lazyLoading';
-
 // Import styles - order matters for CSS
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
 // with proper formatting and line breaks between them and the first CSS rule.
@@ -51,17 +47,9 @@ export default function App({ Component, pageProps }) {
     []
   );
 
-  // Initialize performance monitoring
+  // Initialize basic performance monitoring
   useEffect(() => {
-    // Initialize Web Vitals monitoring
-    initWebVitals();
-    
-    // Analyze bundle size in development
-    if (process.env.NODE_ENV === 'development') {
-      analyzeBundleSize();
-    }
-
-    // Preload critical resources
+    // Simple font preloading without complex utilities
     if (typeof window !== 'undefined') {
       // Preload important fonts
       const linkPreload = document.createElement('link');
