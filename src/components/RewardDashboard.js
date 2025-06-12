@@ -620,11 +620,12 @@ const RewardDashboard = () => {
                 }
 
                 .reward-card {
-                    background: white;
-                    border-radius: 12px;
+                    background: var(--ascii-neutral-100);
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
                     padding: 24px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    border: 1px solid #e5e7eb;
+                    box-shadow: var(--shadow-md);
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .card-header {
@@ -653,7 +654,9 @@ const RewardDashboard = () => {
 
                 .setting-label {
                     font-weight: 500;
-                    color: #374151;
+                    color: var(--ascii-neutral-800);
+                    font-family: 'Courier New', Courier, monospace;
+                    text-transform: uppercase;
                 }
 
                 .toggle-switch {
@@ -676,9 +679,10 @@ const RewardDashboard = () => {
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background-color: #ccc;
-                    transition: .4s;
-                    border-radius: 24px;
+                    background-color: var(--ascii-neutral-400);
+                    transition: var(--transition-normal);
+                    border-radius: 0;
+                    border: 1px solid var(--ascii-neutral-500);
                 }
 
                 .toggle-slider:before {
@@ -688,13 +692,14 @@ const RewardDashboard = () => {
                     width: 18px;
                     left: 3px;
                     bottom: 3px;
-                    background-color: white;
-                    transition: .4s;
-                    border-radius: 50%;
+                    background-color: var(--ascii-white);
+                    transition: var(--transition-normal);
+                    border-radius: 0;
+                    border: 1px solid var(--ascii-neutral-600);
                 }
 
                 input:checked + .toggle-slider {
-                    background-color: #7c3aed;
+                    background-color: var(--ascii-neutral-700);
                 }
 
                 input:checked + .toggle-slider:before {
@@ -710,14 +715,18 @@ const RewardDashboard = () => {
                 .threshold-input input {
                     width: 80px;
                     padding: 4px 8px;
-                    border: 1px solid #d1d5db;
-                    border-radius: 4px;
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
                     font-size: 14px;
+                    font-family: 'Courier New', Courier, monospace;
+                    background: var(--ascii-white);
+                    color: var(--ascii-neutral-800);
                 }
 
                 .input-suffix {
                     font-size: 12px;
-                    color: #6b7280;
+                    color: var(--ascii-neutral-600);
+                    text-transform: uppercase;
                 }
 
                 .status-value {
@@ -726,25 +735,32 @@ const RewardDashboard = () => {
                 }
 
                 .manual-check-button {
-                    background: #3b82f6;
-                    color: white;
-                    border: none;
-                    border-radius: 6px;
+                    background: var(--ascii-neutral-700);
+                    color: var(--ascii-white);
+                    border: 1px solid var(--ascii-neutral-800);
+                    border-radius: 0;
                     padding: 8px 16px;
                     font-size: 14px;
                     font-weight: 500;
                     cursor: pointer;
-                    transition: background 0.2s;
+                    transition: all var(--transition-normal);
                     justify-self: start;
+                    font-family: 'Courier New', Courier, monospace;
+                    text-transform: uppercase;
+                    box-shadow: var(--shadow-sm);
                 }
 
                 .manual-check-button:hover:not(:disabled) {
-                    background: #2563eb;
+                    background: var(--ascii-neutral-600);
+                    box-shadow: var(--shadow-md);
+                    transform: translateY(-1px);
                 }
 
                 .manual-check-button:disabled {
-                    background: #9ca3af;
+                    background: var(--ascii-neutral-300);
+                    color: var(--ascii-neutral-600);
                     cursor: not-allowed;
+                    box-shadow: none;
                 }
 
                 /* Auto-Claim Progress Styles */
@@ -758,21 +774,23 @@ const RewardDashboard = () => {
                 .progress-bar-small {
                     width: 120px;
                     height: 4px;
-                    background: #e5e7eb;
-                    border-radius: 2px;
+                    background: var(--ascii-neutral-300);
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
                     overflow: hidden;
                 }
 
                 .progress-fill-small {
                     height: 100%;
-                    background: linear-gradient(90deg, #7c3aed, #a855f7);
-                    transition: width 0.3s ease;
+                    background: var(--ascii-neutral-700);
+                    transition: width var(--transition-normal);
                 }
 
                 .progress-text-small {
                     font-size: 11px;
-                    color: #6b7280;
+                    color: var(--ascii-neutral-600);
                     font-weight: 500;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .auto-claim-hint {
@@ -780,9 +798,9 @@ const RewardDashboard = () => {
                     align-items: center;
                     gap: 8px;
                     padding: 12px;
-                    background: #f9fafb;
-                    border-radius: 6px;
-                    border: 1px solid #e5e7eb;
+                    background: var(--ascii-neutral-200);
+                    border-radius: 0;
+                    border: 1px solid var(--ascii-neutral-400);
                 }
 
                 .hint-icon {
@@ -791,8 +809,9 @@ const RewardDashboard = () => {
 
                 .hint-text {
                     font-size: 12px;
-                    color: #374151;
+                    color: var(--ascii-neutral-800);
                     line-height: 1.4;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 /* Cooldown Styles */
@@ -807,52 +826,56 @@ const RewardDashboard = () => {
                 .timer-value {
                     font-size: 32px;
                     font-weight: bold;
-                    color: #dc2626;
+                    color: var(--ascii-neutral-900);
                     display: block;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .timer-label {
                     font-size: 14px;
-                    color: #6b7280;
+                    color: var(--ascii-neutral-600);
+                    text-transform: uppercase;
                 }
 
                 .cooldown-progress {
                     width: 100%;
                     height: 6px;
-                    background: #f3f4f6;
-                    border-radius: 3px;
+                    background: var(--ascii-neutral-300);
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
                     overflow: hidden;
                     margin-bottom: 12px;
                 }
 
                 .cooldown-fill {
                     height: 100%;
-                    background: linear-gradient(90deg, #dc2626, #f97316);
-                    transition: width 0.3s ease;
+                    background: var(--ascii-neutral-700);
+                    transition: width var(--transition-normal);
                 }
 
                 .cooldown-hint {
                     font-size: 12px;
-                    color: #6b7280;
+                    color: var(--ascii-neutral-600);
                     margin: 0;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .cooldown-card {
-                    border-color: #fecaca;
-                    background: #fef2f2;
+                    border-color: var(--ascii-neutral-500);
+                    background: var(--ascii-neutral-200);
                 }
                 
                 .cooldown-card:has(.card-header h3:contains("Failed")) {
-                    border-color: #fed7d7;
-                    background: #fff5f5;
+                    border-color: var(--ascii-neutral-600);
+                    background: var(--ascii-neutral-300);
                 }
                 
                 .cooldown-card .cooldown-fill {
-                    background: linear-gradient(90deg, #dc2626, #f97316);
+                    background: var(--ascii-neutral-700);
                 }
                 
                 .cooldown-card:has(.card-header h3:contains("Failed")) .cooldown-fill {
-                    background: linear-gradient(90deg, #b91c1c, #dc2626);
+                    background: var(--ascii-neutral-800);
                 }
 
                 .balance-stats {
@@ -868,42 +891,52 @@ const RewardDashboard = () => {
                 }
 
                 .stat-label {
-                    color: #6b7280;
+                    color: var(--ascii-neutral-600);
                     font-size: 14px;
+                    text-transform: uppercase;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .stat-value {
                     font-weight: 600;
                     font-size: 16px;
+                    color: var(--ascii-neutral-800);
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .stat-value.primary {
-                    color: #7c3aed;
+                    color: var(--ascii-neutral-900);
                     font-size: 18px;
+                    font-weight: bold;
                 }
 
                 .claim-button {
                     width: 100%;
-                    background: linear-gradient(135deg, #7c3aed, #a855f7);
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
+                    background: var(--ascii-neutral-700);
+                    color: var(--ascii-white);
+                    border: 1px solid var(--ascii-neutral-800);
+                    border-radius: 0;
                     padding: 12px 24px;
                     font-size: 16px;
                     font-weight: 600;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all var(--transition-normal);
+                    font-family: 'Courier New', Courier, monospace;
+                    text-transform: uppercase;
+                    box-shadow: var(--shadow-md);
                 }
 
                 .claim-button:hover:not(.disabled) {
                     transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+                    background: var(--ascii-neutral-600);
+                    box-shadow: var(--shadow-lg);
                 }
 
                 .claim-button.disabled {
-                    background: #e5e7eb;
-                    color: #9ca3af;
+                    background: var(--ascii-neutral-300);
+                    color: var(--ascii-neutral-600);
                     cursor: not-allowed;
+                    border-color: var(--ascii-neutral-400);
                 }
 
                 .activity-stats, .rates-content {
@@ -916,7 +949,7 @@ const RewardDashboard = () => {
                     justify-content: space-between;
                     align-items: center;
                     padding: 8px 0;
-                    border-bottom: 1px solid #f3f4f6;
+                    border-bottom: 1px solid var(--ascii-neutral-300);
                 }
 
                 .stat-row:last-child, .rate-item:last-child {
@@ -931,33 +964,38 @@ const RewardDashboard = () => {
                 .progress-bar {
                     width: 100%;
                     height: 8px;
-                    background: #e5e7eb;
-                    border-radius: 4px;
+                    background: var(--ascii-neutral-300);
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
                     overflow: hidden;
                 }
 
                 .progress-fill {
                     height: 100%;
-                    background: linear-gradient(90deg, #7c3aed, #a855f7);
-                    transition: width 0.3s ease;
+                    background: var(--ascii-neutral-700);
+                    transition: width var(--transition-normal);
                 }
 
                 .progress-text {
                     font-weight: 600;
                     text-align: center;
                     margin: 0;
+                    color: var(--ascii-neutral-800);
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .progress-hint {
                     font-size: 14px;
-                    color: #6b7280;
+                    color: var(--ascii-neutral-600);
                     text-align: center;
                     margin: 0;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .rate-value {
-                    color: #059669;
+                    color: var(--ascii-neutral-800);
                     font-weight: 600;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 /* Loading and Error States */
@@ -967,19 +1005,20 @@ const RewardDashboard = () => {
                     align-items: center;
                     justify-content: center;
                     padding: 40px;
-                    background: white;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    border: 1px solid #e5e7eb;
+                    background: var(--ascii-neutral-100);
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
+                    box-shadow: var(--shadow-md);
                     text-align: center;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .loading-spinner {
                     width: 40px;
                     height: 40px;
-                    border: 4px solid #f3f4f6;
-                    border-top: 4px solid #7c3aed;
-                    border-radius: 50%;
+                    border: 4px solid var(--ascii-neutral-300);
+                    border-top: 4px solid var(--ascii-neutral-700);
+                    border-radius: 0;
                     animation: spin 1s linear infinite;
                     margin-bottom: 16px;
                 }
@@ -1008,25 +1047,28 @@ const RewardDashboard = () => {
                 }
 
                 .retry-button {
-                    background: #ef4444;
-                    color: white;
-                    border: none;
-                    border-radius: 6px;
+                    background: var(--ascii-neutral-700);
+                    color: var(--ascii-white);
+                    border: 1px solid var(--ascii-neutral-800);
+                    border-radius: 0;
                     padding: 8px 16px;
                     font-size: 14px;
                     cursor: pointer;
                     margin-top: 16px;
-                    transition: background 0.2s;
+                    transition: all var(--transition-normal);
+                    font-family: 'Courier New', Courier, monospace;
+                    text-transform: uppercase;
                 }
 
                 .retry-button:hover {
-                    background: #dc2626;
+                    background: var(--ascii-neutral-600);
+                    transform: translateY(-1px);
                 }
 
                 .claim-error-alert {
-                    background: #fef2f2;
-                    border: 1px solid #fecaca;
-                    border-radius: 8px;
+                    background: var(--ascii-neutral-200);
+                    border: 1px solid var(--ascii-neutral-500);
+                    border-radius: 0;
                     padding: 16px;
                     margin-bottom: 20px;
                 }
@@ -1047,21 +1089,23 @@ const RewardDashboard = () => {
                 }
 
                 .alert-text strong {
-                    color: #dc2626;
+                    color: var(--ascii-neutral-900);
                     font-weight: 600;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .alert-text p {
-                    color: #6b7280;
+                    color: var(--ascii-neutral-700);
                     font-size: 14px;
                     margin: 4px 0 0 0;
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .alert-close {
                     background: none;
                     border: none;
                     font-size: 20px;
-                    color: #9ca3af;
+                    color: var(--ascii-neutral-600);
                     cursor: pointer;
                     padding: 0;
                     width: 24px;
@@ -1072,27 +1116,31 @@ const RewardDashboard = () => {
                 }
 
                 .alert-close:hover {
-                    color: #6b7280;
+                    color: var(--ascii-neutral-800);
                 }
 
                 .retry-claim-button {
-                    background: #3b82f6;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
+                    background: var(--ascii-neutral-700);
+                    color: var(--ascii-white);
+                    border: 1px solid var(--ascii-neutral-800);
+                    border-radius: 0;
                     padding: 6px 12px;
                     font-size: 12px;
                     cursor: pointer;
                     margin-top: 8px;
-                    transition: background 0.2s;
+                    transition: all var(--transition-normal);
+                    font-family: 'Courier New', Courier, monospace;
+                    text-transform: uppercase;
                 }
 
                 .retry-claim-button:hover:not(:disabled) {
-                    background: #2563eb;
+                    background: var(--ascii-neutral-600);
+                    transform: translateY(-1px);
                 }
 
                 .retry-claim-button:disabled {
-                    background: #9ca3af;
+                    background: var(--ascii-neutral-300);
+                    color: var(--ascii-neutral-600);
                     cursor: not-allowed;
                 }
 

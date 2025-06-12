@@ -88,18 +88,22 @@ const RewardWidget = ({ compact = false }) => {
 
             <style jsx>{`
                 .reward-widget {
-                    background: linear-gradient(135deg, #7c3aed, #a855f7);
-                    color: white;
-                    border-radius: 8px;
+                    background: var(--ascii-neutral-700);
+                    color: var(--ascii-white);
+                    border: 1px solid var(--ascii-neutral-800);
+                    border-radius: 0;
                     padding: ${compact ? '8px 12px' : '12px 16px'};
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all var(--transition-normal);
                     min-width: ${compact ? '120px' : '160px'};
+                    box-shadow: var(--shadow-md);
+                    font-family: 'Courier New', Courier, monospace;
                 }
 
                 .reward-widget:hover {
                     transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+                    background: var(--ascii-neutral-600);
+                    box-shadow: var(--shadow-lg);
                 }
 
                 .widget-content {
@@ -120,13 +124,15 @@ const RewardWidget = ({ compact = false }) => {
 
                 .widget-label {
                     font-size: ${compact ? '10px' : '12px'};
-                    opacity: 0.9;
+                    color: var(--ascii-neutral-300);
                     font-weight: 500;
+                    text-transform: uppercase;
                 }
 
                 .widget-value {
                     font-size: ${compact ? '12px' : '14px'};
                     font-weight: 600;
+                    color: var(--ascii-white);
                 }
 
                 .widget-progress {
@@ -139,21 +145,23 @@ const RewardWidget = ({ compact = false }) => {
                 .progress-bar {
                     width: 100%;
                     height: 4px;
-                    background: rgba(255, 255, 255, 0.3);
-                    border-radius: 2px;
+                    background: var(--ascii-neutral-500);
+                    border: 1px solid var(--ascii-neutral-400);
+                    border-radius: 0;
                     overflow: hidden;
                 }
 
                 .progress-fill {
                     height: 100%;
-                    background: rgba(255, 255, 255, 0.9);
-                    transition: width 0.3s ease;
+                    background: var(--ascii-white);
+                    transition: width var(--transition-normal);
                 }
 
                 .progress-text {
                     font-size: 10px;
-                    opacity: 0.8;
+                    color: var(--ascii-neutral-300);
                     text-align: center;
+                    text-transform: uppercase;
                 }
             `}</style>
         </div>

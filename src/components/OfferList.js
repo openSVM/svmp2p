@@ -1039,16 +1039,20 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         }
 
         .guided-workflow-button {
-          background-color: #3b82f6;
-          color: white;
-          border: none;
+          background-color: var(--ascii-neutral-700);
+          color: var(--ascii-white);
+          border: 1px solid var(--ascii-neutral-800);
           padding: 8px 16px;
-          border-radius: 4px;
+          border-radius: 0;
           cursor: pointer;
           font-size: 0.9rem;
           display: flex;
           align-items: center;
           gap: 8px;
+          font-family: 'Courier New', Courier, monospace;
+          text-transform: uppercase;
+          transition: all var(--transition-normal);
+          box-shadow: var(--shadow-sm);
         }
 
         .guided-workflow-button::before {
@@ -1058,14 +1062,17 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
+          background-color: var(--ascii-neutral-500);
+          border: 1px solid var(--ascii-neutral-600);
+          border-radius: 0;
           font-size: 0.8rem;
           font-weight: bold;
         }
 
         .guided-workflow-button:hover {
-          background-color: #2563eb;
+          background-color: var(--ascii-neutral-600);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
         }
       `}</style>
     </div>
