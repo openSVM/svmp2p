@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { SystemProgram, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { SystemProgram, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 // Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
 import { BN } from '@coral-xyz/anchor';
 import { AppContext } from '../contexts/AppContext';
@@ -98,8 +98,14 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       // Generate a new account for the offer
       const offer = Keypair.generate();
       
-      // Generate a new account for the escrow
-      const escrow = Keypair.generate();
+      // Calculate PDA for escrow account
+      const [escrowAccount] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("escrow"),
+          offer.publicKey.toBuffer()
+        ],
+        program.programId
+      );
       
       // Current timestamp
       const now = new BN(Math.floor(Date.now() / 1000));
@@ -118,10 +124,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         .accounts({
           offer: offer.publicKey,
           seller: wallet.publicKey,
-          escrowAccount: escrow.publicKey,
+          escrowAccount: escrowAccount,
           systemProgram: SystemProgram.programId,
         })
-        .signers([offer, escrow])
+        .signers([offer])
         .rpc();
       
       setTxHash(createTx);

@@ -275,7 +275,6 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     if juror_index >= 3 {
         return Err(error!(ErrorCode::NotAJuror));
     }
-    
     // Double-check that this specific juror hasn't been counted already
     // This is extra safety on top of PDA-based duplicate prevention
     let mut vote_count = 0;
@@ -290,8 +289,9 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     
     // Validate that the juror has not already voted
     // Check by using Vote PDA - if the account exists, they've already voted
-    // This is handled by the PDA constraint in the CastVote accounts struct
-
+    // This is handled by the PDA constraint in the CastVote accounts struct=======
+    // Note: PDA-based duplicate prevention ensures jurors can't vote twice
+    // The vote account PDA will fail to initialize if the juror already voted
     // Initialize vote data (PDA prevents duplicate votes)
     vote.dispute = dispute.key();
     vote.juror = juror.key();
