@@ -30,6 +30,20 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const [currentLocale, setCurrentLocale] = useState('en');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Supported languages - moved up to avoid initialization issues
+  const supportedLanguages = useMemo(() => [
+    { code: 'en', name: 'English', country: '🇺🇸' },
+    { code: 'es', name: 'Español', country: '🇪🇸' },
+    { code: 'fr', name: 'Français', country: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+    { code: 'ja', name: '日本語', country: '🇯🇵' },
+    { code: 'ko', name: '한국어', country: '🇰🇷' },
+    { code: 'zh', name: '中文', country: '🇨🇳' },
+    { code: 'pt', name: 'Português', country: '🇵🇹' },
+    { code: 'ru', name: 'Русский', country: '🇷🇺' },
+    { code: 'ar', name: 'العربية', country: '🇸🇦' },
+  ], []);
+
   // Check if user needs onboarding
   useEffect(() => {
     const hasCompletedOnboarding = localStorage.getItem('onboarding-completed');
@@ -183,20 +197,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D' },
   ];
-
-  // Supported languages
-  const supportedLanguages = useMemo(() => [
-    { code: 'en', name: 'English', country: '🇺🇸' },
-    { code: 'es', name: 'Español', country: '🇪🇸' },
-    { code: 'fr', name: 'Français', country: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
-    { code: 'ja', name: '日本語', country: '🇯🇵' },
-    { code: 'ko', name: '한국어', country: '🇰🇷' },
-    { code: 'zh', name: '中文', country: '🇨🇳' },
-    { code: 'pt', name: 'Português', country: '🇵🇹' },
-    { code: 'ru', name: 'Русский', country: '🇷🇺' },
-    { code: 'ar', name: 'العربية', country: '🇸🇦' },
-  ], []);
 
   return (
     <>

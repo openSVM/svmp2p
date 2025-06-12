@@ -7,7 +7,6 @@ import {
   TorusWalletAdapter,
   LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import dynamic from 'next/dynamic';
 
 // Import styles - order matters for CSS
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
@@ -32,8 +31,8 @@ import { AppContextProvider } from '@/contexts/AppContext';
 // Import Layout
 import Layout from '@/components/Layout';
 
-// Dynamically import ErrorBoundary to prevent SSR issues
-const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary'), { ssr: false });
+// Import ErrorBoundary directly instead of dynamically to avoid initialization issues
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function App({ Component, pageProps }) {
   // Set up wallet adapters

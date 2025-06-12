@@ -1,19 +1,16 @@
 import React, { useContext, Suspense } from 'react';
-import dynamic from 'next/dynamic';
 import { useSafeWallet } from '@/contexts/WalletContextProvider';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
 
-// Create optimized lazy components with standard React lazy
-const ErrorBoundary = React.lazy(() => import('@/components/ErrorBoundary'));
+// Import ErrorBoundary directly since it's already loaded in _app.js
+import ErrorBoundary from '@/components/ErrorBoundary';
 
-// Lazy load components with standard dynamic imports
+// Lazy load components with standard React lazy
 const OfferCreation = React.lazy(() => import('@/components/OfferCreation'));
 const OfferList = React.lazy(() => import('@/components/OfferList'));
-
 const DisputeResolution = React.lazy(() => import('@/components/DisputeResolution'));
-
 const UserProfile = React.lazy(() => import('@/components/UserProfile'));
 
 export default function Home() {
@@ -61,28 +58,28 @@ export default function Home() {
         
         // Wrap UserProfile in ErrorBoundary to catch and handle any rendering errors
         return (
-          <Suspense fallback={<div className="loading-error-boundary">Loading...</div>}>
-            <ErrorBoundary
-              fallback={
-                <div className="error-fallback">
-                  <h3>There was an error loading the profile</h3>
-                  <p>Please make sure your wallet is connected and try again.</p>
-                  <button 
-                    className="button button-primary" 
-                    onClick={() => window.location.reload()}
-                  >
-                    Reload Page
-                  </button>
-                </div>
-              }
-              showReset={true}
-            >
+          <ErrorBoundary
+            fallback={
+              <div className="error-fallback">
+                <h3>There was an error loading the profile</h3>
+                <p>Please make sure your wallet is connected and try again.</p>
+                <button 
+                  className="button button-primary" 
+                  onClick={() => window.location.reload()}
+                >
+                  Reload Page
+                </button>
+              </div>
+            }
+            showReset={true}
+          >
+            <Suspense fallback={<div className="loading-user-profile">Loading profile...</div>}>
               <UserProfile 
                 wallet={wallet} 
                 network={network} 
               />
-            </ErrorBoundary>
-          </Suspense>
+            </Suspense>
+          </ErrorBoundary>
         );
       default:
         return (
