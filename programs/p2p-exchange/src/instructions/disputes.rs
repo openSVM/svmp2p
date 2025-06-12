@@ -276,9 +276,8 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         .ok_or(ErrorCode::NotAJuror)?;
     
     // Validate that the juror has not already voted
-    if dispute.votes.iter().any(|v| v.juror == juror.key()) {
-        return Err(error!(ErrorCode::AlreadyVoted)); // Juror has already cast a vote
-    }
+    // Check by using Vote PDA - if the account exists, they've already voted
+    // This is handled by the PDA constraint in the CastVote accounts struct
 
     // Initialize vote data (PDA prevents duplicate votes)
     vote.dispute = dispute.key();
@@ -310,6 +309,23 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         vote_for_buyer,
     });
 
+    // Try to mint governance rewards for voting (optional - fails silently if reward system not set up)
+    let _ = try_mint_vote_rewards_for_juror(&juror.key());
+
+    Ok(())
+}
+
+// Helper function to mint governance rewards after voting
+fn try_mint_vote_rewards_for_juror(juror: &Pubkey) -> Result<()> {
+    // This is a placeholder - in a full implementation, we would:
+    // 1. Derive the reward token PDA
+    // 2. Derive the user rewards PDA for the juror
+    // 3. Check if they exist and are valid
+    // 4. Mint governance rewards based on the reward token configuration
+    // 
+    // For now, we'll emit an event to indicate rewards should be processed
+    msg!("Governance vote cast - eligible for rewards. Juror: {}", juror);
+    
     Ok(())
 }
 

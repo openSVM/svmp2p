@@ -81,6 +81,8 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const sidebarNavItems = [
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D' },
+    { key: 'rewards', label: 'REWARDS', icon: '🎁' },
+    { key: 'profile', label: 'PROFILE', icon: 'P' },
   ];
 
   return (

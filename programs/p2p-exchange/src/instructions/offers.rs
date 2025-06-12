@@ -326,5 +326,31 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
         amount: escrow_balance,
     });
 
+    // Try to mint trade rewards for both parties (optional - fails silently if reward system not set up)
+    let _ = try_mint_trade_rewards_for_completed_trade(
+        &offer.seller,
+        &buyer.key(),
+        escrow_balance,
+    );
+
+    Ok(())
+}
+
+// Helper function to mint trade rewards after trade completion
+fn try_mint_trade_rewards_for_completed_trade(
+    seller: &Pubkey,
+    buyer: &Pubkey,
+    trade_volume: u64,
+) -> Result<()> {
+    // This is a placeholder - in a full implementation, we would:
+    // 1. Derive the reward token PDA
+    // 2. Derive the user rewards PDAs for both seller and buyer  
+    // 3. Check if they exist and are valid
+    // 4. Mint rewards based on the reward token configuration
+    // 
+    // For now, we'll emit an event to indicate rewards should be processed
+    msg!("Trade completed - eligible for rewards. Seller: {}, Buyer: {}, Volume: {}", 
+         seller, buyer, trade_volume);
+    
     Ok(())
 }

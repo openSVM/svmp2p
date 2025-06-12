@@ -147,4 +147,29 @@ pub mod p2p_exchange {
     ) -> Result<()> {
         instructions::reputation::update_reputation(ctx, successful_trade, dispute_resolved, dispute_won)
     }
+
+    /// Initialize the reward token system (admin-only)
+    ///
+    /// # Arguments
+    /// * `reward_rate_per_trade` - Tokens awarded per successful trade
+    /// * `reward_rate_per_vote` - Tokens awarded per governance vote
+    /// * `min_trade_volume` - Minimum trade volume to qualify for rewards
+    pub fn create_reward_token(
+        ctx: Context<CreateRewardToken>,
+        reward_rate_per_trade: u64,
+        reward_rate_per_vote: u64,
+        min_trade_volume: u64,
+    ) -> Result<()> {
+        instructions::rewards::create_reward_token(ctx, reward_rate_per_trade, reward_rate_per_vote, min_trade_volume)
+    }
+
+    /// Initialize a user rewards account
+    pub fn create_user_rewards(ctx: Context<CreateUserRewards>) -> Result<()> {
+        instructions::rewards::create_user_rewards(ctx)
+    }
+
+    /// Claim accumulated rewards
+    pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
+        instructions::rewards::claim_rewards(ctx)
+    }
 }
