@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::state::Reputation;
+use crate::state::{Reputation, ReputationUpdated};
 
 #[derive(Accounts)]
 pub struct CreateReputation<'info> {
@@ -69,11 +69,18 @@ pub fn update_reputation(
             100
         };
         
-        // Rating is weighted average of success rate and dispute win rate
-        reputation.rating = ((success_rate * 70 + dispute_win_rate * 30) / 100) as u8;
+    // Rating is weighted average of success rate and dispute win rate
+    reputation.rating = ((success_rate * 70 + dispute_win_rate * 30) / 100) as u8;
     }
 
     reputation.last_updated = clock.unix_timestamp;
+
+    // Emit event
+    emit!(ReputationUpdated {
+        user: reputation.user,
+        successful_trades: reputation.successful_trades,
+        rating: reputation.rating,
+    });
 
     Ok(())
 }

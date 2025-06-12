@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
-use crate::state::{Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
+use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
+use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased};
 use crate::errors::ErrorCode;
 
 #[derive(Accounts)]
@@ -9,9 +10,14 @@ pub struct CreateOffer<'info> {
     pub offer: Account<'info, Offer>,
     #[account(mut)]
     pub seller: Signer<'info>,
-    /// CHECK: This is the escrow account that will hold the SOL
-    #[account(mut)]
-    pub escrow_account: AccountInfo<'info>,
+    #[account(
+        init,
+        payer = seller,
+        space = 8 + EscrowAccount::LEN,
+        seeds = [EscrowAccount::SEED.as_bytes(), offer.key().as_ref()],
+        bump
+    )]
+    pub escrow_account: Account<'info, EscrowAccount>,
     pub system_program: Program<'info, System>,
 }
 
@@ -29,9 +35,12 @@ pub struct AcceptOffer<'info> {
     pub offer: Account<'info, Offer>,
     #[account(mut)]
     pub buyer: Signer<'info>,
-    /// CHECK: This is the escrow account that will hold the SOL
-    #[account(mut)]
-    pub escrow_account: AccountInfo<'info>,
+    #[account(
+        mut,
+        seeds = [EscrowAccount::SEED.as_bytes(), offer.key().as_ref()],
+        bump = escrow_account.bump
+    )]
+    pub escrow_account: Account<'info, EscrowAccount>,
     pub system_program: Program<'info, System>,
 }
 
@@ -60,9 +69,12 @@ pub struct ReleaseSol<'info> {
     /// CHECK: This is the buyer who will receive the SOL
     #[account(mut)]
     pub buyer: AccountInfo<'info>,
-    /// CHECK: This is the escrow account that holds the SOL
-    #[account(mut)]
-    pub escrow_account: AccountInfo<'info>,
+    #[account(
+        mut,
+        seeds = [EscrowAccount::SEED.as_bytes(), offer.key().as_ref()],
+        bump = escrow_account.bump
+    )]
+    pub escrow_account: Account<'info, EscrowAccount>,
     pub system_program: Program<'info, System>,
 }
 
@@ -84,18 +96,21 @@ pub fn create_offer(
 
     let offer = &mut ctx.accounts.offer;
     let seller = &ctx.accounts.seller;
-    let escrow_account = &ctx.accounts.escrow_account;
+    let escrow_account = &mut ctx.accounts.escrow_account;
+
+    // Initialize escrow account
+    escrow_account.offer = offer.key();
+    escrow_account.bump = ctx.bumps.get("escrow_account").copied().unwrap();
 
     // Initialize offer data
     offer.seller = seller.key();
-    offer.buyer = Pubkey::default(); // Will be set when accepted
+    offer.buyer = None; // Will be set when accepted
     offer.amount = amount;
     offer.security_bond = 0; // Will be set when accepted
     offer.status = OfferStatus::Created as u8;
     offer.fiat_amount = fiat_amount;
-    offer.fiat_currency = fiat_currency;
-    offer.payment_method = payment_method;
-    offer.escrow_account = escrow_account.key();
+    offer.fiat_currency = fiat_currency.clone();
+    offer.payment_method = payment_method.clone();
     offer.created_at = created_at;
     offer.updated_at = created_at;
     offer.dispute_id = None;
@@ -116,6 +131,15 @@ pub fn create_offer(
         ],
         &[],
     )?;
+
+    // Emit event
+    emit!(OfferCreated {
+        offer: offer.key(),
+        seller: seller.key(),
+        amount,
+        fiat_amount,
+        fiat_currency,
+    });
 
     Ok(())
 }
@@ -148,7 +172,7 @@ pub fn accept_offer(ctx: Context<AcceptOffer>, security_bond: u64) -> Result<()>
     }
 
     // Update offer data
-    offer.buyer = buyer.key();
+    offer.buyer = Some(buyer.key());
     offer.security_bond = security_bond;
     offer.status = OfferStatus::Accepted as u8;
     offer.updated_at = clock.unix_timestamp;
@@ -172,6 +196,13 @@ pub fn accept_offer(ctx: Context<AcceptOffer>, security_bond: u64) -> Result<()>
         )?;
     }
 
+    // Emit event
+    emit!(OfferAccepted {
+        offer: offer.key(),
+        buyer: buyer.key(),
+        security_bond,
+    });
+
     Ok(())
 }
 
@@ -186,13 +217,19 @@ pub fn mark_fiat_sent(ctx: Context<MarkFiatSent>) -> Result<()> {
     }
 
     // Validate buyer
-    if offer.buyer != buyer.key() {
+    if offer.buyer != Some(buyer.key()) {
         return Err(error!(ErrorCode::Unauthorized));
     }
 
     // Update offer status
     offer.status = OfferStatus::FiatSent as u8;
     offer.updated_at = clock.unix_timestamp;
+
+    // Emit event
+    emit!(FiatSent {
+        offer: offer.key(),
+        buyer: buyer.key(),
+    });
 
     Ok(())
 }
@@ -210,6 +247,12 @@ pub fn confirm_fiat_receipt(ctx: Context<ConfirmFiatReceipt>) -> Result<()> {
     offer.status = OfferStatus::SolReleased as u8; // Ready for SOL release
     offer.updated_at = clock.unix_timestamp;
 
+    // Emit event
+    emit!(FiatReceiptConfirmed {
+        offer: offer.key(),
+        seller: offer.seller,
+    });
+
     Ok(())
 }
 
@@ -226,12 +269,12 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
     }
 
     // Validate buyer
-    if offer.buyer != buyer.key() {
+    if offer.buyer != Some(buyer.key()) {
         return Err(error!(ErrorCode::Unauthorized));
     }
 
-    // Transfer SOL from escrow to buyer using CPI
-    let escrow_balance = escrow_account.lamports();
+    // Transfer SOL from escrow to buyer using CPI with proper PDA signing
+    let escrow_balance = escrow_account.to_account_info().lamports();
     if escrow_balance > 0 {
         let transfer_instruction = system_instruction::transfer(
             &escrow_account.key(),
@@ -239,8 +282,12 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
             escrow_balance,
         );
 
-        // Note: In a real implementation, the escrow account would need to be a PDA
-        // controlled by the program to sign for the transfer
+        let escrow_seeds = &[
+            EscrowAccount::SEED.as_bytes(),
+            &offer.key().to_bytes(),
+            &[escrow_account.bump],
+        ];
+
         invoke_signed(
             &transfer_instruction,
             &[
@@ -248,13 +295,20 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
                 buyer.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
             ],
-            &[],
+            &[escrow_seeds],
         )?;
     }
 
     // Update offer status
     offer.status = OfferStatus::Completed as u8;
     offer.updated_at = clock.unix_timestamp;
+
+    // Emit event
+    emit!(SolReleased {
+        offer: offer.key(),
+        buyer: buyer.key(),
+        amount: escrow_balance,
+    });
 
     Ok(())
 }

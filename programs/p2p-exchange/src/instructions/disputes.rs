@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
-use crate::state::{Admin, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN};
+use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN};
+use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted};
 use crate::errors::ErrorCode;
 
 #[derive(Accounts)]
@@ -68,9 +69,12 @@ pub struct ExecuteVerdict<'info> {
     pub dispute: Account<'info, Dispute>,
     #[account(mut)]
     pub offer: Account<'info, Offer>,
-    /// CHECK: This is the escrow account that holds the SOL
-    #[account(mut)]
-    pub escrow_account: AccountInfo<'info>,
+    #[account(
+        mut,
+        seeds = [EscrowAccount::SEED.as_bytes(), offer.key().as_ref()],
+        bump = escrow_account.bump
+    )]
+    pub escrow_account: Account<'info, EscrowAccount>,
     /// CHECK: This is the buyer
     #[account(mut)]
     pub buyer: AccountInfo<'info>,
@@ -106,13 +110,13 @@ pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
     }
 
     // Validate that initiator is either buyer or seller
-    if offer.seller != initiator.key() && offer.buyer != initiator.key() {
+    if offer.seller != initiator.key() && offer.buyer != Some(initiator.key()) {
         return Err(error!(ErrorCode::Unauthorized));
     }
 
     // Set respondent as the other party
     let respondent_key = if offer.seller == initiator.key() {
-        offer.buyer
+        offer.buyer.ok_or(ErrorCode::Unauthorized)?
     } else {
         offer.seller
     };
@@ -125,7 +129,7 @@ pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
     dispute.offer = offer.key();
     dispute.initiator = initiator.key();
     dispute.respondent = respondent.key();
-    dispute.reason = reason;
+    dispute.reason = reason.clone();
     dispute.status = DisputeStatus::Opened as u8;
     dispute.jurors = [Pubkey::default(); 3];
     dispute.evidence_buyer = Vec::new();
@@ -139,6 +143,14 @@ pub fn open_dispute(ctx: Context<OpenDispute>, reason: String) -> Result<()> {
     offer.dispute_id = Some(dispute.key());
     offer.status = OfferStatus::DisputeOpened as u8;
     offer.updated_at = clock.unix_timestamp;
+
+    // Emit event
+    emit!(DisputeOpened {
+        dispute: dispute.key(),
+        offer: offer.key(),
+        initiator: initiator.key(),
+        reason: reason.clone(),
+    });
 
     Ok(())
 }
@@ -159,6 +171,12 @@ pub fn assign_jurors(ctx: Context<AssignJurors>) -> Result<()> {
     dispute.jurors[1] = juror2.key();
     dispute.jurors[2] = juror3.key();
     dispute.status = DisputeStatus::JurorsAssigned as u8;
+
+    // Emit event
+    emit!(JurorsAssigned {
+        dispute: dispute.key(),
+        jurors: dispute.jurors,
+    });
 
     Ok(())
 }
@@ -184,15 +202,22 @@ pub fn submit_evidence(ctx: Context<SubmitEvidence>, evidence_url: String) -> Re
 
     // Add evidence to appropriate list
     if dispute.initiator == submitter.key() {
-        dispute.evidence_buyer.push(evidence_url);
+        dispute.evidence_buyer.push(evidence_url.clone());
     } else {
-        dispute.evidence_seller.push(evidence_url);
+        dispute.evidence_seller.push(evidence_url.clone());
     }
 
     // Update status if first evidence submission
     if dispute.status == DisputeStatus::JurorsAssigned as u8 {
         dispute.status = DisputeStatus::EvidenceSubmission as u8;
     }
+
+    // Emit event
+    emit!(EvidenceSubmitted {
+        dispute: dispute.key(),
+        submitter: submitter.key(),
+        evidence_url,
+    });
 
     Ok(())
 }
@@ -211,6 +236,16 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     // Validate juror is assigned to this dispute
     if !dispute.jurors.contains(&juror.key()) {
         return Err(error!(ErrorCode::NotAJuror));
+    }
+
+    // Additional check: ensure this vote doesn't exceed our vote limits per voter
+    // This is a safeguard in addition to the PDA-based duplicate prevention
+    let juror_index = dispute.jurors.iter().position(|&x| x == juror.key())
+        .ok_or(ErrorCode::NotAJuror)?;
+    
+    // Validate that we haven't exceeded vote counts (should be impossible with PDAs, but extra safety)
+    if dispute.votes_for_buyer + dispute.votes_for_seller >= 3 {
+        return Err(error!(ErrorCode::AlreadyVoted)); // All votes already cast
     }
 
     // Initialize vote data (PDA prevents duplicate votes)
@@ -236,6 +271,13 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         dispute.status = DisputeStatus::VerdictReached as u8;
     }
 
+    // Emit event
+    emit!(VoteCast {
+        dispute: dispute.key(),
+        juror: juror.key(),
+        vote_for_buyer,
+    });
+
     Ok(())
 }
 
@@ -253,7 +295,7 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
     }
 
     // Determine winner and transfer funds accordingly
-    let escrow_balance = escrow_account.lamports();
+    let escrow_balance = escrow_account.to_account_info().lamports();
     
     if escrow_balance > 0 {
         let recipient = if dispute.votes_for_buyer > dispute.votes_for_seller {
@@ -268,8 +310,12 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
             escrow_balance,
         );
 
-        // Note: In a real implementation, the escrow account would need to be a PDA
-        // controlled by the program to sign for the transfer
+        let escrow_seeds = &[
+            EscrowAccount::SEED.as_bytes(),
+            &offer.key().to_bytes(),
+            &[escrow_account.bump],
+        ];
+
         invoke_signed(
             &transfer_instruction,
             &[
@@ -277,8 +323,15 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
                 recipient.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
             ],
-            &[],
+            &[escrow_seeds],
         )?;
+
+        // Emit event
+        emit!(VerdictExecuted {
+            dispute: dispute.key(),
+            winner: recipient.key(),
+            amount: escrow_balance,
+        });
     }
 
     // Update dispute and offer status
