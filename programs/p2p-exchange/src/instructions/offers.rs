@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke, program::invoke_signed, system_instruction};
 use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
-use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased};
+use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased, RewardEligible};
 use crate::errors::ErrorCode;
 
 /// Validates that a string is valid UTF-8 and trims whitespace
@@ -342,13 +342,19 @@ fn try_mint_trade_rewards_for_completed_trade(
     buyer: &Pubkey,
     trade_volume: u64,
 ) -> Result<()> {
-    // This is a placeholder - in a full implementation, we would:
-    // 1. Derive the reward token PDA
-    // 2. Derive the user rewards PDAs for both seller and buyer  
-    // 3. Check if they exist and are valid
-    // 4. Mint rewards based on the reward token configuration
-    // 
-    // For now, we'll emit an event to indicate rewards should be processed
+    let clock = Clock::get()?;
+    let users = vec![*seller, *buyer];
+    
+    // Emit event indicating reward eligibility for monitoring
+    emit!(RewardEligible {
+        users: users.clone(),
+        trade_volume,
+        reward_type: "trade".to_string(),
+        timestamp: clock.unix_timestamp,
+    });
+    
+    // Note: Actual reward minting should be done via separate instructions
+    // This maintains backward compatibility while enabling monitoring
     msg!("Trade completed - eligible for rewards. Seller: {}, Buyer: {}, Volume: {}", 
          seller, buyer, trade_volume);
     

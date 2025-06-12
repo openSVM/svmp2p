@@ -307,3 +307,21 @@ pub struct RewardsClaimed {
     pub amount: u64,
     pub timestamp: i64,
 }
+
+// Events for monitoring reward system
+#[event]
+pub struct RewardEligible {
+    pub users: Vec<Pubkey>,
+    pub trade_volume: u64,
+    pub reward_type: String, // "trade" or "vote"
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct RewardSystemFailure {
+    pub users: Vec<Pubkey>,
+    pub trade_volume: u64,
+    pub reward_type: String,
+    pub error: String,
+    pub timestamp: i64,
+}

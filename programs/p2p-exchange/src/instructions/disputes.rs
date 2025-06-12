@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
 use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
-use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted};
+use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted, RewardEligible};
 use crate::errors::ErrorCode;
 
 /// Validates that a string is valid UTF-8 and trims whitespace
@@ -317,13 +317,19 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
 
 // Helper function to mint governance rewards after voting
 fn try_mint_vote_rewards_for_juror(juror: &Pubkey) -> Result<()> {
-    // This is a placeholder - in a full implementation, we would:
-    // 1. Derive the reward token PDA
-    // 2. Derive the user rewards PDA for the juror
-    // 3. Check if they exist and are valid
-    // 4. Mint governance rewards based on the reward token configuration
-    // 
-    // For now, we'll emit an event to indicate rewards should be processed
+    let clock = Clock::get()?;
+    let users = vec![*juror];
+    
+    // Emit event indicating reward eligibility for monitoring
+    emit!(RewardEligible {
+        users: users.clone(),
+        trade_volume: 0, // Not applicable for governance rewards
+        reward_type: "vote".to_string(),
+        timestamp: clock.unix_timestamp,
+    });
+    
+    // Note: Actual reward minting should be done via separate instructions
+    // This maintains backward compatibility while enabling monitoring
     msg!("Governance vote cast - eligible for rewards. Juror: {}", juror);
     
     Ok(())

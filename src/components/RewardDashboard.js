@@ -18,7 +18,7 @@ const RewardDashboard = () => {
         minTradeVolume: 0.1
     });
     const [loading, setLoading] = useState(false);
-    const [claimLoading, setClamLoading] = useState(false);
+    const [claimLoading, setClaimLoading] = useState(false);
 
     // Mock data for demonstration
     useEffect(() => {
@@ -39,7 +39,7 @@ const RewardDashboard = () => {
     const handleClaimRewards = async () => {
         if (!connected || rewards.unclaimedBalance === 0) return;
         
-        setClamLoading(true);
+        setClaimLoading(true);
         try {
             // In a real implementation, this would call the claim_rewards instruction
             await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate transaction
@@ -55,7 +55,7 @@ const RewardDashboard = () => {
         } catch (error) {
             console.error('Failed to claim rewards:', error);
         } finally {
-            setClamLoading(false);
+            setClaimLoading(false);
         }
     };
 
