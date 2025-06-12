@@ -48,57 +48,15 @@ export const detectSolanaWallets = () => {
       });
     }
 
-    // Check for Solflare wallet
-    if (window.solflare?.isSolflare) {
-      detected.push({
-        name: 'Solflare',
-        type: 'solana',
-        installed: true,
-        icon: '🌞',
-        downloadUrl: 'https://solflare.com/',
-        description: 'Feature-rich Solana wallet with advanced trading tools'
-      });
-    } else {
-      available.push({
-        name: 'Solflare',
-        type: 'solana',
-        installed: false,
-        icon: '🌞',
-        downloadUrl: 'https://solflare.com/',
-        description: 'Feature-rich Solana wallet with advanced trading tools'
-      });
-    }
-
-    // Check for Torus wallet
-    if (window.torus) {
-      detected.push({
-        name: 'Torus',
-        type: 'solana',
-        installed: true,
-        icon: '🔐',
-        downloadUrl: 'https://toruswallet.io/',
-        description: 'Social login-based wallet, great for beginners'
-      });
-    } else {
-      available.push({
-        name: 'Torus',
-        type: 'solana',
-        installed: false,
-        icon: '🔐',
-        downloadUrl: 'https://toruswallet.io/',
-        description: 'Social login-based wallet, great for beginners'
-      });
-    }
-
-    // Check for Ledger Live (hardware wallet support)
-    // Note: Ledger detection is more complex and may require user interaction
+    // Placeholder for Backpack wallet detection - to be implemented
+    // Note: Backpack detection will be added once integration details are confirmed
     available.push({
-      name: 'Ledger',
-      type: 'hardware',
-      installed: false, // Hardware wallets are never "installed" in browser
-      icon: '🔒',
-      downloadUrl: 'https://www.ledger.com/',
-      description: 'Hardware wallet for maximum security (requires device)'
+      name: 'Backpack',
+      type: 'solana',
+      installed: false, // Will be updated with proper detection
+      icon: '🎒',
+      downloadUrl: 'https://backpack.app/',
+      description: 'Feature-rich Solana wallet with social features'
     });
 
     // Determine recommendations based on detected wallets
@@ -173,23 +131,14 @@ const getWalletRecommendations = (detected, available) => {
       });
     }
 
-    // Recommend Torus for users who prefer social login
-    const torus = available.find(w => w.name === 'Torus');
-    if (torus) {
+    // Recommend Backpack as an alternative
+    const backpack = available.find(w => w.name === 'Backpack');
+    if (backpack) {
       recommendations.push({
-        ...torus,
-        reason: 'No extension needed - login with email or social media'
+        ...backpack,
+        reason: 'Modern wallet with social features'
       });
     }
-  }
-
-  // Always recommend hardware wallet for security-conscious users
-  const ledger = available.find(w => w.name === 'Ledger');
-  if (ledger && !recommendations.find(r => r.name === 'Ledger')) {
-    recommendations.push({
-      ...ledger,
-      reason: 'Maximum security for large amounts'
-    });
   }
 
   return recommendations;
@@ -238,7 +187,7 @@ export const checkWalletSupport = () => {
       reason: 'Safari has limited extension support',
       recommendations: [
         'Use Chrome, Firefox, or Edge for best wallet support',
-        'Or use Torus wallet (no extension required)'
+        'Or use web-based wallet options when available'
       ]
     };
   }
@@ -248,7 +197,7 @@ export const checkWalletSupport = () => {
     reason: 'Unsupported browser',
     recommendations: [
       'Use Chrome, Firefox, or Edge for wallet support',
-      'Or use Torus wallet (no extension required)'
+      'Or use web-based wallet options when available'
     ]
   };
 };
