@@ -4,9 +4,6 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  TorusWalletAdapter,
-  LedgerWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import {
   WalletModalProvider,
@@ -18,6 +15,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 // Import styles
 import '@solana/wallet-adapter-react-ui/styles.css';
 import './styles/guided-workflow.css';
+import './styles/wallet-connection-guide.css';
 
 // Import components
 import { AppContext } from './AppContext';
@@ -422,9 +420,6 @@ const App = () => {
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new TorusWalletAdapter(),
-      new LedgerWalletAdapter(),
     ],
     []
   );
