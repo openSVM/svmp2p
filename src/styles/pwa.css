@@ -1,0 +1,261 @@
+/* OfflineIndicator styles */
+.offline-indicator-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.offline-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.offline-indicator.offline {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.offline-indicator.syncing {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fed7aa;
+}
+
+.offline-indicator.success {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.offline-icon svg {
+  animation: none;
+}
+
+.sync-spinner svg {
+  animation: spin 1s linear infinite;
+}
+
+.success-icon svg {
+  animation: none;
+}
+
+.queue-count {
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .offline-indicator-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .offline-indicator {
+    max-width: 100%;
+  }
+  
+  .offline-text,
+  .sync-text,
+  .success-text {
+    font-size: 13px;
+  }
+}
+
+/* PWA Install Button styles */
+.pwa-install-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pwa-install-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.pwa-install-button:active {
+  transform: translateY(0);
+}
+
+.pwa-install-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pwa-install-spinner svg {
+  animation: spin 1s linear infinite;
+}
+
+.pwa-install-success {
+  color: #10b981;
+}
+
+.pwa-install-error {
+  color: #ef4444;
+}
+
+.pulse-attention {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* PWA Install Banner styles */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+.pwa-banner-content {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+}
+
+.pwa-banner-icon {
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.pwa-banner-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-banner-text h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pwa-banner-text p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-banner-install-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pwa-banner-install-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.pwa-banner-install-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.pwa-banner-dismiss-btn {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.pwa-banner-dismiss-btn:hover {
+  color: #374151;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .pwa-install-banner {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+  
+  .pwa-banner-content {
+    padding: 12px;
+  }
+  
+  .pwa-banner-text h3 {
+    font-size: 15px;
+  }
+  
+  .pwa-banner-text p {
+    font-size: 13px;
+  }
+  
+  .pwa-banner-install-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .pwa-install-button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}

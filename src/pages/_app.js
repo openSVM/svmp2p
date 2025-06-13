@@ -28,6 +28,7 @@ import { analyzeBundleSize } from '@/utils/lazyLoading';
 import '../index.css'; // Main CSS file with Tailwind directives (must be first)
 import '@solana/wallet-adapter-react-ui/styles.css'; // Third-party component styles
 import '@/styles/globals.css'; // Global styles and overrides
+import '@/styles/pwa.css'; // PWA-specific styles
 
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';
