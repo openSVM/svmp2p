@@ -12,13 +12,23 @@ const nextConfig = {
   images: {
     domains: [],
     unoptimized: true,
-    // Optimize image loading
+    // Optimize image loading for PWA
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ['image/webp'],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year cache for images
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Enable compression
+  // Enable compression and PWA optimizations
   compress: true,
+  poweredByHeader: false,
+  generateEtags: true,
+  
+  // Performance optimizations
+  // experimental: {
+  //   optimizeCss: true,
+  // },
   webpack: (config, { dev, isServer }) => {
     // Polyfills for blockchain compatibility
     config.resolve.fallback = {
@@ -50,11 +60,17 @@ const nextConfig = {
       },
     });
 
-    // Performance optimizations
+    // Performance optimizations for PWA
     if (!dev && !isServer) {
+      // Enable tree shaking for better bundle sizes
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
+      
       // Bundle splitting optimizations
       config.optimization.splitChunks = {
         chunks: 'all',
+        maxInitialRequests: 25,
+        maxAsyncRequests: 25,
         cacheGroups: {
           default: {
             minChunks: 2,
@@ -65,6 +81,13 @@ const nextConfig = {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             priority: -10,
+            chunks: 'all',
+          },
+          // PWA specific chunks
+          pwa: {
+            test: /[\\/](sw\.js|manifest\.json|pwa|offline)[\\/]/,
+            name: 'pwa',
+            priority: 30,
             chunks: 'all',
           },
           solana: {

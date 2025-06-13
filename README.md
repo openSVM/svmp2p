@@ -6,9 +6,11 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 
 - **Multi-Network Support**: Trade across multiple SVM networks from a single interface
 - **Network-Specific Information**: View confirmation times, gas fees, and other network details
+- **Progressive Web App (PWA)**: Install and use offline with enhanced mobile performance
 - **Responsive Design**: Fully optimized for mobile, tablet, and desktop devices
 - **Wallet Integration**: Connect with popular Solana wallets (Phantom, Solflare, etc.)
 - **Secure Trading**: Escrow-based P2P trading system
+- **Offline Functionality**: Queue actions when offline, sync when reconnected
 - **Tokenized Loyalty System**: Earn reward tokens through trading and governance participation
 - **Dispute Resolution**: Community-driven dispute resolution with juror voting
 - **User Reputation**: Comprehensive reputation tracking system
@@ -21,6 +23,8 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 - JavaScript (ES6+)
 - Solana Web3.js and Wallet Adapters
 - SVG for network logos and icons
+- **PWA Technologies**: Service Workers, Web App Manifest, Background Sync
+- **Offline Storage**: IndexedDB and Cache API
 
 ## Next.js Architecture
 
@@ -53,6 +57,42 @@ A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtua
 2. Install dependencies: `npm install --legacy-peer-deps`
 3. Run the development server: `npm run dev`
 4. Connect your wallet to start trading
+
+## 📱 Progressive Web App (PWA)
+
+The OpenSVM P2P Exchange is a fully-featured Progressive Web App that works seamlessly online and offline.
+
+### PWA Features
+
+- **🚀 Installable**: Add to home screen on mobile and desktop
+- **📴 Offline Mode**: Core functionality works without internet
+- **🔄 Background Sync**: Actions sync automatically when reconnected
+- **⚡ Fast Loading**: Optimized caching for instant app startup
+- **📱 App-like Experience**: Full-screen standalone mode
+
+### Installation
+
+**Desktop (Chrome/Edge):**
+1. Click the install button in the app or address bar
+2. Follow the installation prompt
+
+**Mobile (iOS Safari):**
+1. Tap the Share button
+2. Select "Add to Home Screen"
+
+**Mobile (Android Chrome):**
+1. Tap the "Install" banner or menu option
+2. Confirm installation
+
+### Offline Usage
+
+When offline, the app will:
+- Show cached content and previous data
+- Queue transactions and profile updates
+- Display offline indicator with pending action count
+- Automatically sync queued actions when connection returns
+
+For detailed PWA implementation information, see [PWA Documentation](docs/pwa-implementation.md).
 
 ## 📚 Documentation
 
