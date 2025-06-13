@@ -43,15 +43,40 @@ export default function Document() {
         <link rel="icon" type="image/svg+xml" href="/images/opensvm-logo.svg" />
         <link rel="icon" type="image/svg+xml" sizes="192x192" href="/images/icon-192x192.svg" />
         <link rel="icon" type="image/svg+xml" sizes="512x512" href="/images/icon-512x512.svg" />
-        <link rel="apple-touch-icon" href="/images/icon-192x192.svg" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512x512.png" />
+        <link rel="apple-touch-icon" href="/images/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/images/icon-192x192.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/images/icon-512x512.png" />
+
+        {/* PWA Performance & Caching Hints */}
+        <link rel="preload" href="/manifest.json" as="fetch" crossOrigin="anonymous" />
+        <link rel="preload" href="/sw.js" as="script" />
+        <link rel="prefetch" href="/images/icon-192x192.svg" />
+        <link rel="prefetch" href="/images/icon-512x512.svg" />
+        
+        {/* Resource hints for critical assets */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
 
         {/* Optimized Security Headers */}
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" />
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; worker-src 'self';" />
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
+        <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
         
-        {/* Performance hints */}
+        {/* Performance and PWA hints */}
         <meta httpEquiv="x-dns-prefetch-control" content="on" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        
+        {/* PWA Status Bar Styling */}
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="msapplication-navbutton-color" content="#3b82f6" />
+        <meta name="msapplication-starturl" content="/" />
       </Head>
       <body>
         {/* Add loading state to prevent layout shift */}

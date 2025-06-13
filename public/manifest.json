@@ -11,6 +11,11 @@
   "lang": "en",
   "dir": "ltr",
   "scope": "/",
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "icons": [
     {
       "src": "/images/icon-192x192.svg",
@@ -23,6 +28,34 @@
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile trading interface"
+    },
+    {
+      "src": "/images/screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop trading interface"
     }
   ],
   "shortcuts": [
@@ -43,9 +76,31 @@
     {
       "name": "My Profile",
       "short_name": "Profile",
-      "description": "View your profile",
+      "description": "View your profile and transaction history",
       "url": "/?tab=profile",
       "icons": [{ "src": "/images/icon-192x192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Create Offer",
+      "short_name": "Create",
+      "description": "Create a new buy or sell offer",
+      "url": "/?tab=create",
+      "icons": [{ "src": "/images/icon-192x192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+opensvm",
+      "url": "/?action=handle&type=%s"
     }
   ]
 }

@@ -14,6 +14,7 @@ import LanguageSelector from '@/components/LanguageSelector';
 import ThemeToggle from '@/components/ThemeToggle';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
+import OfflineIndicator from '@/components/OfflineIndicator';
 
 const logger = createLogger('Layout');
 
@@ -269,6 +270,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         onComplete={handleOnboardingComplete}
         onSkip={handleOnboardingSkip}
       />
+
+      {/* Offline Indicator */}
+      <OfflineIndicator />
     </>
   );
 }
