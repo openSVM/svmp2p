@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { SwigWalletButton } from './SwigWalletButton';
 import { Tooltip } from './common';
 import WalletConnectionGuide from './WalletConnectionGuide';
 
@@ -60,7 +60,7 @@ const ConnectWalletPrompt = ({
                 </div>
                 <p>{displayMessage}</p>
                 <div className="wallet-connect-actions">
-                  <WalletMultiButton />
+                  <SwigWalletButton />
                   <button 
                     className="guided-connection-button"
                     onClick={handleShowGuide}

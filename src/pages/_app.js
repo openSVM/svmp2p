@@ -1,12 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  TorusWalletAdapter,
-  LedgerWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
 import dynamic from 'next/dynamic';
 
 // Import performance monitoring
@@ -21,17 +13,17 @@ import { analyzeBundleSize } from '@/utils/lazyLoading';
 // CSS Import Order:
 // 1. First import index.css with Tailwind directives (@tailwind base, components, utilities)
 //    This is critical as it establishes the Tailwind foundation for all other styles
-// 2. Then import third-party component styles (wallet adapter)
+// 2. Then import third-party component styles (no longer needed for Swig wallet)
 // 3. Finally import global styles which may override Tailwind or third-party styles
 //
 // This specific order ensures proper CSS cascade and specificity
 import '../index.css'; // Main CSS file with Tailwind directives (must be first)
-import '@solana/wallet-adapter-react-ui/styles.css'; // Third-party component styles
 import '@/styles/globals.css'; // Global styles and overrides
 import '@/styles/pwa.css'; // PWA-specific styles
 
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';
+import { SwigWalletProvider } from '@/contexts/SwigWalletProvider';
 
 // Import Layout
 import Layout from '@/components/Layout';
@@ -40,16 +32,6 @@ import Layout from '@/components/Layout';
 const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary'), { ssr: false });
 
 export default function App({ Component, pageProps }) {
-  // Set up wallet adapters
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
-      new TorusWalletAdapter(),
-      new LedgerWalletAdapter(),
-    ],
-    []
-  );
 
   // Initialize performance monitoring
   useEffect(() => {
@@ -91,15 +73,11 @@ export default function App({ Component, pageProps }) {
     >
       <AppContextProvider>
         {({ network }) => (
-          <ConnectionProvider endpoint={network.endpoint}>
-            <WalletProvider wallets={wallets} autoConnect>
-              <WalletModalProvider>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </WalletModalProvider>
-            </WalletProvider>
-          </ConnectionProvider>
+          <SwigWalletProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </SwigWalletProvider>
         )}
       </AppContextProvider>
     </ErrorBoundary>

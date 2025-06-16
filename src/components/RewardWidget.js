@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useSwigWallet } from '../contexts/SwigWalletProvider';
 import { useRewardData } from '../hooks/useRewardData';
 import { getUIText } from '../utils/i18n';
 import { createLogger } from '../utils/logger';
@@ -7,8 +7,8 @@ import { createLogger } from '../utils/logger';
 const logger = createLogger('RewardWidget');
 
 const RewardWidget = ({ compact = false }) => {
-    const { connected, publicKey } = useWallet();
-    const { connection } = useConnection();
+    const { connected, publicKey } = wallet;
+    const connection = wallet.getConnection ? wallet.getConnection() : null;
     const { rewardData, isLoading, error } = useRewardData(connection, publicKey);
     
     if (!connected) {

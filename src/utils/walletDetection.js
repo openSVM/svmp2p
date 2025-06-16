@@ -1,25 +1,33 @@
 /**
- * Solana Wallet Detection Utility
+ * Swig Wallet Detection Utility
  * 
- * Detects available Solana wallets in the browser and provides
- * user-friendly information about installation and connection options.
+ * Detects Swig wallet authentication status and provides
+ * user-friendly information about authentication and connection options.
  * 
- * Security Note: This utility only reads wallet metadata and availability.
+ * Security Note: This utility only reads authentication status and availability.
  * It never accesses private keys, user accounts, or sensitive wallet data.
  */
 
+import { para } from '../client/para';
+
 /**
- * Detects available Solana wallets in the browser
- * @returns {Object} Object containing detected wallets and recommendations
+ * Detects Swig wallet authentication status and available options
+ * @returns {Object} Object containing authentication state and recommendations
  */
-export const detectSolanaWallets = () => {
+export const detectSwigWallet = async () => {
   // Return safe default for server-side rendering
   if (typeof window === 'undefined') {
     return {
       detected: [],
-      recommended: [],
+      recommended: [{
+        name: 'Swig Wallet',
+        type: 'swig',
+        authenticated: false,
+        icon: '🔐',
+        description: 'OAuth-based in-app wallet with multi-chain support'
+      }],
       hasAnyWallet: false,
-      needsInstallation: true
+      needsAuthentication: true
     };
   }
 
@@ -27,237 +35,246 @@ export const detectSolanaWallets = () => {
   const available = [];
 
   try {
-    // Check for Phantom wallet (Solana)
-    if (window.phantom?.solana?.isPhantom) {
-      detected.push({
-        name: 'Phantom',
-        type: 'solana',
-        installed: true,
-        icon: '👻',
-        downloadUrl: 'https://phantom.app/',
-        description: 'Popular Solana wallet with excellent mobile support'
-      });
-    } else {
-      available.push({
-        name: 'Phantom',
-        type: 'solana',
-        installed: false,
-        icon: '👻',
-        downloadUrl: 'https://phantom.app/',
-        description: 'Popular Solana wallet with excellent mobile support'
+    // Check Swig wallet authentication status
+    const isAuthenticated = await para.isFullyLoggedIn();
+    
+    if (isAuthenticated) {
+      const wallets = await para.getWallets();
+      const walletEntries = Object.values(wallets);
+      
+      walletEntries.forEach(wallet => {
+        detected.push({
+          name: 'Swig Wallet',
+          type: 'swig',
+          walletType: wallet.type, // 'SOLANA' or 'EVM'
+          address: wallet.address,
+          authenticated: true,
+          icon: wallet.type === 'SOLANA' ? '◉' : '⬢',
+          description: `${wallet.type} wallet via Swig`
+        });
       });
     }
 
-    // Placeholder for Backpack wallet detection - to be implemented
-    // Note: Backpack detection will be added once integration details are confirmed
+    // Add available authentication methods
     available.push({
-      name: 'Backpack',
-      type: 'solana',
-      installed: false, // Will be updated with proper detection
-      icon: '🎒',
-      downloadUrl: 'https://backpack.app/',
-      description: 'Feature-rich Solana wallet with social features'
+      name: 'Swig Wallet',
+      type: 'swig',
+      authenticated: isAuthenticated,
+      icon: '🔐',
+      description: 'OAuth-based in-app wallet with multi-chain support',
+      authMethods: ['Google', 'Apple', 'Farcaster']
     });
 
-    // Determine recommendations based on detected wallets
-    const recommended = getWalletRecommendations(detected, available);
+    // Determine recommendations based on authentication status
+    const recommended = getSwigWalletRecommendations(detected, available, isAuthenticated);
 
     return {
       detected,
       available,
       recommended,
       hasAnyWallet: detected.length > 0,
-      needsInstallation: detected.length === 0
+      needsAuthentication: !isAuthenticated,
+      isAuthenticated
     };
-
   } catch (error) {
-    console.warn('[WalletDetection] Error during wallet detection:', error.message);
+    console.error('[detectSwigWallet] Error detecting wallet:', error);
     
-    // Return safe fallback with basic recommendations
+    // Return safe fallback
     return {
       detected: [],
-      available: [
-        {
-          name: 'Phantom',
-          type: 'solana',
-          installed: false,
-          icon: '👻',
-          downloadUrl: 'https://phantom.app/',
-          description: 'Popular Solana wallet with excellent mobile support'
-        }
-      ],
+      available: [{
+        name: 'Swig Wallet',
+        type: 'swig',
+        authenticated: false,
+        icon: '🔐',
+        description: 'OAuth-based in-app wallet with multi-chain support',
+        authMethods: ['Google', 'Apple', 'Farcaster']
+      }],
       recommended: [{
-        name: 'Phantom',
-        type: 'solana',
-        installed: false,
-        icon: '👻',
-        downloadUrl: 'https://phantom.app/',
-        description: 'Popular Solana wallet with excellent mobile support',
-        reason: 'Most popular Solana wallet for beginners'
+        name: 'Swig Wallet',
+        type: 'swig',
+        authenticated: false,
+        icon: '🔐',
+        description: 'OAuth-based in-app wallet with multi-chain support',
+        reason: 'Sign in with OAuth to access your wallet'
       }],
       hasAnyWallet: false,
-      needsInstallation: true
+      needsAuthentication: true,
+      isAuthenticated: false
     };
   }
 };
 
 /**
- * Generate wallet recommendations based on detected wallets and user context
- * @param {Array} detected - List of detected/installed wallets
- * @param {Array} available - List of available wallets
- * @returns {Array} Recommended wallets with reasons
+ * Legacy function for backward compatibility
+ * @deprecated Use detectSwigWallet instead
  */
-const getWalletRecommendations = (detected, available) => {
+export const detectSolanaWallets = detectSwigWallet;
+
+/**
+ * Generate wallet recommendations based on detection results
+ * @param {Array} detected - Array of detected wallets
+ * @param {Array} available - Array of available wallet options
+ * @param {boolean} isAuthenticated - Whether user is authenticated
+ * @returns {Array} Array of wallet recommendations
+ */
+const getSwigWalletRecommendations = (detected, available, isAuthenticated) => {
   const recommendations = [];
 
-  // If user has wallets installed, recommend using them
-  if (detected.length > 0) {
+  if (!isAuthenticated) {
+    recommendations.push({
+      name: 'Swig Wallet',
+      type: 'swig',
+      authenticated: false,
+      icon: '🔐',
+      description: 'OAuth-based in-app wallet with multi-chain support',
+      reason: 'Sign in with your preferred OAuth provider to get started',
+      priority: 'high'
+    });
+  } else if (detected.length > 0) {
     detected.forEach(wallet => {
       recommendations.push({
         ...wallet,
-        reason: 'Already installed on your device'
+        reason: 'Ready to use - wallet is authenticated and available',
+        priority: 'low'
       });
     });
-  }
-
-  // If no wallets are detected, recommend based on user type
-  if (detected.length === 0) {
-    // Recommend Phantom for beginners (most popular)
-    const phantom = available.find(w => w.name === 'Phantom');
-    if (phantom) {
-      recommendations.push({
-        ...phantom,
-        reason: 'Most popular Solana wallet for beginners'
-      });
-    }
-
-    // Recommend Backpack as an alternative
-    const backpack = available.find(w => w.name === 'Backpack');
-    if (backpack) {
-      recommendations.push({
-        ...backpack,
-        reason: 'Modern wallet with social features'
-      });
-    }
   }
 
   return recommendations;
 };
 
 /**
- * Check if the user's device/browser supports wallet extensions
- * @returns {Object} Support information
+ * Legacy function for backward compatibility
+ * @deprecated Use getSwigWalletRecommendations instead
+ */
+const getWalletRecommendations = getSwigWalletRecommendations;
+
+/**
+ * Check if current environment supports Swig wallet
+ * @returns {Object} Browser support information
  */
 export const checkWalletSupport = () => {
   if (typeof window === 'undefined') {
-    return { supported: false, reason: 'Server-side rendering' };
-  }
-
-  // Check if running in a browser that supports extensions
-  const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-  const isFirefox = /Firefox/.test(navigator.userAgent);
-  const isEdge = /Edg/.test(navigator.userAgent);
-  const isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
-  
-  // Check if mobile
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-  if (isMobile) {
-    return {
-      supported: true,
-      reason: 'Mobile supported',
-      recommendations: [
-        'Use Phantom mobile app with built-in browser',
-        'Or copy connection link to your mobile wallet'
-      ]
-    };
-  }
-
-  if (isChrome || isFirefox || isEdge) {
-    return {
-      supported: true,
-      reason: 'Desktop browser with extension support',
-      recommendations: ['Install wallet extension from official store']
-    };
-  }
-
-  if (isSafari) {
     return {
       supported: false,
-      reason: 'Safari has limited extension support',
-      recommendations: [
-        'Use Chrome, Firefox, or Edge for best wallet support',
-        'Or use web-based wallet options when available'
-      ]
+      reason: 'Server-side rendering environment',
+      recommendations: ['Enable JavaScript and use a modern browser']
+    };
+  }
+
+  // Check for basic browser capabilities needed for Swig wallet
+  const hasLocalStorage = typeof Storage !== 'undefined';
+  const hasWebCrypto = typeof crypto !== 'undefined' && typeof crypto.subtle !== 'undefined';
+  const hasPopupSupport = typeof window.open === 'function';
+
+  if (!hasLocalStorage) {
+    return {
+      supported: false,
+      reason: 'LocalStorage not available',
+      recommendations: ['Use a modern browser with LocalStorage support']
+    };
+  }
+
+  if (!hasWebCrypto) {
+    return {
+      supported: false,
+      reason: 'Web Crypto API not available',
+      recommendations: ['Use a modern browser with Web Crypto API support']
+    };
+  }
+
+  if (!hasPopupSupport) {
+    return {
+      supported: false,
+      reason: 'Popup windows not supported',
+      recommendations: ['Enable popups for OAuth authentication']
     };
   }
 
   return {
-    supported: false,
-    reason: 'Unsupported browser',
-    recommendations: [
-      'Use Chrome, Firefox, or Edge for wallet support',
-      'Or use web-based wallet options when available'
-    ]
+    supported: true,
+    reason: 'All required features are available',
+    recommendations: []
   };
 };
 
 /**
- * Get connection troubleshooting steps based on detected wallet state
- * @param {Object} walletState - Current wallet connection state
+ * Get troubleshooting steps for Swig wallet connection issues
+ * @param {Object} walletState - Current wallet state
  * @returns {Array} Array of troubleshooting steps
  */
 export const getConnectionTroubleshootingSteps = (walletState) => {
   const steps = [];
 
-  if (!walletState.hasAnyWallet) {
+  if (!walletState.isAuthenticated) {
     steps.push({
-      title: 'Install a Solana Wallet',
-      description: 'You need a Solana-compatible wallet to connect',
-      action: 'install',
+      title: 'Sign in with OAuth',
+      description: 'You need to authenticate with an OAuth provider to access your wallet',
+      action: 'authenticate',
       priority: 'high'
     });
   }
 
-  if (walletState.hasAnyWallet && !walletState.connected) {
+  if (walletState.isAuthenticated && !walletState.connected) {
     steps.push({
-      title: 'Click Connect Wallet',
-      description: 'Use the wallet connection button to start the process',
-      action: 'connect',
+      title: 'Check Authentication Status',
+      description: 'Verify that your authentication session is still valid',
+      action: 'check_auth',
       priority: 'high'
     });
 
     steps.push({
-      title: 'Approve Connection',
-      description: 'Your wallet will ask for permission to connect - click Approve',
-      action: 'approve',
+      title: 'Refresh Connection',
+      description: 'Try refreshing the page to re-establish the connection',
+      action: 'refresh',
       priority: 'medium'
     });
   }
 
   if (walletState.error) {
     steps.push({
-      title: 'Check Wallet Status',
-      description: 'Make sure your wallet extension is unlocked and functioning',
-      action: 'check',
+      title: 'Clear Browser Data',
+      description: 'Clear cookies and local storage, then try authenticating again',
+      action: 'clear_data',
       priority: 'high'
     });
 
     steps.push({
-      title: 'Refresh and Retry',
-      description: 'Sometimes a simple refresh resolves connection issues',
-      action: 'refresh',
+      title: 'Check Network Connection',
+      description: 'Ensure you have a stable internet connection',
+      action: 'check_network',
+      priority: 'medium'
+    });
+
+    steps.push({
+      title: 'Try Different OAuth Provider',
+      description: 'If one OAuth method fails, try signing in with a different provider',
+      action: 'try_different_oauth',
       priority: 'medium'
     });
   }
 
-  // Always include network troubleshooting
+  // Add general troubleshooting steps
   steps.push({
-    title: 'Check Network Connection',
-    description: 'Ensure you have a stable internet connection',
-    action: 'network',
+    title: 'Disable Ad Blockers',
+    description: 'Ad blockers may interfere with OAuth popup windows',
+    action: 'disable_adblocker',
+    priority: 'low'
+  });
+
+  steps.push({
+    title: 'Use Incognito Mode',
+    description: 'Try using private/incognito browsing mode to isolate issues',
+    action: 'incognito',
     priority: 'low'
   });
 
   return steps;
 };
+
+/**
+ * Legacy browser support check
+ * @deprecated Use checkWalletSupport instead
+ */
+export const checkBrowserSupport = checkWalletSupport;
