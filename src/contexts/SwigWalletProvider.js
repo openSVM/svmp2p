@@ -6,7 +6,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Connection, PublicKey, LAMPORTS_PER_SOL, Transaction, Keypair, clusterApiUrl } from '@solana/web3.js';
+import { Connection, PublicKey, LAMPORTS_PER_SOL, Transaction, Keypair } from '@solana/web3.js';
 import {
   fetchSwig,
   Role,
@@ -20,39 +20,13 @@ import { OAuthMethod } from '@getpara/web-sdk';
 import { useToast } from '../hooks/useToast';
 import { ToastContainer } from '../components/Toast';
 import { ReconnectionModal } from '../components/ReconnectionModal';
+import { SVM_NETWORKS, getNetworkConfig, getDefaultNetworkConfig } from '../config/networks';
 
-// SVM Networks configuration (imported from main app config)
-const SVM_NETWORKS = {
-  'solana': {
-    name: 'Solana',
-    endpoint: clusterApiUrl('devnet'),
-    programId: 'YOUR_SOLANA_PROGRAM_ID',
-    icon: '/images/solana-logo.svg',
-    color: '#9945FF',
-    explorerUrl: 'https://explorer.solana.com',
-    fallbackEndpoints: [
-      'https://api.devnet.solana.com',
-      'https://solana-devnet-rpc.allthatnode.com',
-    ],
-    connectionConfig: {
-      commitment: 'confirmed',
-      confirmTransactionInitialTimeout: 60000,
-    }
-  },
-  'sonic': {
-    name: 'Sonic',
-    endpoint: 'https://sonic-api.example.com',
-    programId: 'YOUR_SONIC_PROGRAM_ID',
-    icon: '/images/sonic-logo.svg',
-    color: '#00C2FF',
-    explorerUrl: 'https://explorer.sonic.example.com',
-    fallbackEndpoints: [],
-    connectionConfig: {
-      commitment: 'confirmed',
-      confirmTransactionInitialTimeout: 60000,
-    }
-  }
-};
+// Maximum number of reconnection attempts
+const MAX_RECONNECT_ATTEMPTS = 3;
+
+// Initial backoff time in milliseconds
+const INITIAL_BACKOFF_MS = 1000;
 
 // Create Swig wallet context
 const SwigWalletContext = createContext({
@@ -93,12 +67,6 @@ const SwigWalletContext = createContext({
   isReady: true,
   connectionState: 'unknown' // 'unknown', 'connecting', 'connected', 'disconnected', 'error'
 });
-
-// Maximum number of reconnection attempts
-const MAX_RECONNECT_ATTEMPTS = 3;
-
-// Initial backoff time in milliseconds
-const INITIAL_BACKOFF_MS = 1000;
 
 /**
  * Enhanced Swig wallet context provider
@@ -147,17 +115,19 @@ const SwigWalletProvider = ({ children }) => {
   // Refs for cancellation
   const reconnectCancelledRef = useRef(false);
   const reconnectTimeoutRef = useRef(null);
+  const reconnectScheduledTimeouts = useRef(new Set());
 
   // Connection helper that aligns with app-selected network
   const getConnection = useCallback(async () => {
     try {
       // Get the currently selected network from localStorage or context
       const selectedNetwork = localStorage.getItem('selectedNetwork') || 'solana';
-      const networkConfig = SVM_NETWORKS[selectedNetwork];
+      const networkConfig = getNetworkConfig(selectedNetwork);
       
       if (!networkConfig) {
         console.warn('[SwigWalletProvider] Unknown network selected, falling back to Solana');
-        return new Connection(SVM_NETWORKS.solana.endpoint, SVM_NETWORKS.solana.connectionConfig);
+        const defaultConfig = getDefaultNetworkConfig();
+        return new Connection(defaultConfig.endpoint, defaultConfig.connectionConfig);
       }
       
       // Try primary endpoint first
@@ -248,7 +218,56 @@ const SwigWalletProvider = ({ children }) => {
     }
   }, [toast]);
 
-  // OAuth authentication with popup blocker detection
+  // Enhanced popup blocker detection
+  const detectPopupBlocked = useCallback((popup) => {
+    if (!popup) return true;
+    if (popup.closed) return true;
+    if (typeof popup.closed === 'undefined') return true;
+    
+    // Additional check for mobile browsers
+    try {
+      if (popup.outerHeight === 0 || popup.outerWidth === 0) return true;
+      if (popup.screenX === 0 && popup.screenY === 0) return true;
+    } catch (e) {
+      // Some browsers throw errors when checking these properties
+      return true;
+    }
+    
+    return false;
+  }, []);
+
+  // Show popup blocker fallback instructions
+  const showPopupBlockedFallback = useCallback((authUrl, method) => {
+    const methodName = method === OAuthMethod.GOOGLE ? 'Google' : 
+                      method === OAuthMethod.FARCASTER ? 'Farcaster' : 'OAuth';
+    
+    const errorMsg = `Popup blocked. Please allow popups for this site and try again.`;
+    
+    toast.error(errorMsg, {
+      duration: 15000, // Longer duration for instructions
+      action: (
+        <div className="mt-3 space-y-2">
+          <button
+            onClick={() => window.open(authUrl, '_blank')}
+            className="block w-full px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+          >
+            Open {methodName} Login
+          </button>
+          <button
+            onClick={() => {
+              // For mobile devices, try same-tab navigation
+              window.location.href = authUrl;
+            }}
+            className="block w-full px-3 py-2 bg-gray-500 text-white text-sm rounded hover:bg-gray-600"
+          >
+            Continue in This Tab
+          </button>
+        </div>
+      )
+    });
+  }, [toast]);
+
+  // OAuth authentication with enhanced popup blocker detection and fallback
   const authenticate = useCallback(async (method = OAuthMethod.GOOGLE) => {
     try {
       setConnecting(true);
@@ -256,12 +275,15 @@ const SwigWalletProvider = ({ children }) => {
       setConnectionState('connecting');
 
       if (method === OAuthMethod.FARCASTER) {
-        // Farcaster authentication flow
+        // Farcaster authentication flow with better popup management
         const connectUri = await para.getFarcasterConnectURL();
-        const popup = window.open(connectUri, 'farcasterConnectPopup', 'popup=true');
+        
+        // Try to open popup
+        const popup = window.open(connectUri, 'farcasterConnectPopup', 'popup=true,width=500,height=600');
         
         // Check if popup was blocked
-        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        if (detectPopupBlocked(popup)) {
+          showPopupBlockedFallback(connectUri, method);
           throw new Error('POPUP_BLOCKED');
         }
 
@@ -277,26 +299,34 @@ const SwigWalletProvider = ({ children }) => {
               isForNewDevice: false,
             });
 
-        const popupWindow = window.open(
+        // Close first popup to prevent multiple popups
+        if (popup && !popup.closed) {
+          popup.close();
+        }
+
+        // Sequential popup opening to reduce blocker issues
+        const authPopup = window.open(
           authUrl,
           userExists ? 'loginPopup' : 'signUpPopup',
-          'popup=true'
+          'popup=true,width=500,height=600'
         );
 
-        if (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined') {
+        if (detectPopupBlocked(authPopup)) {
+          showPopupBlockedFallback(authUrl, method);
           throw new Error('POPUP_BLOCKED');
         }
 
         await (userExists
-          ? para.waitForLoginAndSetup({ popupWindow })
+          ? para.waitForLoginAndSetup({ popupWindow: authPopup })
           : para.waitForPasskeyAndCreateWallet());
       } else {
-        // Regular OAuth flow (Google, Apple, etc.)
+        // Regular OAuth flow (Google, Apple, etc.) with enhanced detection
         const oAuthURL = await para.getOAuthURL({ method });
-        const popup = window.open(oAuthURL, 'oAuthPopup', 'popup=true');
+        const popup = window.open(oAuthURL, 'oAuthPopup', 'popup=true,width=500,height=600');
         
-        // Check if popup was blocked
-        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        // Enhanced popup blocker detection
+        if (detectPopupBlocked(popup)) {
+          showPopupBlockedFallback(oAuthURL, method);
           throw new Error('POPUP_BLOCKED');
         }
 
@@ -314,10 +344,11 @@ const SwigWalletProvider = ({ children }) => {
         const popupWindow = window.open(
           authUrl,
           userExists ? 'loginPopup' : 'signUpPopup',
-          'popup=true'
+          'popup=true,width=500,height=600'
         );
 
-        if (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined') {
+        if (detectPopupBlocked(popupWindow)) {
+          showPopupBlockedFallback(authUrl, method);
           throw new Error('POPUP_BLOCKED');
         }
 
@@ -336,19 +367,8 @@ const SwigWalletProvider = ({ children }) => {
       console.error('[SwigWalletProvider] Authentication failed:', err);
       
       if (err.message === 'POPUP_BLOCKED') {
-        const errorMsg = 'Popup blocked. Please allow popups for this site and try again.';
-        setError(errorMsg);
-        toast.error(errorMsg, {
-          duration: 10000,
-          action: (
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-            >
-              Try Again
-            </button>
-          )
-        });
+        // Error already handled by showPopupBlockedFallback
+        setError('Popup blocked - please allow popups and try again');
       } else {
         const errorMsg = err.message || 'Authentication failed';
         setError(errorMsg);
@@ -358,7 +378,7 @@ const SwigWalletProvider = ({ children }) => {
     } finally {
       setConnecting(false);
     }
-  }, [checkAuthentication, toast]);
+  }, [checkAuthentication, toast, detectPopupBlocked, showPopupBlockedFallback]);
 
   // Connect (alias for authenticate for compatibility)
   const connect = useCallback(async () => {
@@ -417,7 +437,7 @@ const SwigWalletProvider = ({ children }) => {
     }
   }, [walletAddress, getConnection, toast]);
 
-  // Reconnection logic with progress tracking
+  // Reconnection logic with progress tracking and proper cleanup
   const reconnect = useCallback(async () => {
     if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS || isReconnecting) {
       console.log('[SwigWalletProvider] Max reconnection attempts reached or already reconnecting');
@@ -426,6 +446,7 @@ const SwigWalletProvider = ({ children }) => {
 
     try {
       setIsReconnecting(true);
+      reconnectCancelledRef.current = false;
       const currentAttempt = reconnectAttempts + 1;
       const backoffTime = getBackoffTime(reconnectAttempts);
       
@@ -439,10 +460,11 @@ const SwigWalletProvider = ({ children }) => {
 
       console.log(`[SwigWalletProvider] Reconnecting in ${Math.ceil(backoffTime / 1000)}s (attempt ${currentAttempt})`);
       
-      // Countdown timer for UI
+      // Countdown timer for UI with proper cleanup
       const countdown = Math.ceil(backoffTime / 1000);
       for (let i = countdown; i > 0; i--) {
         if (reconnectCancelledRef.current) {
+          console.log('[SwigWalletProvider] Reconnection cancelled during countdown');
           return;
         }
         
@@ -451,12 +473,31 @@ const SwigWalletProvider = ({ children }) => {
           nextRetryIn: i
         }));
         
-        await new Promise(resolve => {
-          reconnectTimeoutRef.current = setTimeout(resolve, 1000);
+        // Create a new promise for each second with proper timeout tracking
+        await new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => {
+            reconnectScheduledTimeouts.current.delete(timeoutId);
+            resolve();
+          }, 1000);
+          
+          // Track timeout for cancellation
+          reconnectScheduledTimeouts.current.add(timeoutId);
+          
+          // Check if cancelled during timeout
+          if (reconnectCancelledRef.current) {
+            clearTimeout(timeoutId);
+            reconnectScheduledTimeouts.current.delete(timeoutId);
+            reject(new Error('Cancelled'));
+          }
+        }).catch((error) => {
+          if (error.message === 'Cancelled') {
+            return Promise.reject(error);
+          }
         });
       }
 
       if (reconnectCancelledRef.current) {
+        console.log('[SwigWalletProvider] Reconnection cancelled before connection attempt');
         return;
       }
 
@@ -477,29 +518,50 @@ const SwigWalletProvider = ({ children }) => {
         nextRetryIn: 0,
         canCancel: false
       });
+      
+      console.log('[SwigWalletProvider] Reconnection successful');
     } catch (err) {
+      if (err.message === 'Cancelled') {
+        console.log('[SwigWalletProvider] Reconnection cancelled');
+        return;
+      }
+      
       console.error('[SwigWalletProvider] Reconnection failed:', err);
       setReconnectAttempts(prev => prev + 1);
       
-      // If we haven't reached max attempts, schedule next retry
-      if (reconnectAttempts + 1 < MAX_RECONNECT_ATTEMPTS) {
-        setTimeout(() => reconnect(), 1000);
+      // If we haven't reached max attempts, schedule next retry with proper cleanup
+      if (reconnectAttempts + 1 < MAX_RECONNECT_ATTEMPTS && !reconnectCancelledRef.current) {
+        const timeoutId = setTimeout(() => {
+          reconnectScheduledTimeouts.current.delete(timeoutId);
+          if (!reconnectCancelledRef.current) {
+            reconnect();
+          }
+        }, 1000);
+        
+        reconnectScheduledTimeouts.current.add(timeoutId);
       }
     } finally {
       setIsReconnecting(false);
     }
   }, [reconnectAttempts, getBackoffTime, checkAuthentication, isReconnecting]);
 
-  // Cancel reconnection
+  // Cancel reconnection with comprehensive cleanup
   const cancelReconnection = useCallback(() => {
+    console.log('[SwigWalletProvider] Cancelling reconnection...');
     reconnectCancelledRef.current = true;
     setIsReconnecting(false);
     
-    // Clear any pending timeouts
+    // Clear individual timeout if it exists
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
+    
+    // Clear all scheduled timeouts
+    reconnectScheduledTimeouts.current.forEach(timeoutId => {
+      clearTimeout(timeoutId);
+    });
+    reconnectScheduledTimeouts.current.clear();
     
     // Reset progress state
     setReconnectionProgress({
@@ -516,6 +578,23 @@ const SwigWalletProvider = ({ children }) => {
   useEffect(() => {
     checkAuthentication();
   }, [checkAuthentication]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Cancel all reconnection timers on unmount
+      reconnectCancelledRef.current = true;
+      
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      
+      reconnectScheduledTimeouts.current.forEach(timeoutId => {
+        clearTimeout(timeoutId);
+      });
+      reconnectScheduledTimeouts.current.clear();
+    };
+  }, []);
 
   // Memoized context value
   const contextValue = useMemo(() => ({
