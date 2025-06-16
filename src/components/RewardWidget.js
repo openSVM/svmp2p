@@ -225,7 +225,6 @@ const getWidgetStyles = (compact) => `
                     border-color: var(--ascii-red);
                     background: rgba(220, 38, 127, 0.1);
                 }
-            `;
             `}</style>
         </div>
     );

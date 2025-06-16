@@ -20,6 +20,39 @@ This document provides comprehensive documentation for wallet operations in the 
 
 ## Wallet Connection
 
+### Input Validation
+
+All wallet operations now include comprehensive input validation before any blockchain interaction:
+
+```typescript
+import { 
+  validateWalletConnection,
+  validateTransactionParams,
+  isValidPublicKey,
+  isValidNetwork,
+  getErrorMessage
+} from '../utils/walletValidation';
+
+// Validate wallet connection parameters
+const validation = validateWalletConnection({
+  publicKey: wallet.publicKey,
+  network: selectedNetwork
+});
+
+if (!validation.valid) {
+  validation.errors.forEach(error => {
+    console.error(getErrorMessage(error));
+  });
+  return;
+}
+```
+
+**Validation Rules**:
+- **Public Keys**: Must be valid base58 encoded, 32 bytes, not default key
+- **Networks**: Must be supported SVM networks (solana, sonic, eclipse, svmbnb, s00n)
+- **Amounts**: Must be positive numbers within reasonable bounds
+- **Addresses**: Must be valid public key format for recipient addresses
+
 ### Connection Flow
 
 The wallet connection process follows the Solana wallet adapter pattern with additional security measures:
@@ -462,12 +495,88 @@ const handleConnectionError = async (error: WalletConnectionError) => {
       await retryConnection();
       break;
       
+    case 'VALIDATION_FAILED':
+      // Show validation error details with user-friendly messages
+      showValidationErrors(getErrorMessage(error));
+      break;
+      
     default:
       // Log error and show generic message
       logger.error('Wallet connection failed', error);
       showGenericError();
   }
 };
+```
+
+### Transaction Validation
+
+Enhanced transaction validation prevents invalid transactions from being submitted:
+
+```typescript
+import { 
+  validateTransactionParams, 
+  validateCrossNetworkTrade,
+  TransactionError,
+  TRANSACTION_ERRORS
+} from '../utils/transactionHandler';
+
+// Validate transaction before submission
+const validateBeforeTransaction = async (params) => {
+  // Basic parameter validation
+  const validation = validateTransactionParams({
+    from: params.senderAddress,
+    to: params.recipientAddress,
+    amount: params.amount,
+    network: params.network,
+    decimals: params.tokenDecimals || 9
+  });
+
+  if (!validation.valid) {
+    const errorMessages = validation.errors.map(e => getErrorMessage(e));
+    throw new TransactionError(TRANSACTION_ERRORS.VALIDATION_FAILED, errorMessages.join(', '));
+  }
+
+  // Cross-network validation if applicable
+  if (params.crossNetwork) {
+    const crossValidation = validateCrossNetworkTrade({
+      sourceNetwork: params.sourceNetwork,
+      destinationNetwork: params.destinationNetwork,
+      sourceToken: params.sourceToken,
+      destinationToken: params.destinationToken
+    });
+
+    if (!crossValidation.valid) {
+      const errorMessages = crossValidation.errors.map(e => getErrorMessage(e));
+      throw new TransactionError(TRANSACTION_ERRORS.VALIDATION_FAILED, errorMessages.join(', '));
+    }
+  }
+};
+```
+
+### Enhanced Error Messages
+
+The system now provides user-friendly error messages for all validation failures:
+
+```typescript
+import { getErrorMessage, WalletValidationError } from '../utils/walletValidation';
+
+// Example error messages
+const errorExamples = {
+  invalidPublicKey: 'Invalid wallet address format. Please check your wallet connection.',
+  invalidNetwork: 'Unsupported network. Please select a valid SVM network.',
+  invalidAmount: 'Invalid amount. Please enter a positive number.',
+  insufficientBalance: 'Insufficient balance for this transaction.',
+  networkMismatch: 'Network mismatch. Source and destination networks are incompatible.'
+};
+
+// Usage in error handling
+try {
+  await executeTransaction(params);
+} catch (error) {
+  const userFriendlyMessage = getErrorMessage(error);
+  showToast(userFriendlyMessage, 'error');
+}
+```
 ```
 
 #### Transaction Recovery
