@@ -118,6 +118,13 @@ export const SwigWalletButton = ({ className = '' }) => {
 };
 
 // For compatibility with existing code
-export const WalletMultiButton = SwigWalletButton;
+// DEPRECATED: WalletMultiButton is deprecated. Use SwigWalletButton instead.
+export const WalletMultiButton = (props) => {
+  console.warn(
+    '[DEPRECATION WARNING] WalletMultiButton is deprecated and will be removed in v2.0.0. ' +
+    'Please migrate to SwigWalletButton for the same functionality.'
+  );
+  return <SwigWalletButton {...props} />;
+};
 
 export default SwigWalletButton;

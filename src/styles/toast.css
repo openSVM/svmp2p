@@ -1,0 +1,111 @@
+/* Toast notification styles */
+.toast-wrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.toast-container {
+  pointer-events: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.toast-container.toast-enter {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-container.toast-exit {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .toast-wrapper {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .toast-container {
+    transform: translateY(-100%);
+  }
+  
+  .toast-container.toast-enter {
+    transform: translateY(0);
+  }
+  
+  .toast-container.toast-exit {
+    transform: translateY(-100%);
+  }
+}
+
+/* Progress bar animation */
+.toast-container .bg-current {
+  transition: width 0.1s linear;
+}
+
+/* Reconnection modal styles */
+.reconnection-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+}
+
+.reconnection-modal .modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.reconnection-modal .progress-ring {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+}
+
+.reconnection-modal .progress-circle {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 4;
+}
+
+.reconnection-modal .progress-circle.active {
+  stroke: #3b82f6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.reconnection-modal .spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e5e7eb;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
