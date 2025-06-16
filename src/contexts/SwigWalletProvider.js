@@ -21,6 +21,7 @@ import { useToast } from '../hooks/useToast';
 import { ToastContainer } from '../components/Toast';
 import { ReconnectionModal } from '../components/ReconnectionModal';
 import { SVM_NETWORKS, getNetworkConfig, getDefaultNetworkConfig } from '../config/networks';
+import { ERROR_CATEGORIES } from '../hooks/useToast';
 
 // Maximum number of reconnection attempts
 const MAX_RECONNECT_ATTEMPTS = 3;
@@ -196,12 +197,23 @@ const SwigWalletProvider = ({ children }) => {
           setPublicKey(new PublicKey(selectedWallet.address));
           setConnected(true);
           setConnectionState('connected');
-          toast.success('Wallet connected successfully');
+          toast.success('Wallet connected successfully', { 
+            category: ERROR_CATEGORIES.SUCCESS 
+          });
         } else {
           const errorMsg = `No ${storedWalletType} wallet found`;
           setError(errorMsg);
           setConnectionState('error');
-          toast.error(errorMsg);
+          toast.criticalError(errorMsg, {
+            action: (
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+              >
+                Retry
+              </button>
+            )
+          });
         }
       } else {
         setConnected(false);
@@ -212,7 +224,22 @@ const SwigWalletProvider = ({ children }) => {
       const errorMsg = err.message || 'Authentication check failed';
       setError(errorMsg);
       setConnectionState('error');
-      toast.error(`Connection failed: ${errorMsg}`);
+      
+      // Categorize error based on type
+      if (err.message?.includes('network') || err.message?.includes('connection')) {
+        toast.systemError(`Connection failed: ${errorMsg}`, {
+          action: (
+            <button
+              onClick={() => checkAuthentication()}
+              className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+            >
+              Retry Connection
+            </button>
+          )
+        });
+      } else {
+        toast.criticalError(`Authentication failed: ${errorMsg}`);
+      }
     } finally {
       setConnecting(false);
     }
@@ -243,8 +270,10 @@ const SwigWalletProvider = ({ children }) => {
     
     const errorMsg = `Popup blocked. Please allow popups for this site and try again.`;
     
-    toast.error(errorMsg, {
+    toast.systemError(errorMsg, {
+      category: ERROR_CATEGORIES.SYSTEM,
       duration: 15000, // Longer duration for instructions
+      persistent: true,
       action: (
         <div className="mt-3 space-y-2">
           <button
@@ -372,7 +401,22 @@ const SwigWalletProvider = ({ children }) => {
       } else {
         const errorMsg = err.message || 'Authentication failed';
         setError(errorMsg);
-        toast.error(`Login failed: ${errorMsg}`);
+        
+        // Categorize authentication errors
+        if (errorMsg.includes('network') || errorMsg.includes('timeout')) {
+          toast.systemError(`Login failed: ${errorMsg}`, {
+            action: (
+              <button
+                onClick={() => authenticate(method)}
+                className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+              >
+                Retry Login
+              </button>
+            )
+          });
+        } else {
+          toast.criticalError(`Login failed: ${errorMsg}`);
+        }
       }
       setConnectionState('error');
     } finally {
@@ -404,12 +448,14 @@ const SwigWalletProvider = ({ children }) => {
       setError(null);
       setConnectionState('disconnected');
       
-      toast.success('Wallet disconnected');
+      toast.success('Wallet disconnected', { 
+        category: ERROR_CATEGORIES.SUCCESS 
+      });
     } catch (err) {
       console.error('[SwigWalletProvider] Disconnect failed:', err);
       const errorMsg = err.message || 'Disconnect failed';
       setError(errorMsg);
-      toast.error(`Disconnect failed: ${errorMsg}`);
+      toast.criticalError(`Disconnect failed: ${errorMsg}`);
     }
   }, [toast]);
 
@@ -426,12 +472,14 @@ const SwigWalletProvider = ({ children }) => {
       // This is a simplified version - full implementation would use createSwigAccount utilities
       
       console.log('[SwigWalletProvider] Swig wallet setup completed');
-      toast.success('Swig wallet setup completed');
+      toast.success('Swig wallet setup completed', { 
+        category: ERROR_CATEGORIES.SUCCESS 
+      });
     } catch (err) {
       console.error('[SwigWalletProvider] Swig wallet setup failed:', err);
       const errorMsg = err.message || 'Swig wallet setup failed';
       setError(errorMsg);
-      toast.error(`Setup failed: ${errorMsg}`);
+      toast.criticalError(`Setup failed: ${errorMsg}`);
     } finally {
       setIsSettingUp(false);
     }

@@ -19,6 +19,53 @@
 - Clean up legacy code paths
 - **Timeline**: Next major release
 
+## New Features & Improvements
+
+### Enhanced Error Handling System
+The new Swig wallet integration includes a categorized error handling system:
+
+#### Error Categories
+- **Critical Errors**: Authentication failures, API issues (persistent toasts)
+- **System Errors**: Network issues, connection problems (actionable toasts)
+- **Informational Errors**: Form validation, user input (inline or brief toasts)
+- **Success Messages**: Brief confirmation toasts
+
+#### Usage Examples
+```javascript
+const { toast } = useToast();
+
+// Critical errors - persistent with retry actions
+toast.criticalError('Authentication failed', {
+  action: <button onClick={retry}>Retry</button>
+});
+
+// System errors - connection issues with fallbacks
+toast.systemError('Connection lost', {
+  action: <button onClick={reconnect}>Reconnect</button>
+});
+
+// Success messages - brief confirmations
+toast.success('Wallet connected successfully');
+```
+
+### Improved Reconnection Logic
+- **Exponential backoff with jitter** prevents thundering herd problems
+- **Comprehensive timeout cleanup** prevents memory leaks
+- **Progress tracking UI** shows reconnection attempts to users
+- **Cancellation support** allows users to stop reconnection
+
+### Enhanced Popup Handling
+- **Better popup blocker detection** including mobile browsers
+- **Fallback options** for blocked popups (same-tab navigation)
+- **Sequential popup management** reduces blocker issues
+- **User-friendly error messages** with actionable buttons
+
+### Accessibility Improvements
+- **Focus trapping** in modals for keyboard navigation
+- **ARIA labels** for screen readers
+- **Escape key support** for modal dismissal
+- **Proper focus restoration** after modal close
+
 ## Migration Steps
 
 ### 1. Update Hook Usage
