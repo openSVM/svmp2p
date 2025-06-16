@@ -20,6 +20,7 @@ import './styles/wallet-connection-guide.css';
 // Import components
 import { AppContext } from './AppContext';
 import { NetworkSelector } from './components/NetworkSelector';
+import LanguageSelector from './components/LanguageSelector';
 import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
 import { DisputeResolution } from './components/DisputeResolution';
@@ -89,6 +90,18 @@ const SVM_NETWORKS = {
   }
 };
 
+// Supported languages configuration
+const SUPPORTED_LANGUAGES = [
+  { code: 'en', name: 'English', country: '🇺🇸' },
+  { code: 'es', name: 'Español', country: '🇪🇸' },
+  { code: 'fr', name: 'Français', country: '🇫🇷' },
+  { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+  { code: 'ja', name: '日本語', country: '🇯🇵' },
+  { code: 'ko', name: '한국어', country: '🇰🇷' },
+  { code: 'zh', name: '中文', country: '🇨🇳' },
+  { code: 'pt', name: 'Português', country: '🇵🇹' },
+];
+
 // Inner component that can use the wallet hook
 const AppContent = () => {
   // Use safe wallet context instead of direct wallet adapter
@@ -99,6 +112,15 @@ const AppContent = () => {
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
   const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
   const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
+  const [currentLocale, setCurrentLocale] = useState('en'); // Language state
+
+  // Load saved language preference on component mount
+  useEffect(() => {
+    const savedLocale = localStorage.getItem('preferred-language');
+    if (savedLocale && SUPPORTED_LANGUAGES.find(lang => lang.code === savedLocale)) {
+      setCurrentLocale(savedLocale);
+    }
+  }, []);
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -132,6 +154,15 @@ const AppContent = () => {
   // Handle navigation click
   const handleNavClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Handle language change
+  const handleLanguageChange = (languageCode) => {
+    setCurrentLocale(languageCode);
+    // Persist the language preference
+    localStorage.setItem('preferred-language', languageCode);
+    // Here you would typically integrate with i18next to change the language
+    // For now, we'll just update the state
   };
 
   // Status indicator for wallet connection
@@ -225,14 +256,11 @@ const AppContent = () => {
             {/* Header Actions */}
             <div className="header-actions">
               {/* Language selector */}
-              <div className="relative inline-block text-left">
-                <button className="inline-flex justify-center items-center px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  <span className="mr-2">EN</span>
-                  <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                  </svg>
-                </button>
-              </div>
+              <LanguageSelector 
+                languages={SUPPORTED_LANGUAGES}
+                currentLocale={currentLocale}
+                onLanguageChange={handleLanguageChange}
+              />
               
               {/* Solana Explorer link */}
               <a 
