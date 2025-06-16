@@ -23,6 +23,12 @@
 
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { 
+  validateWalletConnection, 
+  getErrorMessage, 
+  WalletValidationError,
+  VALIDATION_ERRORS 
+} from '../utils/walletValidation';
 
 // Create a safe wallet context that wraps the Solana wallet adapter
 const SafeWalletContext = createContext({
@@ -193,16 +199,35 @@ export const SafeWalletProvider = ({ children }) => {
             // Reset cancellation flag for new connection attempt
             reconnectCancelledRef.current = false;
             setConnectionState('connecting');
+            
             if (walletAdapter?.connect) {
               await walletAdapter.connect();
+              
+              // Validate the connection after successful connect
+              if (walletAdapter.publicKey) {
+                const validation = validateWalletConnection({
+                  publicKey: walletAdapter.publicKey,
+                  network: 'solana' // Default network, can be made configurable
+                });
+                
+                if (!validation.valid) {
+                  const errorMessage = validation.errors.map(e => getErrorMessage(e)).join(', ');
+                  throw new WalletValidationError(VALIDATION_ERRORS.INVALID_PUBLIC_KEY, errorMessage);
+                }
+              }
+              
               setConnectionState('connected');
               setReconnectAttempts(0);
+              setError(null); // Clear any previous errors
               return Promise.resolve(true);
             }
             return Promise.resolve(false);
           } catch (err) {
             console.error('[SafeWalletProvider] Error during connect:', err);
-            setError(err.message || 'Failed to connect wallet');
+            
+            // Use enhanced error messaging
+            const errorMessage = getErrorMessage(err);
+            setError(errorMessage);
             setConnectionState('error');
             
             // Check for rate limit errors and handle appropriately
