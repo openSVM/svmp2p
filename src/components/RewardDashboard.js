@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useSwigWallet } from '../contexts/SwigWalletProvider';
 import { fetchCompleteRewardData, clearUserCache } from '../utils/rewardQueries';
 import { 
     claimRewards, 
@@ -22,7 +22,7 @@ import {
 } from '../constants/rewardConstants';
 
 const RewardDashboard = () => {
-    const { publicKey, connected, wallet } = useWallet();
+    const { publicKey, connected, wallet } = useSwigWallet();
     const autoClaimManager = useAutoClaimManager(wallet, null); // connection would be passed in real implementation
     const [rewards, setRewards] = useState(DEFAULT_REWARD_DATA.userRewards);
     const [rewardToken, setRewardToken] = useState(DEFAULT_REWARD_DATA.rewardToken);

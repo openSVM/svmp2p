@@ -1,19 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import {
-  PhantomWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
-import {
-  WalletModalProvider,
-  WalletDisconnectButton,
-  WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 
 // Import styles
-import '@solana/wallet-adapter-react-ui/styles.css';
 import './styles/guided-workflow.css';
 import './styles/wallet-connection-guide.css';
 
@@ -27,8 +16,9 @@ import { UserProfile } from './components/UserProfile';
 import TradingGuidedWorkflow from './components/guided-workflow/TradingGuidedWorkflow';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// Import wallet safety utilities
-import { SafeWalletProvider, useSafeWallet } from './contexts/WalletContextProvider';
+// Import Swig wallet utilities
+import { SwigWalletProvider, useSwigWallet } from './contexts/SwigWalletProvider';
+import { SwigWalletButton } from './components/SwigWalletButton';
 import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
 import { createConnection, getNetworkConnection } from './utils/rpcConnection';
 
@@ -89,10 +79,10 @@ const SVM_NETWORKS = {
   }
 };
 
-// Inner component that can use the wallet hook
+// Inner component that can use the Swig wallet hook
 const AppContent = () => {
-  // Use safe wallet context instead of direct wallet adapter
-  const wallet = useSafeWallet();
+  // Use Swig wallet context instead of Solana wallet adapter
+  const wallet = useSwigWallet();
   
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
@@ -134,7 +124,7 @@ const AppContent = () => {
     setActiveTab(tab);
   };
 
-  // Status indicator for wallet connection
+  // Status indicator for Swig wallet connection
   const renderWalletStatus = () => {
     if (wallet.error) {
       return (
@@ -258,7 +248,7 @@ const AppContent = () => {
               }>
                 <div className="wallet-wrapper">
                   {renderWalletStatus()}
-                  <WalletMultiButton />
+                  <SwigWalletButton />
                   {wallet.error && (
                     <button 
                       className="wallet-retry-button" 
@@ -416,14 +406,6 @@ const AppContent = () => {
 };
 
 const App = () => {
-  // Set up wallet adapters - updated for latest wallet adapter versions
-  const wallets = useMemo(
-    () => [
-      new PhantomWalletAdapter(),
-    ],
-    []
-  );
-  
   // Define network for connection provider
   const network = SVM_NETWORKS['solana'];
   
@@ -452,15 +434,9 @@ const App = () => {
         </div>
       </div>
     }>
-      <ConnectionProvider endpoint={network.endpoint} config={network.connectionConfig} connection={connection}>
-        <WalletProvider wallets={wallets} autoConnect>
-          <SafeWalletProvider>
-            <WalletModalProvider>
-              <AppContent />
-            </WalletModalProvider>
-          </SafeWalletProvider>
-        </WalletProvider>
-      </ConnectionProvider>
+      <SwigWalletProvider>
+        <AppContent />
+      </SwigWalletProvider>
     </ErrorBoundary>
   );
 };

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { SwigWalletButton } from './SwigWalletButton';
+import { useSwigWallet } from '../contexts/SwigWalletProvider';
 import LanguageSelector from './LanguageSelector';
 import { createUserRewardsAccount, hasUserRewardsAccount } from '../utils/rewardTransactions';
 import { REWARD_CONSTANTS, UI_CONFIG } from '../constants/rewardConstants';
 
 const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
-  const { publicKey, connected, wallet } = useWallet();
+  const { publicKey, connected, wallet } = useSwigWallet();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -178,7 +178,7 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
             </div>
           </div>
           <div className="wallet-connect-section">
-            <WalletMultiButton />
+            <SwigWalletButton />
           </div>
         </div>
       )

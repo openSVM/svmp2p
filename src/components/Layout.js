@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { WalletMultiButton, WalletDisconnectButton } from '@solana/wallet-adapter-react-ui';
-import { useSafeWallet } from '@/contexts/WalletContextProvider';
+import { SwigWalletButton } from './SwigWalletButton';
+import { useSwigWallet } from '@/contexts/SwigWalletProvider';
 import { createLogger } from '@/utils/logger';
 
 // Import context
@@ -28,7 +28,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     networks 
   } = useContext(AppContext);
   
-  const { connected, publicKey } = useSafeWallet();
+  const { connected, publicKey } = useSwigWallet();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
 
@@ -199,15 +199,10 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 </span>
               )}
               
-              {/* Wallet connection button */}
-              {!connected && (
-                <div className="header-wallet-container">
-                  <WalletMultiButton />
-                </div>
-              )}
-              
-              {/* Disconnect button for connected users */}
-              {connected && <WalletDisconnectButton />}
+              {/* Swig wallet connection button */}
+              <div className="header-wallet-container">
+                <SwigWalletButton />
+              </div>
             </div>
           </div>
         </header>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { SwigWalletButton } from './SwigWalletButton';
 import WalletConnectionGuide from './WalletConnectionGuide';
 
 /**
@@ -38,16 +38,16 @@ const WalletNotConnected = ({ message }) => {
     </button>
   );
 
-  // Safely render wallet button with error handling
+  // Safely render Swig wallet button with error handling
   const WalletButtonSafe = () => {
     if (buttonError) {
       return <FallbackButton />;
     }
 
     try {
-      return <WalletMultiButton className="prominent-wallet-button" />;
+      return <SwigWalletButton className="prominent-wallet-button" />;
     } catch (error) {
-      console.error('Error rendering WalletMultiButton:', error);
+      console.error('Error rendering SwigWalletButton:', error);
       setButtonError(true);
       return <FallbackButton />;
     }
