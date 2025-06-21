@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
-import { TradingGuidedWorkflowLazy, useWorkflowPreloader } from '../components/guided-workflow/TradingGuidedWorkflowLazy';
+import { TradingGuidedWorkflowLazy, useWorkflowPreloader, LazyLoadErrorBoundary } from '../components/guided-workflow/TradingGuidedWorkflowLazy';
 
 // Mock the actual guided workflow component
 jest.mock('../components/guided-workflow/TradingGuidedWorkflow', () => {
