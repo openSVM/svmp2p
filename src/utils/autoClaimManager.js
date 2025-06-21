@@ -5,6 +5,7 @@
  * Provides both scheduled and threshold-based auto-claiming capabilities.
  */
 
+import React, { useEffect } from 'react';
 import { claimRewards, hasUserRewardsAccount, createUserRewardsAccount } from './rewardTransactions';
 import { fetchCompleteRewardData } from './rewardQueries';
 import { getStorageManager, STORAGE_BACKENDS } from './decentralizedStorage';
@@ -398,29 +399,22 @@ export const getAutoClaimManager = (wallet, connection) => {
  * React hook for using auto-claim manager
  */
 export const useAutoClaimManager = (wallet, connection) => {
-  // In a real React environment, we'd import React here
-  // For now, we'll provide a simple version
-  if (typeof React !== 'undefined' && React.useEffect) {
-    const manager = getAutoClaimManager(wallet, connection);
+  const manager = getAutoClaimManager(wallet, connection);
+  
+  // Auto-start if enabled
+  useEffect(() => {
+    if (manager.getConfig().enabled && !manager.isRunning && wallet?.connected) {
+      manager.start();
+    }
     
-    // Auto-start if enabled
-    React.useEffect(() => {
-      if (manager.getConfig().enabled && !manager.isRunning && wallet?.connected) {
-        manager.start();
+    return () => {
+      if (manager.isRunning) {
+        manager.stop();
       }
-      
-      return () => {
-        if (manager.isRunning) {
-          manager.stop();
-        }
-      };
-    }, [manager, wallet?.connected]);
-    
-    return manager;
-  } else {
-    // Fallback for non-React environments
-    return getAutoClaimManager(wallet, connection);
-  }
+    };
+  }, [manager, wallet?.connected]);
+  
+  return manager;
 };
 
 export default AutoClaimManager;

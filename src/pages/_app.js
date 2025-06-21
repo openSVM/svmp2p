@@ -19,6 +19,9 @@ import { analyzeBundleSize } from '@/utils/lazyLoading';
 // This specific order ensures proper CSS cascade and specificity
 import '../index.css'; // Main CSS file with Tailwind directives (must be first)
 import '@/styles/globals.css'; // Global styles and overrides
+import '@/styles/EnhancedNotification.css'; // Enhanced Notification component styles
+import '@/styles/TransactionAnalytics.css'; // Transaction Analytics component styles
+import '@/styles/TransactionProgressIndicator.css'; // Transaction Progress Indicator component styles
 import '@/styles/pwa.css'; // PWA-specific styles
 
 // Import context
