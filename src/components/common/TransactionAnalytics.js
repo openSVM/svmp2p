@@ -7,10 +7,8 @@ import PropTypes from 'prop-types';
  * Provides transparency and builds user confidence
  */
 const TransactionAnalytics = ({
-  userStats = {},
   globalStats = {},
   recentTransactions = [],
-  showPersonalStats = true,
   showGlobalStats = true,
   showRecentActivity = true,
   timeframe = '7d',
@@ -314,7 +312,6 @@ const TransactionAnalytics = ({
 };
 
 TransactionAnalytics.propTypes = {
-  userStats: PropTypes.object,
   globalStats: PropTypes.object,
   recentTransactions: PropTypes.arrayOf(
     PropTypes.shape({
@@ -326,7 +323,6 @@ TransactionAnalytics.propTypes = {
       value: PropTypes.number
     })
   ),
-  showPersonalStats: PropTypes.bool,
   showGlobalStats: PropTypes.bool,
   showRecentActivity: PropTypes.bool,
   timeframe: PropTypes.oneOf(['24h', '7d', '30d', '90d']),

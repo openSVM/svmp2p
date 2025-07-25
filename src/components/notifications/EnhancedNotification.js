@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -33,6 +33,7 @@ const EnhancedNotification = ({
   const [isExpanded, setIsExpanded] = useState(expanded);
   const [isVisible, setIsVisible] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(autoClose ? autoCloseTime / 1000 : null);
+  const readCalledRef = useRef(false);
 
   // Auto-close timer
   useEffect(() => {
@@ -52,10 +53,15 @@ const EnhancedNotification = ({
     }
   }, [autoClose, persistent, type, read, id, onDelete]);
 
-  // Mark as read when interacted with
+  // Mark as read when interacted with (with throttling to prevent multiple calls)
   const handleRead = () => {
-    if (!read && onRead) {
+    if (!read && onRead && !readCalledRef.current) {
+      readCalledRef.current = true;
       onRead(id);
+      // Reset the flag after a short delay to allow future reads if needed
+      setTimeout(() => {
+        readCalledRef.current = false;
+      }, 100);
     }
   };
 

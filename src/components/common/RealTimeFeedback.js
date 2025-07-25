@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 /**
@@ -27,77 +27,10 @@ const RealTimeFeedback = ({
 
   const intervalRef = useRef(null);
   const retryTimeoutRef = useRef(null);
-  const wsRef = useRef(null);
-
-  // Simulate WebSocket connection
-  useEffect(() => {
-    if (!transactionId && !networkEndpoint) return;
-
-    const connect = () => {
-      setConnectionStatus('connecting');
-      
-      // Simulate connection delay
-      setTimeout(() => {
-        setConnectionStatus('connected');
-        setRetryCount(0);
-        startPolling();
-      }, 500);
-    };
-
-    const disconnect = () => {
-      setConnectionStatus('disconnected');
-      stopPolling();
-    };
-
-    const reconnect = () => {
-      if (retryCount < maxRetries) {
-        setConnectionStatus('reconnecting');
-        setRetryCount(prev => prev + 1);
-        
-        retryTimeoutRef.current = setTimeout(() => {
-          connect();
-        }, retryDelay * Math.pow(2, retryCount)); // Exponential backoff
-      } else {
-        setConnectionStatus('failed');
-      }
-    };
-
-    connect();
-
-    return () => {
-      disconnect();
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
-    };
-  }, [transactionId, networkEndpoint, maxRetries, retryDelay, retryCount]);
-
-  // Polling simulation for real-time updates
-  const startPolling = () => {
-    if (intervalRef.current) return;
-
-    intervalRef.current = setInterval(() => {
-      // Simulate network status updates
-      updateNetworkStatus();
-      
-      // Simulate transaction updates if tracking a transaction
-      if (transactionId) {
-        updateTransactionStatus();
-      }
-      
-      setLastUpdate(new Date().toISOString());
-    }, updateInterval);
-  };
-
-  const stopPolling = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
+  const retryCountRef = useRef(0);
 
   // Simulate network status updates
-  const updateNetworkStatus = () => {
+  const updateNetworkStatus = useCallback(() => {
     const newNetworkStatus = {
       health: Math.max(85, Math.min(100, networkStatus.health + (Math.random() - 0.5) * 10)),
       latency: Math.max(10, Math.min(500, networkStatus.latency + (Math.random() - 0.5) * 50)),
@@ -110,10 +43,10 @@ const RealTimeFeedback = ({
     if (onNetworkChange) {
       onNetworkChange(newNetworkStatus);
     }
-  };
+  }, [networkStatus.health, networkStatus.latency, onNetworkChange]);
 
   // Simulate transaction status updates
-  const updateTransactionStatus = () => {
+  const updateTransactionStatus = useCallback(() => {
     const statuses = ['submitted', 'pending', 'confirming', 'confirmed', 'finalized'];
     const currentIndex = transactionStatus ? statuses.indexOf(transactionStatus.status) : -1;
     
@@ -156,7 +89,76 @@ const RealTimeFeedback = ({
         sendPushNotification(newStatus);
       }
     }
-  };
+  }, [transactionStatus, networkStatus.blockHeight, queuePosition, onStatusUpdate, enableSound, enablePushNotifications]);
+
+  // Polling simulation for real-time updates
+  const startPolling = useCallback(() => {
+    if (intervalRef.current) return;
+
+    intervalRef.current = setInterval(() => {
+      // Simulate network status updates
+      updateNetworkStatus();
+      
+      // Simulate transaction updates if tracking a transaction
+      if (transactionId) {
+        updateTransactionStatus();
+      }
+      
+      setLastUpdate(new Date().toISOString());
+    }, updateInterval);
+  }, [updateInterval, transactionId, updateNetworkStatus, updateTransactionStatus]);
+
+  const stopPolling = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  // Simulate WebSocket connection
+  useEffect(() => {
+    if (!transactionId && !networkEndpoint) return;
+
+    const connect = () => {
+      setConnectionStatus('connecting');
+      
+      // Simulate connection delay
+      setTimeout(() => {
+        setConnectionStatus('connected');
+        retryCountRef.current = 0;
+        setRetryCount(0);
+        startPolling();
+      }, 500);
+    };
+
+    const disconnect = () => {
+      setConnectionStatus('disconnected');
+      stopPolling();
+    };
+
+    const reconnect = () => {
+      if (retryCountRef.current < maxRetries) {
+        setConnectionStatus('reconnecting');
+        retryCountRef.current += 1;
+        setRetryCount(retryCountRef.current);
+        
+        retryTimeoutRef.current = setTimeout(() => {
+          connect();
+        }, retryDelay * Math.pow(2, retryCountRef.current - 1)); // Exponential backoff
+      } else {
+        setConnectionStatus('failed');
+      }
+    };
+
+    connect();
+
+    return () => {
+      disconnect();
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
+    };
+  }, [transactionId, networkEndpoint, maxRetries, retryDelay, startPolling, stopPolling]);
 
   // Play notification sound
   const playNotificationSound = () => {

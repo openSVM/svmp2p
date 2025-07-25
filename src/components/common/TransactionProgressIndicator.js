@@ -19,17 +19,20 @@ const TransactionProgressIndicator = ({
   showStepDetails = true,
   compact = false
 }) => {
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [startTime] = useState(Date.now());
+  const [, forceRender] = useState({});
 
-  // Update elapsed time every second
+  // Force re-render every second to update elapsed time
   useEffect(() => {
     const interval = setInterval(() => {
-      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+      forceRender({});
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime]);
+  }, []);
+
+  // Calculate elapsed time directly during render for accuracy
+  const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
 
   // Calculate progress percentage
   const progressPercentage = totalSteps 
