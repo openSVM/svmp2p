@@ -951,8 +951,47 @@
   --color-border-light: #222222;
 }
 
+/* Light Theme Overrides - ensure proper contrast for onboarding modal */
+:root:not(.dark) {
+  --color-foreground-bright: var(--ascii-neutral-900); /* #121416 - darkest text for titles */
+}
+
 .dark .onboarding-overlay {
   background-color: rgba(0, 0, 0, 0.95);
+}
+
+/* Light theme styles for onboarding modal - ensure proper contrast */
+:root:not(.dark) .onboarding-title {
+  color: var(--ascii-neutral-900) !important; /* Darkest text for maximum contrast */
+}
+
+:root:not(.dark) .onboarding-subtitle {
+  color: var(--ascii-neutral-700) !important; /* Dark gray for subtitles */
+}
+
+:root:not(.dark) .language-description,
+:root:not(.dark) .welcome-description,
+:root:not(.dark) .wallet-description,
+:root:not(.dark) .trading-description {
+  color: var(--ascii-neutral-700) !important; /* Dark gray for descriptions */
+}
+
+:root:not(.dark) .language-feature,
+:root:not(.dark) .wallet-feature,
+:root:not(.dark) .reward-benefit {
+  color: var(--ascii-neutral-800) !important; /* Dark text for features */
+}
+
+:root:not(.dark) .feature-item {
+  color: var(--ascii-neutral-800) !important; /* Dark text for feature items */
+}
+
+:root:not(.dark) .feature-item h4 {
+  color: var(--ascii-neutral-900) !important; /* Darkest text for feature headings */
+}
+
+:root:not(.dark) .feature-item p {
+  color: var(--ascii-neutral-700) !important; /* Dark gray for feature descriptions */
 }
 
 /* Explicit dark theme styles for onboarding modal text visibility */
