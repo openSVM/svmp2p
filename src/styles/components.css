@@ -955,8 +955,81 @@
   background-color: rgba(0, 0, 0, 0.95);
 }
 
+/* Explicit dark theme styles for onboarding modal text visibility */
+.dark .onboarding-modal {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.dark .onboarding-title {
+  color: var(--color-foreground-bright) !important;
+}
+
+.dark .onboarding-subtitle {
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .language-description {
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .welcome-description,
+.dark .wallet-description,
+.dark .trading-description {
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .language-feature,
+.dark .wallet-feature,
+.dark .reward-benefit {
+  color: var(--color-foreground) !important;
+}
+
+.dark .feature-item {
+  color: var(--color-foreground) !important;
+}
+
 .dark .language-dropdown {
   background-color: var(--color-background);
+  border-color: var(--color-border);
+}
+
+.dark .language-trigger {
+  background-color: var(--color-background);
+  border-color: var(--color-border);
+  color: var(--color-foreground) !important;
+}
+
+.dark .language-trigger:hover {
+  background-color: var(--color-background-alt);
+  border-color: var(--color-border);
+  color: var(--color-foreground) !important;
+}
+
+.dark .language-country {
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .language-arrow {
+  color: var(--color-foreground-muted) !important;
+}
+
+.dark .language-option {
+  color: var(--color-foreground) !important;
+}
+
+.dark .language-option:hover {
+  background-color: var(--color-background-alt);
+}
+
+.dark .checkmark {
+  color: var(--color-success) !important;
+}
+
+.dark .language-feature span:not(.checkmark),
+.dark .wallet-feature span:not(.checkmark),
+.dark .reward-benefit span:not(.checkmark) {
+  color: var(--color-foreground) !important;
 }
 
 .dark .feature-item:hover {
