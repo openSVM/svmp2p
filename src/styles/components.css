@@ -1044,17 +1044,44 @@
   background-color: #FFFFFF !important;
 }
 
-/* Force light theme styles when not in dark mode */
-body:not(.dark) .onboarding-title,
-html:not(.dark) .onboarding-title {
+/* Ensure proper contrast in light theme - strongest possible selectors */
+:root:not(.dark) .onboarding-modal,
+:not(.dark) .onboarding-modal,
+body:not(.dark) .onboarding-modal,
+html:not(.dark) .onboarding-modal,
+.onboarding-modal:not(.dark) {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
   color: #121416 !important;
 }
 
-body:not(.dark) .onboarding-subtitle,
-html:not(.dark) .onboarding-subtitle {
-  color: #343A40 !important;
+/* Light theme text colors with maximum specificity */
+:root:not(.dark) .onboarding-title,
+:not(.dark) .onboarding-title,
+body:not(.dark) .onboarding-title,
+html:not(.dark) .onboarding-title,
+.onboarding-modal:not(.dark) .onboarding-title,
+.onboarding-title {
+  color: #121416 !important; /* Darkest text for maximum contrast */
 }
 
+:root:not(.dark) .onboarding-subtitle,
+:not(.dark) .onboarding-subtitle,
+body:not(.dark) .onboarding-subtitle,
+html:not(.dark) .onboarding-subtitle,
+.onboarding-modal:not(.dark) .onboarding-subtitle,
+.onboarding-subtitle {
+  color: #343A40 !important; /* Dark gray for subtitles */
+}
+
+:root:not(.dark) .language-description,
+:root:not(.dark) .welcome-description,
+:root:not(.dark) .wallet-description,
+:root:not(.dark) .trading-description,
+:not(.dark) .language-description,
+:not(.dark) .welcome-description,
+:not(.dark) .wallet-description,
+:not(.dark) .trading-description,
 body:not(.dark) .language-description,
 body:not(.dark) .welcome-description,
 body:not(.dark) .wallet-description,
@@ -1062,26 +1089,95 @@ body:not(.dark) .trading-description,
 html:not(.dark) .language-description,
 html:not(.dark) .welcome-description,
 html:not(.dark) .wallet-description,
-html:not(.dark) .trading-description {
-  color: #343A40 !important;
+html:not(.dark) .trading-description,
+.onboarding-modal:not(.dark) .language-description,
+.onboarding-modal:not(.dark) .welcome-description,
+.onboarding-modal:not(.dark) .wallet-description,
+.onboarding-modal:not(.dark) .trading-description,
+.language-description,
+.welcome-description,
+.wallet-description,
+.trading-description {
+  color: #343A40 !important; /* Dark gray for descriptions */
 }
 
+:root:not(.dark) .language-feature,
+:root:not(.dark) .wallet-feature,
+:root:not(.dark) .reward-benefit,
+:not(.dark) .language-feature,
+:not(.dark) .wallet-feature,
+:not(.dark) .reward-benefit,
 body:not(.dark) .language-feature,
 body:not(.dark) .wallet-feature,
 body:not(.dark) .reward-benefit,
 html:not(.dark) .language-feature,
 html:not(.dark) .wallet-feature,
-html:not(.dark) .reward-benefit {
-  color: #212529 !important;
+html:not(.dark) .reward-benefit,
+.onboarding-modal:not(.dark) .language-feature,
+.onboarding-modal:not(.dark) .wallet-feature,
+.onboarding-modal:not(.dark) .reward-benefit,
+.language-feature,
+.wallet-feature,
+.reward-benefit {
+  color: #212529 !important; /* Dark text for features */
 }
 
+:root:not(.dark) .language-feature span:not(.checkmark),
+:root:not(.dark) .wallet-feature span:not(.checkmark),
+:root:not(.dark) .reward-benefit span:not(.checkmark),
+:not(.dark) .language-feature span:not(.checkmark),
+:not(.dark) .wallet-feature span:not(.checkmark),
+:not(.dark) .reward-benefit span:not(.checkmark),
 body:not(.dark) .language-feature span:not(.checkmark),
 body:not(.dark) .wallet-feature span:not(.checkmark),
 body:not(.dark) .reward-benefit span:not(.checkmark),
 html:not(.dark) .language-feature span:not(.checkmark),
 html:not(.dark) .wallet-feature span:not(.checkmark),
-html:not(.dark) .reward-benefit span:not(.checkmark) {
-  color: #212529 !important;
+html:not(.dark) .reward-benefit span:not(.checkmark),
+.onboarding-modal:not(.dark) .language-feature span:not(.checkmark),
+.onboarding-modal:not(.dark) .wallet-feature span:not(.checkmark),
+.onboarding-modal:not(.dark) .reward-benefit span:not(.checkmark),
+.language-feature span:not(.checkmark),
+.wallet-feature span:not(.checkmark),
+.reward-benefit span:not(.checkmark) {
+  color: #212529 !important; /* Dark text for feature text */
+}
+
+:root:not(.dark) .feature-item,
+:not(.dark) .feature-item,
+body:not(.dark) .feature-item,
+html:not(.dark) .feature-item,
+.onboarding-modal:not(.dark) .feature-item,
+.feature-item {
+  color: #212529 !important; /* Dark text for feature items */
+}
+
+:root:not(.dark) .feature-item h4,
+:not(.dark) .feature-item h4,
+body:not(.dark) .feature-item h4,
+html:not(.dark) .feature-item h4,
+.onboarding-modal:not(.dark) .feature-item h4,
+.feature-item h4 {
+  color: #121416 !important; /* Darkest text for feature headings */
+}
+
+:root:not(.dark) .feature-item p,
+:not(.dark) .feature-item p,
+body:not(.dark) .feature-item p,
+html:not(.dark) .feature-item p,
+.onboarding-modal:not(.dark) .feature-item p,
+.feature-item p {
+  color: #343A40 !important; /* Dark gray for feature descriptions */
+}
+
+/* Additional selectors for elements that might be missed */
+:root:not(.dark) .onboarding-modal *,
+:not(.dark) .onboarding-modal *,
+body:not(.dark) .onboarding-modal *,
+html:not(.dark) .onboarding-modal *,
+.onboarding-modal:not(.dark) *,
+.onboarding-modal * {
+  color: inherit; /* Ensure inheritance works */
 }
 
 /* Explicit dark theme styles for onboarding modal text visibility */
