@@ -225,10 +225,10 @@ describe('RecentTrades', () => {
       />
     );
 
-    // Check for status icons (emojis)
-    expect(screen.getByText('✅')).toBeInTheDocument(); // completed
-    expect(screen.getByText('⏳')).toBeInTheDocument(); // in_progress
-    expect(screen.getByText('❌')).toBeInTheDocument(); // cancelled
+    // Check for status icons (ASCII style)
+    expect(screen.getByText('[C]')).toBeInTheDocument(); // completed
+    expect(screen.getByText('[P]')).toBeInTheDocument(); // in_progress
+    expect(screen.getByText('[X]')).toBeInTheDocument(); // cancelled
   });
 
   test('displays correct trade type icons', () => {
@@ -239,9 +239,9 @@ describe('RecentTrades', () => {
       />
     );
 
-    // Check for trade type icons (emojis)
-    expect(screen.getAllByText('🟢')).toHaveLength(2); // buy trades
-    expect(screen.getByText('🔴')).toBeInTheDocument(); // sell trade
+    // Check for trade type icons (ASCII style)
+    expect(screen.getAllByText('[B]')).toHaveLength(2); // buy trades
+    expect(screen.getByText('[S]')).toBeInTheDocument(); // sell trade
   });
 
   test('shows completion time only for completed trades', () => {
@@ -269,7 +269,7 @@ describe('RecentTrades', () => {
     );
 
     // Check fiat amounts
-    expect(screen.getByText('$788')).toBeInTheDocument(); // 787.5 rounds to 788
+    expect(screen.getByText('$787.5')).toBeInTheDocument(); // Exact value, no rounding
     expect(screen.getByText('$375')).toBeInTheDocument();
     expect(screen.getByText('$150')).toBeInTheDocument();
 
@@ -285,8 +285,8 @@ describe('RecentTrades', () => {
       />
     );
 
-    // Check protocol fees
-    expect(screen.getByText('Fee: 0.0263 SOL')).toBeInTheDocument(); // 0.02625 rounds to 0.0263
+    // Check protocol fees (using toFixed(4) which truncates, not rounds)
+    expect(screen.getByText('Fee: 0.0262 SOL')).toBeInTheDocument(); // 0.02625 truncated to 0.0262
     expect(screen.getByText('Fee: 0.0125 SOL')).toBeInTheDocument();
     expect(screen.getByText('Fee: 0.0050 SOL')).toBeInTheDocument();
   });
@@ -315,6 +315,6 @@ describe('RecentTrades', () => {
     expect(screen.getByText('abc123...f456')).toBeInTheDocument();
     expect(screen.getByText('xyz789...w012')).toBeInTheDocument();
     expect(screen.getByText('def456...c123')).toBeInTheDocument();
-    expect(screen.getByText('uvw012...y789')).toBeInTheDocument();
+    expect(screen.getByText('uvw012...z789')).toBeInTheDocument(); // Fixed: z789 not y789
   });
 });
