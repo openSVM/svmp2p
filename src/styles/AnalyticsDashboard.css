@@ -734,6 +734,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  contain: layout style;
 }
 
 .trades-header {
@@ -817,6 +818,8 @@
   min-height: 0;
   margin-bottom: var(--spacing-2);
   background: var(--ascii-neutral-400);
+  will-change: scroll-position;
+  transform: translateZ(0); /* Force GPU acceleration */
 }
 
 .trade-item {
@@ -1154,6 +1157,7 @@
   .trades-list {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
+    scrollbar-color: var(--ascii-neutral-600) var(--ascii-neutral-300);
   }
   
   .trades-list::-webkit-scrollbar {
@@ -1166,6 +1170,11 @@
   
   .trades-list::-webkit-scrollbar-thumb {
     background: var(--ascii-neutral-600);
+    border-radius: 3px;
+  }
+  
+  .trades-list::-webkit-scrollbar-thumb:hover {
+    background: var(--ascii-neutral-800);
   }
   
   /* Filter buttons mobile optimization */
@@ -1225,11 +1234,32 @@
   .timeframe-button {
     padding: var(--spacing-2) var(--spacing-3);
     min-height: 44px;
+    min-width: 44px;
   }
   
   .load-more-button {
     padding: var(--spacing-2) var(--spacing-3);
     min-height: 44px;
+    min-width: 120px;
+  }
+  
+  /* Touch-friendly filter buttons */
+  .filter-button {
+    min-height: 44px;
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+  
+  /* Enhanced touch feedback */
+  .trade-item:active {
+    background: var(--ascii-neutral-300);
+    transform: scale(0.98);
+    transition: all 0.1s ease;
+  }
+  
+  /* Better mobile search input */
+  .search-input:focus {
+    outline: 2px solid var(--ascii-neutral-800);
+    outline-offset: 2px;
   }
 }
 
@@ -1242,5 +1272,54 @@
   
   .analytics-grid {
     min-height: calc(100vh - 120px);
+  }
+  
+  .analytics-dashboard {
+    min-height: calc(100vh - 20px);
+  }
+}
+
+/* Ultra small screens (older phones) */
+@media (max-width: 320px) {
+  .analytics-dashboard {
+    padding: 0 4px;
+  }
+  
+  .analytics-column-right {
+    height: 85vh;
+    min-height: 350px;
+  }
+  
+  .kpi-card {
+    padding: var(--spacing-1);
+  }
+  
+  .trade-item {
+    padding: var(--spacing-2) var(--spacing-1);
+  }
+  
+  .trades-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .trades-title {
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .trades-stats {
+    text-align: center;
+  }
+}
+
+/* High density screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .trade-item {
+    border-left-width: 3px; /* Thicker borders on high DPI */
+  }
+  
+  .trades-list::-webkit-scrollbar {
+    width: 8px; /* Slightly thicker scrollbar on high DPI */
   }
 }
