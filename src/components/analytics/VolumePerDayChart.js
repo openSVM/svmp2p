@@ -1,31 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
+import React, { useState } from 'react';
 
 export default function VolumePerDayChart({ data, network, timeframe }) {
-  const chartRef = useRef();
+  const [hoveredPoint, setHoveredPoint] = useState(null);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -40,137 +16,91 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
     }
   };
 
-  const chartData = {
-    labels: data.map(point => formatDate(point.time)),
-    datasets: [
-      {
-        label: 'Protocol Volume (SOL)',
-        data: data.map(point => point.volume),
-        borderColor: network.color || '#9945FF',
-        backgroundColor: `${network.color || '#9945FF'}20`,
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-        pointRadius: 3,
-        pointHoverRadius: 6,
-        pointBackgroundColor: network.color || '#9945FF',
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2
-      }
-    ]
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-        labels: {
-          color: '#1f2937',
-          font: {
-            size: 12,
-            family: 'Inter, system-ui, sans-serif'
-          }
-        }
-      },
-      title: {
-        display: false
-      },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        borderColor: network.color || '#9945FF',
-        borderWidth: 1,
-        cornerRadius: 8,
-        displayColors: false,
-        callbacks: {
-          label: function(context) {
-            const volume = context.parsed.y;
-            if (volume >= 1000000) {
-              return `Volume: ${(volume / 1000000).toFixed(2)}M SOL`;
-            } else if (volume >= 1000) {
-              return `Volume: ${(volume / 1000).toFixed(2)}K SOL`;
+  // ASCII Chart Generation Functions
+  const generateAsciiChart = (data, width = 60, height = 12) => {
+    if (!data || data.length === 0) return [];
+    
+    const volumes = data.map(point => point.volume);
+    const maxVolume = Math.max(...volumes);
+    const minVolume = Math.min(...volumes);
+    const range = maxVolume - minVolume || 1;
+    
+    // Create chart grid
+    const chart = Array(height).fill().map(() => Array(width).fill(' '));
+    
+    // Plot data points
+    for (let i = 0; i < data.length && i < width; i++) {
+      const volume = volumes[i];
+      const normalizedHeight = Math.round(((volume - minVolume) / range) * (height - 1));
+      const y = height - 1 - normalizedHeight;
+      
+      if (y >= 0 && y < height) {
+        chart[y][i] = '*';
+        
+        // Connect points with lines if not first point
+        if (i > 0) {
+          const prevVolume = volumes[i - 1];
+          const prevNormalizedHeight = Math.round(((prevVolume - minVolume) / range) * (height - 1));
+          const prevY = height - 1 - prevNormalizedHeight;
+          
+          // Draw connecting line
+          const startY = Math.min(y, prevY);
+          const endY = Math.max(y, prevY);
+          
+          for (let lineY = startY; lineY <= endY; lineY++) {
+            if (lineY >= 0 && lineY < height && chart[lineY][i] === ' ') {
+              if (y > prevY) {
+                chart[lineY][i] = '/';
+              } else if (y < prevY) {
+                chart[lineY][i] = '\\';
+              } else {
+                chart[lineY][i] = '-';
+              }
             }
-            return `Volume: ${volume.toFixed(2)} SOL`;
-          },
-          afterLabel: function(context) {
-            const usdValue = (context.parsed.y * 150).toFixed(0); // Mock SOL price
-            return `≈ $${Number(usdValue).toLocaleString()} USD`;
           }
         }
-      }
-    },
-    interaction: {
-      mode: 'nearest',
-      axis: 'x',
-      intersect: false
-    },
-    scales: {
-      x: {
-        display: true,
-        title: {
-          display: true,
-          text: 'Time',
-          color: '#6b7280',
-          font: {
-            size: 12,
-            family: 'Inter, system-ui, sans-serif'
-          }
-        },
-        grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
-          borderColor: 'rgba(107, 114, 128, 0.2)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          },
-          maxTicksLimit: 8
-        }
-      },
-      y: {
-        display: true,
-        title: {
-          display: true,
-          text: 'Volume (SOL)',
-          color: '#6b7280',
-          font: {
-            size: 12,
-            family: 'Inter, system-ui, sans-serif'
-          }
-        },
-        grid: {
-          color: 'rgba(107, 114, 128, 0.1)',
-          borderColor: 'rgba(107, 114, 128, 0.2)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          },
-          callback: function(value) {
-            if (value >= 1000000) {
-              return `${(value / 1000000).toFixed(1)}M`;
-            } else if (value >= 1000) {
-              return `${(value / 1000).toFixed(1)}K`;
-            }
-            return value.toFixed(0);
-          }
-        },
-        beginAtZero: true
-      }
-    },
-    elements: {
-      point: {
-        hoverBackgroundColor: network.color || '#9945FF'
       }
     }
+    
+    return chart;
+  };
+
+  const generateYAxisLabels = (data, height = 12) => {
+    if (!data || data.length === 0) return [];
+    
+    const volumes = data.map(point => point.volume);
+    const maxVolume = Math.max(...volumes);
+    const minVolume = Math.min(...volumes);
+    
+    const labels = [];
+    for (let i = 0; i < height; i++) {
+      const value = minVolume + ((maxVolume - minVolume) / (height - 1)) * (height - 1 - i);
+      let formattedValue;
+      if (value >= 1000000) {
+        formattedValue = `${(value / 1000000).toFixed(1)}M`;
+      } else if (value >= 1000) {
+        formattedValue = `${(value / 1000).toFixed(1)}K`;
+      } else {
+        formattedValue = value.toFixed(0);
+      }
+      labels.push(formattedValue.padStart(6));
+    }
+    return labels;
+  };
+
+  const generateXAxisLabels = (data, width = 60) => {
+    if (!data || data.length === 0) return [];
+    
+    const labels = [];
+    const step = Math.max(1, Math.floor(data.length / 8)); // Show ~8 labels max
+    
+    for (let i = 0; i < width; i++) {
+      if (i < data.length && (i % step === 0 || i === data.length - 1)) {
+        const formatted = formatDate(data[i].time);
+        labels.push({ position: i, label: formatted });
+      }
+    }
+    return labels;
   };
 
   const formatVolume = (volume) => {
@@ -186,6 +116,13 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
   const avgVolume = data.length > 0 ? data.reduce((sum, point) => sum + point.volume, 0) / data.length : 0;
   const minVolume = data.length > 0 ? Math.min(...data.map(point => point.volume)) : 0;
   const maxVolume = data.length > 0 ? Math.max(...data.map(point => point.volume)) : 0;
+
+  // Generate ASCII chart data
+  const chartWidth = 60;
+  const chartHeight = 12;
+  const asciiChart = generateAsciiChart(data, chartWidth, chartHeight);
+  const yAxisLabels = generateYAxisLabels(data, chartHeight);
+  const xAxisLabels = generateXAxisLabels(data, chartWidth);
 
   return (
     <div className="volume-chart">
@@ -217,13 +154,83 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
         </div>
       </div>
 
-      <div className="chart-container">
+      <div className="ascii-chart-container">
         {data.length > 0 ? (
-          <Line 
-            ref={chartRef}
-            data={chartData} 
-            options={chartOptions} 
-          />
+          <div className="ascii-chart">
+            <div className="chart-legend">
+              <span className="legend-item">[*] Protocol Volume (SOL)</span>
+            </div>
+            
+            <div className="ascii-chart-grid">
+              {asciiChart.map((row, rowIndex) => (
+                <div key={rowIndex} className="chart-row">
+                  <span className="y-axis-label">
+                    {yAxisLabels[rowIndex]}
+                  </span>
+                  <span className="y-axis-separator">|</span>
+                  <span className="chart-line">
+                    {row.map((char, colIndex) => (
+                      <span 
+                        key={colIndex}
+                        className={`chart-char ${char !== ' ' ? 'chart-point' : ''}`}
+                        onMouseEnter={() => {
+                          if (char !== ' ' && colIndex < data.length) {
+                            setHoveredPoint({
+                              index: colIndex,
+                              volume: data[colIndex].volume,
+                              time: data[colIndex].time
+                            });
+                          }
+                        }}
+                        onMouseLeave={() => setHoveredPoint(null)}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              ))}
+              
+              {/* X-axis */}
+              <div className="chart-row x-axis-row">
+                <span className="y-axis-label">      </span>
+                <span className="y-axis-separator">|</span>
+                <span className="chart-line">
+                  {'_'.repeat(chartWidth)}
+                </span>
+              </div>
+              
+              {/* X-axis labels */}
+              <div className="x-axis-labels">
+                <span className="y-axis-label">      </span>
+                <span className="y-axis-separator"> </span>
+                <div className="x-labels-container">
+                  {xAxisLabels.map((labelData, index) => (
+                    <span 
+                      key={index}
+                      className="x-axis-label"
+                      style={{ left: `${(labelData.position / chartWidth) * 100}%` }}
+                    >
+                      {labelData.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {hoveredPoint && (
+              <div className="ascii-tooltip">
+                <div className="tooltip-header">
+                  [VOLUME DATA]
+                </div>
+                <div className="tooltip-content">
+                  <div>Time: {formatDate(hoveredPoint.time)}</div>
+                  <div>Volume: {formatVolume(hoveredPoint.volume)}</div>
+                  <div>≈ ${(hoveredPoint.volume * 150).toLocaleString()} USD</div>
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="chart-placeholder">
             <div className="placeholder-icon">[CHART]</div>

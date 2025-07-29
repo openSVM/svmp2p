@@ -6,18 +6,21 @@ import { useSwigWallet } from '@/contexts/SwigWalletProvider';
 
 // Mock the contexts and imports that cause BigInt issues
 jest.mock('@/contexts/SwigWalletProvider');
-jest.mock('@/contexts/AppContext', () => ({
-  AppContext: React.createContext({})
-}));
+jest.mock('@/contexts/AppContext', () => {
+  const { createContext } = require('react');
+  return {
+    AppContext: createContext({})
+  };
+});
 
 // Mock the main analytics dashboard import to avoid Solana dependency
 jest.mock('@/components/AnalyticsDashboard', () => {
   return function MockAnalyticsDashboard() {
-    const React = require('react');
-    const { useContext } = React;
+    const mockReact = require('react');
+    const { useContext } = mockReact;
     
     // Create a simple mock context
-    const MockAppContext = React.createContext({});
+    const MockAppContext = mockReact.createContext({});
     const { useSwigWallet } = require('@/contexts/SwigWalletProvider');
     
     const contextValue = useContext(MockAppContext) || {

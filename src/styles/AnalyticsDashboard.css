@@ -328,6 +328,139 @@
   font-family: var(--font-family-mono);
 }
 
+/* ASCII Chart Styles */
+.ascii-chart-container {
+  background: var(--ascii-neutral-50);
+  border: 1px solid var(--ascii-neutral-400);
+  padding: var(--spacing-2);
+  position: relative;
+}
+
+.ascii-chart {
+  font-family: var(--font-family-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--ascii-neutral-900);
+}
+
+.chart-legend {
+  margin-bottom: var(--spacing-2);
+  padding-bottom: var(--spacing-1);
+  border-bottom: 1px solid var(--ascii-neutral-400);
+}
+
+.legend-item {
+  font-size: 0.625rem;
+  color: var(--ascii-neutral-600);
+  font-family: var(--font-family-mono);
+}
+
+.ascii-chart-grid {
+  position: relative;
+  overflow-x: auto;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-bottom: 1px;
+}
+
+.y-axis-label {
+  display: inline-block;
+  width: 50px;
+  text-align: right;
+  color: var(--ascii-neutral-600);
+  font-size: 0.625rem;
+  font-family: var(--font-family-mono);
+}
+
+.y-axis-separator {
+  margin: 0 4px;
+  color: var(--ascii-neutral-600);
+}
+
+.chart-line {
+  flex: 1;
+  font-family: var(--font-family-mono);
+  letter-spacing: 0;
+}
+
+.chart-char {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+  position: relative;
+}
+
+.chart-point {
+  color: var(--ascii-neutral-900);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.chart-point:hover {
+  background: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-900);
+}
+
+.x-axis-row {
+  border-top: 1px solid var(--ascii-neutral-400);
+  margin-top: 2px;
+}
+
+.x-axis-labels {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-1);
+  height: 20px;
+}
+
+.x-labels-container {
+  position: relative;
+  flex: 1;
+  height: 100%;
+}
+
+.x-axis-label {
+  position: absolute;
+  font-size: 0.5rem;
+  color: var(--ascii-neutral-600);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-family-mono);
+}
+
+.ascii-tooltip {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  background: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-800);
+  padding: var(--spacing-2);
+  font-family: var(--font-family-mono);
+  font-size: 0.625rem;
+  z-index: 10;
+}
+
+.tooltip-header {
+  font-weight: bold;
+  color: var(--ascii-neutral-900);
+  margin-bottom: var(--spacing-1);
+  border-bottom: 1px solid var(--ascii-neutral-400);
+  padding-bottom: 2px;
+}
+
+.tooltip-content {
+  color: var(--ascii-neutral-700);
+}
+
+.tooltip-content div {
+  margin-bottom: 2px;
+}
+
 .chart-container {
   height: 300px;
   position: relative;
