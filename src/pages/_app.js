@@ -22,6 +22,7 @@ import '@/styles/globals.css'; // Global styles and overrides
 import '@/styles/EnhancedNotification.css'; // Enhanced Notification component styles
 import '@/styles/TransactionAnalytics.css'; // Transaction Analytics component styles
 import '@/styles/TransactionProgressIndicator.css'; // Transaction Progress Indicator component styles
+import '@/styles/AnalyticsDashboard.css'; // Analytics Dashboard component styles
 import '@/styles/pwa.css'; // PWA-specific styles
 
 // Import context

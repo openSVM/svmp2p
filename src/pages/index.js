@@ -55,6 +55,13 @@ const RewardDashboard = createLazyComponent(
   }
 );
 
+const AnalyticsDashboard = createLazyComponent(
+  () => import('@/components/AnalyticsDashboard'),
+  {
+    fallback: <div className="loading-analytics">Loading analytics...</div>
+  }
+);
+
 export default function Home() {
   const { activeTab, network } = useContext(AppContext);
   const wallet = useSafeWallet();
@@ -65,6 +72,7 @@ export default function Home() {
     () => import('@/components/DisputeResolution'),
     () => import('@/components/UserProfile'),
     () => import('@/components/RewardDashboard'),
+    () => import('@/components/AnalyticsDashboard'),
   ]);
 
   // Used to render components conditionally
@@ -85,6 +93,8 @@ export default function Home() {
         return <DisputeResolution />;
       case 'rewards':
         return <RewardDashboard />;
+      case 'analytics':
+        return <AnalyticsDashboard />;
       case 'profile':
         // Ensure wallet object is properly checked and handled
         console.log('Rendering UserProfile with wallet:', 

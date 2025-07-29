@@ -78,6 +78,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const topNavItems = [
     { key: 'buy', label: 'BUY', icon: 'B' },
     { key: 'sell', label: 'SELL', icon: 'S' },
+    { key: 'analytics', label: 'ANALYTICS', icon: '📊' },
     { key: 'help', label: 'HELP', icon: '?' },
   ];
 
