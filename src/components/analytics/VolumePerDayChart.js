@@ -28,35 +28,21 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
     // Create chart grid
     const chart = Array(height).fill().map(() => Array(width).fill(' '));
     
-    // Plot data points
+    // Plot vertical bars for each data point
     for (let i = 0; i < data.length && i < width; i++) {
       const volume = volumes[i];
       const normalizedHeight = Math.round(((volume - minVolume) / range) * (height - 1));
-      const y = height - 1 - normalizedHeight;
+      const barHeight = normalizedHeight + 1; // +1 to ensure at least 1 character for non-zero values
       
-      if (y >= 0 && y < height) {
-        chart[y][i] = '*';
-        
-        // Connect points with lines if not first point
-        if (i > 0) {
-          const prevVolume = volumes[i - 1];
-          const prevNormalizedHeight = Math.round(((prevVolume - minVolume) / range) * (height - 1));
-          const prevY = height - 1 - prevNormalizedHeight;
-          
-          // Draw connecting line
-          const startY = Math.min(y, prevY);
-          const endY = Math.max(y, prevY);
-          
-          for (let lineY = startY; lineY <= endY; lineY++) {
-            if (lineY >= 0 && lineY < height && chart[lineY][i] === ' ') {
-              if (y > prevY) {
-                chart[lineY][i] = '/';
-              } else if (y < prevY) {
-                chart[lineY][i] = '\\';
-              } else {
-                chart[lineY][i] = '-';
-              }
-            }
+      // Draw vertical bar from bottom up
+      for (let barY = 0; barY < barHeight && barY < height; barY++) {
+        const y = height - 1 - barY;
+        if (y >= 0 && y < height) {
+          // Use different characters for better bar visualization
+          if (barY === barHeight - 1) {
+            chart[y][i] = '█'; // Top of bar
+          } else {
+            chart[y][i] = '█'; // Body of bar
           }
         }
       }
@@ -158,7 +144,7 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
         {data.length > 0 ? (
           <div className="ascii-chart">
             <div className="chart-legend">
-              <span className="legend-item">[*] Protocol Volume (SOL)</span>
+              <span className="legend-item">[█] Protocol Volume (SOL)</span>
             </div>
             
             <div className="ascii-chart-grid">
