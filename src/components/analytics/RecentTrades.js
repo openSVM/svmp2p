@@ -18,19 +18,19 @@ export default function RecentTrades({ trades, network }) {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'completed': return '✅';
-      case 'in_progress': return '⏳';
-      case 'cancelled': return '❌';
-      case 'disputed': return '⚠️';
-      default: return '❓';
+      case 'completed': return '[C]';
+      case 'in_progress': return '[P]';
+      case 'cancelled': return '[X]';
+      case 'disputed': return '[!]';
+      default: return '[?]';
     }
   };
 
   const getTradeTypeIcon = (type) => {
     switch (type) {
-      case 'buy': return '🟢';
-      case 'sell': return '🔴';
-      default: return '🔄';
+      case 'buy': return '[B]';
+      case 'sell': return '[S]';
+      default: return '[T]';
     }
   };
 
@@ -96,7 +96,7 @@ export default function RecentTrades({ trades, network }) {
       <div className="trades-list">
         {filteredTrades.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📊</div>
+            <div className="empty-icon">[*]</div>
             <div className="empty-text">No trades match your filters</div>
           </div>
         ) : (

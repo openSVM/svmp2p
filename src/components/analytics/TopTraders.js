@@ -94,7 +94,7 @@ export default function TopTraders({ tradersData }) {
               <div className="trader-cell">
                 <div className="trader-info">
                   <div className="trader-address">{formatAddress(trader.address)}</div>
-                  {trader.verified && <span className="verified-badge">✓</span>}
+                  {trader.verified && <span className="verified-badge">[V]</span>}
                 </div>
               </div>
               

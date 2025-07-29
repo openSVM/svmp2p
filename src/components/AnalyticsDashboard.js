@@ -185,7 +185,7 @@ export default function AnalyticsDashboard() {
         <div className="header-content">
           <div className="title-section">
             <h1 className="analytics-title">
-              📊 Protocol Analytics Dashboard
+              Protocol Analytics Dashboard
             </h1>
             <p className="analytics-subtitle">
               Monitor svmp2p trading performance and user metrics on {network.name}
@@ -208,11 +208,11 @@ export default function AnalyticsDashboard() {
             <div className="connection-status">
               {connected ? (
                 <span className="status-connected">
-                  🟢 Connected to {network.name}
+                  [ONLINE] {network.name}
                 </span>
               ) : (
                 <span className="status-disconnected">
-                  🔴 Wallet not connected
+                  [OFFLINE] WALLET NOT CONNECTED
                 </span>
               )}
             </div>

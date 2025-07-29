@@ -29,13 +29,13 @@ export default function OverviewPanel({ data, network, timeframe }) {
         <h2 className="panel-title">Protocol Trading Overview</h2>
         <div className="live-indicator">
           <span className="live-dot"></span>
-          <span className="live-text">Live</span>
+          <span className="live-text">[LIVE]</span>
         </div>
       </div>
 
       <div className="kpi-grid">
         <div className="kpi-card trades">
-          <div className="kpi-icon">🔄</div>
+          <div className="kpi-icon">[T]</div>
           <div className="kpi-content">
             <div className="kpi-value">{data.totalTrades?.toLocaleString() || 0}</div>
             <div className="kpi-label">Total Trades ({timeframe})</div>
@@ -44,7 +44,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
         </div>
 
         <div className="kpi-card volume">
-          <div className="kpi-icon">💰</div>
+          <div className="kpi-icon">[$]</div>
           <div className="kpi-content">
             <div className="kpi-value">{formatVolume(data.protocolVolume)}</div>
             <div className="kpi-label">Protocol Volume ({timeframe})</div>
@@ -53,7 +53,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
         </div>
 
         <div className="kpi-card fees">
-          <div className="kpi-icon">💵</div>
+          <div className="kpi-icon">[F]</div>
           <div className="kpi-content">
             <div className="kpi-value">{formatNumber(data.totalFees)}</div>
             <div className="kpi-label">Total Fees Collected</div>
@@ -62,7 +62,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
         </div>
 
         <div className="kpi-card completion-rate">
-          <div className="kpi-icon">✅</div>
+          <div className="kpi-icon">[%]</div>
           <div className="kpi-content">
             <div className="kpi-value">{formatPercentage(data.completionRate)}</div>
             <div className="kpi-label">Trade Completion Rate</div>

@@ -226,7 +226,7 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
           />
         ) : (
           <div className="chart-placeholder">
-            <div className="placeholder-icon">📈</div>
+            <div className="placeholder-icon">[CHART]</div>
             <div className="placeholder-text">Loading volume data...</div>
           </div>
         )}
@@ -235,10 +235,10 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
       <div className="chart-footer">
         <div className="chart-info">
           <span className="info-item">
-            🔄 Updates every 5 minutes
+            [UPDATE] Updates every 5 minutes
           </span>
           <span className="info-item">
-            📊 Protocol trading volume only
+            [DATA] Protocol trading volume only
           </span>
         </div>
       </div>
