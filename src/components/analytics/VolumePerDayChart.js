@@ -17,7 +17,7 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
   };
 
   // ASCII Chart Generation Functions
-  const generateAsciiChart = (data, width = 60, height = 12) => {
+  const generateAsciiChart = (data, chartWidth = 80, height = 12) => {
     if (!data || data.length === 0) return [];
     
     const volumes = data.map(point => point.volume);
@@ -25,30 +25,41 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
     const minVolume = Math.min(...volumes);
     const range = maxVolume - minVolume || 1;
     
+    // Calculate bar width and spacing - wider bars with better spacing
+    const barWidth = 3; // Each bar is 3 characters wide
+    const barSpacing = 1; // 1 character spacing between bars
+    const totalBarsNeeded = Math.min(data.length, Math.floor(chartWidth / (barWidth + barSpacing)));
+    const actualChartWidth = totalBarsNeeded * (barWidth + barSpacing);
+    
     // Create chart grid
-    const chart = Array(height).fill().map(() => Array(width).fill(' '));
+    const chart = Array(height).fill().map(() => Array(actualChartWidth).fill(' '));
     
     // Plot vertical bars for each data point
-    for (let i = 0; i < data.length && i < width; i++) {
-      const volume = volumes[i];
+    for (let i = 0; i < totalBarsNeeded; i++) {
+      const dataIndex = Math.floor((i / totalBarsNeeded) * data.length);
+      const volume = volumes[dataIndex];
       const normalizedHeight = Math.round(((volume - minVolume) / range) * (height - 1));
       const barHeight = normalizedHeight + 1; // +1 to ensure at least 1 character for non-zero values
       
-      // Draw vertical bar from bottom up
+      // Calculate bar start position
+      const barStartX = i * (barWidth + barSpacing);
+      
+      // Draw vertical bar from bottom up - 3 characters wide
       for (let barY = 0; barY < barHeight && barY < height; barY++) {
         const y = height - 1 - barY;
         if (y >= 0 && y < height) {
-          // Use different characters for better bar visualization
-          if (barY === barHeight - 1) {
-            chart[y][i] = '█'; // Top of bar
-          } else {
-            chart[y][i] = '█'; // Body of bar
+          // Fill all 3 characters of the bar width
+          for (let barX = 0; barX < barWidth; barX++) {
+            const x = barStartX + barX;
+            if (x < actualChartWidth) {
+              chart[y][x] = '█';
+            }
           }
         }
       }
     }
     
-    return chart;
+    return { chart, actualWidth: actualChartWidth, totalBarsNeeded };
   };
 
   const generateYAxisLabels = (data, height = 12) => {
@@ -74,18 +85,38 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
     return labels;
   };
 
-  const generateXAxisLabels = (data, width = 60) => {
-    if (!data || data.length === 0) return [];
+  const generateXAxisLabels = (data, chartInfo) => {
+    if (!data || data.length === 0 || !chartInfo) return [];
     
+    const { actualWidth, totalBarsNeeded } = chartInfo;
     const labels = [];
-    const step = Math.max(1, Math.floor(data.length / 8)); // Show ~8 labels max
+    const barWidth = 3;
+    const barSpacing = 1;
     
-    for (let i = 0; i < width; i++) {
-      if (i < data.length && (i % step === 0 || i === data.length - 1)) {
-        const formatted = formatDate(data[i].time);
-        labels.push({ position: i, label: formatted });
+    // Show fewer labels to prevent overlap - maximum 6 labels
+    const maxLabels = 6;
+    const step = Math.max(1, Math.floor(totalBarsNeeded / maxLabels));
+    
+    for (let i = 0; i < totalBarsNeeded; i += step) {
+      const dataIndex = Math.floor((i / totalBarsNeeded) * data.length);
+      if (dataIndex < data.length) {
+        const formatted = formatDate(data[dataIndex].time);
+        // Position at center of bar
+        const barCenterX = i * (barWidth + barSpacing) + Math.floor(barWidth / 2);
+        const positionPercent = (barCenterX / actualWidth) * 100;
+        labels.push({ position: positionPercent, label: formatted });
       }
     }
+    
+    // Always include the last data point if not already included
+    const lastIndex = totalBarsNeeded - 1;
+    const lastDataIndex = data.length - 1;
+    if (lastIndex >= 0 && !labels.some(l => l.label === formatDate(data[lastDataIndex].time))) {
+      const lastBarCenterX = lastIndex * (barWidth + barSpacing) + Math.floor(barWidth / 2);
+      const lastPositionPercent = (lastBarCenterX / actualWidth) * 100;
+      labels.push({ position: lastPositionPercent, label: formatDate(data[lastDataIndex].time) });
+    }
+    
     return labels;
   };
 
@@ -104,11 +135,12 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
   const maxVolume = data.length > 0 ? Math.max(...data.map(point => point.volume)) : 0;
 
   // Generate ASCII chart data
-  const chartWidth = 60;
   const chartHeight = 12;
-  const asciiChart = generateAsciiChart(data, chartWidth, chartHeight);
+  const chartResult = generateAsciiChart(data, 80, chartHeight);
+  const asciiChart = chartResult?.chart || [];
+  const chartWidth = chartResult?.actualWidth || 60;
   const yAxisLabels = generateYAxisLabels(data, chartHeight);
-  const xAxisLabels = generateXAxisLabels(data, chartWidth);
+  const xAxisLabels = generateXAxisLabels(data, chartResult);
 
   return (
     <div className="volume-chart">
@@ -160,12 +192,19 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
                         key={colIndex}
                         className={`chart-char ${char !== ' ' ? 'chart-point' : ''}`}
                         onMouseEnter={() => {
-                          if (char !== ' ' && colIndex < data.length) {
-                            setHoveredPoint({
-                              index: colIndex,
-                              volume: data[colIndex].volume,
-                              time: data[colIndex].time
-                            });
+                          if (char !== ' ' && chartResult) {
+                            // Calculate which data point this character represents
+                            const barWidth = 3;
+                            const barSpacing = 1;
+                            const barIndex = Math.floor(colIndex / (barWidth + barSpacing));
+                            const dataIndex = Math.floor((barIndex / chartResult.totalBarsNeeded) * data.length);
+                            if (dataIndex < data.length) {
+                              setHoveredPoint({
+                                index: dataIndex,
+                                volume: data[dataIndex].volume,
+                                time: data[dataIndex].time
+                              });
+                            }
                           }
                         }}
                         onMouseLeave={() => setHoveredPoint(null)}
@@ -195,7 +234,7 @@ export default function VolumePerDayChart({ data, network, timeframe }) {
                     <span 
                       key={index}
                       className="x-axis-label"
-                      style={{ left: `${(labelData.position / chartWidth) * 100}%` }}
+                      style={{ left: `${labelData.position}%` }}
                     >
                       {labelData.label}
                     </span>
