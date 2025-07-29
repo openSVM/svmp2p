@@ -24,20 +24,28 @@ ChartJS.register(
   Filler
 );
 
-export default function GasFeeChart({ data, network, timeframe }) {
+export default function VolumePerDayChart({ data, network, timeframe }) {
   const chartRef = useRef();
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    if (timeframe === '1h') {
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } else if (timeframe === '24h') {
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } else if (timeframe === '7d') {
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    } else {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+  };
+
   const chartData = {
-    labels: data.map(point => {
-      const date = new Date(point.time);
-      return timeframe === '1h' 
-        ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }),
+    labels: data.map(point => formatDate(point.time)),
     datasets: [
       {
-        label: 'Gas Fee (SOL)',
-        data: data.map(point => point.fee),
+        label: 'Protocol Volume (SOL)',
+        data: data.map(point => point.volume),
         borderColor: network.color || '#9945FF',
         backgroundColor: `${network.color || '#9945FF'}20`,
         borderWidth: 2,
@@ -82,11 +90,17 @@ export default function GasFeeChart({ data, network, timeframe }) {
         displayColors: false,
         callbacks: {
           label: function(context) {
-            return `Gas Fee: ${context.parsed.y.toFixed(6)} SOL`;
+            const volume = context.parsed.y;
+            if (volume >= 1000000) {
+              return `Volume: ${(volume / 1000000).toFixed(2)}M SOL`;
+            } else if (volume >= 1000) {
+              return `Volume: ${(volume / 1000).toFixed(2)}K SOL`;
+            }
+            return `Volume: ${volume.toFixed(2)} SOL`;
           },
           afterLabel: function(context) {
-            const usdValue = (context.parsed.y * 150).toFixed(4); // Mock SOL price
-            return `≈ $${usdValue} USD`;
+            const usdValue = (context.parsed.y * 150).toFixed(0); // Mock SOL price
+            return `≈ $${Number(usdValue).toLocaleString()} USD`;
           }
         }
       }
@@ -124,7 +138,7 @@ export default function GasFeeChart({ data, network, timeframe }) {
         display: true,
         title: {
           display: true,
-          text: 'Gas Fee (SOL)',
+          text: 'Volume (SOL)',
           color: '#6b7280',
           font: {
             size: 12,
@@ -141,10 +155,15 @@ export default function GasFeeChart({ data, network, timeframe }) {
             size: 11
           },
           callback: function(value) {
-            return value.toFixed(6);
+            if (value >= 1000000) {
+              return `${(value / 1000000).toFixed(1)}M`;
+            } else if (value >= 1000) {
+              return `${(value / 1000).toFixed(1)}K`;
+            }
+            return value.toFixed(0);
           }
         },
-        beginAtZero: false
+        beginAtZero: true
       }
     },
     elements: {
@@ -154,36 +173,45 @@ export default function GasFeeChart({ data, network, timeframe }) {
     }
   };
 
-  const currentFee = data.length > 0 ? data[data.length - 1].fee : 0;
-  const avgFee = data.length > 0 ? data.reduce((sum, point) => sum + point.fee, 0) / data.length : 0;
-  const minFee = data.length > 0 ? Math.min(...data.map(point => point.fee)) : 0;
-  const maxFee = data.length > 0 ? Math.max(...data.map(point => point.fee)) : 0;
+  const formatVolume = (volume) => {
+    if (volume >= 1000000) {
+      return `${(volume / 1000000).toFixed(2)}M SOL`;
+    } else if (volume >= 1000) {
+      return `${(volume / 1000).toFixed(2)}K SOL`;
+    }
+    return `${volume.toFixed(2)} SOL`;
+  };
+
+  const currentVolume = data.length > 0 ? data[data.length - 1].volume : 0;
+  const avgVolume = data.length > 0 ? data.reduce((sum, point) => sum + point.volume, 0) / data.length : 0;
+  const minVolume = data.length > 0 ? Math.min(...data.map(point => point.volume)) : 0;
+  const maxVolume = data.length > 0 ? Math.max(...data.map(point => point.volume)) : 0;
 
   return (
-    <div className="gas-fee-chart">
+    <div className="volume-chart">
       <div className="chart-header">
         <div className="chart-title-section">
-          <h3 className="chart-title">Gas Fee Trends</h3>
+          <h3 className="chart-title">Protocol Volume Trends</h3>
           <div className="chart-subtitle">
-            Network fees over the last {timeframe} on {network.name}
+            Trading volume over the last {timeframe} on {network.name}
           </div>
         </div>
         
-        <div className="fee-stats">
+        <div className="volume-stats">
           <div className="stat-item">
-            <div className="stat-value">{currentFee.toFixed(6)} SOL</div>
-            <div className="stat-label">Current</div>
+            <div className="stat-value">{formatVolume(currentVolume)}</div>
+            <div className="stat-label">Latest</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">{avgFee.toFixed(6)} SOL</div>
+            <div className="stat-value">{formatVolume(avgVolume)}</div>
             <div className="stat-label">Average</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">{minFee.toFixed(6)} SOL</div>
+            <div className="stat-value">{formatVolume(minVolume)}</div>
             <div className="stat-label">Min</div>
           </div>
           <div className="stat-item">
-            <div className="stat-value">{maxFee.toFixed(6)} SOL</div>
+            <div className="stat-value">{formatVolume(maxVolume)}</div>
             <div className="stat-label">Max</div>
           </div>
         </div>
@@ -199,7 +227,7 @@ export default function GasFeeChart({ data, network, timeframe }) {
         ) : (
           <div className="chart-placeholder">
             <div className="placeholder-icon">📈</div>
-            <div className="placeholder-text">Loading gas fee data...</div>
+            <div className="placeholder-text">Loading volume data...</div>
           </div>
         )}
       </div>
@@ -207,10 +235,10 @@ export default function GasFeeChart({ data, network, timeframe }) {
       <div className="chart-footer">
         <div className="chart-info">
           <span className="info-item">
-            🔄 Updates every 5 seconds
+            🔄 Updates every 5 minutes
           </span>
           <span className="info-item">
-            📊 Based on recent network activity
+            📊 Protocol trading volume only
           </span>
         </div>
       </div>
