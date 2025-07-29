@@ -23,6 +23,10 @@ export default function OverviewPanel({ data, network, timeframe }) {
     return `${percent.toFixed(1)}%`;
   };
 
+  const formatPercentageChange = (percent) => {
+    return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
+  };
+
   return (
     <div className="overview-panel">
       <div className="panel-header">
@@ -39,7 +43,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
           <div className="kpi-content">
             <div className="kpi-value">{data.totalTrades?.toLocaleString() || 0}</div>
             <div className="kpi-label">Total Trades ({timeframe})</div>
-            <div className="kpi-change positive">+{data.tradesChange || 0}%</div>
+            <div className={`kpi-change ${data.tradesChange >= 0 ? 'positive' : 'negative'}`}>{formatPercentageChange(data.tradesChange || 0)}</div>
           </div>
         </div>
 
@@ -48,7 +52,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
           <div className="kpi-content">
             <div className="kpi-value">{formatVolume(data.protocolVolume)}</div>
             <div className="kpi-label">Protocol Volume ({timeframe})</div>
-            <div className="kpi-change positive">+{data.volumeChange || 0}%</div>
+            <div className={`kpi-change ${data.volumeChange >= 0 ? 'positive' : 'negative'}`}>{formatPercentageChange(data.volumeChange || 0)}</div>
           </div>
         </div>
 
@@ -57,7 +61,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
           <div className="kpi-content">
             <div className="kpi-value">{formatNumber(data.totalFees)}</div>
             <div className="kpi-label">Total Fees Collected</div>
-            <div className="kpi-change positive">+{data.feesChange || 0}%</div>
+            <div className={`kpi-change ${data.feesChange >= 0 ? 'positive' : 'negative'}`}>{formatPercentageChange(data.feesChange || 0)}</div>
           </div>
         </div>
 
@@ -66,7 +70,7 @@ export default function OverviewPanel({ data, network, timeframe }) {
           <div className="kpi-content">
             <div className="kpi-value">{formatPercentage(data.completionRate)}</div>
             <div className="kpi-label">Trade Completion Rate</div>
-            <div className="kpi-change positive">+{data.completionChange || 0}%</div>
+            <div className={`kpi-change ${data.completionChange >= 0 ? 'positive' : 'negative'}`}>{formatPercentageChange(data.completionChange || 0)}</div>
           </div>
         </div>
       </div>

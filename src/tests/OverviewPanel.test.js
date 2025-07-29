@@ -33,7 +33,7 @@ describe('OverviewPanel', () => {
     expect(screen.getByText('Protocol Trading Overview')).toBeInTheDocument();
 
     // Check live indicator
-    expect(screen.getByText('Live')).toBeInTheDocument();
+    expect(screen.getByText('[LIVE]')).toBeInTheDocument();
 
     // Check KPI values
     expect(screen.getByText('1,250')).toBeInTheDocument(); // Total trades
@@ -155,6 +155,7 @@ describe('OverviewPanel', () => {
     expect(screen.getByText('0.00 SOL')).toBeInTheDocument(); // Volume
     expect(screen.getByText('$0.00')).toBeInTheDocument(); // Fees
     expect(screen.getByText('0.0%')).toBeInTheDocument(); // Completion rate
+    expect(screen.getAllByText('+0.00%')).toHaveLength(4); // All change percentages should be +0.00%
   });
 
   test('displays change percentages correctly', () => {
@@ -166,9 +167,32 @@ describe('OverviewPanel', () => {
       />
     );
 
-    expect(screen.getByText('+8%')).toBeInTheDocument(); // Trades change
-    expect(screen.getByText('+15%')).toBeInTheDocument(); // Volume change
-    expect(screen.getByText('+12%')).toBeInTheDocument(); // Fees change
-    expect(screen.getByText('+2%')).toBeInTheDocument(); // Completion change
+    expect(screen.getByText('+8.20%')).toBeInTheDocument(); // Trades change
+    expect(screen.getByText('+15.30%')).toBeInTheDocument(); // Volume change
+    expect(screen.getByText('+12.10%')).toBeInTheDocument(); // Fees change
+    expect(screen.getByText('+1.80%')).toBeInTheDocument(); // Completion change
+  });
+
+  test('displays negative change percentages correctly', () => {
+    const negativeChangeData = {
+      ...mockData,
+      tradesChange: -5.25,
+      volumeChange: -8.75,
+      feesChange: -2.5,
+      completionChange: -1.15
+    };
+
+    render(
+      <OverviewPanel 
+        data={negativeChangeData} 
+        network={mockNetwork} 
+        timeframe="24h" 
+      />
+    );
+
+    expect(screen.getByText('-5.25%')).toBeInTheDocument(); // Trades change
+    expect(screen.getByText('-8.75%')).toBeInTheDocument(); // Volume change
+    expect(screen.getByText('-2.50%')).toBeInTheDocument(); // Fees change
+    expect(screen.getByText('-1.15%')).toBeInTheDocument(); // Completion change
   });
 });
