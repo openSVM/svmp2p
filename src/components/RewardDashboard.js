@@ -12,7 +12,7 @@ import {
     getRemainingFailedClaimCooldown,
     getCooldownStats 
 } from '../utils/rewardTransactions';
-import { useAutoClaimManager } from '../utils/autoClaimManager';
+import { useAutoClaimManager } from '../hooks/useAutoClaimManager';
 import { 
     REWARD_CONSTANTS, 
     CONVERSION_HELPERS, 

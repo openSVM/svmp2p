@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Modal Test</title>
+    <link rel="stylesheet" href="./src/styles/components.css">
+    <link rel="stylesheet" href="./src/styles/vscode-dark-theme.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        /* CSS Variables from theme */
+        :root.dark {
+            --color-background: #1e1e1e;
+            --color-background-alt: #252526;
+            --color-foreground: #d4d4d4;
+            --color-foreground-muted: #969696;
+            --color-foreground-bright: #ffffff;
+            --color-border: #3e3e42;
+            --color-primary: #007acc;
+            --color-success: #73c991;
+            --font-size-3xl: 1.875rem;
+            --font-size-lg: 1.125rem;
+            --font-size-base: 1rem;
+            --spacing-3: 0.75rem;
+            --spacing-8: 2rem;
+            --font-weight-bold: 700;
+            --font-weight-medium: 500;
+            --line-height-tight: 1.25;
+            --line-height-relaxed: 1.625;
+            --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        html {
+            --color-background: #1e1e1e;
+            --color-background-alt: #252526;
+            --color-foreground: #d4d4d4;
+            --color-foreground-muted: #969696;
+            --color-foreground-bright: #ffffff;
+            --color-border: #3e3e42;
+            --color-primary: #007acc;
+            --color-success: #73c991;
+            --font-size-3xl: 1.875rem;
+            --font-size-lg: 1.125rem;
+            --font-size-base: 1rem;
+            --spacing-3: 0.75rem;
+            --spacing-8: 2rem;
+            --font-weight-bold: 700;
+            --font-weight-medium: 500;
+            --line-height-tight: 1.25;
+            --line-height-relaxed: 1.625;
+            --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        .dark .onboarding-modal {
+            background: var(--color-background);
+            color: var(--color-foreground);
+        }
+
+        .dark .onboarding-title {
+            color: var(--color-foreground-bright) !important;
+        }
+
+        .dark .onboarding-subtitle {
+            color: var(--color-foreground-muted) !important;
+        }
+
+        .dark .language-description {
+            color: var(--color-foreground-muted) !important;
+        }
+
+        .dark .language-feature {
+            color: var(--color-foreground) !important;
+        }
+
+        .dark .checkmark {
+            color: var(--color-success) !important;
+        }
+        
+        button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body class="dark">
+    <div class="onboarding-overlay visible">
+        <div class="onboarding-modal visible">
+            <!-- Header -->
+            <div class="onboarding-header">
+                <button class="onboarding-close" aria-label="Close onboarding">×</button>
+            </div>
+
+            <!-- Content -->
+            <div class="onboarding-content">
+                <h1 class="onboarding-title">Select Your Language</h1>
+                <p class="onboarding-subtitle">Choose your preferred language for the best experience</p>
+                <div class="onboarding-body">
+                    <div class="onboarding-language">
+                        <div class="language-icon">LANG</div>
+                        <p class="language-description">
+                            Select your preferred language to customize your experience on OpenSVM P2P Exchange. 
+                            This setting will be remembered for future visits.
+                        </p>
+                        <div class="language-features">
+                            <div class="language-feature">
+                                <span class="checkmark">✓</span>
+                                <span>Interface translated to your language</span>
+                            </div>
+                            <div class="language-feature">
+                                <span class="checkmark">✓</span>
+                                <span>Localized currency and date formats</span>
+                            </div>
+                            <div class="language-feature">
+                                <span class="checkmark">✓</span>
+                                <span>Automatically saved preference</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="onboarding-actions">
+                <div class="actions-left"></div>
+                <div class="actions-right">
+                    <button class="btn-text">Skip</button>
+                    <button class="btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
