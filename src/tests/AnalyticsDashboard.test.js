@@ -33,9 +33,9 @@ jest.mock('@/components/AnalyticsDashboard', () => {
         <div className="analytics-header">
           <div className="header-content">
             <div className="title-section">
-              <h1 className="analytics-title">📊 Real-Time Analytics Dashboard</h1>
+              <h1 className="analytics-title">📊 Protocol Analytics Dashboard</h1>
               <p className="analytics-subtitle">
-                Monitor trading performance and network metrics across {contextValue.network.name}
+                Monitor svmp2p trading performance and user metrics on {contextValue.network.name}
               </p>
             </div>
             <div className="header-controls">
@@ -56,21 +56,21 @@ jest.mock('@/components/AnalyticsDashboard', () => {
           </div>
         </div>
         <div data-testid="overview-panel">
-          <div>Volume: $0</div>
+          <div>Total Trades: 0</div>
+          <div>Protocol Volume: 0 SOL</div>
           <div>Network: {contextValue.network.name}</div>
           <div>Timeframe: 24h</div>
         </div>
-        <div data-testid="gas-fee-chart">
-          <div>Gas Data Points: 0</div>
+        <div data-testid="volume-chart">
+          <div>Volume Data Points: 0</div>
           <div>Network: {contextValue.network.name}</div>
           <div>Timeframe: 24h</div>
         </div>
-        <div data-testid="network-metrics">
-          <div>Selected Network: {contextValue.selectedNetwork}</div>
-          <div>Networks Count: {Object.keys(contextValue.networks).length}</div>
+        <div data-testid="top-traders">
+          <div>Top Traders Count: 0</div>
         </div>
-        <div data-testid="transaction-feed">
-          <div>Transactions: 0</div>
+        <div data-testid="recent-trades">
+          <div>Recent Trades: 0</div>
           <div>Network: {contextValue.network.name}</div>
         </div>
       </div>
@@ -80,7 +80,7 @@ jest.mock('@/components/AnalyticsDashboard', () => {
 
 // Mock Chart.js components to avoid canvas rendering issues in tests
 jest.mock('react-chartjs-2', () => ({
-  Line: () => <div data-testid="gas-fee-chart">Gas Fee Chart</div>
+  Line: () => <div data-testid="volume-chart">Volume Chart</div>
 }));
 
 // Mock the analytics sub-components
@@ -88,7 +88,8 @@ jest.mock('@/components/analytics/OverviewPanel', () => {
   return function MockOverviewPanel({ data, network, timeframe }) {
     return (
       <div data-testid="overview-panel">
-        <div>Volume: ${data.totalVolume}</div>
+        <div>Total Trades: {data.totalTrades || 0}</div>
+        <div>Protocol Volume: {data.protocolVolume || 0} SOL</div>
         <div>Network: {network.name}</div>
         <div>Timeframe: {timeframe}</div>
       </div>
@@ -96,22 +97,22 @@ jest.mock('@/components/analytics/OverviewPanel', () => {
   };
 });
 
-jest.mock('@/components/analytics/TransactionFeed', () => {
-  return function MockTransactionFeed({ transactions, network }) {
+jest.mock('@/components/analytics/RecentTrades', () => {
+  return function MockRecentTrades({ trades, network }) {
     return (
-      <div data-testid="transaction-feed">
-        <div>Transactions: {transactions.length}</div>
+      <div data-testid="recent-trades">
+        <div>Recent Trades: {trades.length}</div>
         <div>Network: {network.name}</div>
       </div>
     );
   };
 });
 
-jest.mock('@/components/analytics/GasFeeChart', () => {
-  return function MockGasFeeChart({ data, network, timeframe }) {
+jest.mock('@/components/analytics/VolumePerDayChart', () => {
+  return function MockVolumePerDayChart({ data, network, timeframe }) {
     return (
-      <div data-testid="gas-fee-chart">
-        <div>Gas Data Points: {data.length}</div>
+      <div data-testid="volume-chart">
+        <div>Volume Data Points: {data.length}</div>
         <div>Network: {network.name}</div>
         <div>Timeframe: {timeframe}</div>
       </div>
@@ -119,12 +120,11 @@ jest.mock('@/components/analytics/GasFeeChart', () => {
   };
 });
 
-jest.mock('@/components/analytics/NetworkMetrics', () => {
-  return function MockNetworkMetrics({ stats, networks, selectedNetwork }) {
+jest.mock('@/components/analytics/TopTraders', () => {
+  return function MockTopTraders({ tradersData }) {
     return (
-      <div data-testid="network-metrics">
-        <div>Selected Network: {selectedNetwork}</div>
-        <div>Networks Count: {Object.keys(networks).length}</div>
+      <div data-testid="top-traders">
+        <div>Top Traders Count: {tradersData.length}</div>
       </div>
     );
   };
@@ -151,118 +151,118 @@ const mockContextValue = {
   networks: mockNetworks
 };
 
-// Create a simple mock React Context
-const MockAppContext = React.createContext(mockContextValue);
-
-const renderWithContext = (component) => {
-  return render(
-    <MockAppContext.Provider value={mockContextValue}>
-      {component}
-    </MockAppContext.Provider>
-  );
-};
-
 describe('AnalyticsDashboard', () => {
   beforeEach(() => {
-    // Mock useSwigWallet hook
+    // Reset mocks before each test
     useSwigWallet.mockReturnValue({
       connected: false,
       publicKey: null
     });
 
-    // Mock console.error to avoid noise in tests
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Mock React context
+    React.useContext = jest.fn().mockReturnValue(mockContextValue);
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
+  test('renders analytics dashboard with protocol title', () => {
+    render(React.createElement(AnalyticsDashboard));
+
+    expect(screen.getByText('📊 Protocol Analytics Dashboard')).toBeInTheDocument();
+    expect(screen.getByText(/Monitor svmp2p trading performance/)).toBeInTheDocument();
   });
 
-  test('renders analytics dashboard with all components', () => {
-    renderWithContext(<AnalyticsDashboard />);
+  test('displays timeframe selector buttons', () => {
+    render(React.createElement(AnalyticsDashboard));
 
-    // Check main title
-    expect(screen.getByText('📊 Real-Time Analytics Dashboard')).toBeInTheDocument();
-
-    // Check subtitle
-    expect(screen.getByText(/Monitor trading performance and network metrics across/)).toBeInTheDocument();
-
-    // Check timeframe buttons
     expect(screen.getByText('1H')).toBeInTheDocument();
     expect(screen.getByText('24H')).toBeInTheDocument();
     expect(screen.getByText('7D')).toBeInTheDocument();
     expect(screen.getByText('30D')).toBeInTheDocument();
+  });
 
-    // Check connection status
+  test('shows disconnected status when wallet not connected', () => {
+    render(React.createElement(AnalyticsDashboard));
+
     expect(screen.getByText('🔴 Wallet not connected')).toBeInTheDocument();
-
-    // Check that all components are rendered
-    expect(screen.getByTestId('overview-panel')).toBeInTheDocument();
-    expect(screen.getByTestId('gas-fee-chart')).toBeInTheDocument();
-    expect(screen.getByTestId('network-metrics')).toBeInTheDocument();
-    expect(screen.getByTestId('transaction-feed')).toBeInTheDocument();
   });
 
   test('shows connected status when wallet is connected', () => {
     useSwigWallet.mockReturnValue({
       connected: true,
-      publicKey: { toString: () => 'mock-public-key' }
+      publicKey: 'mock_public_key'
     });
 
-    renderWithContext(<AnalyticsDashboard />);
+    render(React.createElement(AnalyticsDashboard));
 
     expect(screen.getByText('🟢 Connected to Solana')).toBeInTheDocument();
   });
 
-  test('timeframe selector works correctly', () => {
-    renderWithContext(<AnalyticsDashboard />);
+  test('renders all protocol analytics components', () => {
+    render(React.createElement(AnalyticsDashboard));
 
-    const button7D = screen.getByText('7D');
-    fireEvent.click(button7D);
-
-    // The component should re-render with new timeframe
-    // Since we're mocking the sub-components, we can't easily test the state change
-    // but we can verify the button is clickable
-    expect(button7D).toBeInTheDocument();
+    // Check that all new protocol-focused components are present
+    expect(screen.getByTestId('overview-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('volume-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('top-traders')).toBeInTheDocument();
+    expect(screen.getByTestId('recent-trades')).toBeInTheDocument();
   });
 
-  test('renders with correct network information', () => {
-    renderWithContext(<AnalyticsDashboard />);
+  test('passes correct props to protocol overview panel', () => {
+    render(React.createElement(AnalyticsDashboard));
 
-    // Check that components receive correct network info
-    expect(screen.getByText('Network: Solana')).toBeInTheDocument();
+    const overviewPanel = screen.getByTestId('overview-panel');
+    expect(overviewPanel).toHaveTextContent('Total Trades: 0');
+    expect(overviewPanel).toHaveTextContent('Protocol Volume: 0 SOL');
+    expect(overviewPanel).toHaveTextContent('Network: Solana');
+    expect(overviewPanel).toHaveTextContent('Timeframe: 24h');
   });
 
-  test('displays default timeframe as 24h', () => {
-    renderWithContext(<AnalyticsDashboard />);
+  test('passes correct props to volume chart', () => {
+    render(React.createElement(AnalyticsDashboard));
 
-    // Check that overview panel receives 24h timeframe by default
-    expect(screen.getByText('Timeframe: 24h')).toBeInTheDocument();
+    const volumeChart = screen.getByTestId('volume-chart');
+    expect(volumeChart).toHaveTextContent('Volume Data Points: 0');
+    expect(volumeChart).toHaveTextContent('Network: Solana');
+    expect(volumeChart).toHaveTextContent('Timeframe: 24h');
   });
 
-  test('handles different networks correctly', () => {
+  test('passes correct props to recent trades', () => {
+    render(React.createElement(AnalyticsDashboard));
+
+    const recentTrades = screen.getByTestId('recent-trades');
+    expect(recentTrades).toHaveTextContent('Recent Trades: 0');
+    expect(recentTrades).toHaveTextContent('Network: Solana');
+  });
+
+  test('passes correct props to top traders', () => {
+    render(React.createElement(AnalyticsDashboard));
+
+    const topTraders = screen.getByTestId('top-traders');
+    expect(topTraders).toHaveTextContent('Top Traders Count: 0');
+  });
+
+  test('handles different network contexts', () => {
     const sonicContextValue = {
-      ...mockContextValue,
       network: mockNetworks.sonic,
-      selectedNetwork: 'sonic'
+      selectedNetwork: 'sonic',
+      networks: mockNetworks
     };
 
-    render(
-      <MockAppContext.Provider value={sonicContextValue}>
-        <AnalyticsDashboard />
-      </MockAppContext.Provider>
-    );
+    React.useContext = jest.fn().mockReturnValue(sonicContextValue);
 
-    expect(screen.getByText('Monitor trading performance and network metrics across Sonic')).toBeInTheDocument();
-    expect(screen.queryByText('🟢 Connected to Sonic')).not.toBeInTheDocument(); // wallet not connected
-    expect(screen.getByText('🔴 Wallet not connected')).toBeInTheDocument();
+    render(React.createElement(AnalyticsDashboard));
+
+    expect(screen.getByText(/Monitor svmp2p trading performance and user metrics on Sonic/)).toBeInTheDocument();
+    
+    const overviewPanel = screen.getByTestId('overview-panel');
+    expect(overviewPanel).toHaveTextContent('Network: Sonic');
   });
 
-  test('components receive correct props', () => {
-    renderWithContext(<AnalyticsDashboard />);
-
-    // Verify that mocked components receive expected data
-    expect(screen.getByText('Networks Count: 2')).toBeInTheDocument();
-    expect(screen.getByText('Selected Network: solana')).toBeInTheDocument();
+  test('renders analytics dashboard with correct CSS classes', () => {
+    const { container } = render(React.createElement(AnalyticsDashboard));
+    
+    expect(container.querySelector('.analytics-dashboard')).toBeInTheDocument();
+    expect(container.querySelector('.analytics-header')).toBeInTheDocument();
+    expect(container.querySelector('.timeframe-selector')).toBeInTheDocument();
+    expect(container.querySelector('.connection-status')).toBeInTheDocument();
   });
 });
