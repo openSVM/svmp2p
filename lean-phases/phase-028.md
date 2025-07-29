@@ -1,959 +1,1057 @@
-# Phase 028: NFT Trading Integration
-**Duration**: 3 days | **Goal**: Capture high-value NFT market for premium revenue streams
+# Phase 028: P2P Escrow & Trust System
+**Duration**: 3 days | **Goal**: Build secure peer-to-peer trading infrastructure with escrow services
 
 ## Business Purpose
-Integrate comprehensive NFT trading capabilities to capture the high-value NFT market, leveraging NFT collectors' willingness to pay premium fees and creating new revenue streams through NFT marketplace operations, exclusive drops, and collector-focused premium services.
+Create a comprehensive escrow and trust system that enables secure peer-to-peer cryptocurrency trading between individual users, similar to LocalBitcoins, with automated escrow release, dispute resolution, and reputation management to facilitate safe P2P transactions.
 
 ## Revenue Impact
-- **Target**: $500K+ monthly NFT trading volume with 2.5% marketplace fees generating $12.5K+ monthly revenue
-- **Revenue Model**: NFT marketplace fees (2.5%), exclusive drop commissions (10%), premium collector services ($100+/month)
-- **Growth Mechanism**: NFT collectors drive premium user acquisition and create network effects through collection showcasing
-- **Expected Outcome**: $50,000+ monthly revenue from NFT operations + 200% increase in premium user conversions
+- **Target**: 10,000+ P2P trades monthly with 1.5% escrow fees generating $75K+ monthly revenue
+- **Revenue Model**: Escrow service fees (1.5%), dispute resolution fees ($25/case), premium verification ($50/user)
+- **Growth Mechanism**: Trust system enables higher-value P2P trades and attracts security-conscious traders
+- **Expected Outcome**: $100,000+ monthly revenue from P2P trading infrastructure + 300% increase in trade completion rates
 
 ## Deliverable
-Full-featured NFT trading marketplace with collection browsing, trading, minting, exclusive drops, portfolio management, and social features for collectors
+Complete P2P escrow system with automated funds holding, dispute resolution, reputation tracking, identity verification, and trust scoring for secure peer-to-peer trading
 
 ## Detailed Implementation Plan
 
 ### What to Do
-1. **NFT Marketplace Infrastructure**
-   - Build comprehensive NFT marketplace with advanced filtering and discovery
-   - Integrate Solana NFT standards (Metaplex) and cross-chain NFT support
-   - Create NFT portfolio management and analytics dashboard
-   - Implement NFT price tracking and valuation tools
+1. **P2P Escrow Infrastructure**
+   - Build secure escrow smart contracts for holding funds during P2P trades
+   - Create automated escrow release system based on trade confirmation
+   - Implement multi-signature wallet system for enhanced security
+   - Add support for multiple cryptocurrency escrow (BTC, ETH, USDT, etc.)
 
-2. **Advanced NFT Trading Features**
-   - Build NFT auction system with English and Dutch auction formats
-   - Create NFT lending and borrowing marketplace
-   - Implement fractional NFT ownership and trading
-   - Add NFT bundle trading and collection offers
+2. **Trust & Reputation System**
+   - Build comprehensive user reputation scoring based on trading history
+   - Create verification system with ID, phone, and address verification
+   - Implement peer review and rating system for completed trades
+   - Add trust badges and verification levels for user profiles
 
-3. **Exclusive NFT Services**
-   - Launch exclusive NFT drops and collaborations with artists
-   - Create NFT launchpad for new collections
-   - Build NFT rarity analysis and collection insights
-   - Implement NFT staking and yield generation programs
+3. **Dispute Resolution System**
+   - Create automated dispute detection and escalation system
+   - Build admin panel for manual dispute resolution
+   - Implement evidence submission system (screenshots, chat logs, receipts)
+   - Add mediation process with neutral third-party arbitrators
 
-4. **Social NFT Features**
-   - Build NFT collection showcasing and social profiles
-   - Create NFT-based achievements and gamification
-   - Implement NFT community features and collector networking
-   - Add NFT-gated exclusive features and communities
+4. **P2P Trading Features**
+   - Build offer creation system for buy/sell advertisements
+   - Create geographic matching for local P2P trades
+   - Implement payment method selection and verification
+   - Add real-time chat system for trade coordination
 
 ### How to Do It
 
-#### Day 1: NFT Marketplace Foundation (8 hours)
+#### Day 1: Escrow Smart Contract & Infrastructure (8 hours)
 
-1. **Build Core NFT Infrastructure (3 hours)**
+1. **Build P2P Escrow Smart Contract (4 hours)**
    ```javascript
-   // NFT marketplace core system
-   import { Metaplex, keypairIdentity } from '@metaplex-foundation/js';
-   import { Connection, Keypair, PublicKey } from '@solana/web3.js';
-   
-   class NFTMarketplaceManager {
+   // P2P escrow smart contract system
+   class P2PEscrowManager {
      constructor() {
-       this.connection = new Connection(process.env.SOLANA_RPC_URL);
-       this.metaplex = Metaplex.make(this.connection)
-         .use(keypairIdentity(Keypair.fromSecretKey(
-           new Uint8Array(JSON.parse(process.env.MARKETPLACE_KEYPAIR))
-         )));
-         
-       this.marketplaceFee = 0.025; // 2.5%
-       this.creatorRoyalty = 0.05;  // 5% to original creator
+       this.escrowFee = 0.015; // 1.5% escrow fee
+       this.disputeTimeout = 24 * 60 * 60 * 1000; // 24 hours
+       this.autoReleaseTimeout = 72 * 60 * 60 * 1000; // 72 hours
      }
    
-     async indexSolanaNFTs() {
-       // Index popular Solana NFT collections
-       const collections = [
-         { name: 'DeGods', symbol: 'DEGODS', verified: true },
-         { name: 'Okay Bears', symbol: 'OKAY', verified: true },
-         { name: 'Solana Monkey Business', symbol: 'SMB', verified: true },
-         { name: 'Magic Eden', symbol: 'ME', verified: true },
-         { name: 'Boryoku Dragonz', symbol: 'BD', verified: true }
-       ];
-   
-       for (const collection of collections) {
-         await this.indexCollection(collection);
-       }
-     }
-   
-     async indexCollection(collection) {
-       const nfts = await this.metaplex.nfts().findAllByCreator({
-         creator: new PublicKey(collection.creatorAddress)
+     async createP2PTrade(sellerOffer, buyerRequest) {
+       const escrowTrade = await db.p2pTrades.create({
+         tradeId: crypto.randomUUID(),
+         seller: {
+           userId: sellerOffer.userId,
+           wallet: sellerOffer.wallet,
+           reputation: await this.getUserReputation(sellerOffer.userId),
+           verification: await this.getUserVerification(sellerOffer.userId)
+         },
+         buyer: {
+           userId: buyerRequest.userId,
+           wallet: buyerRequest.wallet,
+           reputation: await this.getUserReputation(buyerRequest.userId),
+           verification: await this.getUserVerification(buyerRequest.userId)
+         },
+         trade: {
+           cryptocurrency: sellerOffer.cryptocurrency,
+           amount: buyerRequest.amount,
+           price: sellerOffer.price,
+           totalValue: buyerRequest.amount * sellerOffer.price,
+           paymentMethod: sellerOffer.paymentMethods.find(pm => 
+             buyerRequest.preferredPayment === pm.type
+           )
+         },
+         escrow: {
+           address: await this.createEscrowAddress(),
+           amount: buyerRequest.amount,
+           fee: buyerRequest.amount * this.escrowFee,
+           status: 'pending_deposit'
+         },
+         timeline: {
+           created: new Date(),
+           depositDeadline: new Date(Date.now() + 30 * 60 * 1000), // 30 min
+           paymentDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours
+           autoReleaseTime: new Date(Date.now() + this.autoReleaseTimeout)
+         },
+         status: 'awaiting_deposit',
+         chatId: crypto.randomUUID(),
+         disputeStatus: null
        });
    
-       for (const nft of nfts) {
-         const metadata = await this.metaplex.nfts().load({ metadata: nft });
-         
-         await db.nfts.upsert({
-           mint: nft.mintAddress.toString(),
-           collection: collection.name,
-           name: metadata.name,
-           symbol: metadata.symbol,
-           description: metadata.description,
-           image: metadata.image,
-           attributes: metadata.attributes,
-           owner: metadata.owner?.toString(),
-           price: null,
-           listed: false,
-           rarity: await this.calculateRarity(nft, collection),
-           lastSale: await this.getLastSalePrice(nft.mintAddress),
-           floorPrice: await this.getCollectionFloor(collection.name)
-         });
-       }
-     }
-   
-     async createMarketplaceListing(nft, price, seller) {
-       const listing = await db.nftListings.create({
-         mintAddress: nft.mint,
-         seller: seller.toString(),
-         price: price,
-         collectionName: nft.collection,
-         listedAt: new Date(),
-         status: 'active',
-         marketplaceFee: price * this.marketplaceFee,
-         creatorRoyalty: price * this.creatorRoyalty
-       });
-   
-       // Create Solana marketplace listing
-       const { transaction } = await this.metaplex.auctionHouse().list({
-         auctionHouse: this.marketplaceAuctionHouse,
-         mintAccount: new PublicKey(nft.mint),
-         price: { basisPoints: price * 1000000000, currency: { symbol: 'SOL' } }
-       });
-   
-       return { listing, transaction };
-     }
-   
-     async executeNFTPurchase(listingId, buyer) {
-       const listing = await db.nftListings.findById(listingId);
+       // Create escrow wallet
+       await this.setupEscrowWallet(escrowTrade.tradeId, escrowTrade.escrow.address);
        
-       // Execute on-chain purchase
-       const { transaction } = await this.metaplex.auctionHouse().buy({
-         auctionHouse: this.marketplaceAuctionHouse,
-         mintAccount: new PublicKey(listing.mintAddress),
-         price: { basisPoints: listing.price * 1000000000, currency: { symbol: 'SOL' } }
-       });
+       // Notify participants
+       await this.notifyTradeParticipants(escrowTrade);
+       
+       return escrowTrade;
+     }
    
-       // Update database
-       await db.nftListings.updateOne(
-         { _id: listingId },
-         { status: 'sold', buyer: buyer.toString(), soldAt: new Date() }
+     async depositToEscrow(tradeId, txHash) {
+       const trade = await db.p2pTrades.findOne({ tradeId });
+       
+       // Verify deposit transaction
+       const verified = await this.verifyBlockchainTransaction(
+         txHash, 
+         trade.escrow.address, 
+         trade.escrow.amount
+       );
+       
+       if (!verified) {
+         throw new Error('Deposit verification failed');
+       }
+   
+       // Update trade status
+       await db.p2pTrades.updateOne(
+         { tradeId },
+         {
+           $set: {
+             'escrow.status': 'funds_secured',
+             'escrow.depositTx': txHash,
+             'escrow.depositTime': new Date(),
+             status: 'payment_pending'
+           }
+         }
        );
    
-       // Record sale and distribute fees
-       await this.recordNFTSale(listing, buyer);
+       // Notify buyer to send payment
+       await this.notifyPaymentRequired(trade.buyer.userId, tradeId);
        
-       return transaction;
+       // Start payment deadline timer
+       await this.schedulePaymentDeadline(tradeId);
+       
+       return { success: true, status: 'payment_pending' };
+     }
+   
+     async confirmPaymentReceived(tradeId, userId, evidence) {
+       const trade = await db.p2pTrades.findOne({ tradeId });
+       
+       // Verify user is seller
+       if (trade.seller.userId !== userId) {
+         throw new Error('Only seller can confirm payment');
+       }
+       
+       // Record payment confirmation
+       await db.p2pTrades.updateOne(
+         { tradeId },
+         {
+           $set: {
+             'trade.paymentConfirmed': true,
+             'trade.paymentEvidence': evidence,
+             'trade.paymentConfirmedAt': new Date(),
+             status: 'releasing_funds'
+           }
+         }
+       );
+   
+       // Release escrow funds to seller
+       await this.releaseEscrowFunds(tradeId);
+       
+       return { success: true, status: 'completed' };
+     }
+   
+     async releaseEscrowFunds(tradeId) {
+       const trade = await db.p2pTrades.findOne({ tradeId });
+       
+       const releaseAmount = trade.escrow.amount - trade.escrow.fee;
+       
+       // Execute blockchain transaction to release funds
+       const releaseTx = await this.executeEscrowRelease(
+         trade.escrow.address,
+         trade.buyer.wallet,
+         releaseAmount
+       );
+       
+       // Update trade record
+       await db.p2pTrades.updateOne(
+         { tradeId },
+         {
+           $set: {
+             'escrow.status': 'released',
+             'escrow.releaseTx': releaseTx.hash,
+             'escrow.releaseTime': new Date(),
+             status: 'completed'
+           }
+         }
+       );
+   
+       // Update user reputations
+       await this.updateUserReputations(trade.seller.userId, trade.buyer.userId, 'successful');
+       
+       // Record platform revenue
+       await this.recordEscrowRevenue(trade.escrow.fee, tradeId);
+       
+       return releaseTx;
      }
    }
    ```
 
-2. **Build NFT Discovery & Filtering System (3 hours)**
+2. **Build Trust & Reputation System (4 hours)**
    ```javascript
-   // Advanced NFT discovery and filtering
-   class NFTDiscoveryEngine {
-     async buildAdvancedFilters() {
-       const filterSystem = {
-         collections: await this.getVerifiedCollections(),
-         priceRanges: [
-           { label: 'Under 1 SOL', min: 0, max: 1 },
-           { label: '1-10 SOL', min: 1, max: 10 },
-           { label: '10-100 SOL', min: 10, max: 100 },
-           { label: '100+ SOL', min: 100, max: Infinity }
+   // User trust and reputation management
+   class P2PReputationManager {
+     async calculateUserReputation(userId) {
+       const user = await db.users.findById(userId);
+       const trades = await db.p2pTrades.find({
+         $or: [
+           { 'seller.userId': userId },
+           { 'buyer.userId': userId }
          ],
-         rarities: ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'],
-         attributes: await this.getCollectionAttributes(),
-         sortOptions: [
-           'price_low_high',
-           'price_high_low',
-           'rarity_rare_common',
-           'rarity_common_rare',
-           'recently_listed',
-           'ending_soon'
-         ]
+         status: 'completed'
+       });
+   
+       const reputationFactors = {
+         tradeCount: trades.length,
+         successRate: this.calculateSuccessRate(trades),
+         averageRating: await this.getAverageRating(userId),
+         verificationLevel: await this.getVerificationLevel(userId),
+         disputeHistory: await this.getDisputeHistory(userId),
+         tradingVolume: trades.reduce((sum, trade) => sum + trade.trade.totalValue, 0)
        };
+   
+       const reputationScore = this.calculateReputationScore(reputationFactors);
        
-       return filterSystem;
+       await db.users.updateOne(
+         { _id: userId },
+         {
+           $set: {
+             'p2pReputation.score': reputationScore,
+             'p2pReputation.factors': reputationFactors,
+             'p2pReputation.lastUpdated': new Date()
+           }
+         }
+       );
+   
+       return reputationScore;
      }
    
-     async searchNFTs(query, filters = {}) {
-       const searchPipeline = [
-         // Text search
-         query && {
+     calculateReputationScore(factors) {
+       let score = 0;
+       
+       // Base score from trade count
+       score += Math.min(factors.tradeCount * 2, 200); // Max 200 points
+       
+       // Success rate multiplier
+       score *= factors.successRate;
+       
+       // Rating bonus
+       score += (factors.averageRating - 3) * 50; // -100 to +100 points
+       
+       // Verification bonuses
+       score += factors.verificationLevel * 50;
+       
+       // Volume bonus
+       score += Math.min(Math.log10(factors.tradingVolume) * 20, 100);
+       
+       // Dispute penalty
+       score -= factors.disputeHistory.count * 25;
+       
+       return Math.max(0, Math.min(1000, Math.round(score)));
+     }
+   
+     async createUserVerification(userId, verificationType, evidence) {
+       const verificationTypes = {
+         phone: { points: 10, evidence: 'phone_number' },
+         email: { points: 5, evidence: 'email_address' },
+         identity: { points: 50, evidence: 'id_document' },
+         address: { points: 25, evidence: 'utility_bill' },
+         payment: { points: 15, evidence: 'bank_statement' }
+       };
+       
+       const verification = await db.userVerifications.create({
+         userId,
+         type: verificationType,
+         evidence,
+         points: verificationTypes[verificationType].points,
+         status: 'pending_review',
+         submittedAt: new Date(),
+         reviewedAt: null,
+         reviewedBy: null
+       });
+   
+       // Auto-verify phone and email
+       if (verificationType === 'phone' || verificationType === 'email') {
+         await this.processAutoVerification(verification._id);
+       }
+       
+       return verification;
+     }
+   
+     async createTrustBadges(userId) {
+       const user = await db.users.findById(userId);
+       const reputation = user.p2pReputation || {};
+       const verifications = await db.userVerifications.find({ userId, status: 'approved' });
+       
+       const badges = [];
+       
+       // Reputation-based badges
+       if (reputation.score >= 800) badges.push('trusted_trader');
+       if (reputation.score >= 600) badges.push('reliable_trader');
+       if (reputation.score >= 400) badges.push('verified_trader');
+       
+       // Volume-based badges
+       const totalVolume = reputation.factors?.tradingVolume || 0;
+       if (totalVolume >= 1000000) badges.push('whale_trader');
+       if (totalVolume >= 100000) badges.push('high_volume');
+       if (totalVolume >= 10000) badges.push('active_trader');
+       
+       // Verification badges
+       verifications.forEach(v => {
+         badges.push(`${v.type}_verified`);
+       });
+       
+       // Trade count badges
+       const tradeCount = reputation.factors?.tradeCount || 0;
+       if (tradeCount >= 1000) badges.push('veteran_trader');
+       if (tradeCount >= 100) badges.push('experienced_trader');
+       if (tradeCount >= 10) badges.push('established_trader');
+       
+       await db.users.updateOne(
+         { _id: userId },
+         { $set: { 'p2pReputation.badges': badges } }
+       );
+       
+       return badges;
+     }
+   }
+   ```
+
+#### Day 2: Dispute Resolution & P2P Features (8 hours)
+
+1. **Build Dispute Resolution System (4 hours)**
+   ```javascript
+   // P2P dispute resolution system
+   class P2PDisputeManager {
+     async initiateDispute(tradeId, initiatorId, reason, evidence) {
+       const trade = await db.p2pTrades.findOne({ tradeId });
+       
+       if (!trade || trade.status === 'completed') {
+         throw new Error('Trade not eligible for dispute');
+       }
+       
+       const dispute = await db.p2pDisputes.create({
+         tradeId,
+         initiator: initiatorId,
+         respondent: initiatorId === trade.seller.userId ? 
+           trade.buyer.userId : trade.seller.userId,
+         reason: reason,
+         evidence: {
+           initiator: evidence,
+           respondent: null
+         },
+         status: 'open',
+         createdAt: new Date(),
+         adminAssigned: null,
+         resolution: null,
+         timeline: {
+           responseDeadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
+           resolutionDeadline: new Date(Date.now() + 72 * 60 * 60 * 1000)
+         }
+       });
+   
+       // Freeze escrow funds
+       await db.p2pTrades.updateOne(
+         { tradeId },
+         {
+           $set: {
+             'escrow.status': 'disputed',
+             'disputeStatus': 'active',
+             status: 'disputed'
+           }
+         }
+       );
+   
+       // Notify respondent
+       await this.notifyDisputeInitiated(dispute.respondent, tradeId);
+       
+       // Assign admin moderator
+       await this.assignDisputeModerator(dispute._id);
+       
+       return dispute;
+     }
+   
+     async submitDisputeResponse(disputeId, respondentId, response, evidence) {
+       const dispute = await db.p2pDisputes.findById(disputeId);
+       
+       if (dispute.respondent !== respondentId) {
+         throw new Error('Unauthorized dispute response');
+       }
+       
+       await db.p2pDisputes.updateOne(
+         { _id: disputeId },
+         {
+           $set: {
+             'evidence.respondent': evidence,
+             'response': response,
+             'respondedAt': new Date(),
+             status: 'under_review'
+           }
+         }
+       );
+   
+       // Notify admin for review
+       await this.notifyAdminForReview(disputeId);
+       
+       return { success: true, status: 'under_review' };
+     }
+   
+     async resolveDispute(disputeId, adminId, resolution) {
+       const dispute = await db.p2pDisputes.findById(disputeId);
+       const trade = await db.p2pTrades.findOne({ tradeId: dispute.tradeId });
+       
+       const resolutionActions = {
+         release_to_buyer: async () => {
+           await this.releaseEscrowToBuyer(trade);
+           await this.updateReputations(trade, 'buyer_favored');
+         },
+         release_to_seller: async () => {
+           await this.releaseEscrowToSeller(trade);
+           await this.updateReputations(trade, 'seller_favored');
+         },
+         partial_release: async () => {
+           await this.partialEscrowRelease(trade, resolution.distribution);
+           await this.updateReputations(trade, 'partial');
+         },
+         extend_deadline: async () => {
+           await this.extendTradeDeadline(trade.tradeId, resolution.extension);
+         }
+       };
+   
+       // Execute resolution
+       await resolutionActions[resolution.action]();
+       
+       // Record resolution
+       await db.p2pDisputes.updateOne(
+         { _id: disputeId },
+         {
+           $set: {
+             resolution: {
+               action: resolution.action,
+               reasoning: resolution.reasoning,
+               resolvedBy: adminId,
+               resolvedAt: new Date()
+             },
+             status: 'resolved'
+           }
+         }
+       );
+   
+       // Update trade status
+       await db.p2pTrades.updateOne(
+         { tradeId: dispute.tradeId },
+         {
+           $set: {
+             status: 'resolved',
+             'disputeStatus': 'resolved'
+           }
+         }
+       );
+   
+       return resolution;
+     }
+   
+     async createDisputePreventionSystem() {
+       const preventionMeasures = {
+         riskAssessment: async (sellerId, buyerId) => {
+           const sellerRep = await this.getUserReputation(sellerId);
+           const buyerRep = await this.getUserReputation(buyerId);
+           
+           const riskFactors = [];
+           if (sellerRep.score < 200) riskFactors.push('low_seller_reputation');
+           if (buyerRep.score < 200) riskFactors.push('low_buyer_reputation');
+           
+           return { riskScore: riskFactors.length / 10, factors: riskFactors };
+         },
+         
+         automediation: async (tradeId) => {
+           const trade = await db.p2pTrades.findOne({ tradeId });
+           const suggestions = [];
+           
+           if (trade.status === 'payment_pending') {
+             suggestions.push('Consider extending payment deadline');
+             suggestions.push('Verify payment method details');
+           }
+           
+           return suggestions;
+         },
+         
+         earlyWarning: async (tradeId) => {
+           const trade = await db.p2pTrades.findOne({ tradeId });
+           const warnings = [];
+           
+           const timeElapsed = Date.now() - trade.timeline.created.getTime();
+           const paymentWindow = trade.timeline.paymentDeadline.getTime() - trade.timeline.created.getTime();
+           
+           if (timeElapsed > paymentWindow * 0.8) {
+             warnings.push('Payment deadline approaching');
+           }
+           
+           return warnings;
+         }
+       };
+       
+       return preventionMeasures;
+     }
+   }
+   ```
+
+2. **Create P2P Trading Features (4 hours)**
+   ```javascript
+   // P2P trading offer and matching system
+   class P2PTradingSystem {
+     async createSellOffer(userId, offerData) {
+       const userReputation = await this.getUserReputation(userId);
+       
+       const sellOffer = await db.p2pOffers.create({
+         userId,
+         type: 'sell',
+         cryptocurrency: offerData.cryptocurrency,
+         amount: {
+           min: offerData.minAmount,
+           max: offerData.maxAmount,
+           available: offerData.totalAmount
+         },
+         pricing: {
+           type: offerData.pricingType, // 'fixed', 'market_rate', 'margin'
+           value: offerData.price,
+           margin: offerData.margin || 0,
+           currency: offerData.currency
+         },
+         paymentMethods: offerData.paymentMethods.map(pm => ({
+           type: pm.type, // 'bank_transfer', 'paypal', 'cash', 'zelle', etc.
+           details: pm.details,
+           processingTime: pm.processingTime,
+           limits: pm.limits
+         })),
+         location: {
+           country: offerData.country,
+           region: offerData.region,
+           city: offerData.city,
+           meetingPoints: offerData.meetingPoints || [],
+           onlineOnly: offerData.onlineOnly || true
+         },
+         terms: {
+           tradingWindow: offerData.tradingWindow || '24h',
+           instructions: offerData.instructions,
+           requirements: {
+             minReputation: offerData.minReputation || 0,
+             verificationRequired: offerData.verificationRequired || [],
+             newUserFriendly: offerData.newUserFriendly || false
+           }
+         },
+         status: 'active',
+         createdAt: new Date(),
+         updatedAt: new Date(),
+         stats: {
+           views: 0,
+           contacts: 0,
+           completedTrades: 0
+         }
+       });
+   
+       // Index offer for search
+       await this.indexOfferForSearch(sellOffer._id);
+       
+       return sellOffer;
+     }
+   
+     async searchP2POffers(searchCriteria) {
+       const pipeline = [
+         // Base filters
+         {
            $match: {
-             $text: { $search: query }
+             type: searchCriteria.type, // 'buy' or 'sell'
+             cryptocurrency: searchCriteria.cryptocurrency,
+             status: 'active',
+             'amount.min': { $lte: searchCriteria.amount },
+             'amount.max': { $gte: searchCriteria.amount }
            }
          },
          
-         // Collection filter
-         filters.collections?.length && {
+         // Location filter
+         searchCriteria.location && {
            $match: {
-             collection: { $in: filters.collections }
+             $or: [
+               { 'location.country': searchCriteria.location.country },
+               { 'location.onlineOnly': true }
+             ]
            }
          },
          
-         // Price range
-         filters.priceRange && {
+         // Payment method filter
+         searchCriteria.paymentMethod && {
            $match: {
-             price: {
-               $gte: filters.priceRange.min,
-               $lte: filters.priceRange.max
+             'paymentMethods.type': searchCriteria.paymentMethod
+           }
+         },
+         
+         // Join with user data
+         {
+           $lookup: {
+             from: 'users',
+             localField: 'userId',
+             foreignField: '_id',
+             as: 'user'
+           }
+         },
+         
+         // Add reputation and verification info
+         {
+           $addFields: {
+             userReputation: { $arrayElemAt: ['$user.p2pReputation.score', 0] },
+             userBadges: { $arrayElemAt: ['$user.p2pReputation.badges', 0] },
+             lastSeen: { $arrayElemAt: ['$user.lastSeen', 0] }
+           }
+         },
+         
+         // Filter by minimum reputation if specified
+         searchCriteria.minReputation && {
+           $match: {
+             userReputation: { $gte: searchCriteria.minReputation }
+           }
+         },
+         
+         // Sort by relevance
+         {
+           $addFields: {
+             relevanceScore: {
+               $add: [
+                 { $multiply: ['$userReputation', 0.001] }, // Reputation weight
+                 { $multiply: ['$stats.completedTrades', 0.1] }, // Trade history weight
+                 { $cond: [{ $lt: ['$lastSeen', new Date(Date.now() - 60*60*1000)] }, 1, 0] } // Online bonus
+               ]
              }
            }
          },
          
-         // Rarity filter
-         filters.rarities?.length && {
-           $match: {
-             rarity: { $in: filters.rarities }
-           }
+         {
+           $sort: { relevanceScore: -1, createdAt: -1 }
          },
-         
-         // Attribute filters
-         filters.attributes && {
-           $match: {
-             'attributes.trait_type': { $in: Object.keys(filters.attributes) },
-             'attributes.value': { $in: Object.values(filters.attributes).flat() }
-           }
-         },
-         
-         // Sorting
-         filters.sort && this.getSortStage(filters.sort),
          
          // Pagination
-         { $skip: (filters.page - 1) * filters.limit },
-         { $limit: filters.limit || 20 }
+         { $skip: (searchCriteria.page - 1) * searchCriteria.limit },
+         { $limit: searchCriteria.limit || 20 }
        ].filter(Boolean);
    
-       const results = await db.nfts.aggregate(searchPipeline);
-       return results;
+       const offers = await db.p2pOffers.aggregate(pipeline);
+       return offers;
      }
    
-     async getTrendingCollections(timeframe = '24h') {
-       const trending = await db.nftSales.aggregate([
-         {
-           $match: {
-             soldAt: { $gte: new Date(Date.now() - this.parseTimeframe(timeframe)) }
-           }
-         },
-         {
-           $group: {
-             _id: '$collection',
-             volume: { $sum: '$price' },
-             sales: { $sum: 1 },
-             avgPrice: { $avg: '$price' },
-             uniqueBuyers: { $addToSet: '$buyer' }
-           }
-         },
-         {
-           $addFields: {
-             uniqueBuyerCount: { $size: '$uniqueBuyers' }
-           }
-         },
-         {
-           $sort: { volume: -1 }
-         },
-         {
-           $limit: 10
-         }
-       ]);
-   
-       return trending;
-     }
-   }
-   ```
-
-3. **Create NFT Portfolio Management (2 hours)**
-   ```javascript
-   // NFT portfolio tracking and analytics
-   class NFTPortfolioManager {
-     async createUserNFTPortfolio(userId) {
-       const userWallets = await db.users.findById(userId).select('wallets');
-       const nftPortfolio = {
-         userId,
-         collections: new Map(),
-         totalValue: 0,
-         totalCount: 0,
-         profitLoss: 0,
-         performanceMetrics: {}
-       };
-   
-       for (const wallet of userWallets.wallets) {
-         const walletNFTs = await this.indexWalletNFTs(wallet.address);
-         
-         for (const nft of walletNFTs) {
-           if (!nftPortfolio.collections.has(nft.collection)) {
-             nftPortfolio.collections.set(nft.collection, {
-               name: nft.collection,
-               count: 0,
-               floorValue: 0,
-               purchaseValue: 0,
-               items: []
-             });
-           }
-           
-           const collection = nftPortfolio.collections.get(nft.collection);
-           collection.count++;
-           collection.floorValue += nft.floorPrice || 0;
-           collection.items.push(nft);
-           
-           nftPortfolio.totalCount++;
-           nftPortfolio.totalValue += nft.floorPrice || 0;
-         }
-       }
-   
-       // Calculate performance metrics
-       nftPortfolio.performanceMetrics = await this.calculatePortfolioMetrics(nftPortfolio);
+     async initiateTradeFromOffer(offerId, buyerId, tradeRequest) {
+       const offer = await db.p2pOffers.findById(offerId);
+       const buyer = await db.users.findById(buyerId);
        
-       await db.nftPortfolios.upsert({ userId }, nftPortfolio);
-       return nftPortfolio;
-     }
-   
-     async generatePortfolioInsights(userId) {
-       const portfolio = await db.nftPortfolios.findOne({ userId });
-       
-       const insights = {
-         diversification: this.analyzeDiversification(portfolio),
-         riskAnalysis: this.analyzeRisk(portfolio),
-         recommendations: await this.generateRecommendations(portfolio),
-         marketTrends: await this.getRelevantTrends(portfolio),
-         optimization: this.suggestOptimizations(portfolio)
-       };
-   
-       return insights;
-     }
-   
-     analyzeDiversification(portfolio) {
-       const collectionCount = portfolio.collections.size;
-       const largestCollection = Math.max(...Array.from(portfolio.collections.values()).map(c => c.count));
-       const diversificationScore = Math.min(100, (collectionCount * 10) - (largestCollection / portfolio.totalCount * 50));
-       
-       return {
-         score: diversificationScore,
-         recommendation: diversificationScore < 50 ? 'Consider diversifying across more collections' : 'Well diversified portfolio',
-         collectionCount,
-         concentration: largestCollection / portfolio.totalCount
-       };
-     }
-   }
-   ```
-
-#### Day 2: Advanced NFT Features (8 hours)
-
-1. **Build NFT Auction System (3 hours)**
-   ```javascript
-   // NFT auction implementation
-   class NFTAuctionSystem {
-     async createEnglishAuction(nftMint, startingPrice, duration, seller) {
-       const auction = await db.nftAuctions.create({
-         type: 'english',
-         nftMint,
-         seller: seller.toString(),
-         startingPrice,
-         currentBid: startingPrice,
-         highestBidder: null,
-         startTime: new Date(),
-         endTime: new Date(Date.now() + duration),
-         bids: [],
-         status: 'active',
-         reservePrice: startingPrice * 1.5,
-         bidIncrement: Math.max(0.1, startingPrice * 0.05)
-       });
-   
-       // Set up auction monitoring
-       await this.scheduleAuctionEnd(auction._id, duration);
-       
-       return auction;
-     }
-   
-     async placeBid(auctionId, bidder, bidAmount) {
-       const auction = await db.nftAuctions.findById(auctionId);
-       
-       // Validation
-       if (auction.status !== 'active') throw new Error('Auction not active');
-       if (new Date() > auction.endTime) throw new Error('Auction ended');
-       if (bidAmount <= auction.currentBid) throw new Error('Bid too low');
-       if (bidAmount < auction.currentBid + auction.bidIncrement) throw new Error('Bid increment not met');
-       
-       // Process bid
-       const bid = {
-         bidder: bidder.toString(),
-         amount: bidAmount,
-         timestamp: new Date(),
-         txSignature: null
-       };
-   
-       // Update auction
-       await db.nftAuctions.updateOne(
-         { _id: auctionId },
-         {
-           $push: { bids: bid },
-           $set: {
-             currentBid: bidAmount,
-             highestBidder: bidder.toString()
-           }
-         }
-       );
-   
-       // Notify previous bidder
-       if (auction.highestBidder) {
-         await this.notifyOutbid(auction.highestBidder, auctionId);
-       }
-   
-       // Auto-extend if bid placed in last 5 minutes
-       const timeLeft = auction.endTime - new Date();
-       if (timeLeft < 5 * 60 * 1000) {
-         await this.extendAuction(auctionId, 5 * 60 * 1000);
-       }
-   
-       return bid;
-     }
-   
-     async createDutchAuction(nftMint, startingPrice, endingPrice, duration, seller) {
-       const priceDecrement = (startingPrice - endingPrice) / (duration / (60 * 1000)); // Per minute
-       
-       const auction = await db.nftAuctions.create({
-         type: 'dutch',
-         nftMint,
-         seller: seller.toString(),
-         startingPrice,
-         endingPrice,
-         currentPrice: startingPrice,
-         priceDecrement,
-         startTime: new Date(),
-         endTime: new Date(Date.now() + duration),
-         status: 'active',
-         winner: null
-       });
-   
-       // Set up price updates
-       await this.schedulePriceUpdates(auction._id);
-       
-       return auction;
-     }
-   
-     async buyNowDutchAuction(auctionId, buyer) {
-       const auction = await db.nftAuctions.findById(auctionId);
-       const currentPrice = this.calculateCurrentDutchPrice(auction);
-       
-       // Execute purchase
-       const purchase = await this.executeNFTPurchase(
-         auction.nftMint,
-         buyer,
-         currentPrice,
-         auction.seller
-       );
-   
-       // Complete auction
-       await db.nftAuctions.updateOne(
-         { _id: auctionId },
-         {
-           $set: {
-             status: 'completed',
-             winner: buyer.toString(),
-             finalPrice: currentPrice,
-             completedAt: new Date()
-           }
-         }
-       );
-   
-       return purchase;
-     }
-   }
-   ```
-
-2. **Implement Fractional NFT Trading (3 hours)**
-   ```javascript
-   // Fractional NFT ownership system
-   class FractionalNFTManager {
-     async fractionalize(nftMint, totalShares, sharePrice, owner) {
-       // Create fractional token for the NFT
-       const fractionalToken = await this.createFractionalToken(nftMint, totalShares);
-       
-       const fractionalization = await db.fractionalNFTs.create({
-         nftMint,
-         fractionalTokenMint: fractionalToken.mint,
-         totalShares,
-         sharePrice,
-         sharesOutstanding: totalShares,
-         owner: owner.toString(),
-         status: 'active',
-         shareholders: new Map([[owner.toString(), totalShares]]),
-         dividends: {
-           totalDistributed: 0,
-           lastDistribution: null
-         },
-         governance: {
-           votingThreshold: 0.51, // 51% needed for decisions
-           proposals: []
-         }
-       });
-   
-       // Lock original NFT in escrow
-       await this.lockNFTInEscrow(nftMint, fractionalization._id);
-       
-       return fractionalization;
-     }
-   
-     async tradeFractionalShares(fractionalNFTId, seller, buyer, shares, pricePerShare) {
-       const fractionalNFT = await db.fractionalNFTs.findById(fractionalNFTId);
-       
-       const trade = {
-         seller: seller.toString(),
-         buyer: buyer.toString(),
-         shares,
-         pricePerShare,
-         totalPrice: shares * pricePerShare,
-         timestamp: new Date(),
-         fractionalNFTId
-       };
-   
-       // Update shareholdings
-       fractionalNFT.shareholders.set(
-         seller.toString(),
-         fractionalNFT.shareholders.get(seller.toString()) - shares
-       );
-       
-       const buyerShares = fractionalNFT.shareholders.get(buyer.toString()) || 0;
-       fractionalNFT.shareholders.set(buyer.toString(), buyerShares + shares);
-       
-       // Record trade
-       await db.fractionalTrades.create(trade);
-       await fractionalNFT.save();
-       
-       return trade;
-     }
-   
-     async proposeRedemption(fractionalNFTId, proposer, buyoutPrice) {
-       const fractionalNFT = await db.fractionalNFTs.findById(fractionalNFTId);
-       const proposerShares = fractionalNFT.shareholders.get(proposer.toString()) || 0;
-       
-       if (proposerShares < fractionalNFT.totalShares * 0.1) {
-         throw new Error('Need at least 10% ownership to propose redemption');
+       // Validate trade request
+       if (tradeRequest.amount < offer.amount.min || tradeRequest.amount > offer.amount.max) {
+         throw new Error('Trade amount outside offer limits');
        }
        
-       const proposal = {
-         id: crypto.randomUUID(),
-         type: 'redemption',
-         proposer: proposer.toString(),
-         buyoutPrice,
-         pricePerShare: buyoutPrice / fractionalNFT.totalShares,
-         votingStartTime: new Date(),
-         votingEndTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-         votes: new Map(),
-         status: 'active'
-       };
-   
-       fractionalNFT.governance.proposals.push(proposal);
-       await fractionalNFT.save();
+       if (!offer.paymentMethods.some(pm => pm.type === tradeRequest.paymentMethod)) {
+         throw new Error('Payment method not supported by this offer');
+       }
        
-       // Notify all shareholders
-       await this.notifyShareholdersOfProposal(fractionalNFT, proposal);
+       // Check buyer meets requirements
+       const buyerReputation = buyer.p2pReputation?.score || 0;
+       if (buyerReputation < offer.terms.requirements.minReputation) {
+         throw new Error('Insufficient reputation to trade with this offer');
+       }
        
-       return proposal;
-     }
-   }
-   ```
-
-3. **Create NFT Staking System (2 hours)**
-   ```javascript
-   // NFT staking and rewards
-   class NFTStakingManager {
-     async createStakingPool(collectionName, rewardToken, dailyReward) {
-       const stakingPool = await db.nftStakingPools.create({
-         collectionName,
-         rewardToken, // Token to earn (could be platform token)
-         dailyRewardPerNFT: dailyReward,
-         totalStaked: 0,
-         totalRewardsDistributed: 0,
-         stakingPeriods: [
-           { duration: '30d', multiplier: 1.0 },  // No bonus for 30 days
-           { duration: '90d', multiplier: 1.25 }, // 25% bonus for 90 days
-           { duration: '180d', multiplier: 1.5 }, // 50% bonus for 180 days
-           { duration: '365d', multiplier: 2.0 }  // 100% bonus for 365 days
-         ],
-         status: 'active'
-       });
-   
-       return stakingPool;
-     }
-   
-     async stakeNFT(nftMint, owner, stakingPeriod) {
-       const nft = await db.nfts.findOne({ mint: nftMint });
-       const stakingPool = await db.nftStakingPools.findOne({ 
-         collectionName: nft.collection 
-       });
-       
-       if (!stakingPool) throw new Error('No staking pool for this collection');
-       
-       const stake = await db.nftStakes.create({
-         nftMint,
-         owner: owner.toString(),
-         stakingPoolId: stakingPool._id,
-         stakingPeriod,
-         stakedAt: new Date(),
-         unlocksAt: new Date(Date.now() + this.parseDuration(stakingPeriod)),
-         rewardsEarned: 0,
-         lastRewardClaim: new Date(),
-         status: 'active'
-       });
-       
-       // Lock NFT (transfer to staking contract)
-       await this.lockNFTForStaking(nftMint, stake._id);
-       
-       // Update pool stats
-       await db.nftStakingPools.updateOne(
-         { _id: stakingPool._id },
-         { $inc: { totalStaked: 1 } }
-       );
-       
-       return stake;
-     }
-   
-     async calculateStakingRewards(stakeId) {
-       const stake = await db.nftStakes.findById(stakeId);
-       const pool = await db.nftStakingPools.findById(stake.stakingPoolId);
-       
-       const stakingDuration = Date.now() - stake.lastRewardClaim.getTime();
-       const daysStaked = stakingDuration / (24 * 60 * 60 * 1000);
-       
-       const periodMultiplier = pool.stakingPeriods.find(
-         p => p.duration === stake.stakingPeriod
-       ).multiplier;
-       
-       const rewards = daysStaked * pool.dailyRewardPerNFT * periodMultiplier;
-       
-       return rewards;
-     }
-   
-     async claimStakingRewards(stakeId) {
-       const rewards = await this.calculateStakingRewards(stakeId);
-       
-       // Transfer rewards to user
-       await this.transferRewards(stake.owner, rewards);
-       
-       // Update stake record
-       await db.nftStakes.updateOne(
-         { _id: stakeId },
-         {
-           $inc: { rewardsEarned: rewards },
-           $set: { lastRewardClaim: new Date() }
-         }
-       );
-       
-       return rewards;
-     }
-   }
-   ```
-
-#### Day 3: Social NFT Features & Launch (6 hours)
-
-1. **Build NFT Social Features (3 hours)**
-   ```javascript
-   // NFT social and community features
-   class NFTSocialManager {
-     async createNFTProfile(userId) {
-       const user = await db.users.findById(userId);
-       const portfolio = await db.nftPortfolios.findOne({ userId });
-       
-       const profile = {
-         userId,
-         displayName: user.username,
-         bio: '',
-         avatar: portfolio?.collections?.values()?.next()?.value?.items?.[0]?.image || null,
-         featuredNFTs: [],
-         collections: Array.from(portfolio?.collections?.keys() || []),
-         stats: {
-           totalNFTs: portfolio?.totalCount || 0,
-           totalValue: portfolio?.totalValue || 0,
-           collectionsCount: portfolio?.collections?.size || 0,
-           tradingVolume: await this.getUserTradingVolume(userId)
-         },
-         achievements: await this.calculateNFTAchievements(userId),
-         social: {
-           followers: 0,
-           following: 0,
-           likes: 0
-         }
-       };
-   
-       await db.nftProfiles.upsert({ userId }, profile);
-       return profile;
-     }
-   
-     async createNFTShowcase(userId, nftMints, title, description) {
-       const showcase = await db.nftShowcases.create({
-         userId,
-         title,
-         description,
-         nfts: nftMints,
+       // Create trade request
+       const tradeRequestRecord = await db.p2pTradeRequests.create({
+         offerId,
+         sellerId: offer.userId,
+         buyerId,
+         amount: tradeRequest.amount,
+         paymentMethod: tradeRequest.paymentMethod,
+         message: tradeRequest.message,
+         status: 'pending_seller_approval',
          createdAt: new Date(),
-         views: 0,
-         likes: 0,
-         comments: [],
-         tags: this.extractTags(description),
-         isPublic: true
+         expiresAt: new Date(Date.now() + 30 * 60 * 1000) // 30 minutes
+       });
+       
+       // Notify seller
+       await this.notifySellerOfTradeRequest(offer.userId, tradeRequestRecord._id);
+       
+       return tradeRequestRecord;
+     }
+   
+     async createGeographicMatching(userId, preferences) {
+       const userLocation = preferences.location;
+       const searchRadius = preferences.radius || 50; // km
+       
+       const nearbyOffers = await db.p2pOffers.find({
+         type: preferences.type === 'buy' ? 'sell' : 'buy',
+         cryptocurrency: preferences.cryptocurrency,
+         status: 'active',
+         $or: [
+           { 'location.onlineOnly': true },
+           {
+             'location.coordinates': {
+               $near: {
+                 $geometry: {
+                   type: 'Point',
+                   coordinates: [userLocation.lng, userLocation.lat]
+                 },
+                 $maxDistance: searchRadius * 1000 // Convert to meters
+               }
+             }
+           }
+         ]
+       }).limit(20);
+       
+       return nearbyOffers;
+     }
+   }
+   ```
+
+#### Day 3: Chat System & Platform Launch (6 hours)
+
+1. **Build P2P Chat System (3 hours)**
+   ```javascript
+   // Secure P2P trading chat system
+   class P2PTradingChat {
+     async createTradeChat(tradeId, participants) {
+       const chatRoom = await db.p2pChats.create({
+         tradeId,
+         participants: participants.map(p => ({
+           userId: p.userId,
+           role: p.role, // 'seller', 'buyer', 'admin'
+           joinedAt: new Date()
+         })),
+         messages: [],
+         status: 'active',
+         features: {
+           fileUpload: true,
+           paymentProof: true,
+           autoTranslation: true,
+           disputeEscalation: true
+         },
+         moderation: {
+           autoModeration: true,
+           flaggedMessages: [],
+           warnings: []
+         },
+         createdAt: new Date()
        });
    
-       // Update user profile
-       await db.nftProfiles.updateOne(
-         { userId },
-         { $push: { showcases: showcase._id } }
-       );
-   
-       return showcase;
+       // Set up real-time connection
+       await this.setupRealTimeChat(chatRoom._id);
+       
+       return chatRoom;
      }
    
-     async createNFTLeaderboards() {
-       const leaderboards = {
-         topCollectors: await db.nftProfiles.aggregate([
-           { $sort: { 'stats.totalNFTs': -1 } },
-           { $limit: 100 },
-           { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } }
-         ]),
-         
-         topTraders: await db.nftTrades.aggregate([
-           { $group: { _id: '$trader', volume: { $sum: '$price' }, trades: { $sum: 1 } } },
-           { $sort: { volume: -1 } },
-           { $limit: 100 }
-         ]),
-         
-         rarityKings: await db.nftPortfolios.aggregate([
-           { $unwind: '$collections' },
-           { $group: { _id: '$userId', avgRarity: { $avg: '$collections.items.rarity' } } },
-           { $sort: { avgRarity: -1 } },
-           { $limit: 100 }
-         ])
+     async sendTradeMessage(chatId, senderId, messageData) {
+       const chat = await db.p2pChats.findById(chatId);
+       
+       // Verify sender is participant
+       if (!chat.participants.some(p => p.userId === senderId)) {
+         throw new Error('Unauthorized chat access');
+       }
+       
+       const message = {
+         id: crypto.randomUUID(),
+         senderId,
+         type: messageData.type, // 'text', 'image', 'payment_proof', 'system'
+         content: messageData.content,
+         metadata: messageData.metadata || {},
+         timestamp: new Date(),
+         edited: false,
+         moderated: false
+       };
+   
+       // Content moderation
+       const moderationResult = await this.moderateMessage(message);
+       if (moderationResult.flagged) {
+         message.moderated = true;
+         message.moderationFlags = moderationResult.flags;
+       }
+   
+       // Add to chat
+       await db.p2pChats.updateOne(
+         { _id: chatId },
+         { $push: { messages: message } }
+       );
+   
+       // Real-time delivery
+       await this.deliverMessageRealTime(chatId, message);
+       
+       // Auto-responses for certain message types
+       if (messageData.type === 'payment_sent') {
+         await this.triggerPaymentNotification(chat.tradeId);
+       }
+       
+       return message;
+     }
+   
+     async uploadPaymentProof(chatId, senderId, proofData) {
+       const proofMessage = {
+         type: 'payment_proof',
+         content: 'Payment proof uploaded',
+         metadata: {
+           filename: proofData.filename,
+           fileType: proofData.type,
+           fileSize: proofData.size,
+           uploadUrl: await this.uploadToSecureStorage(proofData.file),
+           verification: {
+             status: 'pending',
+             verifiedAt: null,
+             verifiedBy: null
+           }
+         }
+       };
+   
+       await this.sendTradeMessage(chatId, senderId, proofMessage);
+       
+       // Trigger payment verification process
+       await this.initiatePaymentVerification(chatId, proofMessage.metadata.uploadUrl);
+       
+       return proofMessage;
+     }
+   
+     async createChatTemplates() {
+       const templates = {
+         greeting: {
+           seller: "Hello! I'm ready to trade {amount} {crypto} for {fiat_amount} {currency}. Please confirm the payment method: {payment_method}",
+           buyer: "Hi! I'm interested in buying {amount} {crypto}. I can pay via {payment_method}. When can we start?"
+         },
+         payment_instructions: {
+           seller: "Please send {fiat_amount} {currency} to:\n{payment_details}\n\nUse reference: {reference}\n\nUpload payment proof when done.",
+           buyer: "Payment sent! Transaction ID: {tx_id}. Please check and confirm receipt."
+         },
+         completion: {
+           seller: "Payment received and verified! Releasing crypto now. Thanks for the smooth trade!",
+           buyer: "Crypto received! Great trading experience. Will definitely trade again!"
+         },
+         dispute: {
+           generic: "I'm experiencing an issue with this trade. I'd like to escalate to dispute resolution. Reason: {reason}"
+         }
+       };
+   
+       return templates;
+     }
+   }
+   ```
+
+2. **Create Safety & Security Features (2 hours)**
+   ```javascript
+   // P2P trading safety and security system
+   class P2PSafetyManager {
+     async createSafetyGuidelines() {
+       const guidelines = {
+         general: [
+           'Never trade outside the platform escrow system',
+           'Always verify payment before confirming receipt',
+           'Use secure communication channels only',
+           'Meet in public places for cash trades',
+           'Bring a friend for in-person meetings'
+         ],
+         red_flags: [
+           'Requests to trade without escrow',
+           'Pressure to complete quickly',
+           'Asks for personal banking passwords',
+           'Offers prices significantly above/below market',
+           'Poor communication or evasive answers'
+         ],
+         best_practices: [
+           'Check trader reputation and reviews',
+           'Start with small amounts for new traders',
+           'Keep records of all communications',
+           'Report suspicious behavior immediately',
+           'Use strong passwords and 2FA'
+         ]
+       };
+   
+       return guidelines;
+     }
+   
+     async implementFraudDetection(tradeId) {
+       const trade = await db.p2pTrades.findOne({ tradeId });
+       const fraudSignals = [];
+       
+       // Check for suspicious patterns
+       const sellerHistory = await this.getUserTradeHistory(trade.seller.userId);
+       const buyerHistory = await this.getUserTradeHistory(trade.buyer.userId);
+       
+       // Rapid succession trades
+       if (sellerHistory.todayCount > 10) {
+         fraudSignals.push('high_frequency_trading');
+       }
+       
+       // New account with large trade
+       if (sellerHistory.accountAge < 7 && trade.trade.totalValue > 1000) {
+         fraudSignals.push('new_account_large_trade');
+       }
+       
+       // Unusual payment patterns
+       if (trade.trade.paymentMethod.type === 'bank_transfer' && 
+           trade.trade.totalValue > 10000) {
+         fraudSignals.push('large_bank_transfer');
+       }
+       
+       // IP and device analysis
+       const deviceFingerprint = await this.getDeviceFingerprint(trade.seller.userId);
+       if (deviceFingerprint.suspicious) {
+         fraudSignals.push('suspicious_device');
+       }
+       
+       const riskScore = fraudSignals.length * 0.25;
+       
+       if (riskScore > 0.5) {
+         await this.flagTradeForReview(tradeId, fraudSignals);
+       }
+       
+       return { riskScore, signals: fraudSignals };
+     }
+   
+     async createUserSafetyScore(userId) {
+       const user = await db.users.findById(userId);
+       const trades = await db.p2pTrades.find({
+         $or: [{ 'seller.userId': userId }, { 'buyer.userId': userId }],
+         status: 'completed'
+       });
+       
+       const safetyFactors = {
+         completedTrades: trades.length,
+         disputeRate: await this.calculateDisputeRate(userId),
+         verificationLevel: await this.getVerificationLevel(userId),
+         reportCount: await this.getUserReportCount(userId),
+         responseTime: await this.getAverageResponseTime(userId),
+         accountAge: (Date.now() - user.createdAt.getTime()) / (24 * 60 * 60 * 1000)
        };
        
-       return leaderboards;
-     }
-   
-     async enableNFTGatedFeatures(userId) {
-       const portfolio = await db.nftPortfolios.findOne({ userId });
-       const gatedFeatures = {
-         premiumTrading: false,
-         exclusiveDrops: false,
-         vipCommunity: false,
-         customProfile: false
-       };
-   
-       // Check for blue chip NFTs
-       const blueChipCollections = ['DeGods', 'Okay Bears', 'SMB', 'Magic Eden'];
-       const hasBlueChip = Array.from(portfolio.collections.keys()).some(
-         collection => blueChipCollections.includes(collection)
-       );
-   
-       if (hasBlueChip) {
-         gatedFeatures.premiumTrading = true;
-         gatedFeatures.exclusiveDrops = true;
-       }
-   
-       // Check portfolio value
-       if (portfolio.totalValue > 100) { // 100+ SOL portfolio
-         gatedFeatures.vipCommunity = true;
-         gatedFeatures.customProfile = true;
-       }
-   
+       let safetyScore = 100; // Start with perfect score
+       
+       // Penalties
+       safetyScore -= safetyFactors.disputeRate * 200; // -2 points per 1% dispute rate
+       safetyScore -= safetyFactors.reportCount * 10; // -10 points per report
+       
+       // Bonuses
+       safetyScore += Math.min(safetyFactors.completedTrades * 2, 100); // +2 per trade, max 100
+       safetyScore += safetyFactors.verificationLevel * 20; // +20 per verification
+       
+       safetyScore = Math.max(0, Math.min(1000, safetyScore));
+       
        await db.users.updateOne(
          { _id: userId },
-         { $set: { nftGatedFeatures: gatedFeatures } }
+         { $set: { 'p2pSafety.score': safetyScore, 'p2pSafety.factors': safetyFactors } }
        );
-   
-       return gatedFeatures;
+       
+       return safetyScore;
      }
    }
    ```
 
-2. **Launch Exclusive NFT Drops (2 hours)**
+3. **Launch P2P Platform (1 hour)**
    ```javascript
-   // Exclusive NFT drop system
-   class ExclusiveNFTDrops {
-     async createExclusiveDrop(artistInfo, collectionDetails, dropSchedule) {
-       const drop = await db.nftDrops.create({
-         artist: {
-           name: artistInfo.name,
-           wallet: artistInfo.wallet,
-           bio: artistInfo.bio,
-           socialMedia: artistInfo.social
-         },
-         collection: {
-           name: collectionDetails.name,
-           description: collectionDetails.description,
-           totalSupply: collectionDetails.supply,
-           mintPrice: collectionDetails.price,
-           royalties: 0.05 // 5% to artist
-         },
-         schedule: {
-           whitelistStart: dropSchedule.whitelistStart,
-           publicStart: dropSchedule.publicStart,
-           endTime: dropSchedule.endTime
-         },
-         eligibility: {
-           whitelist: [], // Addresses eligible for early access
-           requirements: {
-             minPortfolioValue: 50, // 50 SOL minimum
-             requiredCollections: ['DeGods', 'Okay Bears'], // Must own from these
-             platformTradingVolume: 10000 // 10K SOL traded on platform
-           }
-         },
-         status: 'upcoming',
-         metrics: {
-           whitelistSignups: 0,
-           totalMinted: 0,
-           revenue: 0
-         }
-       });
-   
-       // Set up drop promotion
-       await this.createDropPromotionCampaign(drop._id);
+   // P2P platform launch and monitoring
+   class P2PPlatformLaunch {
+     async launchP2PSystem() {
+       const launchChecklist = [
+         'escrow_contracts_deployed',
+         'reputation_system_active',
+         'dispute_resolution_staffed',
+         'chat_system_operational',
+         'safety_guidelines_published',
+         'fraud_detection_enabled',
+         'payment_methods_integrated',
+         'geographic_matching_active'
+       ];
        
-       return drop;
-     }
-   
-     async processWhitelistSignup(dropId, userId) {
-       const drop = await db.nftDrops.findById(dropId);
-       const user = await db.users.findById(userId);
-       const portfolio = await db.nftPortfolios.findOne({ userId });
-       
-       // Check eligibility
-       const eligible = await this.checkDropEligibility(user, portfolio, drop.eligibility);
-       
-       if (!eligible.qualified) {
-         throw new Error(`Not eligible: ${eligible.reason}`);
-       }
-       
-       // Add to whitelist
-       await db.nftDrops.updateOne(
-         { _id: dropId },
-         { 
-           $addToSet: { 'eligibility.whitelist': userId },
-           $inc: { 'metrics.whitelistSignups': 1 }
-         }
-       );
-       
-       // Send confirmation
-       await this.sendWhitelistConfirmation(userId, drop);
-       
-       return { success: true, position: drop.eligibility.whitelist.length + 1 };
-     }
-   
-     async executeDrop(dropId) {
-       const drop = await db.nftDrops.findById(dropId);
-       const mintResults = [];
-       
-       // Whitelist phase
-       if (new Date() >= drop.schedule.whitelistStart && 
-           new Date() < drop.schedule.publicStart) {
-         
-         for (const userId of drop.eligibility.whitelist) {
-           const mintResult = await this.mintNFTForUser(userId, drop);
-           mintResults.push(mintResult);
-         }
-       }
-       
-       // Public phase
-       if (new Date() >= drop.schedule.publicStart && 
-           new Date() < drop.schedule.endTime) {
-         
-         // Open to public minting
-         await this.enablePublicMinting(drop);
-       }
-       
-       return mintResults;
-     }
-   }
-   ```
-
-3. **Create NFT Analytics Dashboard (1 hour)**
-   ```javascript
-   // NFT market analytics
-   class NFTAnalyticsDashboard {
-     async generateMarketOverview() {
-       const overview = {
-         totalVolume24h: await this.calculate24hVolume(),
-         totalSales24h: await this.calculate24hSales(),
-         averagePrice: await this.calculateAveragePrice(),
-         topCollections: await this.getTopCollections(),
-         priceMovements: await this.getPriceMovements(),
-         newListings: await this.getNewListings(),
-         marketCap: await this.calculateMarketCap()
+       const launchMetrics = {
+         initialOffers: await this.createSeedOffers(),
+         activeUsers: await this.getUserCount(),
+         systemHealth: await this.checkSystemHealth(),
+         supportStaff: await this.getAvailableSupport()
        };
        
-       return overview;
+       // Create launch campaign
+       const campaign = await this.createLaunchCampaign();
+       
+       return { checklist: launchChecklist, metrics: launchMetrics, campaign };
      }
    
-     async generateCollectionAnalytics(collectionName) {
-       const analytics = {
-         floorPrice: await this.getFloorPrice(collectionName),
-         volume7d: await this.getVolume(collectionName, '7d'),
-         holders: await this.getUniqueHolders(collectionName),
-         avgHoldTime: await this.getAverageHoldTime(collectionName),
-         rarityDistribution: await this.getRarityDistribution(collectionName),
-         priceHistory: await this.getPriceHistory(collectionName),
-         topSales: await this.getTopSales(collectionName)
-       };
+     async createInitialOffers() {
+       // Create some seed offers to bootstrap the marketplace
+       const seedOffers = [
+         {
+           type: 'sell',
+           cryptocurrency: 'BTC',
+           amount: { min: 0.01, max: 1 },
+           price: 43000,
+           paymentMethods: ['bank_transfer', 'paypal'],
+           location: { country: 'US', onlineOnly: true }
+         },
+         {
+           type: 'buy',
+           cryptocurrency: 'ETH',
+           amount: { min: 0.1, max: 10 },
+           price: 2400,
+           paymentMethods: ['zelle', 'cashapp'],
+           location: { country: 'US', onlineOnly: true }
+         }
+       ];
        
-       return analytics;
-     }
-   
-     async createPriceAlerts(userId, conditions) {
-       const alerts = conditions.map(condition => ({
-         userId,
-         type: condition.type, // 'floor_price', 'collection_volume', 'specific_nft'
-         target: condition.target,
-         operator: condition.operator, // 'above', 'below', 'change'
-         value: condition.value,
-         active: true,
-         createdAt: new Date()
-       }));
-       
-       await db.nftAlerts.insertMany(alerts);
-       return alerts;
+       return seedOffers;
      }
    }
    ```
 
 ## Reference Links
-- **Metaplex NFT Standard**: https://docs.metaplex.com/
-- **Solana NFT Development**: https://solanacookbook.com/references/nfts.html
-- **NFT Marketplace Architecture**: https://github.com/metaplex-foundation/metaplex
-- **Auction House Program**: https://docs.metaplex.com/auction-house/introduction
-- **NFT Metadata Standard**: https://docs.metaplex.com/token-metadata/specification
-- **Fractional NFT Implementation**: https://fractional.art/
-- **NFT Staking Mechanisms**: https://docs.opensea.io/
-- **NFT Analytics APIs**: https://moralis.io/nft-api/
+- **P2P Trading Platforms**: https://localbitcoins.com
+- **Escrow Smart Contracts**: https://docs.openzeppelin.com/contracts/4.x/escrow
+- **Multi-Signature Wallets**: https://gnosis-safe.io/
+- **Dispute Resolution Systems**: https://kleros.io/
+- **Identity Verification**: https://onfido.com/
+- **Payment Method Integration**: https://stripe.com/payments
+- **Real-time Chat**: https://socket.io/
+- **Fraud Detection**: https://sift.com/
 
 ## Success Metrics & KPIs
-- [ ] **Trading Volume**: $500K+ monthly NFT trading volume, 2,000+ NFT transactions
-- [ ] **Marketplace Revenue**: $12.5K+ monthly marketplace fees, $5K+ exclusive drop commissions
-- [ ] **User Engagement**: 5,000+ NFT portfolio users, 80% monthly active NFT traders
-- [ ] **Collection Coverage**: 100+ verified collections, 50K+ indexed NFTs
-- [ ] **Premium Conversions**: 200% increase in premium subscriptions from NFT collectors
-- [ ] **Social Features**: 1,000+ NFT showcases, 10K+ profile views monthly
-- [ ] **Exclusive Drops**: 10+ exclusive drops, $100K+ drop revenue
+- [ ] **P2P Trading Volume**: 10,000+ monthly trades, $5M+ monthly volume
+- [ ] **Escrow Revenue**: $75K+ monthly escrow fees, 1.5% fee capture rate
+- [ ] **User Trust**: 95%+ trade completion rate, 4.8+ average rating
+- [ ] **Dispute Resolution**: <5% dispute rate, 24-hour resolution time
+- [ ] **User Verification**: 80% phone verified, 60% ID verified users
+- [ ] **Geographic Coverage**: 50+ countries, 500+ cities supported
+- [ ] **Safety Score**: <1% fraud incidents, 99.5% successful dispute resolutions
 
 ## Risk Mitigation
-- **Market Risk**: Diversified collection support and market-agnostic features
-- **Technical Risk**: Robust Metaplex integration with fallback systems
-- **Legal Risk**: Clear IP policies and artist agreements for drops
-- **Fraud Risk**: NFT verification systems and authenticity checks
-- **Liquidity Risk**: Market maker partnerships and guaranteed liquidity programs
-- **Platform Risk**: Multi-chain NFT support reducing Solana dependency
+- **Escrow Risk**: Multi-signature wallets and time-locked releases
+- **Fraud Risk**: Advanced fraud detection and user verification systems
+- **Dispute Risk**: Professional mediation team and clear resolution processes
+- **Technical Risk**: Redundant systems and comprehensive testing
+- **Regulatory Risk**: Compliance with local trading and AML regulations
+- **User Safety Risk**: Comprehensive safety guidelines and community reporting
 
 ## Viral Elements
-- **NFT Status Symbols**: Public portfolio displays and collection bragging rights
-- **Exclusive Drop FOMO**: Limited access drops creating urgency and social sharing
-- **Collection Competitions**: Community challenges and rarity contests
-- **NFT Achievement System**: Collectible badges and milestones for social sharing
-- **Showcase Contests**: Community-voted best NFT displays with rewards
-- **Celebrity NFT Partnerships**: High-profile drops driving mainstream attention
+- **Trust Network Effects**: Reputation system encourages repeat trading and referrals
+- **Geographic Community Building**: Local trading groups and meetup integrations
+- **Success Story Sharing**: User testimonials and trading achievement sharing
+- **Referral Trust Bonuses**: Enhanced reputation scores for successful referrals
+- **Community Safety Recognition**: Public recognition for trusted traders
+- **Local Trading Events**: Offline meetups and community building initiatives
 
 ## Expected Outcomes
-- **$500K+ monthly NFT trading volume** establishing platform as serious NFT marketplace
-- **$50,000+ monthly revenue** from marketplace fees, exclusive drops, and premium services
-- **5,000+ active NFT collectors** with high-value portfolios and premium conversion rates
-- **Market leadership** in Solana NFT trading with comprehensive feature set
-- **Creator economy hub** attracting top artists and exclusive NFT projects
-- **Community-driven growth** through social features and collector networking
+- **$100,000+ monthly revenue** from escrow services, verification fees, and premium features
+- **10,000+ monthly P2P trades** with 95%+ completion rate establishing market leadership
+- **Trusted trading community** with comprehensive reputation and verification systems
+- **Global P2P marketplace** covering major markets with local payment method support
+- **Industry-leading safety standards** with sub-1% fraud rate and rapid dispute resolution
+- **Network effect growth** through community-driven referrals and geographic expansion
