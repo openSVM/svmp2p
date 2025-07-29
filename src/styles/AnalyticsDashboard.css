@@ -7,6 +7,9 @@
   font-family: var(--font-family-mono);
   background-color: var(--ascii-neutral-50);
   color: var(--ascii-neutral-800);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header */
@@ -103,23 +106,31 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
+  flex: 1;
+  min-height: 0;
 }
 
 .analytics-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: var(--spacing-3);
+  flex: 1;
+  min-height: 0;
+  height: calc(100vh - 200px); /* Subtract header height and padding */
 }
 
 .analytics-column-left {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-3);
+  min-height: 0;
 }
 
 .analytics-column-right {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  height: 100%;
 }
 
 /* Overview Panel */
@@ -719,7 +730,10 @@
   background: var(--ascii-neutral-100);
   border: 2px solid var(--ascii-neutral-800);
   padding: var(--spacing-3);
-  height: fit-content;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .trades-header {
@@ -729,6 +743,9 @@
   margin-bottom: var(--spacing-2);
   border-bottom: 1px solid var(--ascii-neutral-400);
   padding-bottom: var(--spacing-1);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: var(--spacing-1);
 }
 
 .trades-title {
@@ -748,6 +765,7 @@
 
 .trades-filters {
   margin-bottom: var(--spacing-2);
+  flex-shrink: 0;
 }
 
 .filter-buttons {
@@ -794,8 +812,9 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-height: 500px;
+  flex: 1;
   overflow-y: auto;
+  min-height: 0;
   margin-bottom: var(--spacing-2);
   background: var(--ascii-neutral-400);
 }
@@ -995,6 +1014,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .load-more-button {
@@ -1025,6 +1045,13 @@
 @media (max-width: 1024px) {
   .analytics-grid {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - 200px);
+  }
+  
+  .analytics-column-right {
+    height: 60vh; /* Fixed height on tablet */
+    min-height: 400px;
   }
   
   .kpi-grid {
@@ -1045,6 +1072,7 @@
 @media (max-width: 768px) {
   .analytics-dashboard {
     padding: 0 var(--spacing-1);
+    min-height: 100vh;
   }
   
   .analytics-header .header-content {
@@ -1055,6 +1083,16 @@
   
   .header-controls {
     justify-content: space-between;
+  }
+  
+  .analytics-grid {
+    height: auto;
+    min-height: calc(100vh - 180px);
+  }
+  
+  .analytics-column-right {
+    height: 70vh; /* Larger height on mobile */
+    min-height: 500px;
   }
   
   .kpi-grid {
@@ -1101,11 +1139,65 @@
     align-items: flex-start;
     gap: var(--spacing-1);
   }
+  
+  /* Enhanced mobile touches for trade items */
+  .trade-item {
+    padding: var(--spacing-3) var(--spacing-2);
+    margin-bottom: 2px;
+  }
+  
+  .trade-item:hover {
+    background: var(--ascii-neutral-200);
+  }
+  
+  /* Better mobile scrolling */
+  .trades-list {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  .trades-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .trades-list::-webkit-scrollbar-track {
+    background: var(--ascii-neutral-300);
+  }
+  
+  .trades-list::-webkit-scrollbar-thumb {
+    background: var(--ascii-neutral-600);
+  }
+  
+  /* Filter buttons mobile optimization */
+  .filter-buttons {
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  
+  .filter-button {
+    flex: 1;
+    min-width: 0;
+    padding: var(--spacing-2) var(--spacing-1);
+    font-size: 0.625rem;
+  }
+  
+  /* Search input mobile optimization */
+  .search-input {
+    padding: var(--spacing-2);
+    font-size: 16px; /* Prevent zoom on iOS */
+    border-radius: 0; /* Remove iOS styling */
+    -webkit-appearance: none;
+  }
 }
 
 @media (max-width: 480px) {
   .analytics-title {
     font-size: 1.25rem;
+  }
+  
+  .analytics-column-right {
+    height: 80vh; /* Even larger height on small mobile */
+    min-height: 400px;
   }
   
   .filter-buttons {
@@ -1114,5 +1206,41 @@
   
   .trade-meta {
     align-items: flex-start;
+  }
+  
+  /* Compact layout for very small screens */
+  .trade-details {
+    font-size: 0.875rem;
+  }
+  
+  .trade-amounts {
+    font-size: 0.75rem;
+  }
+  
+  .trade-participants {
+    font-size: 0.75rem;
+  }
+  
+  /* Better touch targets */
+  .timeframe-button {
+    padding: var(--spacing-2) var(--spacing-3);
+    min-height: 44px;
+  }
+  
+  .load-more-button {
+    padding: var(--spacing-2) var(--spacing-3);
+    min-height: 44px;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+  .analytics-column-right {
+    height: 50vh;
+    min-height: 300px;
+  }
+  
+  .analytics-grid {
+    min-height: calc(100vh - 120px);
   }
 }
