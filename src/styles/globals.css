@@ -629,3 +629,300 @@ input:focus, textarea:focus, select:focus {
   color: white;
   border-color: var(--color-primary);
 }
+
+/* ===== PROFILE PAGE LAYOUT FIXES ===== */
+
+/* Profile container with proper max-width */
+.user-profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-6);
+  width: 100%;
+}
+
+/* Profile content wrapper */
+.profile-content {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Profile overview layout with sidebar-like structure */
+.profile-overview {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-6);
+  width: 100%;
+  max-width: 100%;
+  align-items: start;
+}
+
+/* Main content area (left side) */
+.profile-overview-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* Reputation card with constrained width */
+.reputation-card {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  width: 100%;
+  max-width: 600px; /* Constrain max width for better proportions */
+  box-sizing: border-box;
+}
+
+/* Reputation card header */
+.reputation-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+/* Reputation card title */
+.reputation-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+  margin: 0;
+}
+
+/* Reputation score container with flexbox layout */
+.reputation-score-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+/* Reputation score circle - fixed size */
+.reputation-score-circle {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+/* Reputation score chart */
+.reputation-score-chart {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+/* Reputation score background and fill */
+.reputation-score-bg {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 2;
+}
+
+.reputation-score-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+/* Reputation score text */
+.reputation-score-text {
+  fill: var(--color-foreground);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+/* Reputation score info (right side of the chart) */
+.reputation-score-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+/* Reputation level */
+.reputation-level {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+}
+
+/* Star rating */
+.star-rating {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  font-size: var(--font-size-lg);
+  color: var(--color-border);
+}
+
+.star-filled {
+  color: #fbbf24; /* Gold color for filled stars */
+}
+
+/* Reputation last updated */
+.reputation-last-updated {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+}
+
+/* Reputation details section */
+.reputation-details {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-4);
+}
+
+/* Reputation metrics grid */
+.reputation-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+}
+
+/* Individual reputation metric */
+.reputation-metric {
+  text-align: center;
+  padding: var(--spacing-2);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-md);
+}
+
+.reputation-metric-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+  margin-bottom: var(--spacing-1);
+}
+
+.reputation-metric-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+}
+
+/* Reputation explanation */
+.reputation-explanation h4 {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.reputation-explanation p {
+  font-size: var(--font-size-sm);
+  color: var(--color-foreground-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Profile tabs styling */
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-4);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-button {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-foreground-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  white-space: nowrap;
+  font-size: var(--font-size-sm);
+}
+
+.tab-button:hover {
+  color: var(--color-foreground);
+  background-color: var(--color-background-alt);
+}
+
+.tab-button.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Profile tab content */
+.profile-tab-content {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Activity feed (right sidebar) */
+.activity-feed {
+  width: 100%;
+  max-width: 100%;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  height: fit-content;
+}
+
+.activity-feed h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-foreground);
+  margin: 0 0 var(--spacing-3) 0;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 1024px) {
+  .profile-overview {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  
+  .user-profile-container {
+    padding: var(--spacing-4);
+  }
+}
+
+@media (max-width: 768px) {
+  .user-profile-container {
+    padding: var(--spacing-3);
+  }
+  
+  .reputation-score-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .reputation-score-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .reputation-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .reputation-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-tabs {
+    justify-content: flex-start;
+  }
+  
+  .tab-button {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-xs);
+  }
+}
