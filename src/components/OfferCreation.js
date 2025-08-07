@@ -265,112 +265,124 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         />
       )}
       
-      <form onSubmit={handleCreateOffer}>
-        <div className="form-group">
-          <label htmlFor="solAmount">
-            <Tooltip content="Enter the amount of SOL you want to sell">
-              <span>SOL Amount</span>
-            </Tooltip>
-          </label>
-          <input
-            id="solAmount"
-            type="number"
-            value={solAmount}
-            onChange={handleSolAmountChange}
-            placeholder="Enter SOL amount"
-            min={VALIDATION_CONSTRAINTS.SOL_AMOUNT.min}
-            max={VALIDATION_CONSTRAINTS.SOL_AMOUNT.max}
-            step={VALIDATION_CONSTRAINTS.SOL_AMOUNT.step}
-            required
-            className={!solValidation.isValid ? 'input-error' : ''}
-          />
-          {!solValidation.isValid && (
-            <div className="validation-error">{solValidation.error}</div>
-          )}
-        </div>
+      <div className="ascii-form">
+        <div className="ascii-form-header">CREATE SELL OFFER</div>
         
-        <div className="form-group">
-          <label htmlFor="fiatCurrency">
-            <Tooltip content="Select the currency you want to receive">
-              <span>Fiat Currency</span>
-            </Tooltip>
-          </label>
-          <select
-            id="fiatCurrency"
-            value={fiatCurrency}
-            onChange={handleCurrencyChange}
-            required
-          >
-            {SUPPORTED_CURRENCIES.map(currency => (
-              <option key={currency} value={currency}>{currency}</option>
-            ))}
-          </select>
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="fiatAmount">
-            <Tooltip content="The amount in fiat currency you will receive">
-              <span>Fiat Amount</span>
-            </Tooltip>
-          </label>
-          <input
-            id="fiatAmount"
-            type="number"
-            value={fiatAmount}
-            onChange={(e) => setFiatAmount(e.target.value)}
-            placeholder="Enter fiat amount"
-            min={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.min}
-            max={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.max}
-            step={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.step}
-            required
-            className={!fiatValidation.isValid ? 'input-error' : ''}
-          />
-          {!fiatValidation.isValid && (
-            <div className="validation-error">{fiatValidation.error}</div>
-          )}
-          {rateValidation.error && (
-            <div className="validation-warning">{rateValidation.error}</div>
-          )}
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="paymentMethod">
-            <Tooltip content="Select how you want to receive payment">
-              <span>Payment Method</span>
-            </Tooltip>
-          </label>
-          <select
-            id="paymentMethod"
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-            required
-          >
-            {SUPPORTED_PAYMENT_METHODS.map(method => (
-              <option key={method} value={method}>{method}</option>
-            ))}
-          </select>
-        </div>
-        
-        {/* Submit button or connect wallet prompt */}
-        {!wallet.connected ? (
-          <ConnectWalletPrompt
-            action="create sell offers"
-            className="create-offer-button connect-wallet-button"
-          />
-        ) : (
-          <ButtonLoader
-            type="submit"
-            isLoading={isCreating}
-            disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
-            loadingText="Creating Offer..."
-            variant="primary"
-            size="medium"
-            className="create-offer-button"
-          >
-            Create Offer
-          </ButtonLoader>
-        )}
-      </form>
+        <form onSubmit={handleCreateOffer}>
+          {/* Primary amount fields in one row */}
+          <div className="ascii-form-row-2">
+            <div className="ascii-field">
+              <label htmlFor="solAmount">
+                <Tooltip content="Enter the amount of SOL you want to sell">
+                  <span>SOL AMOUNT</span>
+                </Tooltip>
+              </label>
+              <input
+                id="solAmount"
+                type="number"
+                value={solAmount}
+                onChange={handleSolAmountChange}
+                placeholder="0.00 SOL"
+                min={VALIDATION_CONSTRAINTS.SOL_AMOUNT.min}
+                max={VALIDATION_CONSTRAINTS.SOL_AMOUNT.max}
+                step={VALIDATION_CONSTRAINTS.SOL_AMOUNT.step}
+                required
+                className={!solValidation.isValid ? 'input-error' : ''}
+              />
+              {!solValidation.isValid && (
+                <div className="ascii-field-error-message">{solValidation.error}</div>
+              )}
+            </div>
+            
+            <div className="ascii-field">
+              <label htmlFor="fiatAmount">
+                <Tooltip content="The amount in fiat currency you will receive">
+                  <span>FIAT AMOUNT</span>
+                </Tooltip>
+              </label>
+              <input
+                id="fiatAmount"
+                type="number"
+                value={fiatAmount}
+                onChange={(e) => setFiatAmount(e.target.value)}
+                placeholder="0.00"
+                min={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.min}
+                max={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.max}
+                step={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.step}
+                required
+                className={!fiatValidation.isValid ? 'input-error' : ''}
+              />
+              {!fiatValidation.isValid && (
+                <div className="ascii-field-error-message">{fiatValidation.error}</div>
+              )}
+              {rateValidation.error && (
+                <div className="ascii-field-help">{rateValidation.error}</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Currency and payment method in one row */}
+          <div className="ascii-form-row-2">
+            <div className="ascii-field">
+              <label htmlFor="fiatCurrency">
+                <Tooltip content="Select the currency you want to receive">
+                  <span>CURRENCY</span>
+                </Tooltip>
+              </label>
+              <select
+                id="fiatCurrency"
+                value={fiatCurrency}
+                onChange={handleCurrencyChange}
+                required
+              >
+                {SUPPORTED_CURRENCIES.map(currency => (
+                  <option key={currency} value={currency}>{currency}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="ascii-field">
+              <label htmlFor="paymentMethod">
+                <Tooltip content="Select how you want to receive payment">
+                  <span>PAYMENT METHOD</span>
+                </Tooltip>
+              </label>
+              <select
+                id="paymentMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                required
+              >
+                {SUPPORTED_PAYMENT_METHODS.map(method => (
+                  <option key={method} value={method}>{method}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          {/* Submit button */}
+          <div className="ascii-form-actions">
+            {!wallet.connected ? (
+              <ConnectWalletPrompt
+                action="create sell offers"
+                className="create-offer-button connect-wallet-button"
+              />
+            ) : (
+              <ButtonLoader
+                type="submit"
+                isLoading={isCreating}
+                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
+                loadingText="Creating Offer..."
+                variant="primary"
+                size="medium"
+                className="create-offer-button"
+              >
+                Create Offer
+              </ButtonLoader>
+            )}
+          </div>
+        </form>
+      </div>
       
       <div className="network-info">
         <p>Network: {network.name}</p>

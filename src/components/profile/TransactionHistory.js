@@ -96,11 +96,12 @@ const TransactionHistory = ({ transactions }) => {
       <div className="card-header">
         <h3 className="card-title">Transaction History</h3>
         
-        <div className="transaction-filters">
-          <div className="search-container">
+        <div className="ascii-form-filters">
+          <div className="ascii-field">
+            <label htmlFor="search">SEARCH</label>
             <input
+              id="search"
               type="text"
-              className="search-input"
               placeholder="Search transactions..."
               value={searchQuery}
               onChange={(e) => {
@@ -110,9 +111,10 @@ const TransactionHistory = ({ transactions }) => {
             />
           </div>
           
-          <div className="filter-container">
+          <div className="ascii-field">
+            <label htmlFor="filter">TYPE FILTER</label>
             <select 
-              className="filter-select"
+              id="filter"
               value={filter}
               onChange={(e) => {
                 setFilter(e.target.value);
@@ -124,6 +126,33 @@ const TransactionHistory = ({ transactions }) => {
               <option value="sell">Sell</option>
               <option value="deposit">Deposit</option>
               <option value="withdrawal">Withdrawal</option>
+            </select>
+          </div>
+          
+          <div className="ascii-field">
+            <label htmlFor="sortBy">SORT BY</label>
+            <select 
+              id="sortBy"
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+            >
+              <option value="date">Date</option>
+              <option value="amount">Amount</option>
+              <option value="fiat">Fiat</option>
+              <option value="status">Status</option>
+              <option value="type">Type</option>
+            </select>
+          </div>
+          
+          <div className="ascii-field">
+            <label htmlFor="sortOrder">ORDER</label>
+            <select 
+              id="sortOrder"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="desc">DESC</option>
+              <option value="asc">ASC</option>
             </select>
           </div>
         </div>

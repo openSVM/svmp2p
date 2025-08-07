@@ -39,166 +39,167 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
       </div>
       
       {isEditing ? (
-        <form onSubmit={handleSubmit} className="settings-form">
-          <div className="form-section">
-            <h4>Display Preferences</h4>
-            
-            <div className="form-group">
-              <label className="form-label" htmlFor="displayName">
-                Display Name
-              </label>
-              <input
-                type="text"
-                id="displayName"
-                name="displayName"
-                className="form-input"
-                value={profileSettings.displayName}
-                onChange={handleChange}
-                placeholder="Enter a display name"
-                maxLength={30}
-              />
-              <p className="form-help-text">
-                This name will be displayed to other users
-              </p>
-            </div>
-            
-            <div className="form-group">
-              <label className="form-label" htmlFor="bio">
-                Bio
-              </label>
-              <textarea
-                id="bio"
-                name="bio"
-                className="form-textarea"
-                value={profileSettings.bio}
-                onChange={handleChange}
-                placeholder="Tell others about yourself"
-                maxLength={160}
-                rows={3}
-              />
-              <p className="form-help-text">
-                {160 - (profileSettings.bio?.length || 0)} characters remaining
-              </p>
-            </div>
-            
-            <div className="form-group">
-              <label className="form-checkbox">
-                <input
-                  type="checkbox"
-                  name="showReputationScore"
-                  checked={profileSettings.showReputationScore}
-                  onChange={handleChange}
-                />
-                <span>Show reputation score publicly</span>
-              </label>
-            </div>
-            
-            <div className="form-group">
-              <label className="form-checkbox">
-                <input
-                  type="checkbox"
-                  name="showTransactionHistory"
-                  checked={profileSettings.showTransactionHistory}
-                  onChange={handleChange}
-                />
-                <span>Show transaction history publicly</span>
-              </label>
-            </div>
-          </div>
+        <div className="ascii-form">
+          <div className="ascii-form-header">PROFILE SETTINGS</div>
           
-          <div className="form-section">
-            <h4>Notification Settings</h4>
-            
-            <div className="form-group">
-              <label className="form-checkbox">
-                <input
-                  type="checkbox"
-                  name="emailNotifications"
-                  checked={profileSettings.emailNotifications}
-                  onChange={handleChange}
-                />
-                <span>Email notifications</span>
-              </label>
+          <form onSubmit={handleSubmit}>
+            <div className="ascii-form-section">
+              <div className="ascii-form-section-title">DISPLAY PREFERENCES</div>
+              
+              <div className="ascii-form-row-2">
+                <div className="ascii-field">
+                  <label htmlFor="displayName">DISPLAY NAME</label>
+                  <input
+                    type="text"
+                    id="displayName"
+                    name="displayName"
+                    value={profileSettings.displayName}
+                    onChange={handleChange}
+                    placeholder="Enter display name"
+                    maxLength={30}
+                  />
+                  <div className="ascii-field-help">This name will be displayed to other users</div>
+                </div>
+                
+                <div className="ascii-field">
+                  <label htmlFor="bio">BIO</label>
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={profileSettings.bio}
+                    onChange={handleChange}
+                    placeholder="Tell others about yourself"
+                    maxLength={160}
+                    rows={3}
+                  />
+                  <div className="ascii-field-help">
+                    {160 - (profileSettings.bio?.length || 0)} characters remaining
+                  </div>
+                </div>
+              </div>
+              
+              <div className="ascii-form-row-2">
+                <div className="ascii-field-inline">
+                  <label className="ascii-checkbox">
+                    <input
+                      type="checkbox"
+                      name="showReputationScore"
+                      checked={profileSettings.showReputationScore}
+                      onChange={handleChange}
+                    />
+                    SHOW REPUTATION SCORE PUBLICLY
+                  </label>
+                </div>
+                
+                <div className="ascii-field-inline">
+                  <label className="ascii-checkbox">
+                    <input
+                      type="checkbox"
+                      name="showTransactionHistory"
+                      checked={profileSettings.showTransactionHistory}
+                      onChange={handleChange}
+                    />
+                    SHOW TRANSACTION HISTORY PUBLICLY
+                  </label>
+                </div>
+              </div>
             </div>
             
-            <div className="form-group">
-              <label className="form-checkbox">
-                <input
-                  type="checkbox"
-                  name="browserNotifications"
-                  checked={profileSettings.browserNotifications}
-                  onChange={handleChange}
-                />
-                <span>Browser notifications</span>
-              </label>
+            <div className="ascii-form-section">
+              <div className="ascii-form-section-title">NOTIFICATION SETTINGS</div>
+              
+              <div className="ascii-form-row-3">
+                <div className="ascii-field-inline">
+                  <label className="ascii-checkbox">
+                    <input
+                      type="checkbox"
+                      name="emailNotifications"
+                      checked={profileSettings.emailNotifications}
+                      onChange={handleChange}
+                    />
+                    EMAIL NOTIFICATIONS
+                  </label>
+                </div>
+                
+                <div className="ascii-field-inline">
+                  <label className="ascii-checkbox">
+                    <input
+                      type="checkbox"
+                      name="browserNotifications"
+                      checked={profileSettings.browserNotifications}
+                      onChange={handleChange}
+                    />
+                    BROWSER NOTIFICATIONS
+                  </label>
+                </div>
+                
+                <div className="ascii-field">
+                  <label htmlFor="notificationFrequency">FREQUENCY</label>
+                  <select
+                    id="notificationFrequency"
+                    name="notificationFrequency"
+                    value={profileSettings.notificationFrequency}
+                    onChange={handleChange}
+                  >
+                    <option value="immediate">Immediate</option>
+                    <option value="hourly">Hourly Digest</option>
+                    <option value="daily">Daily Digest</option>
+                    <option value="weekly">Weekly Digest</option>
+                  </select>
+                </div>
+              </div>
             </div>
             
-            <div className="form-group">
-              <label className="form-label" htmlFor="notificationFrequency">
-                Notification Frequency
-              </label>
-              <select
-                id="notificationFrequency"
-                name="notificationFrequency"
-                className="form-select"
-                value={profileSettings.notificationFrequency}
-                onChange={handleChange}
+            <div className="ascii-form-section">
+              <div className="ascii-form-section-title">PRIVACY SETTINGS</div>
+              
+              <div className="ascii-form-row-2">
+                <div className="ascii-field-inline">
+                  <label className="ascii-checkbox">
+                    <input
+                      type="checkbox"
+                      name="privateProfile"
+                      checked={profileSettings.privateProfile}
+                      onChange={handleChange}
+                    />
+                    MAKE PROFILE PRIVATE
+                  </label>
+                  <div className="ascii-field-help">
+                    Only users you've traded with can see your profile
+                  </div>
+                </div>
+                
+                <div className="ascii-field-inline">
+                  <label className="ascii-checkbox">
+                    <input
+                      type="checkbox"
+                      name="hideWalletAddress"
+                      checked={profileSettings.hideWalletAddress}
+                      onChange={handleChange}
+                    />
+                    HIDE FULL WALLET ADDRESS
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="ascii-form-actions">
+              <button type="submit" className="ascii-button-primary">
+                SAVE SETTINGS
+              </button>
+              <button 
+                type="button" 
+                className="ascii-button-secondary"
+                onClick={() => {
+                  setProfileSettings(settings);
+                  setIsEditing(false);
+                }}
               >
-                <option value="immediate">Immediate</option>
-                <option value="hourly">Hourly Digest</option>
-                <option value="daily">Daily Digest</option>
-                <option value="weekly">Weekly Digest</option>
-              </select>
+                CANCEL
+              </button>
             </div>
-          </div>
-          
-          <div className="form-section">
-            <h4>Privacy Settings</h4>
-            
-            <div className="form-group">
-              <label className="form-checkbox">
-                <input
-                  type="checkbox"
-                  name="privateProfile"
-                  checked={profileSettings.privateProfile}
-                  onChange={handleChange}
-                />
-                <span>Make profile private</span>
-              </label>
-              <p className="form-help-text">
-                Only users you've traded with can see your profile
-              </p>
-            </div>
-            
-            <div className="form-group">
-              <label className="form-checkbox">
-                <input
-                  type="checkbox"
-                  name="hideWalletAddress"
-                  checked={profileSettings.hideWalletAddress}
-                  onChange={handleChange}
-                />
-                <span>Hide full wallet address</span>
-              </label>
-            </div>
-          </div>
-          
-          <div className="form-actions">
-            <button type="submit" className="button button-primary">
-              Save Settings
-            </button>
-            <button 
-              type="button" 
-              className="button button-ghost"
-              onClick={() => {
-                setProfileSettings(settings);
-                setIsEditing(false);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       ) : (
         <div className="settings-summary">
           <div className="settings-section">

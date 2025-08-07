@@ -167,30 +167,36 @@ const DisputeResolution = ({ disputeId }) => {
         />
       )}
       
-      <div className="dispute-details">
-        <div className="detail-row">
-          <span className="label">Dispute ID:</span>
-          <span className="value">{dispute.id}</span>
+      <div className="ascii-form">
+        <div className="ascii-form-header">DISPUTE DETAILS</div>
+        
+        <div className="ascii-form-row-2">
+          <div className="ascii-field-inline">
+            <label>DISPUTE ID:</label>
+            <span className="ascii-code">{dispute.id}</span>
+          </div>
+          
+          <div className="ascii-field-inline">
+            <label>OFFER ID:</label>
+            <span className="ascii-code">{dispute.offerId}</span>
+          </div>
         </div>
         
-        <div className="detail-row">
-          <span className="label">Offer ID:</span>
-          <span className="value">{dispute.offerId}</span>
+        <div className="ascii-form-row-2">
+          <div className="ascii-field-inline">
+            <label>STATUS:</label>
+            <span className="ascii-status ascii-status-active">{dispute.status}</span>
+          </div>
+          
+          <div className="ascii-field-inline">
+            <label>CREATED:</label>
+            <span>{new Date(dispute.createdAt).toLocaleString()}</span>
+          </div>
         </div>
         
-        <div className="detail-row">
-          <span className="label">Status:</span>
-          <span className="value status-badge">{dispute.status}</span>
-        </div>
-        
-        <div className="detail-row">
-          <span className="label">Reason:</span>
-          <span className="value">{dispute.reason}</span>
-        </div>
-        
-        <div className="detail-row">
-          <span className="label">Created:</span>
-          <span className="value">{new Date(dispute.createdAt).toLocaleString()}</span>
+        <div className="ascii-field-inline">
+          <label>REASON:</label>
+          <span>{dispute.reason}</span>
         </div>
       </div>
       
@@ -226,23 +232,32 @@ const DisputeResolution = ({ disputeId }) => {
         </div>
         
         {dispute.status === 'EvidenceSubmission' && (
-          <form onSubmit={handleSubmitEvidence} className="evidence-form">
-            <h4>Submit Evidence</h4>
-            <textarea
-              value={evidence}
-              onChange={(e) => setEvidence(e.target.value)}
-              placeholder="Describe your evidence here..."
-              disabled={submittingEvidence}
-              required
-            />
-            <button 
-              type="submit" 
-              className="submit-evidence-button"
-              disabled={submittingEvidence}
-            >
-              {submittingEvidence ? 'Submitting...' : 'Submit Evidence'}
-            </button>
-          </form>
+          <div className="ascii-form">
+            <div className="ascii-form-header">SUBMIT EVIDENCE</div>
+            <form onSubmit={handleSubmitEvidence}>
+              <div className="ascii-field">
+                <label htmlFor="evidence">EVIDENCE DESCRIPTION</label>
+                <textarea
+                  id="evidence"
+                  value={evidence}
+                  onChange={(e) => setEvidence(e.target.value)}
+                  placeholder="Describe your evidence here..."
+                  disabled={submittingEvidence}
+                  required
+                  rows={4}
+                />
+              </div>
+              <div className="ascii-form-actions">
+                <button 
+                  type="submit" 
+                  className="ascii-button-primary"
+                  disabled={submittingEvidence}
+                >
+                  {submittingEvidence ? 'SUBMITTING...' : 'SUBMIT EVIDENCE'}
+                </button>
+              </div>
+            </form>
+          </div>
         )}
       </div>
       

@@ -415,6 +415,378 @@ html, body {
   background-color: var(--ascii-neutral-50);
 }
 
+/* ===== EFFICIENT FORM SYSTEM ===== */
+/* Compact form layouts that don't waste vertical space */
+
+.ascii-form {
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  padding: var(--spacing-4);
+  font-family: 'Courier New', Courier, monospace !important;
+  margin-bottom: var(--spacing-4);
+}
+
+.ascii-form-header {
+  border-bottom: 1px solid var(--ascii-neutral-400);
+  padding-bottom: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--ascii-neutral-900);
+  text-transform: uppercase;
+}
+
+/* Horizontal form groups - fields side by side */
+.ascii-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  align-items: end; /* Align inputs to bottom for consistent height */
+}
+
+.ascii-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  align-items: end;
+}
+
+.ascii-form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  align-items: end;
+}
+
+.ascii-form-row-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+  align-items: end;
+}
+
+/* Inline form group - all fields in one line */
+.ascii-form-inline {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: end;
+  margin-bottom: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+.ascii-form-inline > .ascii-field {
+  min-width: 120px;
+  flex: 1;
+}
+
+/* Individual field styling */
+.ascii-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.ascii-field-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.ascii-field-inline label {
+  min-width: 100px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.ascii-field-inline input,
+.ascii-field-inline select {
+  flex: 1;
+}
+
+.ascii-field label {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: var(--ascii-neutral-700);
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-1);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-field input,
+.ascii-field select,
+.ascii-field textarea {
+  font-family: 'Courier New', Courier, monospace !important;
+  border: 1px solid var(--ascii-neutral-400);
+  background-color: var(--ascii-white);
+  color: var(--ascii-neutral-800);
+  padding: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  transition: border-color 0.2s ease;
+}
+
+.ascii-field input:focus,
+.ascii-field select:focus,
+.ascii-field textarea:focus {
+  outline: none;
+  border-color: var(--ascii-neutral-700);
+  background-color: var(--ascii-neutral-50);
+}
+
+.ascii-field input::placeholder {
+  color: var(--ascii-neutral-500);
+  font-style: normal;
+}
+
+/* Compact field sizing options */
+.ascii-field-sm input,
+.ascii-field-sm select {
+  padding: var(--spacing-1);
+  font-size: var(--font-size-xs);
+}
+
+.ascii-field-lg input,
+.ascii-field-lg select {
+  padding: var(--spacing-3);
+  font-size: var(--font-size-base);
+}
+
+/* Form sections for grouping related fields */
+.ascii-form-section {
+  border: 1px solid var(--ascii-neutral-300);
+  padding: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+  background-color: var(--ascii-neutral-50);
+}
+
+.ascii-form-section-title {
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  color: var(--ascii-neutral-800);
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-3);
+  border-bottom: 1px dotted var(--ascii-neutral-400);
+  padding-bottom: var(--spacing-1);
+}
+
+/* Action buttons area */
+.ascii-form-actions {
+  display: flex;
+  gap: var(--spacing-3);
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 1px solid var(--ascii-neutral-400);
+  padding-top: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+.ascii-form-actions-left {
+  justify-content: flex-start;
+}
+
+.ascii-form-actions-center {
+  justify-content: center;
+}
+
+.ascii-form-actions-spread {
+  justify-content: space-between;
+}
+
+/* Validation styling */
+.ascii-field-error input,
+.ascii-field-error select,
+.ascii-field-error textarea {
+  border-color: var(--ascii-neutral-800);
+  background-color: var(--ascii-neutral-200);
+}
+
+.ascii-field-error-message {
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-800);
+  margin-top: var(--spacing-1);
+  font-weight: bold;
+}
+
+.ascii-field-success input,
+.ascii-field-success select {
+  border-color: var(--ascii-neutral-600);
+  background-color: var(--ascii-neutral-100);
+}
+
+/* Help text */
+.ascii-field-help {
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-600);
+  margin-top: var(--spacing-1);
+  font-style: italic;
+}
+
+/* Form tables - for displaying form data in tabular format */
+.ascii-form-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-4);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-sm);
+}
+
+.ascii-form-table th,
+.ascii-form-table td {
+  border: 1px solid var(--ascii-neutral-400);
+  padding: var(--spacing-2);
+  text-align: left;
+}
+
+.ascii-form-table th {
+  background-color: var(--ascii-neutral-200);
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--ascii-neutral-800);
+}
+
+.ascii-form-table tr:nth-child(even) {
+  background-color: var(--ascii-neutral-100);
+}
+
+.ascii-form-table tr:hover {
+  background-color: var(--ascii-neutral-200);
+}
+
+/* Filter/search bars */
+.ascii-form-filters {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-3);
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+}
+
+.ascii-form-filters label {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: var(--ascii-neutral-700);
+  min-width: 80px;
+}
+
+.ascii-form-filters input,
+.ascii-form-filters select {
+  font-family: 'Courier New', Courier, monospace !important;
+  border: 1px solid var(--ascii-neutral-400);
+  background-color: var(--ascii-white);
+  color: var(--ascii-neutral-800);
+  padding: var(--spacing-1);
+  font-size: var(--font-size-sm);
+}
+
+/* Checkbox styling */
+.ascii-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-sm);
+  color: var(--ascii-neutral-700);
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ascii-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  appearance: none;
+  border: 1px solid var(--ascii-neutral-400);
+  background-color: var(--ascii-white);
+  position: relative;
+  cursor: pointer;
+}
+
+.ascii-checkbox input[type="checkbox"]:checked {
+  background-color: var(--ascii-neutral-700);
+  border-color: var(--ascii-neutral-700);
+}
+
+.ascii-checkbox input[type="checkbox"]:checked::after {
+  content: "X";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--ascii-white);
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.ascii-checkbox input[type="checkbox"]:focus {
+  outline: none;
+  border-color: var(--ascii-neutral-600);
+  box-shadow: 0 0 0 1px var(--ascii-neutral-600);
+}
+
+/* Responsive form layouts */
+@media (max-width: 768px) {
+  .ascii-form-row,
+  .ascii-form-row-2,
+  .ascii-form-row-3,
+  .ascii-form-row-4 {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+  }
+  
+  .ascii-form-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .ascii-form-inline > .ascii-field {
+    min-width: auto;
+  }
+  
+  .ascii-field-inline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .ascii-field-inline label {
+    min-width: auto;
+    margin-bottom: var(--spacing-1);
+  }
+  
+  .ascii-form-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .ascii-form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .ascii-form {
+    padding: var(--spacing-2);
+  }
+  
+  .ascii-form-row {
+    gap: var(--spacing-2);
+  }
+  
+  .ascii-field input,
+  .ascii-field select,
+  .ascii-field textarea {
+    padding: var(--spacing-1);
+    font-size: var(--font-size-xs);
+  }
+}
+
 /* ASCII Status Badges */
 .ascii-status {
   border: 1px solid var(--ascii-neutral-400);
