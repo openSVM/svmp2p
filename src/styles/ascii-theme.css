@@ -1250,3 +1250,156 @@ html, body {
     margin-bottom: 4px;
   }
 }
+
+/* Transaction History Specific Styles */
+.transaction-history .ascii-form-table {
+  margin: var(--spacing-4) 0;
+}
+
+.transaction-history .table-header {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.5px;
+}
+
+.transaction-history .table-row {
+  border-bottom: 1px solid var(--ascii-neutral-300);
+}
+
+.transaction-history .table-row:hover {
+  background-color: var(--ascii-neutral-100);
+}
+
+.transaction-history .col {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+}
+
+.transaction-history .type-badge,
+.transaction-history .status-badge {
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--ascii-neutral-200);
+  border: 1px solid var(--ascii-neutral-400);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+}
+
+.transaction-history .amount-value,
+.transaction-history .fiat-value {
+  font-weight: bold;
+  margin-right: var(--spacing-1);
+}
+
+.transaction-history .amount-unit,
+.transaction-history .fiat-currency {
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-600);
+}
+
+.transaction-history .pagination {
+  margin: var(--spacing-4) 0;
+  justify-content: center;
+}
+
+.transaction-history .pagination-info {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  margin: 0 var(--spacing-3);
+}
+
+.transaction-history .pagination-button {
+  font-family: 'Courier New', Courier, monospace !important;
+  border: 1px solid var(--ascii-neutral-400);
+  background-color: var(--ascii-white);
+  color: var(--ascii-neutral-800);
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.transaction-history .pagination-button:disabled {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-500);
+  cursor: not-allowed;
+}
+
+.transaction-history .pagination-button:hover:not(:disabled) {
+  background-color: var(--ascii-neutral-100);
+}
+
+.ascii-form-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-5);
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  margin: var(--spacing-4) 0;
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+}
+
+.ascii-form-message .message-icon {
+  font-size: var(--font-size-lg);
+  color: var(--ascii-neutral-600);
+}
+
+.ascii-form-actions-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.results-count {
+  font-size: var(--font-size-sm);
+  color: var(--ascii-neutral-600);
+  font-style: italic;
+}
+
+/* Button size variant for extra compact buttons */
+.button-xs {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Enhanced mobile responsive improvements for transaction history */
+@media (max-width: 768px) {
+  .transaction-history .ascii-form-filters {
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  
+  .transaction-history .ascii-form-filters .ascii-field {
+    width: 100%;
+  }
+  
+  .transaction-history .ascii-form-table .table-header,
+  .transaction-history .ascii-form-table .table-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .transaction-history .ascii-form-table .col {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-1) var(--spacing-3);
+    border-bottom: 1px solid var(--ascii-neutral-300);
+  }
+  
+  .transaction-history .ascii-form-table .col::before {
+    content: attr(data-label);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: var(--font-size-xs);
+  }
+  
+  .transaction-history .pagination {
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+}

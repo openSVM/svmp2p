@@ -159,76 +159,79 @@ const TransactionHistory = ({ transactions }) => {
       </div>
       
       {paginatedTransactions.length === 0 ? (
-        <div className="no-transactions">
-          {searchQuery || filter !== 'all' 
-            ? 'No transactions match your filters.' 
-            : 'No transactions found.'}
+        <div className="ascii-form-message no-transactions">
+          <span className="message-icon">[!]</span>
+          <span className="message-text">
+            {searchQuery || filter !== 'all' 
+              ? 'NO TRANSACTIONS MATCH YOUR FILTERS' 
+              : 'NO TRANSACTIONS FOUND'}
+          </span>
         </div>
       ) : (
         <>
-          <div className="transactions-table">
+          <div className="ascii-form-table transactions-table">
             <div className="table-header">
               <div 
                 className={`col type ${sortBy === 'type' ? 'sorted' : ''}`}
                 onClick={() => handleSortChange('type')}
               >
-                Type{getSortIndicator('type')}
+                TYPE{getSortIndicator('type')}
               </div>
               <div 
                 className={`col amount ${sortBy === 'amount' ? 'sorted' : ''}`}
                 onClick={() => handleSortChange('amount')}
               >
-                Amount{getSortIndicator('amount')}
+                AMOUNT{getSortIndicator('amount')}
               </div>
               <div 
                 className={`col fiat ${sortBy === 'fiat' ? 'sorted' : ''}`}
                 onClick={() => handleSortChange('fiat')}
               >
-                Fiat{getSortIndicator('fiat')}
+                FIAT{getSortIndicator('fiat')}
               </div>
               <div 
                 className={`col status ${sortBy === 'status' ? 'sorted' : ''}`}
                 onClick={() => handleSortChange('status')}
               >
-                Status{getSortIndicator('status')}
+                STATUS{getSortIndicator('status')}
               </div>
               <div 
                 className={`col date ${sortBy === 'date' ? 'sorted' : ''}`}
                 onClick={() => handleSortChange('date')}
               >
-                Date{getSortIndicator('date')}
+                DATE{getSortIndicator('date')}
               </div>
               <div className="col actions">
-                Actions
+                ACTION
               </div>
             </div>
             
             {paginatedTransactions.map(transaction => (
               <div key={transaction.id} className="table-row">
                 <div className={`col type ${transaction.type.toLowerCase()}`}>
-                  {transaction.type}
+                  <span className="type-badge">{transaction.type.toUpperCase()}</span>
                 </div>
                 <div className="col amount">
-                  {transaction.solAmount.toFixed(2)} SOL
+                  <span className="amount-value">{transaction.solAmount.toFixed(2)}</span>
+                  <span className="amount-unit">SOL</span>
                 </div>
                 <div className="col fiat">
-                  {transaction.fiatAmount.toFixed(2)} {transaction.fiatCurrency}
+                  <span className="fiat-value">{transaction.fiatAmount.toFixed(2)}</span>
+                  <span className="fiat-currency">{transaction.fiatCurrency}</span>
                 </div>
                 <div className={`col status status-${transaction.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                  {transaction.status}
+                  <span className="status-badge">{transaction.status.toUpperCase()}</span>
                 </div>
                 <div className="col date">
                   {transaction.createdAt}
                 </div>
                 <div className="col actions">
                   <button 
-                    className="button button-ghost button-sm"
+                    className="button button-ghost button-xs"
                     onClick={() => alert(`View details for transaction ${transaction.id}`)}
                     aria-label={`View details for transaction ${transaction.id}`}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                    </svg>
+                    VIEW
                   </button>
                 </div>
               </div>
@@ -236,40 +239,53 @@ const TransactionHistory = ({ transactions }) => {
           </div>
           
           {totalPages > 1 && (
-            <div className="pagination">
-              <button 
-                className="pagination-button"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-                aria-label="Previous page"
-              >
-                &laquo;
-              </button>
+            <div className="ascii-form-inline pagination">
+              <div className="ascii-field-inline">
+                <button 
+                  className="pagination-button"
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                  aria-label="Previous page"
+                >
+                  ← PREV
+                </button>
+              </div>
               
-              <span className="pagination-info">
-                Page {page} of {totalPages}
-              </span>
+              <div className="ascii-field-inline">
+                <span className="pagination-info">
+                  PAGE {page} OF {totalPages}
+                </span>
+              </div>
               
-              <button 
-                className="pagination-button"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-                aria-label="Next page"
-              >
-                &raquo;
-              </button>
+              <div className="ascii-field-inline">
+                <button 
+                  className="pagination-button"
+                  disabled={page === totalPages}
+                  onClick={() => setPage(page + 1)}
+                  aria-label="Next page"
+                >
+                  NEXT →
+                </button>
+              </div>
             </div>
           )}
         </>
       )}
       
-      <div className="transaction-actions">
-        <button className="button button-outline button-sm">
-          Export Transactions
-        </button>
-        <button className="button button-ghost button-sm">
-          View All
-        </button>
+      <div className="ascii-form-actions ascii-form-actions-spread">
+        <div className="ascii-form-actions-left">
+          <button className="button button-outline button-sm">
+            Export Transactions
+          </button>
+          <button className="button button-ghost button-sm">
+            View All
+          </button>
+        </div>
+        <div className="ascii-form-actions-right">
+          <span className="results-count">
+            {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}
+          </span>
+        </div>
       </div>
     </div>
   );
