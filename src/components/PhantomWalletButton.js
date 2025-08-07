@@ -5,6 +5,7 @@
  */
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 
 /**
@@ -53,10 +54,11 @@ export const PhantomWalletButton = ({ className = '' }) => {
           title={`Connected to ${walletAddress}`}
         >
           <div className="w-6 h-6 flex items-center justify-center">
-            <img 
+            <Image 
               src="/images/phantom-logo.svg" 
               alt="Phantom" 
-              className="w-4 h-4"
+              width={16}
+              height={16}
             />
           </div>
           <div className="w-2 h-2 bg-green-300 rounded-full"></div>
@@ -90,10 +92,11 @@ export const PhantomWalletButton = ({ className = '' }) => {
         className={`flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${className}`}
       >
         <div className="w-6 h-6 flex items-center justify-center">
-          <img 
+          <Image 
             src="/images/phantom-logo.svg" 
             alt="Phantom" 
-            className="w-4 h-4"
+            width={16}
+            height={16}
           />
         </div>
         <span>Connect Phantom</span>
@@ -117,10 +120,11 @@ export const PhantomWalletButton = ({ className = '' }) => {
             {/* Modal content */}
             <div className="pt-4">
               <div className="flex items-center justify-center mb-4">
-                <img 
+                <Image 
                   src="/images/phantom-logo.svg" 
                   alt="Phantom" 
-                  className="w-16 h-16"
+                  width={64}
+                  height={64}
                 />
               </div>
               

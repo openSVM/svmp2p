@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSwigWallet } from '../contexts/SwigWalletProvider';
+import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import { useRewardData } from '../hooks/useRewardData';
 import { getUIText } from '../utils/i18n';
 import { createLogger } from '../utils/logger';
@@ -7,6 +7,7 @@ import { createLogger } from '../utils/logger';
 const logger = createLogger('RewardWidget');
 
 const RewardWidget = ({ compact = false }) => {
+    const wallet = usePhantomWallet();
     const { connected, publicKey } = wallet;
     const connection = wallet.getConnection ? wallet.getConnection() : null;
     const { rewardData, isLoading, error } = useRewardData(connection, publicKey);
