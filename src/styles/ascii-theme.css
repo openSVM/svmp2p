@@ -1369,12 +1369,12 @@ html, body {
 
 /* Enhanced mobile responsive improvements for transaction history */
 @media (max-width: 768px) {
-  .transaction-history .ascii-form-filters {
-    flex-direction: column;
+  .transaction-history .ascii-form-row-4 {
+    grid-template-columns: 1fr;
     gap: var(--spacing-2);
   }
   
-  .transaction-history .ascii-form-filters .ascii-field {
+  .transaction-history .ascii-form-row-4 .ascii-field {
     width: 100%;
   }
   

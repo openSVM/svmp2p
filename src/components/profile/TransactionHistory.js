@@ -96,7 +96,7 @@ const TransactionHistory = ({ transactions }) => {
       <div className="card-header">
         <h3 className="card-title">Transaction History</h3>
         
-        <div className="ascii-form-filters">
+        <div className="ascii-form-row-4">
           <div className="ascii-field">
             <label htmlFor="search">SEARCH</label>
             <input
