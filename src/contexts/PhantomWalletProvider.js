@@ -175,37 +175,6 @@ const PhantomWalletProvider = ({ children }) => {
       setError(null);
       setConnectionState('connecting');
 
-      // Development mode: simulate wallet connection for testing profile layout
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      if (isDevelopment) {
-        console.log('[PhantomWalletProvider] Development mode: simulating wallet connection');
-        
-        // Create a mock wallet with a fake public key
-        const mockPublicKey = new PublicKey('5J4r87t9DaNBdFQeTnLLJqPKF5f6Ck8GWk52fjpkxzGu');
-        const mockAddress = mockPublicKey.toString();
-        
-        setWallet({
-          publicKey: mockPublicKey,
-          address: mockAddress,
-          connected: true,
-          autoApprove: false,
-          signTransaction: async () => ({}),
-          signAllTransactions: async () => ([]),
-          signMessage: async () => new Uint8Array(),
-          connect: async () => ({ publicKey: mockPublicKey }),
-          disconnect: async () => {},
-          on: () => {},
-          off: () => {},
-        });
-        
-        setConnected(true);
-        setConnecting(false);
-        setConnectionState('connected');
-        
-        console.log('[PhantomWalletProvider] Mock wallet connected:', mockAddress);
-        return;
-      }
-
       const phantomWallet = detectPhantomWallet();
       
       if (!phantomWallet) {

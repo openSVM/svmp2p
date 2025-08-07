@@ -272,10 +272,6 @@ const UserProfile = ({ wallet: walletProp, network }) => {
       if (isWalletConnected && wallet.publicKey) {
         return wallet.publicKey.toString();
       }
-      // Development mode fallback for testing
-      if (process.env.NODE_ENV === 'development') {
-        return '5J4r87t9DaNBdFQeTnLLJqPKF5f6Ck8GWk52fjpkxzGu';
-      }
       return null;
     } catch (error) {
       console.warn("[UserProfile] Error extracting wallet address:", error);
@@ -284,9 +280,7 @@ const UserProfile = ({ wallet: walletProp, network }) => {
   }, [wallet, isWalletConnected]);
 
   // Early return for wallet not connected after all hooks are initialized
-  // Development mode override for testing profile layout
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  if (!isWalletConnected && !isDevelopment) {
+  if (!isWalletConnected) {
     console.log('[UserProfile] No wallet connected, returning WalletNotConnected');
     return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
   }
