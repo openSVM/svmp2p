@@ -16,9 +16,9 @@ import { UserProfile } from './components/UserProfile';
 import TradingGuidedWorkflow from './components/guided-workflow/TradingGuidedWorkflow';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// Import Swig wallet utilities
-import { SwigWalletProvider, useSwigWallet } from './contexts/SwigWalletProvider';
-import { SwigWalletButton } from './components/SwigWalletButton';
+// Import Phantom wallet utilities
+import { PhantomWalletProvider, usePhantomWallet } from './contexts/PhantomWalletProvider';
+import { PhantomWalletButton } from './components/PhantomWalletButton';
 import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
 import { createConnection, getNetworkConnection } from './utils/rpcConnection';
 
@@ -79,10 +79,10 @@ const SVM_NETWORKS = {
   }
 };
 
-// Inner component that can use the Swig wallet hook
+// Inner component that can use the Phantom wallet hook
 const AppContent = () => {
-  // Use Swig wallet context instead of Solana wallet adapter
-  const wallet = useSwigWallet();
+  // Use Phantom wallet context instead of Swig wallet
+  const wallet = usePhantomWallet();
   
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
@@ -124,7 +124,7 @@ const AppContent = () => {
     setActiveTab(tab);
   };
 
-  // Status indicator for Swig wallet connection
+  // Status indicator for Phantom wallet connection
   const renderWalletStatus = () => {
     if (wallet.error) {
       return (
@@ -248,7 +248,7 @@ const AppContent = () => {
               }>
                 <div className="wallet-wrapper">
                   {renderWalletStatus()}
-                  <SwigWalletButton />
+                  <PhantomWalletButton />
                   {wallet.error && (
                     <button 
                       className="wallet-retry-button" 
@@ -434,9 +434,9 @@ const App = () => {
         </div>
       </div>
     }>
-      <SwigWalletProvider>
+      <PhantomWalletProvider>
         <AppContent />
-      </SwigWalletProvider>
+      </PhantomWalletProvider>
     </ErrorBoundary>
   );
 };

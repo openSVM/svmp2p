@@ -27,7 +27,7 @@ import '@/styles/pwa.css'; // PWA-specific styles
 
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';
-import { SwigWalletProvider } from '@/contexts/SwigWalletProvider';
+import { PhantomWalletProvider } from '@/contexts/PhantomWalletProvider';
 
 // Import Layout
 import Layout from '@/components/Layout';
@@ -77,11 +77,11 @@ export default function App({ Component, pageProps }) {
     >
       <AppContextProvider>
         {({ network }) => (
-          <SwigWalletProvider>
+          <PhantomWalletProvider>
             <Layout>
               <Component {...pageProps} />
             </Layout>
-          </SwigWalletProvider>
+          </PhantomWalletProvider>
         )}
       </AppContextProvider>
     </ErrorBoundary>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useSwigWallet } from '../contexts/SwigWalletProvider';
-import { SwigWalletButton } from './SwigWalletButton';
-import { detectSwigWallet, checkWalletSupport, getConnectionTroubleshootingSteps } from '../utils/walletDetection';
+import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
+import { PhantomWalletButton } from './PhantomWalletButton';
+import { detectPhantomWallet, checkWalletSupport, getConnectionTroubleshootingSteps } from '../utils/walletDetection';
 
 /**
- * Multi-step Swig wallet connection guide component
- * Provides user-friendly guidance through the OAuth authentication process
+ * Multi-step Phantom wallet connection guide component
+ * Provides user-friendly guidance through the wallet connection process
  */
 const WalletConnectionGuide = ({ 
   onClose = () => {},
@@ -13,7 +13,7 @@ const WalletConnectionGuide = ({
   showAsModal = true,
   className = ''
 }) => {
-  const wallet = useSwigWallet();
+  const wallet = usePhantomWallet();
   const [currentStep, setCurrentStep] = useState(1);
   const [walletDetection, setWalletDetection] = useState(null);
   const [browserSupport, setBrowserSupport] = useState(null);
@@ -23,7 +23,7 @@ const WalletConnectionGuide = ({
   // Detect Swig wallet and browser support on component mount
   useEffect(() => {
     const checkWalletStatus = async () => {
-      const detection = await detectSwigWallet();
+      const detection = await detectPhantomWallet();
       const support = checkWalletSupport();
       
       setWalletDetection(detection);
@@ -283,7 +283,7 @@ const ConnectWalletStep = ({ wallet, walletDetection }) => {
       <div className="connection-action">
         <p>Click the button below to connect your Swig wallet:</p>
         <div className="wallet-button-wrapper">
-          <SwigWalletButton />
+          <PhantomWalletButton />
         </div>
         
         {wallet.connecting && (

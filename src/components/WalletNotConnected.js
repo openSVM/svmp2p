@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SwigWalletButton } from './SwigWalletButton';
+import { PhantomWalletButton } from './PhantomWalletButton';
 import WalletConnectionGuide from './WalletConnectionGuide';
 
 /**
@@ -45,9 +45,9 @@ const WalletNotConnected = ({ message }) => {
     }
 
     try {
-      return <SwigWalletButton className="prominent-wallet-button" />;
+      return <PhantomWalletButton className="prominent-wallet-button" />;
     } catch (error) {
-      console.error('Error rendering SwigWalletButton:', error);
+      console.error('Error rendering PhantomWalletButton:', error);
       setButtonError(true);
       return <FallbackButton />;
     }

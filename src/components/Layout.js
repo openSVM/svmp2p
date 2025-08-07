@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { SwigWalletButton } from './SwigWalletButton';
-import { useSwigWallet } from '@/contexts/SwigWalletProvider';
+import { PhantomWalletButton } from './PhantomWalletButton';
+import { usePhantomWallet } from '@/contexts/PhantomWalletProvider';
 import { createLogger } from '@/utils/logger';
 
 // Import context
@@ -28,7 +28,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     networks 
   } = useContext(AppContext);
   
-  const { connected, publicKey } = useSwigWallet();
+  const { connected, publicKey } = usePhantomWallet();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
 
@@ -200,9 +200,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 </span>
               )}
               
-              {/* Swig wallet connection button */}
+              {/* Phantom wallet connection button */}
               <div className="header-wallet-container">
-                <SwigWalletButton />
+                <PhantomWalletButton />
               </div>
             </div>
           </div>

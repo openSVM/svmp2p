@@ -1,33 +1,31 @@
 /**
- * Swig Wallet Detection Utility
+ * Phantom Wallet Detection Utility
  * 
- * Detects Swig wallet authentication status and provides
- * user-friendly information about authentication and connection options.
+ * Detects Phantom wallet availability and connection status, providing
+ * user-friendly information about wallet availability and connection options.
  * 
- * Security Note: This utility only reads authentication status and availability.
+ * Security Note: This utility only reads wallet availability and connection status.
  * It never accesses private keys, user accounts, or sensitive wallet data.
  */
 
-import { para } from '../client/para';
-
 /**
- * Detects Swig wallet authentication status and available options
- * @returns {Object} Object containing authentication state and recommendations
+ * Detects Phantom wallet availability and connection status
+ * @returns {Object} Object containing wallet state and recommendations
  */
-export const detectSwigWallet = async () => {
+export const detectPhantomWallet = async () => {
   // Return safe default for server-side rendering
   if (typeof window === 'undefined') {
     return {
       detected: [],
       recommended: [{
-        name: 'Swig Wallet',
-        type: 'swig',
-        authenticated: false,
-        icon: '🔐',
-        description: 'OAuth-based in-app wallet with multi-chain support'
+        name: 'Phantom Wallet',
+        type: 'phantom',
+        connected: false,
+        icon: '👻',
+        description: 'Secure Solana wallet browser extension'
       }],
       hasAnyWallet: false,
-      needsAuthentication: true
+      needsConnection: true
     };
   }
 
@@ -35,108 +33,138 @@ export const detectSwigWallet = async () => {
   const available = [];
 
   try {
-    // Check Swig wallet authentication status
-    const isAuthenticated = await para.isFullyLoggedIn();
+    // Check for Phantom wallet
+    const phantomWallet = window.phantom?.solana || (window.solana?.isPhantom ? window.solana : null);
     
-    if (isAuthenticated) {
-      const wallets = await para.getWallets();
-      const walletEntries = Object.values(wallets);
+    if (phantomWallet) {
+      // Phantom is installed
+      const isConnected = phantomWallet.isConnected;
       
-      walletEntries.forEach(wallet => {
+      if (isConnected && phantomWallet.publicKey) {
         detected.push({
-          name: 'Swig Wallet',
-          type: 'swig',
-          walletType: wallet.type, // 'SOLANA' or 'EVM'
-          address: wallet.address,
-          authenticated: true,
-          icon: wallet.type === 'SOLANA' ? '◉' : '⬢',
-          description: `${wallet.type} wallet via Swig`
+          name: 'Phantom Wallet',
+          type: 'phantom',
+          address: phantomWallet.publicKey.toString(),
+          connected: true,
+          icon: '👻',
+          description: 'Connected Phantom wallet'
         });
+      }
+
+      // Add to available wallets
+      available.push({
+        name: 'Phantom Wallet',
+        type: 'phantom',
+        connected: isConnected,
+        icon: '👻',
+        description: 'Secure Solana wallet browser extension',
+        installed: true
+      });
+    } else {
+      // Phantom is not installed
+      available.push({
+        name: 'Phantom Wallet',
+        type: 'phantom',
+        connected: false,
+        icon: '👻',
+        description: 'Secure Solana wallet browser extension',
+        installed: false,
+        installUrl: 'https://phantom.app/'
       });
     }
 
-    // Add available authentication methods
-    available.push({
-      name: 'Swig Wallet',
-      type: 'swig',
-      authenticated: isAuthenticated,
-      icon: '🔐',
-      description: 'OAuth-based in-app wallet with multi-chain support',
-      authMethods: ['Google', 'Apple', 'Farcaster']
-    });
-
-    // Determine recommendations based on authentication status
-    const recommended = getSwigWalletRecommendations(detected, available, isAuthenticated);
+    // Determine recommendations based on connection status
+    const recommended = getPhantomWalletRecommendations(detected, available, phantomWallet);
 
     return {
       detected,
       available,
       recommended,
       hasAnyWallet: detected.length > 0,
-      needsAuthentication: !isAuthenticated,
-      isAuthenticated
+      needsConnection: !detected.length > 0,
+      isPhantomInstalled: !!phantomWallet,
+      isConnected: phantomWallet ? phantomWallet.isConnected : false
     };
   } catch (error) {
-    console.error('[detectSwigWallet] Error detecting wallet:', error);
+    console.error('[detectPhantomWallet] Error detecting wallet:', error);
     
     // Return safe fallback
     return {
       detected: [],
       available: [{
-        name: 'Swig Wallet',
-        type: 'swig',
-        authenticated: false,
-        icon: '🔐',
-        description: 'OAuth-based in-app wallet with multi-chain support',
-        authMethods: ['Google', 'Apple', 'Farcaster']
+        name: 'Phantom Wallet',
+        type: 'phantom',
+        connected: false,
+        icon: '👻',
+        description: 'Secure Solana wallet browser extension',
+        installed: false,
+        installUrl: 'https://phantom.app/'
       }],
       recommended: [{
-        name: 'Swig Wallet',
-        type: 'swig',
-        authenticated: false,
-        icon: '🔐',
-        description: 'OAuth-based in-app wallet with multi-chain support',
-        reason: 'Sign in with OAuth to access your wallet'
+        name: 'Phantom Wallet',
+        type: 'phantom',
+        connected: false,
+        icon: '👻',
+        description: 'Install Phantom wallet to get started',
+        reason: 'Phantom wallet is required to use this application'
       }],
       hasAnyWallet: false,
-      needsAuthentication: true,
-      isAuthenticated: false
+      needsConnection: true,
+      isPhantomInstalled: false,
+      isConnected: false
     };
   }
 };
 
 /**
  * Legacy function for backward compatibility
- * @deprecated Use detectSwigWallet instead
+ * @deprecated Use detectPhantomWallet instead
  */
-export const detectSolanaWallets = detectSwigWallet;
+export const detectSolanaWallets = detectPhantomWallet;
 
 /**
  * Generate wallet recommendations based on detection results
  * @param {Array} detected - Array of detected wallets
  * @param {Array} available - Array of available wallet options
- * @param {boolean} isAuthenticated - Whether user is authenticated
+ * @param {Object} phantomWallet - Phantom wallet instance
  * @returns {Array} Array of wallet recommendations
  */
-const getSwigWalletRecommendations = (detected, available, isAuthenticated) => {
+const getPhantomWalletRecommendations = (detected, available, phantomWallet) => {
   const recommendations = [];
 
-  if (!isAuthenticated) {
+  if (!phantomWallet) {
+    // Phantom not installed
     recommendations.push({
-      name: 'Swig Wallet',
-      type: 'swig',
-      authenticated: false,
-      icon: '🔐',
-      description: 'OAuth-based in-app wallet with multi-chain support',
-      reason: 'Sign in with your preferred OAuth provider to get started',
-      priority: 'high'
+      name: 'Phantom Wallet',
+      type: 'phantom',
+      connected: false,
+      icon: '👻',
+      description: 'Install Phantom wallet to get started',
+      reason: 'Phantom wallet extension is required to use this application',
+      priority: 'high',
+      action: 'install',
+      installUrl: 'https://phantom.app/'
+    });
+  } else if (!phantomWallet.isConnected) {
+    // Phantom installed but not connected
+    recommendations.push({
+      name: 'Phantom Wallet',
+      type: 'phantom',
+      connected: false,
+      icon: '👻',
+      description: 'Connect your Phantom wallet to get started',
+      reason: 'Click the connect button to link your Phantom wallet',
+      priority: 'high',
+      action: 'connect'
     });
   } else if (detected.length > 0) {
+    // Phantom connected
     detected.forEach(wallet => {
       recommendations.push({
         ...wallet,
-        reason: 'Ready to use - wallet is authenticated and available',
-        priority: 'low'
+        reason: 'Ready to use - wallet is connected and available',
+        priority: 'low',
+        action: 'ready'
       });
     });
   }
@@ -146,12 +174,12 @@ const getSwigWalletRecommendations = (detected, available, isAuthenticated) => {
 
 /**
  * Legacy function for backward compatibility
- * @deprecated Use getSwigWalletRecommendations instead
+ * @deprecated Use getPhantomWalletRecommendations instead
  */
-const getWalletRecommendations = getSwigWalletRecommendations;
+const getWalletRecommendations = getPhantomWalletRecommendations;
 
 /**
- * Check if current environment supports Swig wallet
+ * Check if current environment supports Phantom wallet
  * @returns {Object} Browser support information
  */
 export const checkWalletSupport = () => {
@@ -163,10 +191,10 @@ export const checkWalletSupport = () => {
     };
   }
 
-  // Check for basic browser capabilities needed for Swig wallet
+  // Check for basic browser capabilities needed for Phantom wallet
   const hasLocalStorage = typeof Storage !== 'undefined';
   const hasWebCrypto = typeof crypto !== 'undefined' && typeof crypto.subtle !== 'undefined';
-  const hasPopupSupport = typeof window.open === 'function';
+  const supportsExtensions = typeof window.chrome !== 'undefined' || typeof window.browser !== 'undefined';
 
   if (!hasLocalStorage) {
     return {
@@ -184,11 +212,11 @@ export const checkWalletSupport = () => {
     };
   }
 
-  if (!hasPopupSupport) {
+  if (!supportsExtensions) {
     return {
       supported: false,
-      reason: 'Popup windows not supported',
-      recommendations: ['Enable popups for OAuth authentication']
+      reason: 'Browser extensions not supported',
+      recommendations: ['Use Chrome, Firefox, or other extension-capable browsers']
     };
   }
 
@@ -200,44 +228,54 @@ export const checkWalletSupport = () => {
 };
 
 /**
- * Get troubleshooting steps for Swig wallet connection issues
+ * Get troubleshooting steps for Phantom wallet connection issues
  * @param {Object} walletState - Current wallet state
  * @returns {Array} Array of troubleshooting steps
  */
 export const getConnectionTroubleshootingSteps = (walletState) => {
   const steps = [];
 
-  if (!walletState.isAuthenticated) {
+  if (!walletState.isPhantomInstalled) {
     steps.push({
-      title: 'Sign in with OAuth',
-      description: 'You need to authenticate with an OAuth provider to access your wallet',
-      action: 'authenticate',
+      title: 'Install Phantom Wallet',
+      description: 'You need to install the Phantom browser extension to use this application',
+      action: 'install_phantom',
+      priority: 'high',
+      url: 'https://phantom.app/'
+    });
+  }
+
+  if (walletState.isPhantomInstalled && !walletState.isConnected) {
+    steps.push({
+      title: 'Connect Phantom Wallet',
+      description: 'Click the connect button to link your Phantom wallet to this application',
+      action: 'connect',
       priority: 'high'
     });
   }
 
-  if (walletState.isAuthenticated && !walletState.connected) {
-    steps.push({
-      title: 'Check Authentication Status',
-      description: 'Verify that your authentication session is still valid',
-      action: 'check_auth',
-      priority: 'high'
-    });
-
+  if (walletState.isConnected && walletState.error) {
     steps.push({
       title: 'Refresh Connection',
       description: 'Try refreshing the page to re-establish the connection',
       action: 'refresh',
-      priority: 'medium'
+      priority: 'high'
+    });
+
+    steps.push({
+      title: 'Check Phantom Extension',
+      description: 'Make sure Phantom extension is enabled and unlocked',
+      action: 'check_extension',
+      priority: 'high'
     });
   }
 
   if (walletState.error) {
     steps.push({
       title: 'Clear Browser Data',
-      description: 'Clear cookies and local storage, then try authenticating again',
+      description: 'Clear cookies and local storage, then try connecting again',
       action: 'clear_data',
-      priority: 'high'
+      priority: 'medium'
     });
 
     steps.push({
@@ -248,9 +286,9 @@ export const getConnectionTroubleshootingSteps = (walletState) => {
     });
 
     steps.push({
-      title: 'Try Different OAuth Provider',
-      description: 'If one OAuth method fails, try signing in with a different provider',
-      action: 'try_different_oauth',
+      title: 'Restart Browser',
+      description: 'Close and restart your browser, then try connecting again',
+      action: 'restart_browser',
       priority: 'medium'
     });
   }
@@ -258,7 +296,7 @@ export const getConnectionTroubleshootingSteps = (walletState) => {
   // Add general troubleshooting steps
   steps.push({
     title: 'Disable Ad Blockers',
-    description: 'Ad blockers may interfere with OAuth popup windows',
+    description: 'Ad blockers may interfere with wallet extensions',
     action: 'disable_adblocker',
     priority: 'low'
   });
@@ -267,6 +305,13 @@ export const getConnectionTroubleshootingSteps = (walletState) => {
     title: 'Use Incognito Mode',
     description: 'Try using private/incognito browsing mode to isolate issues',
     action: 'incognito',
+    priority: 'low'
+  });
+
+  steps.push({
+    title: 'Update Browser',
+    description: 'Ensure you are using the latest version of your browser',
+    action: 'update_browser',
     priority: 'low'
   });
 

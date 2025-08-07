@@ -11,7 +11,7 @@ import {
   ConfirmationDialog 
 } from './common';
 
-import { useSwigWallet } from '../contexts/SwigWalletProvider';
+import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import { useActionDebounce, useInputValidation } from '../hooks/useActionDebounce';
 import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../utils/validation';
 import { createLogger } from '../utils/logger';
@@ -28,7 +28,7 @@ import DemoIndicator from './DemoIndicator';
 const logger = createLogger('OfferCreation');
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
-  const wallet = useSwigWallet();
+  const wallet = usePhantomWallet();
   // For Swig wallet, we'll get connection from the wallet context
   const connection = wallet.getConnection ? wallet.getConnection() : null;
   const { program, network } = useContext(AppContext);
