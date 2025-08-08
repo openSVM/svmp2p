@@ -1,0 +1,1523 @@
+{
+  "version": "0.1.0",
+  "name": "p2p_exchange",
+  "instructions": [
+    {
+      "name": "initializeAdmin",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "updateAdminAuthorities",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "secondaryAuthorities",
+          "type": {
+            "array": [
+              "publicKey",
+              2
+            ]
+          }
+        },
+        {
+          "name": "requiredSignatures",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "createOffer",
+      "accounts": [
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "seller",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "fiatAmount",
+          "type": "u64"
+        },
+        {
+          "name": "fiatCurrency",
+          "type": "string"
+        },
+        {
+          "name": "paymentMethod",
+          "type": "string"
+        },
+        {
+          "name": "createdAt",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "listOffer",
+      "accounts": [
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "seller",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "acceptOffer",
+      "accounts": [
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "securityBond",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "markFiatSent",
+      "accounts": [
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "buyer",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "confirmFiatReceipt",
+      "accounts": [
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "seller",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "releaseSol",
+      "accounts": [
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "seller",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "openDispute",
+      "accounts": [
+        {
+          "name": "dispute",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "initiator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "assignJurors",
+      "accounts": [
+        {
+          "name": "dispute",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "submitEvidence",
+      "accounts": [
+        {
+          "name": "dispute",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "submitter",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "evidenceUrl",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "castVote",
+      "accounts": [
+        {
+          "name": "dispute",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vote",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "juror",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "voteForBuyer",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "executeVerdict",
+      "accounts": [
+        {
+          "name": "dispute",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "offer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "buyer",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "seller",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "createReputation",
+      "accounts": [
+        {
+          "name": "reputation",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "updateReputation",
+      "accounts": [
+        {
+          "name": "reputation",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "successfulTrade",
+          "type": "bool"
+        },
+        {
+          "name": "disputeResolved",
+          "type": "bool"
+        },
+        {
+          "name": "disputeWon",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "createRewardToken",
+      "accounts": [
+        {
+          "name": "rewardToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "rewardRatePerTrade",
+          "type": "u64"
+        },
+        {
+          "name": "rewardRatePerVote",
+          "type": "u64"
+        },
+        {
+          "name": "minTradeVolume",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "updateRewardToken",
+      "accounts": [
+        {
+          "name": "rewardToken",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "rewardRatePerTrade",
+          "type": "u64"
+        },
+        {
+          "name": "rewardRatePerVote",
+          "type": "u64"
+        },
+        {
+          "name": "minTradeVolume",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "createUserRewards",
+      "accounts": [
+        {
+          "name": "userRewards",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "mintTradeRewards",
+      "accounts": [
+        {
+          "name": "rewardToken",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userRewards",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "tradeVolume",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "mintVoteRewards",
+      "accounts": [
+        {
+          "name": "rewardToken",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userRewards",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimRewards",
+      "accounts": [
+        {
+          "name": "userRewards",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Admin",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "secondaryAuthorities",
+            "type": {
+              "array": [
+                "publicKey",
+                2
+              ]
+            }
+          },
+          {
+            "name": "requiredSignatures",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "offer",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Offer",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "seller",
+            "type": "publicKey"
+          },
+          {
+            "name": "buyer",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "securityBond",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "fiatAmount",
+            "type": "u64"
+          },
+          {
+            "name": "fiatCurrency",
+            "type": "string"
+          },
+          {
+            "name": "paymentMethod",
+            "type": "string"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "updatedAt",
+            "type": "i64"
+          },
+          {
+            "name": "disputeId",
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dispute",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "offer",
+            "type": "publicKey"
+          },
+          {
+            "name": "initiator",
+            "type": "publicKey"
+          },
+          {
+            "name": "respondent",
+            "type": "publicKey"
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "jurors",
+            "type": {
+              "array": [
+                "publicKey",
+                3
+              ]
+            }
+          },
+          {
+            "name": "evidenceBuyer",
+            "type": {
+              "array": [
+                "string",
+                5
+              ]
+            }
+          },
+          {
+            "name": "evidenceBuyerCount",
+            "type": "u8"
+          },
+          {
+            "name": "evidenceSeller",
+            "type": {
+              "array": [
+                "string",
+                5
+              ]
+            }
+          },
+          {
+            "name": "evidenceSellerCount",
+            "type": "u8"
+          },
+          {
+            "name": "votesForBuyer",
+            "type": "u8"
+          },
+          {
+            "name": "votesForSeller",
+            "type": "u8"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "resolvedAt",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "dispute",
+            "type": "publicKey"
+          },
+          {
+            "name": "juror",
+            "type": "publicKey"
+          },
+          {
+            "name": "voteForBuyer",
+            "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reputation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "publicKey"
+          },
+          {
+            "name": "successfulTrades",
+            "type": "u32"
+          },
+          {
+            "name": "disputedTrades",
+            "type": "u32"
+          },
+          {
+            "name": "disputesWon",
+            "type": "u32"
+          },
+          {
+            "name": "disputesLost",
+            "type": "u32"
+          },
+          {
+            "name": "rating",
+            "type": "u8"
+          },
+          {
+            "name": "lastUpdated",
+            "type": "i64"
+          },
+          {
+            "name": "lastOfferCreated",
+            "type": "i64"
+          },
+          {
+            "name": "lastDisputeOpened",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardToken",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "totalSupply",
+            "type": "u64"
+          },
+          {
+            "name": "rewardRatePerTrade",
+            "type": "u64"
+          },
+          {
+            "name": "rewardRatePerVote",
+            "type": "u64"
+          },
+          {
+            "name": "minTradeVolume",
+            "type": "u64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "lastUpdated",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserRewards",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "publicKey"
+          },
+          {
+            "name": "totalEarned",
+            "type": "u64"
+          },
+          {
+            "name": "totalClaimed",
+            "type": "u64"
+          },
+          {
+            "name": "unclaimedBalance",
+            "type": "u64"
+          },
+          {
+            "name": "tradingVolume",
+            "type": "u64"
+          },
+          {
+            "name": "governanceVotes",
+            "type": "u32"
+          },
+          {
+            "name": "lastTradeReward",
+            "type": "i64"
+          },
+          {
+            "name": "lastVoteReward",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "OfferStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Created"
+          },
+          {
+            "name": "Listed"
+          },
+          {
+            "name": "Accepted"
+          },
+          {
+            "name": "FiatSent"
+          },
+          {
+            "name": "SolReleased"
+          },
+          {
+            "name": "DisputeOpened"
+          },
+          {
+            "name": "Completed"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DisputeStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Opened"
+          },
+          {
+            "name": "JurorsAssigned"
+          },
+          {
+            "name": "EvidenceSubmission"
+          },
+          {
+            "name": "Voting"
+          },
+          {
+            "name": "VerdictReached"
+          },
+          {
+            "name": "Resolved"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "OfferCreated",
+      "fields": [
+        {
+          "name": "offer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "seller",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "fiatAmount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "fiatCurrency",
+          "type": "string",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "OfferAccepted",
+      "fields": [
+        {
+          "name": "offer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "securityBond",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "FiatSent",
+      "fields": [
+        {
+          "name": "offer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyer",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "FiatReceiptConfirmed",
+      "fields": [
+        {
+          "name": "offer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "seller",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SolReleased",
+      "fields": [
+        {
+          "name": "offer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "DisputeOpened",
+      "fields": [
+        {
+          "name": "dispute",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "offer",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "initiator",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "JurorsAssigned",
+      "fields": [
+        {
+          "name": "dispute",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "jurors",
+          "type": {
+            "array": [
+              "publicKey",
+              3
+            ]
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "EvidenceSubmitted",
+      "fields": [
+        {
+          "name": "dispute",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "submitter",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "evidenceUrl",
+          "type": "string",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "VoteCast",
+      "fields": [
+        {
+          "name": "dispute",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "juror",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "voteForBuyer",
+          "type": "bool",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "VerdictExecuted",
+      "fields": [
+        {
+          "name": "dispute",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "winner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "ReputationUpdated",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "successfulTrades",
+          "type": "u32",
+          "index": false
+        },
+        {
+          "name": "rating",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RewardTokenCreated",
+      "fields": [
+        {
+          "name": "authority",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "rewardRatePerTrade",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "rewardRatePerVote",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RewardsEarned",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RewardsClaimed",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RewardTokenUpdated",
+      "fields": [
+        {
+          "name": "authority",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "rewardRatePerTrade",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "rewardRatePerVote",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "minTradeVolume",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RewardEligible",
+      "fields": [
+        {
+          "name": "users",
+          "type": {
+            "vec": "publicKey"
+          },
+          "index": false
+        },
+        {
+          "name": "tradeVolume",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "rewardType",
+          "type": "string",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RewardSystemFailure",
+      "fields": [
+        {
+          "name": "users",
+          "type": {
+            "vec": "publicKey"
+          },
+          "index": false
+        },
+        {
+          "name": "tradeVolume",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "rewardType",
+          "type": "string",
+          "index": false
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "index": false
+        },
+        {
+          "name": "timestamp",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidOfferStatus",
+      "msg": "Invalid offer status for this operation"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidDisputeStatus",
+      "msg": "Invalid dispute status for this operation"
+    },
+    {
+      "code": 6002,
+      "name": "Unauthorized",
+      "msg": "You are not authorized to perform this action"
+    },
+    {
+      "code": 6003,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds for this operation"
+    },
+    {
+      "code": 6004,
+      "name": "AlreadyVoted",
+      "msg": "Juror has already voted"
+    },
+    {
+      "code": 6005,
+      "name": "NotAJuror",
+      "msg": "You are not a juror for this dispute"
+    },
+    {
+      "code": 6006,
+      "name": "DisputeAlreadyExists",
+      "msg": "A dispute already exists for this offer"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidAmount",
+      "msg": "Invalid amount"
+    },
+    {
+      "code": 6008,
+      "name": "InputTooLong",
+      "msg": "Input string too long"
+    },
+    {
+      "code": 6009,
+      "name": "AdminRequired",
+      "msg": "Admin authority required"
+    },
+    {
+      "code": 6010,
+      "name": "TooManyEvidenceItems",
+      "msg": "Too many evidence items"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidUtf8",
+      "msg": "Invalid UTF-8 string"
+    },
+    {
+      "code": 6012,
+      "name": "TiedVote",
+      "msg": "Vote is tied, cannot execute verdict"
+    },
+    {
+      "code": 6013,
+      "name": "MathOverflow",
+      "msg": "Math operation resulted in overflow"
+    },
+    {
+      "code": 6014,
+      "name": "NoRewardsToClaim",
+      "msg": "No rewards available to claim"
+    },
+    {
+      "code": 6015,
+      "name": "RewardTokenNotInitialized",
+      "msg": "Reward token not initialized"
+    },
+    {
+      "code": 6016,
+      "name": "TooManyRequests",
+      "msg": "Too many requests - rate limit exceeded"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidEscrowBalance",
+      "msg": "Escrow balance does not match expected amount"
+    },
+    {
+      "code": 6018,
+      "name": "DisputeExpired",
+      "msg": "Dispute has expired and can no longer be modified"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidCurrencyCode",
+      "msg": "Invalid currency code format"
+    }
+  ],
+  "metadata": {
+    "address": "FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9",
+    "origin": "anchor",
+    "binaryVersion": "0.31.1",
+    "libVersion": "0.31.1"
+  }
+}
