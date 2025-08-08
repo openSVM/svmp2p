@@ -54,22 +54,23 @@ const UserStatistics = () => {
     );
   }
 
-  // Calculate additional statistics from history
-  const totalVolume = history.reduce((sum, trade) => sum + trade.solAmount, 0);
-  const totalValue = history.reduce((sum, trade) => sum + trade.fiatAmount, 0);
-  const buyTrades = history.filter(trade => trade.type === 'buy');
-  const sellTrades = history.filter(trade => trade.type === 'sell');
-  const completedTrades = history.filter(trade => trade.status === 'Completed');
-  const activeTrades = history.filter(trade => 
+  // Calculate additional statistics from history - with null safety
+  const safeHistory = history || [];
+  const totalVolume = safeHistory.reduce((sum, trade) => sum + trade.solAmount, 0);
+  const totalValue = safeHistory.reduce((sum, trade) => sum + trade.fiatAmount, 0);
+  const buyTrades = safeHistory.filter(trade => trade.type === 'buy');
+  const sellTrades = safeHistory.filter(trade => trade.type === 'sell');
+  const completedTrades = safeHistory.filter(trade => trade.status === 'Completed');
+  const activeTrades = safeHistory.filter(trade => 
     ['Listed', 'Accepted', 'AwaitingFiatPayment', 'FiatSent'].includes(trade.status)
   );
 
-  const averageTradeSize = history.length > 0 ? totalVolume / history.length : 0;
-  const averageTradeValue = history.length > 0 ? totalValue / history.length : 0;
+  const averageTradeSize = safeHistory.length > 0 ? totalVolume / safeHistory.length : 0;
+  const averageTradeValue = safeHistory.length > 0 ? totalValue / safeHistory.length : 0;
 
   // Get recent activity (last 30 days)
   const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-  const recentTrades = history.filter(trade => trade.createdAt > thirtyDaysAgo);
+  const recentTrades = safeHistory.filter(trade => trade.createdAt > thirtyDaysAgo);
 
   const renderStatCard = (title, value, subtitle, tooltip, color = 'blue') => (
     <div className={`stat-card stat-card-${color}`}>
@@ -200,7 +201,7 @@ const UserStatistics = () => {
           {renderStatCard(
             'Recent Trades',
             recentTrades.length,
-            history.length > 0 ? `${((recentTrades.length / history.length) * 100).toFixed(1)}% of total` : '0% of total',
+            safeHistory.length > 0 ? `${((recentTrades.length / safeHistory.length) * 100).toFixed(1)}% of total` : '0% of total',
             'Number of trades in the last 30 days'
           )}
           
@@ -215,7 +216,7 @@ const UserStatistics = () => {
           {renderStatCard(
             'Completed Trades',
             completedTrades.length,
-            `${completedTrades.length > 0 ? ((completedTrades.length / history.length) * 100).toFixed(1) : 0}% completion rate`,
+            `${completedTrades.length > 0 ? ((completedTrades.length / safeHistory.length) * 100).toFixed(1) : 0}% completion rate`,
             'Successfully completed trades',
             'green'
           )}
@@ -254,11 +255,11 @@ const UserStatistics = () => {
       )}
 
       {/* Trade History */}
-      {history.length > 0 && (
+      {safeHistory.length > 0 && (
         <div className="trade-history-section">
           <h3>Recent Trade History</h3>
           <div className="trade-history-list">
-            {history.slice(0, 5).map(trade => (
+            {safeHistory.slice(0, 5).map(trade => (
               <div key={trade.id} className="trade-history-item">
                 <div className="trade-info">
                   <span className={`trade-type ${trade.type}`}>{trade.type.toUpperCase()}</span>
@@ -273,16 +274,16 @@ const UserStatistics = () => {
                 </div>
               </div>
             ))}
-            {history.length > 5 && (
+            {safeHistory.length > 5 && (
               <div className="view-all-trades">
-                <button className="view-all-button">View All {history.length} Trades</button>
+                <button className="view-all-button">View All {safeHistory.length} Trades</button>
               </div>
             )}
           </div>
         </div>
       )}
 
-      {history.length === 0 && !historyLoading && (
+      {safeHistory.length === 0 && !historyLoading && (
         <div className="no-history">
           <h3>No Trading History</h3>
           <p>You haven't completed any trades yet. Start trading to build your reputation!</p>

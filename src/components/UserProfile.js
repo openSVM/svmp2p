@@ -79,20 +79,25 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
   // Process real blockchain data when available
   useEffect(() => {
     if (reputation && history && !reputationLoading && !historyLoading) {
-      // Convert real blockchain data to profile format
+      // Convert real blockchain data to profile format with null safety
+      const safeReputation = reputation || {};
+      const safeHistory = history || [];
+      
       const realProfileData = {
         reputation: {
-          successfulTrades: reputation.successfulTrades,
-          disputedTrades: reputation.disputedTrades,
-          disputesWon: reputation.disputesWon,
-          totalTrades: reputation.totalTrades,
-          completionRate: reputation.successRate,
-          averageRating: reputation.rating / 100, // Convert from 0-500 to 0-5 scale
+          successfulTrades: safeReputation.successfulTrades || 0,
+          disputedTrades: safeReputation.disputedTrades || 0,
+          disputesWon: safeReputation.disputesWon || 0,
+          totalTrades: safeReputation.totalTrades || 0,
+          completionRate: safeReputation.successRate || 0,
+          averageRating: (safeReputation.rating || 0) / 100, // Convert from 0-500 to 0-5 scale
           averageResponseTime: 'N/A', // Would need additional tracking
-          disputeRate: reputation.disputedTrades / reputation.totalTrades * 100,
-          lastUpdated: new Date(reputation.lastUpdated).toLocaleDateString()
+          disputeRate: (safeReputation.totalTrades || 0) > 0 ? 
+            ((safeReputation.disputedTrades || 0) / safeReputation.totalTrades * 100) : 0,
+          lastUpdated: safeReputation.lastUpdated ? 
+            new Date(safeReputation.lastUpdated).toLocaleDateString() : 'Never'
         },
-        transactions: history.slice(0, 10).map(trade => ({
+        transactions: safeHistory.slice(0, 10).map(trade => ({
           id: trade.id,
           type: trade.type === 'sell' ? 'Sell' : 'Buy',
           solAmount: trade.solAmount,
@@ -113,23 +118,23 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
           hideWalletAddress: false
         },
         tradingStats: {
-          totalTrades: reputation.totalTrades,
-          successfulTrades: reputation.successfulTrades,
-          completionRate: reputation.successRate,
-          totalVolume: history.reduce((sum, trade) => sum + trade.fiatAmount, 0),
-          buyOrders: history.filter(trade => trade.type === 'buy').length,
-          sellOrders: history.filter(trade => trade.type === 'sell').length,
-          disputedTrades: reputation.disputedTrades,
-          cancelledTrades: history.filter(trade => trade.status === 'Cancelled').length,
+          totalTrades: safeReputation.totalTrades || 0,
+          successfulTrades: safeReputation.successfulTrades || 0,
+          completionRate: safeReputation.successRate || 0,
+          totalVolume: safeHistory.reduce((sum, trade) => sum + (trade.fiatAmount || 0), 0),
+          buyOrders: safeHistory.filter(trade => trade.type === 'buy').length,
+          sellOrders: safeHistory.filter(trade => trade.type === 'sell').length,
+          disputedTrades: safeReputation.disputedTrades || 0,
+          cancelledTrades: safeHistory.filter(trade => trade.status === 'Cancelled').length,
           averageResponseTime: 'N/A',
           responseTimeRating: 'average',
           periodStart: 'All time',
           periodEnd: 'Today'
         },
-        activities: history.slice(0, 5).map((trade, i) => ({
+        activities: safeHistory.slice(0, 5).map((trade, i) => ({
           id: `activity-${trade.id}`,
           type: 'trade',
-          message: `You ${trade.type === 'sell' ? 'sold' : 'bought'} ${trade.solAmount.toFixed(4)} SOL`,
+          message: `You ${trade.type === 'sell' ? 'sold' : 'bought'} ${(trade.solAmount || 0).toFixed(4)} SOL`,
           timestamp: new Date(trade.createdAt).toISOString(),
           relatedId: trade.id,
           actionable: true,
