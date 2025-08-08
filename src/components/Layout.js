@@ -160,6 +160,15 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               
               {/* Language selector */}
               <LanguageSelector
+                languages={[
+                  { code: 'en', name: 'English', country: '🇺🇸' },
+                  { code: 'es', name: 'Español', country: '🇪🇸' },
+                  { code: 'fr', name: 'Français', country: '🇫🇷' },
+                  { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+                  { code: 'ja', name: '日本語', country: '🇯🇵' },
+                  { code: 'ko', name: '한국어', country: '🇰🇷' },
+                  { code: 'zh', name: '中文', country: '🇨🇳' }
+                ]}
                 currentLocale={currentLocale}
                 onLanguageChange={handleLanguageChange}
               />

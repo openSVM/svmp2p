@@ -171,14 +171,12 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
         aria-label={`Current network: ${network.name}. Press Enter or Space to open network options`}
       >
         <div 
-          className="w-3 h-3 rounded-full mr-1.5"
+          className="network-indicator"
           style={{ backgroundColor: network.color }}
         />
-        <span>{network.name}</span>
+        <span className="network-selector-text">{network.name}</span>
         <DropdownIcon 
-          className={`h-4 w-4 ml-1.5 transition-transform duration-200 ${
-            isOpen ? 'transform rotate-180' : ''
-          }`}
+          className={`network-dropdown-icon ${isOpen ? 'open' : ''}`}
         />
       </button>
       
@@ -209,7 +207,7 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
                 tabIndex={-1}
               >
                 <div 
-                  className="w-3 h-3 rounded-full mr-1.5"
+                  className="network-indicator"
                   style={{ backgroundColor: network.color }}
                 />
                 <span className="network-option-name">{network.name}</span>

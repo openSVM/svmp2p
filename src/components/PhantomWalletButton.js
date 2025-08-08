@@ -47,25 +47,24 @@ export const PhantomWalletButton = ({ className = '' }) => {
   // If connected, show disconnect button
   if (connected && walletAddress) {
     return (
-      <div className={`relative ${className}`}>
+      <div className={`ascii-wallet-button-container ${className}`}>
         <button
           onClick={handleDisconnect}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="ascii-wallet-button connected"
           title={`Connected to ${walletAddress}`}
         >
-          <div className="w-6 h-6 flex items-center justify-center">
+          <div className="ascii-wallet-icon">
             <Image 
               src="/images/phantom-logo.svg" 
               alt="Phantom" 
-              width={16}
-              height={16}
+              width={12}
+              height={12}
             />
           </div>
-          <div className="w-2 h-2 bg-green-300 rounded-full"></div>
-          <span className="hidden sm:inline">
-            {`${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`}
+          <span className="ascii-wallet-status-indicator">●</span>
+          <span className="ascii-wallet-text">
+            CONNECT PHANTOM
           </span>
-          <span className="sm:hidden">Connected</span>
         </button>
       </div>
     );
@@ -76,10 +75,10 @@ export const PhantomWalletButton = ({ className = '' }) => {
     return (
       <button
         disabled
-        className={`flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg opacity-50 cursor-not-allowed ${className}`}
+        className={`ascii-wallet-button connecting ${className}`}
       >
-        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-        <span>Connecting...</span>
+        <span className="ascii-wallet-spinner">⟳</span>
+        <span className="ascii-wallet-text">CONNECTING...</span>
       </button>
     );
   }
@@ -89,72 +88,70 @@ export const PhantomWalletButton = ({ className = '' }) => {
     <>
       <button
         onClick={handleConnect}
-        className={`flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${className}`}
+        className={`ascii-wallet-button ${className}`}
       >
-        <div className="w-6 h-6 flex items-center justify-center">
+        <div className="ascii-wallet-icon">
           <Image 
             src="/images/phantom-logo.svg" 
             alt="Phantom" 
-            width={16}
-            height={16}
+            width={12}
+            height={12}
           />
         </div>
-        <span>Connect Phantom</span>
+        <span className="ascii-wallet-text">CONNECT PHANTOM</span>
       </button>
 
       {/* Install Phantom Modal */}
       {showInstallModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+        <div className="ascii-modal-backdrop">
+          <div className="ascii-modal">
             {/* Close button */}
             <button
               onClick={() => setShowInstallModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className="ascii-modal-close"
               aria-label="Close"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              ✕
             </button>
 
             {/* Modal content */}
-            <div className="pt-4">
-              <div className="flex items-center justify-center mb-4">
+            <div className="ascii-modal-content">
+              <div className="ascii-modal-icon">
                 <Image 
                   src="/images/phantom-logo.svg" 
                   alt="Phantom" 
-                  width={64}
-                  height={64}
+                  width={32}
+                  height={32}
                 />
               </div>
               
-              <h2 className="text-xl font-bold text-center mb-4">Install Phantom Wallet</h2>
+              <h2 className="ascii-modal-title">INSTALL PHANTOM WALLET</h2>
               
-              <p className="text-gray-600 text-center mb-6">
-                Phantom wallet is required to use this application. It's a secure and easy-to-use Solana wallet.
+              <p className="ascii-modal-text">
+                PHANTOM WALLET IS REQUIRED TO USE THIS APPLICATION. IT'S A SECURE AND EASY-TO-USE SOLANA WALLET.
               </p>
               
-              <div className="space-y-3">
+              <div className="ascii-modal-actions">
                 <a
                   href="https://phantom.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full px-4 py-3 bg-purple-600 text-white text-center rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                  className="ascii-button primary"
                 >
-                  Download Phantom Wallet
+                  DOWNLOAD PHANTOM WALLET
                 </a>
                 
                 <button
                   onClick={() => setShowInstallModal(false)}
-                  className="block w-full px-4 py-3 bg-gray-200 text-gray-800 text-center rounded-lg hover:bg-gray-300 transition-colors"
+                  className="ascii-button secondary"
                 >
-                  Cancel
+                  CANCEL
                 </button>
               </div>
               
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> After installing Phantom, refresh this page and try connecting again.
+              <div className="ascii-modal-note">
+                <p className="ascii-modal-note-text">
+                  NOTE: AFTER INSTALLING PHANTOM, REFRESH THIS PAGE AND TRY CONNECTING AGAIN.
                 </p>
               </div>
             </div>
@@ -164,7 +161,7 @@ export const PhantomWalletButton = ({ className = '' }) => {
 
       {/* Error display */}
       {error && (
-        <div className="absolute top-full left-0 mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm max-w-xs">
+        <div className="ascii-error-tooltip">
           {error}
         </div>
       )}

@@ -162,10 +162,10 @@ const LanguageSelector = ({
   };
   
   return (
-    <div className="language-selector relative inline-flex" ref={dropdownRef}>
+    <div className="language-selector" ref={dropdownRef}>
       <button
         ref={triggerRef}
-        className="inline-flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-500 transition-all duration-200 ease-in-out min-w-[90px]"
+        className="language-selector-button"
         onClick={handleTriggerClick}
         onKeyDown={handleKeyDown}
         aria-label={`Current language: ${currentLanguage.name}. Click to change language`}
@@ -174,11 +174,11 @@ const LanguageSelector = ({
         aria-controls="language-dropdown"
         role="combobox"
       >
-        <span className="text-sm font-medium">
+        <span className="language-selector-text">
           {currentLanguage.country} {currentLanguage.code.toUpperCase()}
         </span>
         <DropdownIcon 
-          className={`h-5 w-5 ml-1.5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+          className={`language-dropdown-icon ${isOpen ? 'open' : ''}`}
         />
       </button>
       
@@ -187,21 +187,16 @@ const LanguageSelector = ({
           <div className="dropdown-backdrop" onClick={() => setIsOpen(false)} />
           <div 
             id="language-dropdown"
-            className="language-dropdown"
+            className="language-selector-dropdown"
             style={{
               position: 'fixed',
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
-              zIndex: 99999,
-              minWidth: '200px',
-              backgroundColor: 'var(--color-background)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-lg)'
+              zIndex: 99999
             }}
           >
             <div 
-              className="py-1 max-h-60 overflow-auto"
+              className="language-dropdown-list"
               role="listbox"
               aria-label="Language options"
             >
@@ -210,12 +205,10 @@ const LanguageSelector = ({
                 <button
                   key={language.code}
                   ref={el => optionRefs.current[index] = el}
-                  className={`language-option w-full flex items-center px-4 py-3 text-sm text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors duration-150 ${
-                    language.code === currentLocale 
-                      ? 'bg-gray-800 text-white' 
-                      : 'text-gray-700'
+                  className={`language-option ${
+                    language.code === currentLocale ? 'active' : ''
                   } ${
-                    focusedIndex === index ? 'bg-gray-100' : '' // Keep focus style separate
+                    focusedIndex === index ? 'focused' : ''
                   }`}
                   onClick={() => handleLanguageSelect(language.code)}
                   onKeyDown={handleKeyDown}
@@ -223,25 +216,17 @@ const LanguageSelector = ({
                   aria-selected={language.code === currentLocale}
                   tabIndex={-1}
                 >
-                  <span className="font-medium">
-                    {language.country}{language.code.toUpperCase()}
+                  <span className="language-option-flag">
+                    {language.country}
                   </span>
-                  <span className="ml-3">{language.name}</span>
+                  <span className="language-option-code">
+                    {language.code.toUpperCase()}
+                  </span>
+                  <span className="language-option-name">
+                    {language.name}
+                  </span>
                   {language.code === currentLocale && (
-                    <svg 
-                      className="w-4 h-4 ml-auto text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M5 13l4 4L19 7" 
-                      />
-                    </svg>
+                    <span className="language-option-check">✓</span>
                   )}
                 </button>
               ))}

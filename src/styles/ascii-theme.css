@@ -1014,6 +1014,180 @@ html, body {
   align-items: center;
   gap: var(--spacing-3);
   flex-shrink: 0;
+  height: 32px; /* Consistent height for all controls */
+}
+
+/* Consistent base styling for all header controls */
+.network-selector,
+.language-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* Consistent button styling for selectors */
+.network-selector-button,
+.language-selector-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--ascii-neutral-200);
+  border: 1px solid var(--ascii-neutral-400);
+  color: var(--ascii-neutral-700);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 32px;
+  min-width: 80px;
+  border-radius: 0; /* Square corners for ASCII aesthetic */
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.network-selector-button:hover,
+.language-selector-button:hover {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+  border-color: var(--ascii-neutral-600);
+}
+
+.network-selector-button:focus,
+.language-selector-button:focus {
+  outline: 2px solid var(--ascii-neutral-600);
+  outline-offset: 1px;
+}
+
+/* Network indicator styling */
+.network-indicator {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--ascii-neutral-600);
+  flex-shrink: 0;
+}
+
+/* Text styling */
+.network-selector-text,
+.language-selector-text {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Dropdown icon styling */
+.network-dropdown-icon,
+.language-dropdown-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--ascii-neutral-600);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.network-dropdown-icon.open,
+.language-dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown containers */
+.network-selector-dropdown,
+.language-selector-dropdown {
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: var(--spacing-1) 0;
+  z-index: 99999 !important;
+  border-radius: 0; /* Square corners */
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.language-dropdown-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+/* Option styling */
+.network-option,
+.language-option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: transparent;
+  border: none;
+  color: var(--ascii-neutral-700);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  text-align: left;
+  gap: var(--spacing-2);
+  border-radius: 0;
+  letter-spacing: 0.5px;
+}
+
+.network-option:hover,
+.language-option:hover,
+.network-option.focused,
+.language-option.focused {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-800);
+}
+
+.network-option.active,
+.language-option.active {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+}
+
+.network-option:focus,
+.language-option:focus {
+  outline: 1px solid var(--ascii-neutral-600);
+  outline-offset: -1px;
+}
+
+/* Language option specific styling */
+.language-option-flag,
+.language-option-code {
+  font-weight: bold;
+  color: inherit;
+}
+
+.language-option-name {
+  flex: 1;
+  font-weight: normal;
+  text-transform: capitalize;
+}
+
+.language-option-check {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: inherit;
+}
+
+/* Dropdown backdrop for mobile */
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 99998;
 }
 
 .ascii-wallet-status {
@@ -1025,11 +1199,266 @@ html, body {
   padding: var(--spacing-1) var(--spacing-2);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  border-radius: 0;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .ascii-wallet-container {
   display: flex;
   align-items: center;
+  height: 32px;
+}
+
+/* ASCII Wallet Button Styling */
+.ascii-wallet-button-container {
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.ascii-wallet-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--ascii-neutral-200);
+  border: 1px solid var(--ascii-neutral-400);
+  color: var(--ascii-neutral-700);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 32px;
+  border-radius: 0;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.ascii-wallet-button:hover {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+  border-color: var(--ascii-neutral-600);
+}
+
+.ascii-wallet-button:focus {
+  outline: 2px solid var(--ascii-neutral-600);
+  outline-offset: 1px;
+}
+
+.ascii-wallet-button.connected {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  border-color: var(--ascii-neutral-900);
+}
+
+.ascii-wallet-button.connecting {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-700);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.ascii-wallet-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.ascii-wallet-status-indicator {
+  font-size: 8px;
+  color: var(--ascii-neutral-300);
+  line-height: 1;
+}
+
+.ascii-wallet-button.connected .ascii-wallet-status-indicator {
+  color: var(--ascii-neutral-300);
+}
+
+.ascii-wallet-text {
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ascii-wallet-spinner {
+  animation: ascii-spin 1s linear infinite;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+}
+
+@keyframes ascii-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ASCII Modal Styling */
+.ascii-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: var(--spacing-4);
+}
+
+.ascii-modal {
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  padding: var(--spacing-6);
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  font-family: 'Courier New', Courier, monospace !important;
+  border-radius: 0;
+}
+
+.ascii-modal-close {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  color: var(--ascii-neutral-600);
+  cursor: pointer;
+  padding: var(--spacing-1);
+  line-height: 1;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-modal-close:hover {
+  color: var(--ascii-neutral-800);
+}
+
+.ascii-modal-content {
+  padding-top: var(--spacing-4);
+  text-align: center;
+}
+
+.ascii-modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.ascii-modal-title {
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--ascii-neutral-800);
+  margin-bottom: var(--spacing-4);
+  font-family: 'Courier New', Courier, monospace !important;
+  letter-spacing: 0.5px;
+}
+
+.ascii-modal-text {
+  font-size: var(--font-size-sm);
+  color: var(--ascii-neutral-600);
+  margin-bottom: var(--spacing-6);
+  line-height: 1.4;
+  font-family: 'Courier New', Courier, monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+}
+
+.ascii-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.ascii-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--ascii-neutral-400);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+  border-radius: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.ascii-button.primary {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  border-color: var(--ascii-neutral-900);
+}
+
+.ascii-button.primary:hover {
+  background-color: var(--ascii-neutral-800);
+  color: var(--ascii-white);
+}
+
+.ascii-button.secondary {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-700);
+  border-color: var(--ascii-neutral-400);
+}
+
+.ascii-button.secondary:hover {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+}
+
+.ascii-modal-note {
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-3);
+  background-color: var(--ascii-neutral-200);
+  border: 1px solid var(--ascii-neutral-400);
+}
+
+.ascii-modal-note-text {
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-700);
+  font-family: 'Courier New', Courier, monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.ascii-error-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--ascii-neutral-200);
+  border: 1px solid var(--ascii-neutral-600);
+  color: var(--ascii-neutral-800);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  max-width: 200px;
+  word-wrap: break-word;
+  z-index: 99999;
 }
 
 /* ASCII Mobile Navigation */
