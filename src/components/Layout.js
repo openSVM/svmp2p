@@ -17,6 +17,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
 import OfflineIndicator from '@/components/OfflineIndicator';
+import ProfileDropdown from '@/components/ProfileDropdown';
 
 const logger = createLogger('Layout');
 
@@ -75,7 +76,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     logger.debug('Language changed', { locale });
   };
 
-  // Top navbar items (most important sections)
+  // Top navbar items (main navigation sections)
   const topNavItems = [
     { key: 'buy', label: 'BUY', icon: 'B', href: '/buy' },
     { key: 'sell', label: 'SELL', icon: 'S', href: '/sell' },
@@ -83,12 +84,16 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     { key: 'help', label: 'HELP', icon: '?', href: '/help' },
   ];
 
-  // Sidebar navigation items (secondary sections) 
-  const sidebarNavItems = [
+  // Mobile navigation items (includes profile items for mobile grid)
+  const mobileNavItems = [
+    { key: 'buy', label: 'BUY', icon: 'B', href: '/buy' },
+    { key: 'sell', label: 'SELL', icon: 'S', href: '/sell' },
+    { key: 'analytics', label: 'ANALYTICS', icon: '📊', href: '/analytics' },
+    { key: 'help', label: 'HELP', icon: '?', href: '/help' },
+    { key: 'profile', label: 'PROFILE', icon: 'P', href: '/profile' },
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M', href: '/myoffers' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D', href: '/disputes' },
     { key: 'rewards', label: 'REWARDS', icon: '🎁', href: '/rewards' },
-    { key: 'profile', label: 'PROFILE', icon: 'P', href: '/profile' },
   ];
 
   return (
@@ -122,7 +127,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               <h1 className="ascii-logo-text">OPENSVM P2P</h1>
             </div>
             
-            {/* Desktop Navigation - ASCII Styled */}
+            {/* Desktop Navigation - ASCII Styled with Full Width */}
             <nav className="ascii-nav-desktop">
               <div className="ascii-nav-tabs">
                 {/* Primary navigation items */}
@@ -136,16 +141,8 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                   </Link>
                 ))}
                 
-                {/* Secondary navigation items */}
-                {sidebarNavItems.map((item) => (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    className={`ascii-nav-tab ${router.pathname === item.href ? 'active' : ''}`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {/* Profile dropdown for secondary navigation */}
+                <ProfileDropdown />
               </div>
             </nav>
             
@@ -192,7 +189,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         <nav className="ascii-nav-mobile">
           <div className="ascii-nav-grid">
             {/* All navigation items in mobile grid */}
-            {[...topNavItems, ...sidebarNavItems].map((item) => (
+            {mobileNavItems.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}

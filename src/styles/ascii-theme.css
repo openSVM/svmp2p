@@ -3255,3 +3255,198 @@ button:focus-visible {
     font-weight: bold;
   }
 }
+
+/* ========================================
+ * PROFILE DROPDOWN COMPONENT STYLES
+ * ======================================== */
+
+/* Dropdown container */
+.ascii-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown trigger button - extends from ascii-nav-tab */
+.ascii-dropdown-trigger {
+  background-color: var(--ascii-neutral-300);
+  border: 1px solid var(--ascii-neutral-500);
+  color: var(--ascii-neutral-700);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  border-radius: 0;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.ascii-dropdown-trigger:hover {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-800);
+  border-color: var(--ascii-neutral-600);
+  transform: translateY(-1px);
+}
+
+.ascii-dropdown-trigger.active {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  border-color: var(--ascii-neutral-900);
+  font-weight: bold;
+  transform: none;
+}
+
+/* Dropdown menu */
+.ascii-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--ascii-white);
+  border: 1px solid var(--ascii-neutral-400);
+  box-shadow: 2px 2px 0px var(--ascii-neutral-400);
+  z-index: 99999;
+  min-width: 120px;
+  padding: var(--spacing-1);
+  margin-top: 1px;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+/* Dropdown items */
+.ascii-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--ascii-white);
+  border: 1px solid transparent;
+  color: var(--ascii-neutral-700);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--spacing-1);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-dropdown-item:last-child {
+  margin-bottom: 0;
+}
+
+.ascii-dropdown-item:hover {
+  background-color: var(--ascii-neutral-100);
+  border-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-800);
+  transform: translateY(-1px);
+}
+
+.ascii-dropdown-item.active {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+  border-color: var(--ascii-neutral-900);
+}
+
+/* Mobile responsive adjustments for dropdown */
+@media (max-width: 768px) {
+  .ascii-dropdown-trigger {
+    min-width: 70px;
+    padding: var(--spacing-2);
+    font-size: var(--font-size-xs);
+  }
+  
+  .ascii-dropdown-menu {
+    min-width: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .ascii-dropdown-item {
+    padding: var(--spacing-2);
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Enhanced navigation styles for full width navbar */
+.ascii-header {
+  width: 100%;
+  background-color: var(--ascii-neutral-700);
+  border-bottom: 1px solid var(--ascii-neutral-900);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.ascii-header-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-2) var(--spacing-4);
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Make navbar section take full available width */
+.ascii-nav-desktop {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  flex: 1;
+  margin: 0 var(--spacing-4);
+}
+
+.ascii-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background-color: var(--ascii-neutral-200);
+  border: 1px solid var(--ascii-neutral-400);
+  padding: var(--spacing-1);
+  border-radius: 0;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Responsive navigation for full width */
+@media (max-width: 1200px) {
+  .ascii-header-content {
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-3);
+  }
+  
+  .ascii-header-controls {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: var(--spacing-2);
+  }
+}
+
+@media (max-width: 768px) {
+  .ascii-header-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+    text-align: center;
+  }
+  
+  .ascii-logo-section {
+    justify-self: center;
+  }
+  
+  .ascii-nav-desktop {
+    justify-self: center;
+    margin: 0;
+    max-width: 100%;
+  }
+  
+  .ascii-header-controls {
+    justify-self: center;
+    margin-top: 0;
+  }
+}
