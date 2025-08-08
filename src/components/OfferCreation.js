@@ -203,6 +203,19 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     }
   };
   
+  // Calculate SOL amount based on fiat amount using real prices
+  const handleFiatAmountChange = (e) => {
+    const fiat = e.target.value;
+    setFiatAmount(fiat);
+    
+    if (fiat && !isNaN(fiat) && prices && prices[fiatCurrency] && prices[fiatCurrency] > 0) {
+      const calculatedSol = (parseFloat(fiat) / prices[fiatCurrency]).toFixed(6);
+      setSolAmount(calculatedSol);
+    } else if (!fiat) {
+      setSolAmount('');
+    }
+  };
+  
   // Update fiat amount when currency changes using real prices
   const handleCurrencyChange = (e) => {
     setFiatCurrency(e.target.value);
@@ -327,7 +340,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 id="fiatAmount"
                 type="number"
                 value={fiatAmount}
-                onChange={(e) => setFiatAmount(e.target.value)}
+                onChange={handleFiatAmountChange}
                 placeholder="0.00"
                 min={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.min}
                 max={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.max}
@@ -441,9 +454,9 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .guided-workflow-button {
-          background-color: var(--color-primary);
-          color: white;
-          border: none;
+          background-color: var(--ascii-neutral-700);
+          color: var(--ascii-white);
+          border: 1px solid var(--ascii-neutral-800);
           padding: 8px 16px;
           border-radius: 0;
           cursor: pointer;
@@ -451,6 +464,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           display: flex;
           align-items: center;
           gap: 8px;
+          font-family: 'Courier New', Courier, monospace;
+          text-transform: uppercase;
+          transition: all var(--transition-normal);
+          box-shadow: var(--shadow-sm);
         }
 
         .guided-workflow-button::before {
@@ -460,14 +477,17 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: rgba(255, 255, 255, 0.3);
+          background-color: var(--ascii-neutral-500);
+          border: 1px solid var(--ascii-neutral-600);
           border-radius: 0;
           font-size: 0.8rem;
           font-weight: bold;
         }
 
         .guided-workflow-button:hover {
-          background-color: var(--color-primary-dark);
+          background-color: var(--ascii-neutral-600);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
         }
 
         .input-error {

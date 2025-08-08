@@ -117,7 +117,7 @@ const UserStatistics = () => {
         <h2>Your Trading Statistics</h2>
         <div className="user-wallet-info">
           <span className="wallet-address">
-            {wallet.publicKey?.toString().substring(0, 8)}...{wallet.publicKey?.toString().substring(-4)}
+            {wallet.publicKey?.toString().substring(0, 8)}...{wallet.publicKey?.toString().slice(-4)}
           </span>
           {renderReputationBadge()}
         </div>
