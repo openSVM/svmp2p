@@ -216,7 +216,7 @@ const UserStatistics = () => {
           {renderStatCard(
             'Completed Trades',
             completedTrades.length,
-            `${completedTrades.length > 0 ? ((completedTrades.length / safeHistory.length) * 100).toFixed(1) : 0}% completion rate`,
+            `${completedTrades.length > 0 && safeHistory.length > 0 ? ((completedTrades.length / safeHistory.length) * 100).toFixed(1) : 0}% completion rate`,
             'Successfully completed trades',
             'green'
           )}

@@ -173,17 +173,20 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
     }
   }, [isWalletConnected, reputationLoading, historyLoading]);
 
-  // Only fetch data when wallet or network changes
+  // Only fetch data when wallet connection status changes (not when loading states change)
   useEffect(() => {
     // Extra protection in case fetchProfileData changes between renders
     try {
-      fetchProfileData();
+      if (isWalletConnected) {
+        // Call fetchProfileData directly to avoid dependency warning
+        fetchProfileData();
+      }
     } catch (err) {
       console.error('[UserProfile] Error in fetchProfileData effect:', err);
       setError('An error occurred while loading your profile');
       setLoading(false);
     }
-  }, [fetchProfileData]);
+  }, [isWalletConnected, fetchProfileData]); // Include fetchProfileData to fix lint warning
 
   // Handle settings update - optimized with useCallback
   const handleSaveSettings = useCallback((newSettings) => {

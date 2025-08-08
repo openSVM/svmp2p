@@ -13,7 +13,7 @@ export const useOffers = (program, filters = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchOffers = useCallback(async () => {
+  const fetchOffers = useCallback(async (abortSignal) => {
     if (!program) {
       setOffers([]);
       setLoading(false);
@@ -26,8 +26,20 @@ export const useOffers = (program, filters = {}) => {
     try {
       logger.info('Fetching offers from blockchain...');
       
+      // Check if operation was aborted
+      if (abortSignal?.aborted) {
+        logger.info('Fetch offers operation aborted');
+        return;
+      }
+      
       // Fetch all offer accounts
       const offerAccounts = await program.account.offer.all();
+      
+      // Check again after async operation
+      if (abortSignal?.aborted) {
+        logger.info('Fetch offers operation aborted after blockchain query');
+        return;
+      }
       
       const processedOffers = offerAccounts.map(({ account, publicKey }) => ({
         id: publicKey.toString(),
@@ -72,6 +84,12 @@ export const useOffers = (program, filters = {}) => {
         filteredOffers = filteredOffers.filter(offer => offer.solAmount <= filters.maxAmount);
       }
 
+      // Final abort check before setting state
+      if (abortSignal?.aborted) {
+        logger.info('Fetch offers operation aborted before setting state');
+        return;
+      }
+
       logger.info(`Fetched ${filteredOffers.length} offers from blockchain`, { 
         total: offerAccounts.length,
         filtered: filteredOffers.length 
@@ -79,19 +97,35 @@ export const useOffers = (program, filters = {}) => {
 
       setOffers(filteredOffers);
     } catch (err) {
+      if (abortSignal?.aborted) {
+        logger.info('Fetch offers operation aborted due to error:', err.message);
+        return;
+      }
       logger.error('Error fetching offers:', err);
       setError(`Failed to fetch offers: ${err.message}`);
       setOffers([]);
     } finally {
-      setLoading(false);
+      if (!abortSignal?.aborted) {
+        setLoading(false);
+      }
     }
   }, [program, filters]);
 
   useEffect(() => {
+    const abortController = new AbortController();
+    fetchOffers(abortController.signal);
+    
+    // Cleanup function
+    return () => {
+      abortController.abort();
+    };
+  }, [fetchOffers]);
+
+  const refetchOffers = useCallback(() => {
     fetchOffers();
   }, [fetchOffers]);
 
-  return { offers, loading, error, refetch: fetchOffers };
+  return { offers, loading, error, refetch: refetchOffers };
 };
 
 /**
@@ -175,10 +209,20 @@ export const useUserReputation = (program, userPublicKey) => {
   }, [program, userPublicKey]);
 
   useEffect(() => {
+    const abortController = new AbortController();
+    fetchReputation(abortController.signal);
+    
+    // Cleanup function
+    return () => {
+      abortController.abort();
+    };
+  }, [fetchReputation]);
+
+  const refetchReputation = useCallback(() => {
     fetchReputation();
   }, [fetchReputation]);
 
-  return { reputation, loading, error, refetch: fetchReputation };
+  return { reputation, loading, error, refetch: refetchReputation };
 };
 
 /**
