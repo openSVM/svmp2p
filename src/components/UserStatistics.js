@@ -239,15 +239,15 @@ const UserStatistics = () => {
             
             {renderStatCard(
               'Platform Average',
-              `${programStats.users.averageRating.toFixed(1)}`,
+              `${(programStats.users.averageRating || 0).toFixed(1)}`,
               'Average user rating',
               'Average reputation rating across all users'
             )}
             
             {renderStatCard(
               'Active Traders',
-              `${programStats.users.activeTraders}`,
-              `${programStats.users.participationRate.toFixed(1)}% participation`,
+              `${programStats.users.activeTraders || 0}`,
+              `${(programStats.users.participationRate || 0).toFixed(1)}% participation`,
               'Number of users who have completed trades'
             )}
           </div>

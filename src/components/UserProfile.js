@@ -93,7 +93,7 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
           averageRating: (safeReputation.rating || 0) / 100, // Convert from 0-500 to 0-5 scale
           averageResponseTime: 'N/A', // Would need additional tracking
           disputeRate: (safeReputation.totalTrades || 0) > 0 ? 
-            ((safeReputation.disputedTrades || 0) / safeReputation.totalTrades * 100) : 0,
+            ((safeReputation.disputedTrades || 0) / (safeReputation.totalTrades || 1) * 100) : 0,
           lastUpdated: safeReputation.lastUpdated ? 
             new Date(safeReputation.lastUpdated).toLocaleDateString() : 'Never'
         },
@@ -186,7 +186,7 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
       setError('An error occurred while loading your profile');
       setLoading(false);
     }
-  }, [isWalletConnected, fetchProfileData]); // Include fetchProfileData to fix lint warning
+  }, [isWalletConnected]); // Remove fetchProfileData to prevent infinite re-renders
 
   // Handle settings update - optimized with useCallback
   const handleSaveSettings = useCallback((newSettings) => {

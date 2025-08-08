@@ -36,15 +36,15 @@ const TradingStats = ({ stats }) => {
 
   // Prepare performance metrics data
   const performanceData = [
-    { property: 'AVERAGE RESPONSE TIME', value: stats.averageResponseTime || 'N/A' },
+    { property: 'AVERAGE RESPONSE TIME', value: stats?.averageResponseTime || 'N/A' },
     { 
       property: 'RESPONSE TIME RATING', 
-      value: stats.responseTimeRating?.toUpperCase() || 'AVERAGE',
-      badge: stats.responseTimeRating?.toUpperCase() || 'AVERAGE',
-      badgeClassName: `rating-${stats.responseTimeRating || 'average'}`
+      value: stats?.responseTimeRating?.toUpperCase() || 'AVERAGE',
+      badge: stats?.responseTimeRating?.toUpperCase() || 'AVERAGE',
+      badgeClassName: `rating-${stats?.responseTimeRating || 'average'}`
     },
-    { property: 'STATISTICS PERIOD START', value: stats.periodStart || '30 days ago' },
-    { property: 'STATISTICS PERIOD END', value: stats.periodEnd || 'Today' },
+    { property: 'STATISTICS PERIOD START', value: stats?.periodStart || '30 days ago' },
+    { property: 'STATISTICS PERIOD END', value: stats?.periodEnd || 'Today' },
   ];
 
   const statsActions = (
