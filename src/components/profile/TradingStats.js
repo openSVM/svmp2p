@@ -1,125 +1,56 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import PropertyValueTable from '../common/PropertyValueTable';
 
 /**
  * TradingStats component displays the user's trading statistics
  */
 const TradingStats = ({ stats }) => {
+  // Prepare trading statistics data for PropertyValueTable
+  const tradingStatsData = [
+    { property: 'TOTAL TRADES', value: stats.totalTrades || 0 },
+    { property: 'SUCCESSFUL TRADES', value: stats.successfulTrades || 0, badge: 'SUCCESS', badgeClassName: 'badge-success' },
+    { property: 'COMPLETION RATE', value: `${stats.completionRate || 0}%`, valueClassName: 'completion-rate' },
+    { property: 'TOTAL VOLUME', value: `$${stats.totalVolume?.toFixed(2) || '0.00'}`, valueClassName: 'total-volume' },
+    { property: 'BUY ORDERS', value: stats.buyOrders || 0, description: `${((stats.buyOrders / stats.totalTrades) * 100).toFixed(1)}% of total trades` },
+    { property: 'SELL ORDERS', value: stats.sellOrders || 0, description: `${((stats.sellOrders / stats.totalTrades) * 100).toFixed(1)}% of total trades` },
+    { property: 'DISPUTED TRADES', value: stats.disputedTrades || 0, badge: stats.disputedTrades > 0 ? 'DISPUTED' : null, badgeClassName: 'badge-warning' },
+    { property: 'CANCELLED TRADES', value: stats.cancelledTrades || 0, badge: stats.cancelledTrades > 0 ? 'CANCELLED' : null, badgeClassName: 'badge-error' },
+  ];
+
+  // Prepare performance metrics data
+  const performanceData = [
+    { property: 'AVERAGE RESPONSE TIME', value: stats.averageResponseTime || 'N/A' },
+    { 
+      property: 'RESPONSE TIME RATING', 
+      value: stats.responseTimeRating?.toUpperCase() || 'AVERAGE',
+      badge: stats.responseTimeRating?.toUpperCase() || 'AVERAGE',
+      badgeClassName: `rating-${stats.responseTimeRating || 'average'}`
+    },
+    { property: 'STATISTICS PERIOD START', value: stats.periodStart || '30 days ago' },
+    { property: 'STATISTICS PERIOD END', value: stats.periodEnd || 'Today' },
+  ];
+
+  const statsActions = (
+    <button className="button button-ghost button-sm">
+      VIEW DETAILED ANALYTICS
+    </button>
+  );
+
   return (
-    <div className="trading-stats card">
-      <div className="card-header">
-        <h3 className="card-title">Trading Statistics</h3>
-      </div>
+    <div className="trading-stats">
+      <PropertyValueTable
+        title="Trading Statistics"
+        data={tradingStatsData}
+        className="trading-stats-table"
+      />
       
-      <div className="stats-grid responsive-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="stat-item">
-          <div className="stat-value">{stats.totalTrades || 0}</div>
-          <div className="stat-label">Total Trades</div>
-        </div>
-        
-        <div className="stat-item">
-          <div className="stat-value">{stats.successfulTrades || 0}</div>
-          <div className="stat-label">Successful</div>
-        </div>
-        
-        <div className="stat-item">
-          <div className="stat-value">{stats.completionRate || 0}%</div>
-          <div className="stat-label">Completion Rate</div>
-        </div>
-        
-        <div className="stat-item">
-          <div className="stat-value">${stats.totalVolume?.toFixed(2) || '0.00'}</div>
-          <div className="stat-label">Total Volume</div>
-        </div>
-      </div>
-      
-      <div className="stats-details">
-        <div className="stats-section">
-          <h4>Trade Breakdown</h4>
-          <div className="stats-bar-chart">
-            <div className="stats-bar-item">
-              <div className="stats-bar-label">Buy Orders</div>
-              <div className="stats-bar-container">
-                <div 
-                  className="stats-bar stats-bar-buy" 
-                  style={{ width: `${(stats.buyOrders / stats.totalTrades) * 100}%` }}
-                ></div>
-                <div className="stats-bar-value">{stats.buyOrders || 0}</div>
-              </div>
-            </div>
-            
-            <div className="stats-bar-item">
-              <div className="stats-bar-label">Sell Orders</div>
-              <div className="stats-bar-container">
-                <div 
-                  className="stats-bar stats-bar-sell" 
-                  style={{ width: `${(stats.sellOrders / stats.totalTrades) * 100}%` }}
-                ></div>
-                <div className="stats-bar-value">{stats.sellOrders || 0}</div>
-              </div>
-            </div>
-            
-            <div className="stats-bar-item">
-              <div className="stats-bar-label">Disputed</div>
-              <div className="stats-bar-container">
-                <div 
-                  className="stats-bar stats-bar-disputed" 
-                  style={{ width: `${(stats.disputedTrades / stats.totalTrades) * 100}%` }}
-                ></div>
-                <div className="stats-bar-value">{stats.disputedTrades || 0}</div>
-              </div>
-            </div>
-            
-            <div className="stats-bar-item">
-              <div className="stats-bar-label">Cancelled</div>
-              <div className="stats-bar-container">
-                <div 
-                  className="stats-bar stats-bar-cancelled" 
-                  style={{ width: `${(stats.cancelledTrades / stats.totalTrades) * 100}%` }}
-                ></div>
-                <div className="stats-bar-value">{stats.cancelledTrades || 0}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="stats-section">
-          <h4>Response Time</h4>
-          <div className="response-time-container">
-            <div className="response-time-value">
-              {stats.averageResponseTime || 'N/A'}
-            </div>
-            <div className="response-time-label">
-              Average Response Time
-            </div>
-          </div>
-          
-          <div className="response-time-rating">
-            {stats.responseTimeRating === 'excellent' && (
-              <div className="rating-badge rating-excellent">Excellent</div>
-            )}
-            {stats.responseTimeRating === 'good' && (
-              <div className="rating-badge rating-good">Good</div>
-            )}
-            {stats.responseTimeRating === 'average' && (
-              <div className="rating-badge rating-average">Average</div>
-            )}
-            {stats.responseTimeRating === 'slow' && (
-              <div className="rating-badge rating-slow">Slow</div>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      <div className="stats-footer">
-        <div className="stats-period">
-          Statistics from {stats.periodStart} to {stats.periodEnd}
-        </div>
-        
-        <button className="button button-ghost button-sm">
-          View Detailed Analytics
-        </button>
-      </div>
+      <PropertyValueTable
+        title="Performance Metrics"
+        data={performanceData}
+        actions={statsActions}
+        className="performance-metrics-table"
+      />
     </div>
   );
 };

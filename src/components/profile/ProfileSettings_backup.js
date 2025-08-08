@@ -1,5 +1,31 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
+/**
+ * ProfileSettings component allows users to customize their profile settings
+ */
+const ProfileSettings = ({ settings, onSaveSettings }) => {
+  const [profileSettings, setProfileSettings] = useState(settings);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setProfileSettings({
+      ...profileSettings,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+  
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSaveSettings(profileSettings);
+    setIsEditing(false);
+  };
+  
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import PropertyValueTable from '../common/PropertyValueTable';
 
 /**

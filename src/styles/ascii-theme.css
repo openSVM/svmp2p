@@ -1403,3 +1403,479 @@ html, body {
     gap: var(--spacing-2);
   }
 }
+
+/* ===== PROPERTY VALUE TABLE SYSTEM ===== */
+/* Clean table layout for displaying property-value pairs */
+
+.property-value-table {
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  margin-bottom: var(--spacing-4);
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.property-value-table .card-header {
+  background-color: var(--ascii-neutral-200);
+  border-bottom: 1px solid var(--ascii-neutral-400);
+  padding: var(--spacing-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.property-value-table .card-title {
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  color: var(--ascii-neutral-900);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.property-value-table .card-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.ascii-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace !important;
+  font-size: var(--font-size-sm);
+}
+
+.ascii-table-header {
+  background-color: var(--ascii-neutral-300);
+  border-bottom: 2px solid var(--ascii-neutral-500);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.ascii-table-col {
+  padding: var(--spacing-2) var(--spacing-3);
+  text-align: left;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--ascii-neutral-900);
+  border-right: 1px solid var(--ascii-neutral-400);
+}
+
+.ascii-table-col:last-child {
+  border-right: none;
+}
+
+.ascii-table-col.property-col {
+  background-color: var(--ascii-neutral-300);
+  font-weight: bold;
+}
+
+.ascii-table-col.value-col {
+  background-color: var(--ascii-neutral-200);
+}
+
+.ascii-table-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  border-bottom: 1px solid var(--ascii-neutral-300);
+  transition: background-color 0.2s ease;
+}
+
+.ascii-table-row:hover {
+  background-color: var(--ascii-neutral-150);
+}
+
+.ascii-table-row:nth-child(even) {
+  background-color: var(--ascii-neutral-100);
+}
+
+.ascii-table-row .ascii-table-col {
+  font-weight: normal;
+  color: var(--ascii-neutral-800);
+  border-bottom: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.property-name {
+  font-weight: bold;
+  color: var(--ascii-neutral-700);
+  font-size: var(--font-size-sm);
+}
+
+.property-description {
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-600);
+  font-style: italic;
+  margin-top: var(--spacing-1);
+}
+
+.property-value {
+  font-weight: bold;
+  color: var(--ascii-neutral-800);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.property-value.has-value {
+  color: var(--ascii-neutral-900);
+}
+
+.property-value.no-value {
+  color: var(--ascii-neutral-500);
+  font-style: italic;
+}
+
+.property-value.excellent {
+  color: var(--ascii-neutral-900);
+  font-weight: bold;
+}
+
+.property-value.good {
+  color: var(--ascii-neutral-800);
+}
+
+.property-value.average {
+  color: var(--ascii-neutral-600);
+}
+
+.property-value.warning {
+  color: var(--ascii-neutral-700);
+  background-color: var(--ascii-neutral-200);
+  padding: var(--spacing-1) var(--spacing-2);
+  border: 1px solid var(--ascii-neutral-400);
+}
+
+.property-value.star-rating {
+  font-size: var(--font-size-lg);
+  letter-spacing: 2px;
+  color: var(--ascii-neutral-700);
+}
+
+.property-value.completion-rate,
+.property-value.total-volume {
+  font-size: var(--font-size-base);
+  font-weight: bold;
+}
+
+.property-value.last-updated {
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-600);
+}
+
+.property-badge {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  border: 1px solid var(--ascii-neutral-400);
+  margin-left: var(--spacing-2);
+}
+
+.property-badge.badge-success {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-900);
+  border-color: var(--ascii-neutral-500);
+}
+
+.property-badge.badge-warning {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+  border-color: var(--ascii-neutral-600);
+}
+
+.property-badge.badge-error {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+  border-color: var(--ascii-neutral-700);
+}
+
+.property-badge.badge-neutral {
+  background-color: var(--ascii-neutral-100);
+  color: var(--ascii-neutral-700);
+  border-color: var(--ascii-neutral-300);
+}
+
+/* Level badges for reputation */
+.property-badge.level-excellent {
+  background-color: var(--ascii-neutral-800);
+  color: var(--ascii-white);
+}
+
+.property-badge.level-very-good {
+  background-color: var(--ascii-neutral-700);
+  color: var(--ascii-white);
+}
+
+.property-badge.level-good {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+}
+
+.property-badge.level-fair,
+.property-badge.level-moderate {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+}
+
+.property-badge.level-developing,
+.property-badge.level-basic {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+}
+
+.property-badge.level-new-user {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+}
+
+/* Type badges for activities */
+.property-badge.type-badge-buy {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-900);
+}
+
+.property-badge.type-badge-sell {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-900);
+}
+
+.property-badge.type-badge-deposit {
+  background-color: var(--ascii-neutral-100);
+  color: var(--ascii-neutral-800);
+}
+
+/* Status badges */
+.property-badge.status-badge-completed {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-900);
+}
+
+.property-badge.status-badge-pending {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+}
+
+.property-badge.status-badge-disputed {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+}
+
+.property-badge.status-badge-cancelled {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+}
+
+/* Rating badges */
+.property-badge.rating-excellent {
+  background-color: var(--ascii-neutral-800);
+  color: var(--ascii-white);
+}
+
+.property-badge.rating-good {
+  background-color: var(--ascii-neutral-600);
+  color: var(--ascii-white);
+}
+
+.property-badge.rating-average {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+}
+
+.property-badge.rating-slow {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+}
+
+/* Transaction summary styling for transaction history */
+.transaction-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.transaction-amount {
+  font-weight: bold;
+  color: var(--ascii-neutral-900);
+  font-size: var(--font-size-sm);
+}
+
+.transaction-meta {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  font-size: var(--font-size-xs);
+}
+
+.transaction-date {
+  color: var(--ascii-neutral-600);
+}
+
+.status-badge {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  border: 1px solid var(--ascii-neutral-400);
+}
+
+.status-badge.status-completed {
+  background-color: var(--ascii-neutral-200);
+  color: var(--ascii-neutral-900);
+}
+
+.status-badge.status-pending {
+  background-color: var(--ascii-neutral-300);
+  color: var(--ascii-neutral-800);
+}
+
+.status-badge.status-disputed {
+  background-color: var(--ascii-neutral-400);
+  color: var(--ascii-neutral-900);
+}
+
+.status-badge.status-cancelled {
+  background-color: var(--ascii-neutral-500);
+  color: var(--ascii-white);
+}
+
+/* Activity summary styling */
+.activity-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.activity-message {
+  font-weight: normal;
+  color: var(--ascii-neutral-800);
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
+}
+
+.activity-meta {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--ascii-neutral-600);
+}
+
+.activity-time {
+  font-weight: bold;
+  color: var(--ascii-neutral-700);
+}
+
+.activity-id {
+  font-family: 'Courier New', Courier, monospace !important;
+  background-color: var(--ascii-neutral-200);
+  padding: var(--spacing-1);
+  border: 1px solid var(--ascii-neutral-400);
+}
+
+.activity-action-btn {
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: var(--ascii-neutral-100);
+  border: 1px solid var(--ascii-neutral-400);
+  color: var(--ascii-neutral-800);
+  cursor: pointer;
+  font-family: 'Courier New', Courier, monospace !important;
+}
+
+.activity-action-btn:hover {
+  background-color: var(--ascii-neutral-200);
+}
+
+/* Profile-specific table layouts */
+.transaction-data-table,
+.trading-stats-table,
+.performance-metrics-table,
+.reputation-table,
+.reputation-details-table,
+.display-preferences-table,
+.notification-settings-table,
+.privacy-settings-table,
+.activity-table {
+  margin-bottom: var(--spacing-4);
+}
+
+/* Settings action styling */
+.settings-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.edit-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+/* Transaction filters and pagination styling */
+.transaction-filters {
+  margin-bottom: var(--spacing-4);
+}
+
+.filter-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2) 0;
+  border-top: 1px solid var(--ascii-neutral-400);
+  margin-top: var(--spacing-3);
+}
+
+.transaction-pagination {
+  margin-top: var(--spacing-4);
+}
+
+.no-transactions {
+  text-align: center;
+  padding: var(--spacing-5);
+}
+
+/* Responsive adjustments for property-value tables */
+@media (max-width: 768px) {
+  .ascii-table-header,
+  .ascii-table-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .ascii-table-col.property-col {
+    border-bottom: 1px solid var(--ascii-neutral-400);
+    padding-bottom: var(--spacing-1);
+  }
+  
+  .ascii-table-col.value-col {
+    padding-top: var(--spacing-1);
+  }
+  
+  .property-name {
+    font-size: var(--font-size-xs);
+  }
+  
+  .property-value {
+    font-size: var(--font-size-sm);
+  }
+  
+  .property-badge {
+    margin-left: 0;
+    margin-top: var(--spacing-1);
+    display: inline-block;
+  }
+  
+  .transaction-summary,
+  .activity-summary {
+    gap: var(--spacing-2);
+  }
+  
+  .transaction-meta,
+  .activity-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
+}

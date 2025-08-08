@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import PropertyValueTable from '../common/PropertyValueTable';
 
 /**
  * TransactionHistory component displays the user's transaction history with filtering and sorting
@@ -10,6 +11,7 @@ const TransactionHistory = ({ transactions }) => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   
   const itemsPerPage = 5;
   
@@ -91,10 +93,69 @@ const TransactionHistory = ({ transactions }) => {
     );
   };
   
+  // Prepare transaction data for PropertyValueTable
+  const getTransactionTableData = () => {
+    if (selectedTransaction) {
+      // Show detailed view of selected transaction
+      return [
+        { property: 'TRANSACTION ID', value: selectedTransaction.id },
+        { property: 'TYPE', value: selectedTransaction.type.toUpperCase(), badge: selectedTransaction.type.toUpperCase(), badgeClassName: `type-badge-${selectedTransaction.type.toLowerCase()}` },
+        { property: 'SOL AMOUNT', value: `${selectedTransaction.solAmount.toFixed(2)} SOL` },
+        { property: 'FIAT AMOUNT', value: `${selectedTransaction.fiatAmount.toFixed(2)} ${selectedTransaction.fiatCurrency}` },
+        { property: 'STATUS', value: selectedTransaction.status.toUpperCase(), badge: selectedTransaction.status.toUpperCase(), badgeClassName: `status-badge-${selectedTransaction.status.toLowerCase()}` },
+        { property: 'DATE CREATED', value: selectedTransaction.createdAt },
+        { property: 'RATE', value: `${(selectedTransaction.fiatAmount / selectedTransaction.solAmount).toFixed(2)} ${selectedTransaction.fiatCurrency}/SOL` },
+      ];
+    }
+
+    // Show list of transactions with clickable rows
+    return paginatedTransactions.map(transaction => ({
+      property: `${transaction.type.toUpperCase()} - ${transaction.id}`,
+      value: (
+        <div 
+          className="transaction-summary clickable"
+          onClick={() => setSelectedTransaction(transaction)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="transaction-amount">
+            {transaction.solAmount.toFixed(2)} SOL → {transaction.fiatAmount.toFixed(2)} {transaction.fiatCurrency}
+          </div>
+          <div className="transaction-meta">
+            <span className={`status-badge status-${transaction.status.toLowerCase()}`}>
+              {transaction.status.toUpperCase()}
+            </span>
+            <span className="transaction-date">{transaction.createdAt}</span>
+          </div>
+        </div>
+      ),
+      className: `transaction-row transaction-${transaction.type.toLowerCase()}`,
+      description: `Click to view details`,
+    }));
+  };
+
+  const transactionActions = (
+    <div className="transaction-actions">
+      {selectedTransaction && (
+        <button 
+          className="button button-ghost button-sm"
+          onClick={() => setSelectedTransaction(null)}
+        >
+          ← BACK TO LIST
+        </button>
+      )}
+      <button className="button button-outline button-sm">
+        EXPORT TRANSACTIONS
+      </button>
+    </div>
+  );
+
   return (
-    <div className="transaction-history card">
-      <div className="card-header">
-        <h3 className="card-title">Transaction History</h3>
+    <div className="transaction-history">
+      {/* Filters */}
+      <div className="transaction-filters card">
+        <div className="card-header">
+          <h3 className="card-title">Transaction Filters</h3>
+        </div>
         
         <div className="ascii-form-row-4">
           <div className="ascii-field">
@@ -106,7 +167,7 @@ const TransactionHistory = ({ transactions }) => {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setPage(1); // Reset to first page on search
+                setPage(1);
               }}
             />
           </div>
@@ -118,7 +179,7 @@ const TransactionHistory = ({ transactions }) => {
               value={filter}
               onChange={(e) => {
                 setFilter(e.target.value);
-                setPage(1); // Reset to first page on filter change
+                setPage(1);
               }}
             >
               <option value="all">All Types</option>
@@ -156,137 +217,70 @@ const TransactionHistory = ({ transactions }) => {
             </select>
           </div>
         </div>
-      </div>
-      
-      {paginatedTransactions.length === 0 ? (
-        <div className="ascii-form-message no-transactions">
-          <span className="message-icon">[!]</span>
-          <span className="message-text">
-            {searchQuery || filter !== 'all' 
-              ? 'NO TRANSACTIONS MATCH YOUR FILTERS' 
-              : 'NO TRANSACTIONS FOUND'}
+
+        <div className="filter-summary">
+          <span className="results-count">
+            {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''} found
           </span>
+        </div>
+      </div>
+
+      {/* Transaction Data */}
+      {paginatedTransactions.length === 0 ? (
+        <div className="no-transactions card">
+          <div className="ascii-form-message">
+            <span className="message-icon">[!]</span>
+            <span className="message-text">
+              {searchQuery || filter !== 'all' 
+                ? 'NO TRANSACTIONS MATCH YOUR FILTERS' 
+                : 'NO TRANSACTIONS FOUND'}
+            </span>
+          </div>
         </div>
       ) : (
         <>
-          <div className="ascii-form-table transactions-table">
-            <div className="table-header">
-              <div 
-                className={`col type ${sortBy === 'type' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('type')}
-              >
-                TYPE{getSortIndicator('type')}
-              </div>
-              <div 
-                className={`col amount ${sortBy === 'amount' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('amount')}
-              >
-                AMOUNT{getSortIndicator('amount')}
-              </div>
-              <div 
-                className={`col fiat ${sortBy === 'fiat' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('fiat')}
-              >
-                FIAT{getSortIndicator('fiat')}
-              </div>
-              <div 
-                className={`col status ${sortBy === 'status' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('status')}
-              >
-                STATUS{getSortIndicator('status')}
-              </div>
-              <div 
-                className={`col date ${sortBy === 'date' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('date')}
-              >
-                DATE{getSortIndicator('date')}
-              </div>
-              <div className="col actions">
-                ACTION
-              </div>
-            </div>
-            
-            {paginatedTransactions.map(transaction => (
-              <div key={transaction.id} className="table-row">
-                <div className={`col type ${transaction.type.toLowerCase()}`}>
-                  <span className="type-badge">{transaction.type.toUpperCase()}</span>
-                </div>
-                <div className="col amount">
-                  <span className="amount-value">{transaction.solAmount.toFixed(2)}</span>
-                  <span className="amount-unit">SOL</span>
-                </div>
-                <div className="col fiat">
-                  <span className="fiat-value">{transaction.fiatAmount.toFixed(2)}</span>
-                  <span className="fiat-currency">{transaction.fiatCurrency}</span>
-                </div>
-                <div className={`col status status-${transaction.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                  <span className="status-badge">{transaction.status.toUpperCase()}</span>
-                </div>
-                <div className="col date">
-                  {transaction.createdAt}
-                </div>
-                <div className="col actions">
+          <PropertyValueTable
+            title={selectedTransaction ? `Transaction Details - ${selectedTransaction.id}` : "Transaction History"}
+            data={getTransactionTableData()}
+            actions={transactionActions}
+            className="transaction-data-table"
+          />
+
+          {!selectedTransaction && totalPages > 1 && (
+            <div className="transaction-pagination card">
+              <div className="ascii-form-inline pagination">
+                <div className="ascii-field-inline">
                   <button 
-                    className="button button-ghost button-xs"
-                    onClick={() => alert(`View details for transaction ${transaction.id}`)}
-                    aria-label={`View details for transaction ${transaction.id}`}
+                    className="pagination-button"
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    aria-label="Previous page"
                   >
-                    VIEW
+                    ← PREV
                   </button>
                 </div>
-              </div>
-            ))}
-          </div>
-          
-          {totalPages > 1 && (
-            <div className="ascii-form-inline pagination">
-              <div className="ascii-field-inline">
-                <button 
-                  className="pagination-button"
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                  aria-label="Previous page"
-                >
-                  ← PREV
-                </button>
-              </div>
-              
-              <div className="ascii-field-inline">
-                <span className="pagination-info">
-                  PAGE {page} OF {totalPages}
-                </span>
-              </div>
-              
-              <div className="ascii-field-inline">
-                <button 
-                  className="pagination-button"
-                  disabled={page === totalPages}
-                  onClick={() => setPage(page + 1)}
-                  aria-label="Next page"
-                >
-                  NEXT →
-                </button>
+                
+                <div className="ascii-field-inline">
+                  <span className="pagination-info">
+                    PAGE {page} OF {totalPages}
+                  </span>
+                </div>
+                
+                <div className="ascii-field-inline">
+                  <button 
+                    className="pagination-button"
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                    aria-label="Next page"
+                  >
+                    NEXT →
+                  </button>
+                </div>
               </div>
             </div>
           )}
         </>
       )}
-      
-      <div className="ascii-form-actions ascii-form-actions-spread">
-        <div className="ascii-form-actions-left">
-          <button className="button button-outline button-sm">
-            Export Transactions
-          </button>
-          <button className="button button-ghost button-sm">
-            View All
-          </button>
-        </div>
-        <div className="ascii-form-actions-right">
-          <span className="results-count">
-            {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}
-          </span>
-        </div>
-      </div>
     </div>
   );
 };
