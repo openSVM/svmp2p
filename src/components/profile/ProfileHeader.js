@@ -101,27 +101,27 @@ const ProfileHeader = ({
             </button>
           </div>
           
-          <div className="profile-meta">
-            <div className="profile-network">
+          <div className="profile-meta ascii-form-row-2">
+            <div className="profile-network ascii-form-field">
               <span className="profile-meta-label">Network:</span>
               <span className="profile-meta-value">{network.name}</span>
             </div>
             
-            <div className="profile-join-date">
+            <div className="profile-join-date ascii-form-field">
               <span className="profile-meta-label">Member since:</span>
               <span className="profile-meta-value">{joinDate}</span>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="profile-actions">
-        <button className="button button-outline button-sm">
-          Edit Profile
-        </button>
-        <button className="button button-ghost button-sm">
-          Share Profile
-        </button>
+        
+        <div className="profile-actions">
+          <button className="button button-outline button-sm">
+            Edit Profile
+          </button>
+          <button className="button button-ghost button-sm">
+            Share Profile
+          </button>
+        </div>
       </div>
     </div>
   );
