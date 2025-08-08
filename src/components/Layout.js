@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { PhantomWalletButton } from './PhantomWalletButton';
 import { usePhantomWallet } from '@/contexts/PhantomWalletProvider';
 import { createLogger } from '@/utils/logger';
@@ -23,11 +25,10 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     network, 
     selectedNetwork, 
     setSelectedNetwork, 
-    activeTab, 
-    setActiveTab,
     networks 
   } = useContext(AppContext);
   
+  const router = useRouter();
   const { connected, publicKey } = usePhantomWallet();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [currentLocale, setCurrentLocale] = useState('en');
@@ -76,18 +77,18 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
 
   // Top navbar items (most important sections)
   const topNavItems = [
-    { key: 'buy', label: 'BUY', icon: 'B' },
-    { key: 'sell', label: 'SELL', icon: 'S' },
-    { key: 'analytics', label: 'ANALYTICS', icon: '📊' },
-    { key: 'help', label: 'HELP', icon: '?' },
+    { key: 'buy', label: 'BUY', icon: 'B', href: '/buy' },
+    { key: 'sell', label: 'SELL', icon: 'S', href: '/sell' },
+    { key: 'analytics', label: 'ANALYTICS', icon: '📊', href: '/analytics' },
+    { key: 'help', label: 'HELP', icon: '?', href: '/help' },
   ];
 
   // Sidebar navigation items (secondary sections)
   const sidebarNavItems = [
-    { key: 'myoffers', label: 'MY OFFERS', icon: 'M' },
-    { key: 'disputes', label: 'DISPUTES', icon: 'D' },
-    { key: 'rewards', label: 'REWARDS', icon: '🎁' },
-    { key: 'profile', label: 'PROFILE', icon: 'P' },
+    { key: 'myoffers', label: 'MY OFFERS', icon: 'M', href: '/myoffers' },
+    { key: 'disputes', label: 'DISPUTES', icon: 'D', href: '/disputes' },
+    { key: 'rewards', label: 'REWARDS', icon: '🎁', href: '/rewards' },
+    { key: 'profile', label: 'PROFILE', icon: 'P', href: '/profile' },
   ];
 
   return (
@@ -124,28 +125,24 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             <nav className="desktop-nav">
               {/* Primary navigation items */}
               {topNavItems.map((item) => (
-                <button
+                <Link
                   key={item.key}
-                  className={`nav-tab ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
-                  onClick={() => setActiveTab(item.key)}
+                  href={item.href}
+                  className={`nav-tab ${router.pathname === item.href ? 'active' : ''}`}
                 >
                   <span className="nav-label">{item.label}</span>
-                </button>
+                </Link>
               ))}
               
               {/* Secondary navigation items (previously in sidebar) */}
               {sidebarNavItems.map((item) => (
-                <button
+                <Link
                   key={item.key}
-                  className={`nav-tab ${
-                    activeTab === item.key ? 'active' : ''
-                  }`}
-                  onClick={() => setActiveTab(item.key)}
+                  href={item.href}
+                  className={`nav-tab ${router.pathname === item.href ? 'active' : ''}`}
                 >
                   <span className="nav-label">{item.label}</span>
-                </button>
+                </Link>
               ))}
             </nav>
             
@@ -153,15 +150,12 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             <div className="header-controls">
               {/* PROFILE element - now properly in the flex container */}
               <div className="profile-nav">
-                <a 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveTab('profile');
-                  }}
+                <Link 
+                  href="/profile"
+                  className={router.pathname === '/profile' ? 'active' : ''}
                 >
                   PROFILE
-                </a>
+                </Link>
               </div>
               
               {/* Network selector */}
@@ -213,28 +207,24 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
           <div className="mobile-nav-buttons">
             {/* Primary navigation items */}
             {topNavItems.map((item) => (
-              <button
+              <Link
                 key={item.key}
-                className={`mobile-nav-btn ${
-                  activeTab === item.key ? 'active' : ''
-                }`}
-                onClick={() => setActiveTab(item.key)}
+                href={item.href}
+                className={`mobile-nav-btn ${router.pathname === item.href ? 'active' : ''}`}
               >
                 <span className="nav-label">{item.label}</span>
-              </button>
+              </Link>
             ))}
             
             {/* Secondary navigation items */}
             {sidebarNavItems.map((item) => (
-              <button
+              <Link
                 key={item.key}
-                className={`mobile-nav-btn ${
-                  activeTab === item.key ? 'active' : ''
-                }`}
-                onClick={() => setActiveTab(item.key)}
+                href={item.href}
+                className={`mobile-nav-btn ${router.pathname === item.href ? 'active' : ''}`}
               >
                 <span className="nav-label">{item.label}</span>
-              </button>
+              </Link>
             ))}
           </div>
         </nav>

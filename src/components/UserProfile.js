@@ -24,13 +24,13 @@ const LoadingFallback = () => (
  * Optimized for performance with React.memo, lazy loading, and hooks
  * Now uses SafeWallet context to prevent null reference errors
  */
-const UserProfile = ({ wallet: walletProp, network }) => {
+const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onTabChange }) => {
   // Use safe wallet context if no wallet prop provided
   const contextWallet = useSafeWallet();
   const wallet = walletProp || contextWallet;
   
   // Initialize all hooks first (Rules of Hooks)
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [profileData, setProfileData] = useState({
@@ -174,30 +174,43 @@ const UserProfile = ({ wallet: walletProp, network }) => {
     console.log('Saving settings:', newSettings);
   }, []);
 
+  // Handle tab change with URL update
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    if (onTabChange) {
+      onTabChange(newTab);
+    }
+  };
+
+  // Update tab when initialTab changes (for URL navigation)
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
   // Render tabs navigation - memoized to prevent recreation on each render
   const renderTabs = useMemo(() => (
     <div className="profile-tabs">
       <button 
         className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-        onClick={() => setActiveTab('overview')}
+        onClick={() => handleTabChange('overview')}
       >
         Overview
       </button>
       <button 
         className={`tab-button ${activeTab === 'transactions' ? 'active' : ''}`}
-        onClick={() => setActiveTab('transactions')}
+        onClick={() => handleTabChange('transactions')}
       >
         Transactions
       </button>
       <button 
         className={`tab-button ${activeTab === 'stats' ? 'active' : ''}`}
-        onClick={() => setActiveTab('stats')}
+        onClick={() => handleTabChange('stats')}
       >
         Statistics
       </button>
       <button 
         className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
-        onClick={() => setActiveTab('settings')}
+        onClick={() => handleTabChange('settings')}
       >
         Settings
       </button>
@@ -323,7 +336,9 @@ UserProfile.propTypes = {
   }),
   network: PropTypes.shape({
     name: PropTypes.string
-  })
+  }),
+  initialTab: PropTypes.string,
+  onTabChange: PropTypes.func
 };
 
 // Export memoized component to prevent unnecessary re-renders

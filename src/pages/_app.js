@@ -24,6 +24,7 @@ import '@/styles/TransactionAnalytics.css'; // Transaction Analytics component s
 import '@/styles/TransactionProgressIndicator.css'; // Transaction Progress Indicator component styles
 import '@/styles/AnalyticsDashboard.css'; // Analytics Dashboard component styles
 import '@/styles/pwa.css'; // PWA-specific styles
+import '@/styles/routing.css'; // Routing and navigation styles
 
 // Import context
 import { AppContextProvider } from '@/contexts/AppContext';
