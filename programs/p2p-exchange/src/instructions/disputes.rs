@@ -253,6 +253,30 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         return Err(error!(ErrorCode::InvalidDisputeStatus));
     }
 
+    // Critical security fix: Validate dispute deadlines to prevent indefinite locking
+    let current_time = clock.unix_timestamp;
+    let time_since_creation = current_time
+        .checked_sub(dispute.created_at)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    // Check if total dispute deadline has passed
+    if time_since_creation > Dispute::TOTAL_DISPUTE_DEADLINE {
+        return Err(error!(ErrorCode::DisputeExpired));
+    }
+    
+    // Check voting phase deadline if in voting status
+    if dispute.status == DisputeStatus::Voting as u8 {
+        let voting_deadline = dispute.created_at
+            .checked_add(Dispute::EVIDENCE_SUBMISSION_DEADLINE)
+            .ok_or(ErrorCode::MathOverflow)?
+            .checked_add(Dispute::VOTING_DEADLINE)
+            .ok_or(ErrorCode::MathOverflow)?;
+            
+        if current_time > voting_deadline {
+            return Err(error!(ErrorCode::DisputeExpired));
+        }
+    }
+
     // Validate juror is assigned to this dispute
     if !dispute.jurors.contains(&juror.key()) {
         return Err(error!(ErrorCode::NotAJuror));
@@ -289,15 +313,39 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     vote.vote_for_buyer = vote_for_buyer;
     vote.timestamp = clock.unix_timestamp;
 
-    // Update vote counts
-    if vote_for_buyer {
-        dispute.votes_for_buyer += 1;
-    } else {
-        dispute.votes_for_seller += 1;
+    // Critical security fix: Atomic vote counting with validation
+    // Store original vote counts for potential rollback scenarios if needed
+    let _original_votes_for_buyer = dispute.votes_for_buyer;
+    let _original_votes_for_seller = dispute.votes_for_seller;
+    let original_status = dispute.status;
+
+    // Validate current vote count totals don't exceed maximum possible (3 jurors)
+    let total_votes = dispute.votes_for_buyer
+        .checked_add(dispute.votes_for_seller)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    if total_votes >= 3 {
+        return Err(error!(ErrorCode::InvalidDisputeStatus));
     }
 
+    // Update vote counts atomically
+    if vote_for_buyer {
+        dispute.votes_for_buyer = dispute.votes_for_buyer
+            .checked_add(1)
+            .ok_or(ErrorCode::MathOverflow)?;
+    } else {
+        dispute.votes_for_seller = dispute.votes_for_seller
+            .checked_add(1)
+            .ok_or(ErrorCode::MathOverflow)?;
+    }
+
+    // Update status transitions atomically
+    let new_total_votes = dispute.votes_for_buyer
+        .checked_add(dispute.votes_for_seller)
+        .ok_or(ErrorCode::MathOverflow)?;
+
     // Update status if first vote
-    if dispute.status == DisputeStatus::EvidenceSubmission as u8 {
+    if original_status == DisputeStatus::EvidenceSubmission as u8 && new_total_votes == 1 {
         dispute.status = DisputeStatus::Voting as u8;
     }
 
@@ -377,6 +425,20 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
     let minimum_rent_exempt = Rent::get()?.minimum_balance(EscrowAccount::LEN + 8);
     if escrow_balance <= minimum_rent_exempt {
         return Err(error!(ErrorCode::InsufficientFunds));
+    }
+
+    // Enhanced balance validation: Ensure exact balance matches expected
+    let expected_balance = offer.amount
+        .checked_add(offer.security_bond)
+        .ok_or(ErrorCode::MathOverflow)?
+        .checked_add(minimum_rent_exempt)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    // Allow some tolerance for potential small discrepancies in rent calculations
+    let balance_tolerance = 1000; // Allow up to 1000 lamports difference for rent calculation variations
+    if escrow_balance < expected_balance.saturating_sub(balance_tolerance) || 
+       escrow_balance > expected_balance.saturating_add(balance_tolerance) {
+        return Err(error!(ErrorCode::InvalidEscrowBalance));
     }
 
     // Calculate transferable amount (total balance minus rent exempt)

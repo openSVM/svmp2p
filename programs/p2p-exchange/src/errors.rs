@@ -36,6 +36,12 @@ pub enum P2PExchangeError {
     RewardTokenNotInitialized,
     #[msg("Too many requests - rate limit exceeded")]
     TooManyRequests,
+    #[msg("Escrow balance does not match expected amount")]
+    InvalidEscrowBalance,
+    #[msg("Dispute has expired and can no longer be modified")]
+    DisputeExpired,
+    #[msg("Invalid currency code format")]
+    InvalidCurrencyCode,
 }
 
 // Maintain backward compatibility

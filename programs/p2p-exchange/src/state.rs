@@ -94,6 +94,11 @@ impl Dispute {
                            1 +  // votes_for_seller
                            8 +  // created_at
                            8;   // resolved_at
+
+    // Dispute deadline constants (in seconds)
+    pub const EVIDENCE_SUBMISSION_DEADLINE: i64 = 172800; // 48 hours for evidence submission
+    pub const VOTING_DEADLINE: i64 = 604800; // 7 days for voting phase
+    pub const TOTAL_DISPUTE_DEADLINE: i64 = 776800; // 9 days total (48h + 7d)
 }
 
 #[account]

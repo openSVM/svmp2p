@@ -66,18 +66,45 @@ pub fn update_reputation(
         }
     }
 
-    // Recalculate rating based on performance
-    let total_trades = reputation.successful_trades + reputation.disputed_trades;
+    // Recalculate rating based on performance with overflow protection
+    let total_trades = reputation.successful_trades
+        .checked_add(reputation.disputed_trades)
+        .ok_or(ErrorCode::MathOverflow)?;
+        
     if total_trades > 0 {
-        let success_rate = (reputation.successful_trades * 100) / total_trades;
+        // Use checked arithmetic to prevent overflow
+        let success_rate = reputation.successful_trades
+            .checked_mul(100)
+            .ok_or(ErrorCode::MathOverflow)?
+            .checked_div(total_trades)
+            .ok_or(ErrorCode::MathOverflow)?;
+            
         let dispute_win_rate = if reputation.disputed_trades > 0 {
-            (reputation.disputes_won * 100) / reputation.disputed_trades
+            reputation.disputes_won
+                .checked_mul(100)
+                .ok_or(ErrorCode::MathOverflow)?
+                .checked_div(reputation.disputed_trades)
+                .ok_or(ErrorCode::MathOverflow)?
         } else {
             100
         };
         
-    // Rating is weighted average of success rate and dispute win rate
-    reputation.rating = ((success_rate * 70 + dispute_win_rate * 30) / 100) as u8;
+        // Rating is weighted average of success rate and dispute win rate
+        // Cap the calculation to prevent u8 overflow (rating should be 0-100)
+        let weighted_success = success_rate
+            .checked_mul(70)
+            .ok_or(ErrorCode::MathOverflow)?;
+        let weighted_dispute = dispute_win_rate
+            .checked_mul(30)
+            .ok_or(ErrorCode::MathOverflow)?;
+        let combined_rating = weighted_success
+            .checked_add(weighted_dispute)
+            .ok_or(ErrorCode::MathOverflow)?
+            .checked_div(100)
+            .ok_or(ErrorCode::MathOverflow)?;
+            
+        // Ensure rating stays within u8 bounds (0-255, but practically should be 0-100)
+        reputation.rating = if combined_rating > 100 { 100 } else { combined_rating as u8 };
     }
 
     reputation.last_updated = clock.unix_timestamp;
