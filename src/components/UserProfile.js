@@ -88,7 +88,7 @@ const UserProfile = ({ wallet: walletProp, network }) => {
           disputeRate: 6.25,
           lastUpdated: new Date().toLocaleDateString()
         },
-        transactions: Array.from({ length: 10 }, (_, i) => ({
+        transactions: Array.from({ length: 5 }, (_, i) => ({
           id: `tx-${i+1}`,
           type: i % 3 === 0 ? 'Buy' : i % 3 === 1 ? 'Sell' : 'Deposit',
           solAmount: Math.random() * 10 + 0.5,
@@ -279,7 +279,7 @@ const UserProfile = ({ wallet: walletProp, network }) => {
     }
   }, [wallet, isWalletConnected]);
 
-  // Early return for wallet not connected after all hooks are initialized
+  // Early return for wallet not connected after all hooks are initialized  
   if (!isWalletConnected) {
     console.log('[UserProfile] No wallet connected, returning WalletNotConnected');
     return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
