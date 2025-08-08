@@ -71,7 +71,7 @@ const TransactionConfirmation = ({
             <p className="tx-hash">
               Transaction ID: 
               <span className="hash-value">
-                {txHash.substring(0, 8)}...{txHash.substring(txHash.length - 8)}
+                {txHash.slice(0, 8)}...{txHash.slice(-8)}
               </span>
             </p>
             <a 

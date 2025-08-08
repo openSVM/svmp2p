@@ -278,20 +278,8 @@ export const claimRewards = async (wallet, connection, userPublicKey, options = 
   }
   
   if (!web3 || !PublicKey) {
-    // Mock implementation for test environment with enhanced cooldown
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate 10% chance of failure for demonstration
-        if (Math.random() < 0.1) {
-          setFailedClaimCooldown(userPublicKey);
-          reject(new Error('Simulated transaction failure: Network congestion'));
-        } else {
-          // Set cooldown for successful mock claim
-          setClaimCooldown(userPublicKey);
-          resolve('mock_transaction_signature_' + Date.now());
-        }
-      }, 2000);
-    });
+    // Real blockchain environment required - no mock data
+    throw new Error('Web3 connection required for claiming rewards');
   }
 
   const operation = async () => {
@@ -354,8 +342,8 @@ export const createUserRewardsAccount = async (wallet, connection, userPublicKey
   const { retryConfig = {} } = options;
   
   if (!web3 || !PublicKey) {
-    // Mock implementation
-    return Promise.resolve('mock_create_account_signature_' + Date.now());
+    // Real blockchain environment required - no mock data
+    throw new Error('Web3 connection required for creating user rewards account');
   }
 
   const operation = async () => {
@@ -409,8 +397,8 @@ export const hasUserRewardsAccount = async (
   const { retryConfig = {} } = options;
   
   if (!web3 || !PublicKey) {
-    // Mock implementation - randomly return true/false
-    return Math.random() > 0.5;
+    // Real blockchain environment required - no mock data
+    throw new Error('Web3 connection required for checking user rewards account');
   }
 
   const operation = async () => {

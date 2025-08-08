@@ -143,18 +143,18 @@ export const fetchUserRewards = async (userPublicKey) => {
     }
     
     // Parse the account data (simplified - in reality would use Anchor IDL)
-    // For now, return mock data that represents realistic values with proper Date objects
-    const mockData = {
-      totalEarned: Math.floor(Math.random() * 2000) + 500,
-      totalClaimed: Math.floor(Math.random() * 1000) + 200,
-      unclaimedBalance: Math.floor(Math.random() * 500) + 50,
-      tradingVolume: Math.floor((Math.random() * 20 + 5) * CONVERSION_HELPERS.solToLamports(1)), // SOL to lamports
-      governanceVotes: Math.floor(Math.random() * 10) + 1,
-      lastTradeReward: new Date(Date.now() - Math.random() * 86400000 * 7), // Last week
-      lastVoteReward: new Date(Date.now() - Math.random() * 86400000 * 14), // Last 2 weeks
+    // Return default values instead of random mock data
+    const defaultRewardData = {
+      totalEarned: 0, // Start with 0 for new users
+      totalClaimed: 0,
+      unclaimedBalance: 0,
+      tradingVolume: 0,
+      governanceVotes: 0,
+      lastTradeReward: null, // No rewards initially
+      lastVoteReward: null,
     };
     
-    return mockData;
+    return defaultRewardData;
   } catch (error) {
     console.error('Error fetching user rewards:', error);
     throw new Error(`Failed to fetch user rewards: ${error.message}`);
@@ -170,8 +170,8 @@ export const fetchUserRewards = async (userPublicKey) => {
 export const fetchUserTokenBalance = async (userPublicKey, mintAddress) => {
   try {
     if (!getConnection) {
-      // Mock balance for test environment
-      return Math.floor(Math.random() * 1000);
+      // Return 0 balance for test environment instead of random
+      return 0;
     }
     
     const connection = getConnection();
