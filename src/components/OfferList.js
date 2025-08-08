@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import { AppContext } from '../contexts/AppContext';
 import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationDialog } from './common';
-import { useSafeWallet } from '../contexts/WalletContextProvider';
+import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import { useDebounce, VirtualizedList } from '../utils/performance';
 import { useActionDebounce } from '../hooks/useActionDebounce';
 import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS, DEMO_MODE, DEMO_OFFERS } from '../constants/tradingConstants';
@@ -219,8 +219,8 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
 
 // Optimized OfferList component
 const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
-  const wallet = useSafeWallet();
-  const { program, network } = useContext(AppContext);
+  const wallet = usePhantomWallet();
+  const { program, network, connection } = useContext(AppContext);
   
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -29,9 +29,7 @@ const logger = createLogger('OfferCreation');
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = usePhantomWallet();
-  // For Swig wallet, we'll get connection from the wallet context
-  const connection = wallet.getConnection ? wallet.getConnection() : null;
-  const { program, network } = useContext(AppContext);
+  const { program, network, connection } = useContext(AppContext);
   
   const [solAmount, setSolAmount] = useState('');
   const [fiatAmount, setFiatAmount] = useState('');
@@ -63,6 +61,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     
     if (!wallet.publicKey || !wallet.connected) {
       setError('Please connect your wallet first');
+      return;
+    }
+
+    if (!program) {
+      setError('Program not initialized. Please ensure your wallet is connected and try again.');
       return;
     }
     
@@ -114,10 +117,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       const now = new BN(Math.floor(Date.now() / 1000));
       
       logger.info('Creating offer', { 
-        solAmountLamports: solAmountLamports.toString(),
+        solAmountLamports: lamports.toString(),
         fiatAmount: parseFloat(fiatAmount),
-        currency: selectedCurrency,
-        paymentMethod: selectedPaymentMethod
+        currency: fiatCurrency,
+        paymentMethod: paymentMethod
       });
       
       // Create offer
@@ -144,7 +147,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         message: 'Offer created successfully! Now listing your offer...'
       });
       
-      logger.info('Listing offer', { offerPubkey: offerKeypair.publicKey.toString() });
+      logger.info('Listing offer', { offerPubkey: offer.publicKey.toString() });
       
       // List offer
       const listTx = await program.methods
@@ -172,8 +175,8 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         error: err.message, 
         solAmount, 
         fiatAmount, 
-        currency: selectedCurrency,
-        paymentMethod: selectedPaymentMethod
+        currency: fiatCurrency,
+        paymentMethod: paymentMethod
       });
       setError(`Failed to create offer: ${err.message}`);
       setTxStatus({
@@ -367,11 +370,20 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 action="create sell offers"
                 className="create-offer-button connect-wallet-button"
               />
+            ) : !program ? (
+              <button 
+                type="button"
+                disabled={true}
+                className="create-offer-button disabled"
+                title="Initializing smart contract connection..."
+              >
+                Connecting to Smart Contract...
+              </button>
             ) : (
               <ButtonLoader
                 type="submit"
                 isLoading={isCreating}
-                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
+                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid || !program}
                 loadingText="Creating Offer..."
                 variant="primary"
                 size="medium"
