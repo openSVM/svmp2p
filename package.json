@@ -17,7 +17,13 @@
     "test:e2e:ci": "./run-e2e-tests.sh --env ci",
     "test:e2e:all": "./run-e2e-tests.sh --env local && ./run-e2e-tests.sh --env docker",
     "analyze-bundle": "./scripts/analyze-bundle.sh",
-    "performance": "npm run build && npm run analyze-bundle"
+    "performance": "npm run build && npm run analyze-bundle",
+    "test:anchor": "anchor test --skip-local-validator",
+    "test:security": "npx ts-mocha -p ./tsconfig.test.json -t 1000000 tests/security_audit_tests.ts --reporter spec",
+    "test:unit": "npx ts-mocha -p ./tsconfig.test.json -t 1000000 tests/unit_tests.ts --reporter spec",
+    "test:integration": "npx ts-mocha -p ./tsconfig.test.json -t 1000000 tests/integration_tests.ts --reporter spec",
+    "test:comprehensive": "./scripts/run_comprehensive_tests.sh",
+    "audit:security": "npm run test:security && npm run test:unit && npm run test:integration"
   },
   "repository": {
     "type": "git",
@@ -43,7 +49,7 @@
     "@noble/curves": "^1.3.0",
     "@noble/hashes": "^1.3.3",
     "@project-serum/anchor": "^0.26.0",
-    "@solana/spl-token": "^0.4.13",
+    "@solana/spl-token": "^0.1.8",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-phantom": "^0.9.28",
     "@solana/wallet-adapter-react": "^0.15.39",

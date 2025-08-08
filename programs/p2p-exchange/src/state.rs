@@ -5,11 +5,15 @@ declare_id!("FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9");
 #[account]
 pub struct Admin {
     pub authority: Pubkey,
+    pub secondary_authorities: [Pubkey; 2], // Multi-sig support
+    pub required_signatures: u8, // 1-3 signatures required
     pub bump: u8,
 }
 
 impl Admin {
     pub const LEN: usize = 32 + // authority
+                           64 + // secondary_authorities (2 * 32)
+                           1 +  // required_signatures
                            1;   // bump
 
     pub const SEED: &'static str = "admin";
@@ -90,6 +94,11 @@ impl Dispute {
                            1 +  // votes_for_seller
                            8 +  // created_at
                            8;   // resolved_at
+
+    // Dispute deadline constants (in seconds)
+    pub const EVIDENCE_SUBMISSION_DEADLINE: i64 = 172800; // 48 hours for evidence submission
+    pub const VOTING_DEADLINE: i64 = 604800; // 7 days for voting phase
+    pub const TOTAL_DISPUTE_DEADLINE: i64 = 776800; // 9 days total (48h + 7d)
 }
 
 #[account]
@@ -116,6 +125,8 @@ pub struct Reputation {
     pub disputes_lost: u32,
     pub rating: u8,
     pub last_updated: i64,
+    pub last_offer_created: i64, // Rate limiting for offer creation
+    pub last_dispute_opened: i64, // Rate limiting for dispute opening  
 }
 
 impl Reputation {
@@ -125,7 +136,13 @@ impl Reputation {
                            4 +  // disputes_won
                            4 +  // disputes_lost
                            1 +  // rating
-                           8;   // last_updated
+                           8 +  // last_updated
+                           8 +  // last_offer_created
+                           8;   // last_dispute_opened
+
+    // Rate limiting constants (in seconds)
+    pub const OFFER_CREATION_COOLDOWN: i64 = 300; // 5 minutes
+    pub const DISPUTE_OPENING_COOLDOWN: i64 = 3600; // 1 hour
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]

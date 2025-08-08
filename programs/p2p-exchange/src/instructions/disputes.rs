@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
-use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
+use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, Reputation, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
 use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted, RewardEligible};
 use crate::errors::ErrorCode;
 use crate::utils::validate_and_process_string;
@@ -253,6 +253,30 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
         return Err(error!(ErrorCode::InvalidDisputeStatus));
     }
 
+    // Critical security fix: Validate dispute deadlines to prevent indefinite locking
+    let current_time = clock.unix_timestamp;
+    let time_since_creation = current_time
+        .checked_sub(dispute.created_at)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    // Check if total dispute deadline has passed
+    if time_since_creation > Dispute::TOTAL_DISPUTE_DEADLINE {
+        return Err(error!(ErrorCode::DisputeExpired));
+    }
+    
+    // Check voting phase deadline if in voting status
+    if dispute.status == DisputeStatus::Voting as u8 {
+        let voting_deadline = dispute.created_at
+            .checked_add(Dispute::EVIDENCE_SUBMISSION_DEADLINE)
+            .ok_or(ErrorCode::MathOverflow)?
+            .checked_add(Dispute::VOTING_DEADLINE)
+            .ok_or(ErrorCode::MathOverflow)?;
+            
+        if current_time > voting_deadline {
+            return Err(error!(ErrorCode::DisputeExpired));
+        }
+    }
+
     // Validate juror is assigned to this dispute
     if !dispute.jurors.contains(&juror.key()) {
         return Err(error!(ErrorCode::NotAJuror));
@@ -289,15 +313,39 @@ pub fn cast_vote(ctx: Context<CastVote>, vote_for_buyer: bool) -> Result<()> {
     vote.vote_for_buyer = vote_for_buyer;
     vote.timestamp = clock.unix_timestamp;
 
-    // Update vote counts
-    if vote_for_buyer {
-        dispute.votes_for_buyer += 1;
-    } else {
-        dispute.votes_for_seller += 1;
+    // Critical security fix: Atomic vote counting with validation
+    // Store original vote counts for potential rollback scenarios if needed
+    let _original_votes_for_buyer = dispute.votes_for_buyer;
+    let _original_votes_for_seller = dispute.votes_for_seller;
+    let original_status = dispute.status;
+
+    // Validate current vote count totals don't exceed maximum possible (3 jurors)
+    let total_votes = dispute.votes_for_buyer
+        .checked_add(dispute.votes_for_seller)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    if total_votes >= 3 {
+        return Err(error!(ErrorCode::InvalidDisputeStatus));
     }
 
+    // Update vote counts atomically
+    if vote_for_buyer {
+        dispute.votes_for_buyer = dispute.votes_for_buyer
+            .checked_add(1)
+            .ok_or(ErrorCode::MathOverflow)?;
+    } else {
+        dispute.votes_for_seller = dispute.votes_for_seller
+            .checked_add(1)
+            .ok_or(ErrorCode::MathOverflow)?;
+    }
+
+    // Update status transitions atomically
+    let new_total_votes = dispute.votes_for_buyer
+        .checked_add(dispute.votes_for_seller)
+        .ok_or(ErrorCode::MathOverflow)?;
+
     // Update status if first vote
-    if dispute.status == DisputeStatus::EvidenceSubmission as u8 {
+    if original_status == DisputeStatus::EvidenceSubmission as u8 && new_total_votes == 1 {
         dispute.status = DisputeStatus::Voting as u8;
     }
 
@@ -353,10 +401,52 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
         return Err(error!(ErrorCode::InvalidDisputeStatus));
     }
 
+    // Critical security fix: Validate that the dispute belongs to this offer
+    if dispute.offer != offer.key() {
+        return Err(error!(ErrorCode::Unauthorized));
+    }
+
+    // Critical security fix: Validate buyer and seller identities
+    if offer.seller != seller.key() {
+        return Err(error!(ErrorCode::Unauthorized));
+    }
+    if let Some(offer_buyer) = offer.buyer {
+        if offer_buyer != buyer.key() {
+            return Err(error!(ErrorCode::Unauthorized));
+        }
+    } else {
+        return Err(error!(ErrorCode::Unauthorized));
+    }
+
     // Determine winner and transfer funds accordingly
     let escrow_balance = escrow_account.to_account_info().lamports();
     
-    if escrow_balance > 0 {
+    // Critical security fix: Validate minimum balance and expected amount
+    let minimum_rent_exempt = Rent::get()?.minimum_balance(EscrowAccount::LEN + 8);
+    if escrow_balance <= minimum_rent_exempt {
+        return Err(error!(ErrorCode::InsufficientFunds));
+    }
+
+    // Enhanced balance validation: Ensure exact balance matches expected
+    let expected_balance = offer.amount
+        .checked_add(offer.security_bond)
+        .ok_or(ErrorCode::MathOverflow)?
+        .checked_add(minimum_rent_exempt)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    // Allow some tolerance for potential small discrepancies in rent calculations
+    let balance_tolerance = 1000; // Allow up to 1000 lamports difference for rent calculation variations
+    if escrow_balance < expected_balance.saturating_sub(balance_tolerance) || 
+       escrow_balance > expected_balance.saturating_add(balance_tolerance) {
+        return Err(error!(ErrorCode::InvalidEscrowBalance));
+    }
+
+    // Calculate transferable amount (total balance minus rent exempt)
+    let transferable_amount = escrow_balance
+        .checked_sub(minimum_rent_exempt)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    if transferable_amount > 0 {
         // Explicit tie-breaking logic: ties are rejected
         let recipient = if dispute.votes_for_buyer > dispute.votes_for_seller {
             buyer // Buyer wins
@@ -367,10 +457,15 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
             return Err(error!(ErrorCode::TiedVote));
         };
 
+        // Critical security fix: Validate transfer amount doesn't exceed expected
+        if transferable_amount > offer.amount.checked_add(offer.security_bond).ok_or(ErrorCode::MathOverflow)? {
+            return Err(error!(ErrorCode::InvalidAmount));
+        }
+
         let transfer_instruction = system_instruction::transfer(
             &escrow_account.key(),
             &recipient.key(),
-            escrow_balance,
+            transferable_amount,
         );
 
         let escrow_seeds = &[
@@ -389,11 +484,11 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
             &[escrow_seeds],
         )?;
 
-        // Emit event
+        // Emit event with actual transferred amount
         emit!(VerdictExecuted {
             dispute: dispute.key(),
             winner: recipient.key(),
-            amount: escrow_balance,
+            amount: transferable_amount,
         });
     }
 

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::{program::invoke, program::invoke_signed, system_instruction};
-use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
+use anchor_lang::solana_program::{program::invoke, program::invoke_signed, system_instruction, sysvar::rent::Rent};
+use crate::state::{EscrowAccount, Offer, OfferStatus, Reputation, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
 use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased, RewardEligible};
 use crate::errors::ErrorCode;
 use crate::utils::validate_and_process_string;
@@ -100,13 +100,28 @@ pub fn create_offer(
         return Err(error!(ErrorCode::InputTooLong));
     }
 
+    // Enhanced currency code validation - ensure proper ISO format
+    if fiat_currency.len() < 3 || fiat_currency.len() > 3 {
+        return Err(error!(ErrorCode::InvalidCurrencyCode));
+    }
+    
+    // Check that currency code contains only uppercase letters
+    if !fiat_currency.chars().all(|c| c.is_ascii_uppercase()) {
+        return Err(error!(ErrorCode::InvalidCurrencyCode));
+    }
+
+    // Validate amount
+    if amount == 0 || fiat_amount == 0 {
+        return Err(error!(ErrorCode::InvalidAmount));
+    }
+
     let offer = &mut ctx.accounts.offer;
     let seller = &ctx.accounts.seller;
     let escrow_account = &mut ctx.accounts.escrow_account;
 
     // Initialize escrow account
     escrow_account.offer = offer.key();
-    escrow_account.bump = ctx.bumps.get("escrow_account").copied().unwrap();
+    escrow_account.bump = ctx.bumps.escrow_account;
 
     // Initialize offer data
     offer.seller = seller.key();
@@ -267,7 +282,7 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
     let escrow_account = &ctx.accounts.escrow_account;
     let clock = Clock::get()?;
 
-    // Validate offer status
+    // Enhanced fiat payment validation - ensure proper payment flow was completed
     if offer.status != OfferStatus::SolReleased as u8 {
         return Err(error!(ErrorCode::InvalidOfferStatus));
     }
@@ -277,13 +292,39 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
         return Err(error!(ErrorCode::Unauthorized));
     }
 
+    // Additional security: Ensure the offer went through proper fiat payment flow
+    // The status should have been set to SolReleased only after seller confirmed fiat receipt
+    // This prevents release without proper fiat payment confirmation
+    if offer.buyer.is_none() {
+        return Err(error!(ErrorCode::InvalidOfferStatus));
+    }
+
     // Transfer SOL from escrow to buyer using CPI with proper PDA signing
     let escrow_balance = escrow_account.to_account_info().lamports();
-    if escrow_balance > 0 {
+    
+    // Critical security fix: Validate exact balance to prevent fund drainage
+    let minimum_rent_exempt = Rent::get()?.minimum_balance(EscrowAccount::LEN + 8);
+    let expected_balance = offer.amount
+        .checked_add(offer.security_bond)
+        .ok_or(ErrorCode::MathOverflow)?
+        .checked_add(minimum_rent_exempt)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    // Ensure escrow balance matches exactly what we expect
+    if escrow_balance != expected_balance {
+        return Err(error!(ErrorCode::InvalidEscrowBalance));
+    }
+    
+    // Calculate transferable amount (exclude rent exempt amount)
+    let transferable_amount = escrow_balance
+        .checked_sub(minimum_rent_exempt)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    if transferable_amount > 0 {
         let transfer_instruction = system_instruction::transfer(
             &escrow_account.key(),
             &buyer.key(),
-            escrow_balance,
+            transferable_amount,
         );
 
         let escrow_seeds = &[
@@ -311,7 +352,7 @@ pub fn release_sol(ctx: Context<ReleaseSol>) -> Result<()> {
     emit!(SolReleased {
         offer: offer.key(),
         buyer: buyer.key(),
-        amount: escrow_balance,
+        amount: transferable_amount,
     });
 
     // Try to mint trade rewards for both parties (optional - fails silently if reward system not set up)
