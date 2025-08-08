@@ -83,7 +83,7 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
     { key: 'help', label: 'HELP', icon: '?', href: '/help' },
   ];
 
-  // Sidebar navigation items (secondary sections)
+  // Sidebar navigation items (secondary sections) 
   const sidebarNavItems = [
     { key: 'myoffers', label: 'MY OFFERS', icon: 'M', href: '/myoffers' },
     { key: 'disputes', label: 'DISPUTES', icon: 'D', href: '/disputes' },
@@ -106,58 +106,51 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
       </a>
 
       <div className="app-layout">
-        {/* Top Header */}
-        <header className="app-header">
-          <div className="header-content">
-            <div className="logo-section">
+        {/* ASCII Header with proper responsive design */}
+        <header className="ascii-header">
+          <div className="ascii-header-content">
+            {/* Logo Section */}
+            <div className="ascii-logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
-                className="logo-image"
-                width={24}
-                height={24}
+                className="ascii-logo-image"
+                width={20}
+                height={20}
                 priority
               />
-              <h1 className="logo-text">OpenSVM P2P</h1>
+              <h1 className="ascii-logo-text">OPENSVM P2P</h1>
             </div>
             
-            {/* Desktop Navigation - Horizontal layout for desktop */}
-            <nav className="desktop-nav">
-              {/* Primary navigation items */}
-              {topNavItems.map((item) => (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  className={`nav-tab ${router.pathname === item.href ? 'active' : ''}`}
-                >
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              ))}
-              
-              {/* Secondary navigation items (previously in sidebar) */}
-              {sidebarNavItems.map((item) => (
-                <Link
-                  key={item.key}
-                  href={item.href}
-                  className={`nav-tab ${router.pathname === item.href ? 'active' : ''}`}
-                >
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              ))}
+            {/* Desktop Navigation - ASCII Styled */}
+            <nav className="ascii-nav-desktop">
+              <div className="ascii-nav-tabs">
+                {/* Primary navigation items */}
+                {topNavItems.map((item) => (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className={`ascii-nav-tab ${router.pathname === item.href ? 'active' : ''}`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                
+                {/* Secondary navigation items */}
+                {sidebarNavItems.map((item) => (
+                  <Link
+                    key={item.key}
+                    href={item.href}
+                    className={`ascii-nav-tab ${router.pathname === item.href ? 'active' : ''}`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </nav>
             
-            {/* RIGHT SIDE: ALL HEADER CONTROLS */}
-            <div className="header-controls">
-              {/* PROFILE element - now properly in the flex container */}
-              <div className="profile-nav">
-                <Link 
-                  href="/profile"
-                  className={router.pathname === '/profile' ? 'active' : ''}
-                >
-                  PROFILE
-                </Link>
-              </div>
-              
+            {/* Header Controls - Simplified and ASCII styled */}
+            <div className="ascii-header-controls">
               {/* Network selector */}
               <NetworkSelector 
                 networks={networks} 
@@ -171,59 +164,32 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 onLanguageChange={handleLanguageChange}
               />
               
-              {/* Theme toggle */}
-              <ThemeToggle />
-              
-              {/* Explorer link */}
-              <a 
-                href={network.explorerUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="explorer-link"
-              >
-                SOLANA EXPLORER
-              </a>
-              
-              {/* Install App button with proper prominence */}
-              <PWAInstallButton className="header-prominent-action" />
-              
               {/* Connected wallet info */}
               {connected && publicKey && (
-                <span className="connection-status">
-                  Connected: {publicKey.toString().slice(0, 8)}...{publicKey.toString().slice(-8)}
+                <span className="ascii-wallet-status">
+                  {publicKey.toString().slice(0, 6)}...{publicKey.toString().slice(-4)}
                 </span>
               )}
               
               {/* Phantom wallet connection button */}
-              <div className="header-wallet-container">
+              <div className="ascii-wallet-container">
                 <PhantomWalletButton />
               </div>
             </div>
           </div>
         </header>
 
-        {/* Mobile Navigation - Stacked below header */}
-        <nav className="mobile-nav">
-          <div className="mobile-nav-buttons">
-            {/* Primary navigation items */}
-            {topNavItems.map((item) => (
+        {/* Mobile Navigation - ASCII Grid Layout */}
+        <nav className="ascii-nav-mobile">
+          <div className="ascii-nav-grid">
+            {/* All navigation items in mobile grid */}
+            {[...topNavItems, ...sidebarNavItems].map((item) => (
               <Link
                 key={item.key}
                 href={item.href}
-                className={`mobile-nav-btn ${router.pathname === item.href ? 'active' : ''}`}
+                className={`ascii-nav-button ${router.pathname === item.href ? 'active' : ''}`}
               >
-                <span className="nav-label">{item.label}</span>
-              </Link>
-            ))}
-            
-            {/* Secondary navigation items */}
-            {sidebarNavItems.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                className={`mobile-nav-btn ${router.pathname === item.href ? 'active' : ''}`}
-              >
-                <span className="nav-label">{item.label}</span>
+                {item.label}
               </Link>
             ))}
           </div>
