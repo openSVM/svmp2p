@@ -66,8 +66,17 @@ const ActivityFeed = ({ activities }) => {
     description: activity.actionable ? `Action available: ${activity.actionText}` : null,
   }));
 
+  const handleViewAllActivity = () => {
+    // Navigate to a dedicated activity page or expand current view
+    // For now, we'll implement a simple expand behavior
+    alert('VIEW ALL ACTIVITY: Feature coming soon! This would navigate to a detailed activity log.');
+  };
+
   const activityActions = (
-    <button className="button button-ghost button-sm">
+    <button 
+      className="button button-ghost button-sm ascii-button-animate" 
+      onClick={handleViewAllActivity}
+    >
       VIEW ALL ACTIVITY
     </button>
   );

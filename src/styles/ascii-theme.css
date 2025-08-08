@@ -148,6 +148,12 @@
    */
   --transition-fast: 0.1s;     /* Instant feedback */
   --transition-normal: 0.2s;   /* Standard interactions */
+  --transition-slow: 0.3s;     /* Smooth animations */
+  
+  /* Animation easing curves for ASCII microanimations */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   
   /* 
    * Z-index Management System
@@ -2109,5 +2115,352 @@ html, body {
   
   .profile-actions {
     flex-direction: column;
+  }
+}
+
+/* ========================================
+ * COMPREHENSIVE BUTTON ANIMATION SYSTEM
+ * ======================================== */
+
+/* Base button animation class - adds microanimations to all buttons */
+.ascii-button-animate,
+.button,
+button,
+[role="button"],
+.nav-tab,
+.nav-item,
+.ascii-button-primary,
+.ascii-button-secondary,
+.profile-actions .button {
+  transition: all var(--transition-normal) var(--ease-in-out);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Enhanced hover states with microanimations */
+.ascii-button-animate:hover,
+.button:hover,
+button:hover,
+[role="button"]:hover,
+.nav-tab:hover,
+.nav-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Active/pressed state animations */
+.ascii-button-animate:active,
+.button:active,
+button:active,
+[role="button"]:active,
+.nav-tab:active,
+.nav-item:active {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast) var(--ease-in);
+}
+
+/* Focus state for accessibility */
+.ascii-button-animate:focus,
+.button:focus,
+button:focus,
+[role="button"]:focus {
+  outline: 2px solid var(--ascii-neutral-600);
+  outline-offset: 2px;
+  transition: outline var(--transition-fast) var(--ease-out);
+}
+
+/* Button press animation keyframes */
+@keyframes buttonPress {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(1px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes buttonHover {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-1px) scale(1.02); }
+}
+
+/* Ripple effect for button clicks */
+.ascii-button-animate::before,
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: var(--ascii-neutral-300);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width var(--transition-slow) var(--ease-out), 
+              height var(--transition-slow) var(--ease-out),
+              opacity var(--transition-slow) var(--ease-out);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ascii-button-animate:active::before,
+.button:active::before {
+  width: 100px;
+  height: 100px;
+  opacity: 0.3;
+  transition: width var(--transition-fast) var(--ease-out), 
+              height var(--transition-fast) var(--ease-out),
+              opacity var(--transition-normal) var(--ease-out);
+}
+
+/* Enhanced primary button animations */
+.ascii-button-primary:hover {
+  background-color: var(--ascii-neutral-600);
+  border-color: var(--ascii-neutral-600);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.ascii-button-primary:active {
+  background-color: var(--ascii-neutral-800);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Enhanced secondary button animations */
+.ascii-button-secondary:hover {
+  background-color: var(--ascii-neutral-100);
+  border-color: var(--ascii-neutral-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.ascii-button-secondary:active {
+  background-color: var(--ascii-neutral-200);
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Loading state animation for buttons */
+.button-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.button-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--ascii-neutral-300);
+  border-top: 2px solid var(--ascii-neutral-700);
+  border-radius: 50%;
+  animation: buttonSpin 1s linear infinite;
+}
+
+@keyframes buttonSpin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Success animation for form submissions */
+.button-success {
+  background-color: var(--ascii-neutral-200) !important;
+  color: var(--ascii-neutral-900) !important;
+  animation: buttonSuccess 0.6s var(--ease-out);
+}
+
+@keyframes buttonSuccess {
+  0% { 
+    transform: scale(1);
+    background-color: var(--ascii-neutral-200);
+  }
+  50% { 
+    transform: scale(1.05);
+    background-color: var(--ascii-neutral-300);
+  }
+  100% { 
+    transform: scale(1);
+    background-color: var(--ascii-neutral-200);
+  }
+}
+
+/* Navigation tab enhanced animations */
+.nav-tab {
+  transition: all var(--transition-normal) var(--ease-in-out);
+}
+
+.nav-tab:hover {
+  background-color: var(--ascii-neutral-500);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-tab.active {
+  animation: tabActivate 0.3s var(--ease-out);
+}
+
+@keyframes tabActivate {
+  0% { 
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Form input focus animations */
+.ascii-field input:focus,
+.ascii-field select:focus,
+.ascii-field textarea:focus {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal) var(--ease-out);
+}
+
+/* Checkbox animation enhancements */
+.ascii-checkbox input[type="checkbox"] {
+  transition: all var(--transition-normal) var(--ease-in-out);
+}
+
+.ascii-checkbox input[type="checkbox"]:hover {
+  transform: scale(1.1);
+  border-color: var(--ascii-neutral-600);
+}
+
+.ascii-checkbox input[type="checkbox"]:checked {
+  animation: checkboxCheck 0.3s var(--ease-out);
+}
+
+@keyframes checkboxCheck {
+  0% { 
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Table row hover animations */
+.ascii-table-row,
+.transaction-history .table-row,
+.property-value-table .ascii-table-row {
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.ascii-table-row:hover,
+.transaction-history .table-row:hover {
+  transform: translateX(2px);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--ascii-neutral-150) !important;
+}
+
+/* Card hover animations */
+.ascii-card,
+.property-value-table,
+.offer-card {
+  transition: all var(--transition-normal) var(--ease-in-out);
+}
+
+.ascii-card:hover,
+.property-value-table:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Link animations */
+.ascii-link,
+a {
+  transition: all var(--transition-fast) var(--ease-out);
+  position: relative;
+}
+
+.ascii-link:hover,
+a:hover {
+  transform: translateY(-1px);
+  color: var(--ascii-neutral-900);
+}
+
+/* Status badge animations */
+.property-badge,
+.status-badge,
+.ascii-status {
+  transition: all var(--transition-normal) var(--ease-in-out);
+}
+
+.property-badge:hover,
+.status-badge:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Mobile touch optimizations */
+@media (max-width: 768px) {
+  .ascii-button-animate:hover,
+  .button:hover,
+  button:hover {
+    transform: none; /* Disable hover transforms on mobile */
+  }
+  
+  .ascii-button-animate:active,
+  .button:active,
+  button:active {
+    transform: scale(0.98);
+    transition: transform var(--transition-fast) var(--ease-in);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .ascii-button-animate,
+  .button,
+  button,
+  .nav-tab,
+  .nav-item,
+  .ascii-card,
+  .ascii-table-row,
+  .ascii-link,
+  .property-badge,
+  .status-badge {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  .ascii-button-animate:hover,
+  .button:hover,
+  button:hover {
+    transform: none !important;
+  }
+}
+
+/* Accessibility: Enhanced focus states */
+.ascii-button-animate:focus-visible,
+.button:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--ascii-neutral-600);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--ascii-white), 0 0 0 5px var(--ascii-neutral-600);
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .ascii-button-animate:hover,
+  .button:hover,
+  button:hover {
+    border-width: 2px;
+    font-weight: bold;
   }
 }

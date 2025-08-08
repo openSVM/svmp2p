@@ -37,6 +37,23 @@ const ProfileHeader = ({
     }
   };
 
+  const handleEditProfile = () => {
+    // Navigate to profile editing mode or modal
+    alert('EDIT PROFILE: Feature coming soon! This would allow editing display name, bio, and settings.');
+  };
+
+  const handleShareProfile = () => {
+    // Copy profile URL to clipboard or open share modal
+    const profileUrl = `${window.location.origin}/profile`;
+    navigator.clipboard.writeText(profileUrl)
+      .then(() => {
+        alert('Profile URL copied to clipboard!');
+      })
+      .catch(() => {
+        alert('Profile URL: ' + profileUrl);
+      });
+  };
+
   return (
     <div className="profile-header card">
       <div className="profile-header-content">
@@ -115,10 +132,16 @@ const ProfileHeader = ({
         </div>
         
         <div className="profile-actions">
-          <button className="button button-outline button-sm">
+          <button 
+            className="button button-outline button-sm ascii-button-animate" 
+            onClick={handleEditProfile}
+          >
             Edit Profile
           </button>
-          <button className="button button-ghost button-sm">
+          <button 
+            className="button button-ghost button-sm ascii-button-animate" 
+            onClick={handleShareProfile}
+          >
             Share Profile
           </button>
         </div>

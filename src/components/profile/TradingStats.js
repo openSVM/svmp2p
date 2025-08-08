@@ -1,11 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useRouter } from 'next/router';
 import PropertyValueTable from '../common/PropertyValueTable';
 
 /**
  * TradingStats component displays the user's trading statistics
  */
 const TradingStats = ({ stats }) => {
+  const router = useRouter();
+
+  // Handle navigation to detailed analytics
+  const handleViewDetailedAnalytics = () => {
+    router.push('/analytics');
+  };
   // Prepare trading statistics data for PropertyValueTable
   const tradingStatsData = [
     { property: 'TOTAL TRADES', value: stats.totalTrades || 0 },
@@ -32,7 +39,10 @@ const TradingStats = ({ stats }) => {
   ];
 
   const statsActions = (
-    <button className="button button-ghost button-sm">
+    <button 
+      className="button button-ghost button-sm ascii-button-animate" 
+      onClick={handleViewDetailedAnalytics}
+    >
       VIEW DETAILED ANALYTICS
     </button>
   );

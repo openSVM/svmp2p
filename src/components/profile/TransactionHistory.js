@@ -133,17 +133,48 @@ const TransactionHistory = ({ transactions }) => {
     }));
   };
 
+  const handleExportTransactions = () => {
+    // Generate CSV data from filtered transactions
+    const csvData = filteredTransactions.map(tx => ({
+      Type: tx.type,
+      'SOL Amount': tx.solAmount,
+      'Fiat Amount': tx.fiatAmount,
+      Currency: tx.fiatCurrency,
+      Status: tx.status,
+      Date: tx.createdAt
+    }));
+    
+    // Create CSV string
+    const headers = Object.keys(csvData[0] || {});
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => headers.map(header => row[header]).join(','))
+    ].join('\n');
+    
+    // Download CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   const transactionActions = (
     <div className="transaction-actions">
       {selectedTransaction && (
         <button 
-          className="button button-ghost button-sm"
+          className="button button-ghost button-sm ascii-button-animate"
           onClick={() => setSelectedTransaction(null)}
         >
           ← BACK TO LIST
         </button>
       )}
-      <button className="button button-outline button-sm">
+      <button 
+        className="button button-outline button-sm ascii-button-animate" 
+        onClick={handleExportTransactions}
+      >
         EXPORT TRANSACTIONS
       </button>
     </div>
