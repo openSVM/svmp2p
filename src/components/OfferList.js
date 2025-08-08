@@ -149,7 +149,7 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
         <div className="offer-card-header">
           <div className="seller-info">
             <span className="seller-name">
-              {offer.seller.substring(0, 8)}...{offer.seller.slice(-4)}
+              {offer.seller.slice(0, 8)}...{offer.seller.slice(-4)}
             </span>
           </div>
           <div className="time-info">

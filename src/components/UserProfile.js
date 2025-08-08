@@ -200,12 +200,12 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
   }, []);
 
   // Handle tab change with URL update
-  const handleTabChange = (newTab) => {
+  const handleTabChange = useCallback((newTab) => {
     setActiveTab(newTab);
     if (onTabChange) {
       onTabChange(newTab);
     }
-  };
+  }, [onTabChange]);
 
   // Update tab when initialTab changes (for URL navigation)
   useEffect(() => {
@@ -240,7 +240,7 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
         Settings
       </button>
     </div>
-  ), [activeTab]);
+  ), [activeTab, handleTabChange]);
 
   // Render tab content based on active tab - optimized with lazy loading
   const renderTabContent = useCallback(() => {

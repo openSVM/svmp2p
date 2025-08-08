@@ -30,7 +30,7 @@ const ProfileHeader = ({
     
     // Use try-catch for extra safety
     try {
-      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+      return `${address.slice(0, 6)}...${address.slice(-4)}`;
     } catch (error) {
       console.error('Error formatting wallet address:', error);
       return 'Address error';

@@ -102,7 +102,7 @@ const TradingGuidedWorkflow = ({ tradingType = 'buy', onComplete }) => {
             
             // Mock transaction info
             setTransactionInfo({
-              txHash: '0x' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+              txHash: '0x' + Date.now().toString(16) + performance.now().toString(16).replace('.', ''),
               solAmount: selectedOffer.solAmount,
               seller: selectedOffer.seller,
               timestamp: Date.now(),

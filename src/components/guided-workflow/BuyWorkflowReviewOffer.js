@@ -29,7 +29,7 @@ const BuyWorkflowReviewOffer = ({ selectedOffer, onConfirm, onBack }) => {
           <div className="detail-label">Seller:</div>
           <div className="detail-value">
             <span className="seller-name">
-              {selectedOffer.seller.substring(0, 4)}...{selectedOffer.seller.substring(selectedOffer.seller.length - 4)}
+              {selectedOffer.seller.slice(0, 4)}...{selectedOffer.seller.slice(-4)}
             </span>
             <span className="seller-rating">★★★★☆ (32 trades)</span>
           </div>
