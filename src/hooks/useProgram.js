@@ -30,7 +30,7 @@ export const useProgram = (connection, wallet) => {
       );
 
       // Create program instance
-      const program = new Program(idl as Idl, PROGRAM_ID, provider);
+      const program = new Program(idl, PROGRAM_ID, provider);
       
       return program;
     } catch (error) {

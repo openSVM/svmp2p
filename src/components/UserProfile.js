@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import ProfileHeader from './profile/ProfileHeader';
 import WalletNotConnected from './WalletNotConnected';
 import { useSafeWallet } from '../contexts/WalletContextProvider';
+import { useProgram } from '../hooks/useProgram';
+import { useUserReputation, useUserHistory, useProgramStatistics } from '../hooks/useOnChainData';
 import UserStatistics from './UserStatistics';
 
 // Lazy load components that aren't needed for initial render
@@ -24,11 +26,26 @@ const LoadingFallback = () => (
  * Enhanced UserProfile component that integrates all the profile modules
  * Optimized for performance with React.memo, lazy loading, and hooks
  * Now uses SafeWallet context to prevent null reference errors
+ * Uses real blockchain data instead of mock data
  */
 const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onTabChange }) => {
   // Use safe wallet context if no wallet prop provided
   const contextWallet = useSafeWallet();
   const wallet = walletProp || contextWallet;
+  
+  // Initialize program for blockchain data access
+  const program = useProgram(wallet?.connection, wallet);
+  
+  // Real blockchain data hooks
+  const { reputation, loading: reputationLoading, error: reputationError } = useUserReputation(
+    program, 
+    wallet?.publicKey
+  );
+  const { history, loading: historyLoading, error: historyError } = useUserHistory(
+    program, 
+    wallet?.publicKey
+  );
+  const { statistics: programStats, loading: statsLoading } = useProgramStatistics(program);
   
   // Initialize all hooks first (Rules of Hooks)
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -59,48 +76,34 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
     return wallet && hasValidPublicKey;
   }, [wallet, hasValidPublicKey]);
 
-  // Fetch user profile data - optimized with useCallback
-  const fetchProfileData = useCallback(async () => {
-    // Only fetch if wallet is connected and valid
-    if (!isWalletConnected) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // Minimal logging to reduce console noise
-      console.log('[UserProfile] Fetching profile data');
-
-      setLoading(true);
-      
-      // Simulate API calls to fetch profile data
-      // In a real implementation, these would be actual API calls
-      
-      // Mock data for demonstration
-      const mockData = {
+  // Process real blockchain data when available
+  useEffect(() => {
+    if (reputation && history && !reputationLoading && !historyLoading) {
+      // Convert real blockchain data to profile format
+      const realProfileData = {
         reputation: {
-          successfulTrades: 28,
-          disputedTrades: 2,
-          disputesWon: 1,
-          totalTrades: 32,
-          completionRate: 87.5,
-          averageRating: 4.2,
-          averageResponseTime: '15 minutes',
-          disputeRate: 6.25,
-          lastUpdated: new Date().toLocaleDateString()
+          successfulTrades: reputation.successfulTrades,
+          disputedTrades: reputation.disputedTrades,
+          disputesWon: reputation.disputesWon,
+          totalTrades: reputation.totalTrades,
+          completionRate: reputation.successRate,
+          averageRating: reputation.rating / 100, // Convert from 0-500 to 0-5 scale
+          averageResponseTime: 'N/A', // Would need additional tracking
+          disputeRate: reputation.disputedTrades / reputation.totalTrades * 100,
+          lastUpdated: new Date(reputation.lastUpdated).toLocaleDateString()
         },
-        transactions: Array.from({ length: 5 }, (_, i) => ({
-          id: `tx-${i+1}`,
-          type: i % 3 === 0 ? 'Buy' : i % 3 === 1 ? 'Sell' : 'Deposit',
-          solAmount: Math.random() * 10 + 0.5,
-          fiatAmount: Math.random() * 500 + 20,
-          fiatCurrency: 'USD',
-          status: i % 4 === 0 ? 'Completed' : i % 4 === 1 ? 'Pending' : i % 4 === 2 ? 'Disputed' : 'Cancelled',
-          createdAt: new Date(Date.now() - i * 86400000).toLocaleDateString()
+        transactions: history.slice(0, 10).map(trade => ({
+          id: trade.id,
+          type: trade.type === 'sell' ? 'Sell' : 'Buy',
+          solAmount: trade.solAmount,
+          fiatAmount: trade.fiatAmount,
+          fiatCurrency: trade.fiatCurrency,
+          status: trade.status,
+          createdAt: new Date(trade.createdAt).toLocaleDateString()
         })),
         settings: {
           displayName: 'Crypto Trader',
-          bio: 'Experienced P2P trader with focus on secure transactions.',
+          bio: 'P2P trader on svmp2p protocol.',
           showReputationScore: true,
           showTransactionHistory: false,
           emailNotifications: true,
@@ -110,47 +113,60 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
           hideWalletAddress: false
         },
         tradingStats: {
-          totalTrades: 32,
-          successfulTrades: 28,
-          completionRate: 87.5,
-          totalVolume: 4325.75,
-          buyOrders: 18,
-          sellOrders: 14,
-          disputedTrades: 2,
-          cancelledTrades: 2,
-          averageResponseTime: '15 minutes',
-          responseTimeRating: 'excellent',
-          periodStart: '90 days ago',
+          totalTrades: reputation.totalTrades,
+          successfulTrades: reputation.successfulTrades,
+          completionRate: reputation.successRate,
+          totalVolume: history.reduce((sum, trade) => sum + trade.fiatAmount, 0),
+          buyOrders: history.filter(trade => trade.type === 'buy').length,
+          sellOrders: history.filter(trade => trade.type === 'sell').length,
+          disputedTrades: reputation.disputedTrades,
+          cancelledTrades: history.filter(trade => trade.status === 'Cancelled').length,
+          averageResponseTime: 'N/A',
+          responseTimeRating: 'average',
+          periodStart: 'All time',
           periodEnd: 'Today'
         },
-        activities: Array.from({ length: 5 }, (_, i) => ({
-          id: `activity-${i+1}`,
-          type: i % 5 === 0 ? 'trade' : i % 5 === 1 ? 'offer' : i % 5 === 2 ? 'dispute' : i % 5 === 3 ? 'rating' : 'system',
-          message: i % 5 === 0 ? 'You completed a trade with user123' : 
-                  i % 5 === 1 ? 'You created a new sell offer' :
-                  i % 5 === 2 ? 'A dispute was resolved in your favor' :
-                  i % 5 === 3 ? 'You received a 5-star rating' :
-                  'System maintenance completed',
-          timestamp: new Date(Date.now() - i * 3600000).toISOString(),
-          relatedId: i % 5 !== 4 ? `ref-${i+100}` : null,
-          actionable: i % 3 === 0,
-          actionText: i % 3 === 0 ? 'View Details' : null,
-          actionLink: i % 3 === 0 ? '#' : null
+        activities: history.slice(0, 5).map((trade, i) => ({
+          id: `activity-${trade.id}`,
+          type: 'trade',
+          message: `You ${trade.type === 'sell' ? 'sold' : 'bought'} ${trade.solAmount.toFixed(4)} SOL`,
+          timestamp: new Date(trade.createdAt).toISOString(),
+          relatedId: trade.id,
+          actionable: true,
+          actionText: 'View Trade',
+          actionLink: `#trade-${trade.id}`
         }))
       };
       
-      // Simulate network delay
-      setTimeout(() => {
-        setProfileData(mockData);
-        setLoading(false);
-      }, 1000);
+      setProfileData(realProfileData);
+      setLoading(false);
+    } else if (reputationError || historyError) {
+      setError('Failed to load profile data from blockchain. Please try again.');
+      setLoading(false);
+    }
+  }, [reputation, history, reputationLoading, historyLoading, reputationError, historyError]);
+
+  // Fetch user profile data - now using real blockchain data
+  const fetchProfileData = useCallback(async () => {
+    // Only fetch if wallet is connected and valid
+    if (!isWalletConnected) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      console.log('[UserProfile] Using real blockchain data from hooks');
+      setLoading(reputationLoading || historyLoading);
+      
+      // Data is fetched automatically by the hooks
+      // Processing happens in the useEffect above
       
     } catch (err) {
-      console.error('Error fetching profile data:', err);
+      console.error('Error processing profile data:', err);
       setError('Failed to load profile data. Please try again later.');
       setLoading(false);
     }
-  }, [isWalletConnected]);
+  }, [isWalletConnected, reputationLoading, historyLoading]);
 
   // Only fetch data when wallet or network changes
   useEffect(() => {
