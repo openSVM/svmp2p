@@ -57,45 +57,15 @@ export const useOffers = (program, filters = {}) => {
         isDemo: false // Real blockchain data
       }));
 
-      // Apply filters
-      let filteredOffers = processedOffers;
-
-      if (filters.status) {
-        filteredOffers = filteredOffers.filter(offer => offer.status === filters.status);
-      }
-
-      if (filters.seller) {
-        filteredOffers = filteredOffers.filter(offer => offer.seller === filters.seller);
-      }
-
-      if (filters.buyer) {
-        filteredOffers = filteredOffers.filter(offer => offer.buyer === filters.buyer);
-      }
-
-      if (filters.currency) {
-        filteredOffers = filteredOffers.filter(offer => offer.fiatCurrency === filters.currency);
-      }
-
-      if (filters.minAmount) {
-        filteredOffers = filteredOffers.filter(offer => offer.solAmount >= filters.minAmount);
-      }
-
-      if (filters.maxAmount) {
-        filteredOffers = filteredOffers.filter(offer => offer.solAmount <= filters.maxAmount);
-      }
-
       // Final abort check before setting state
       if (abortSignal?.aborted) {
         logger.info('Fetch offers operation aborted before setting state');
         return;
       }
 
-      logger.info(`Fetched ${filteredOffers.length} offers from blockchain`, { 
-        total: offerAccounts.length,
-        filtered: filteredOffers.length 
-      });
+      logger.info(`Fetched ${processedOffers.length} offers from blockchain`);
 
-      setOffers(filteredOffers);
+      setOffers(processedOffers);
     } catch (err) {
       if (abortSignal?.aborted) {
         logger.info('Fetch offers operation aborted due to error:', err.message);
@@ -109,7 +79,7 @@ export const useOffers = (program, filters = {}) => {
         setLoading(false);
       }
     }
-  }, [program, filters]);
+  }, [program]); // Remove filters dependency to prevent infinite re-renders
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -121,11 +91,43 @@ export const useOffers = (program, filters = {}) => {
     };
   }, [fetchOffers]);
 
+  // Apply filters to fetched offers
+  const filteredOffers = useMemo(() => {
+    let result = offers;
+
+    if (filters?.status) {
+      result = result.filter(offer => offer.status === filters.status);
+    }
+
+    if (filters?.seller) {
+      result = result.filter(offer => offer.seller === filters.seller);
+    }
+
+    if (filters?.buyer) {
+      result = result.filter(offer => offer.buyer === filters.buyer);
+    }
+
+    if (filters?.currency) {
+      result = result.filter(offer => offer.fiatCurrency === filters.currency);
+    }
+
+    if (filters?.minAmount) {
+      result = result.filter(offer => offer.solAmount >= filters.minAmount);
+    }
+
+    if (filters?.maxAmount) {
+      result = result.filter(offer => offer.solAmount <= filters.maxAmount);
+    }
+
+    return result;
+  }, [offers, filters]);
+
   const refetchOffers = useCallback(() => {
-    fetchOffers();
+    const abortController = new AbortController();
+    fetchOffers(abortController.signal);
   }, [fetchOffers]);
 
-  return { offers, loading, error, refetch: refetchOffers };
+  return { offers: filteredOffers, loading, error, refetch: refetchOffers };
 };
 
 /**

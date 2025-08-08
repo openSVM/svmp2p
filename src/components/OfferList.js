@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { AppContext } from '../contexts/AppContext';
 import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationDialog } from './common';
 import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
@@ -184,6 +185,11 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
           </div>
           
           <div className="action-button-container">
+            <Link href={`/deal/${offer.id}`}>
+              <button className="view-deal-button">
+                View Deal
+              </button>
+            </Link>
             {renderActionButtons()}
           </div>
         </div>
@@ -939,6 +945,31 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           background-color: var(--ascii-neutral-600);
           transform: translateY(-1px);
           box-shadow: var(--shadow-md);
+        }
+
+        .view-deal-button {
+          background-color: var(--color-primary);
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.8rem;
+          font-family: var(--font-family-mono);
+          text-transform: uppercase;
+          transition: all 0.2s;
+          margin-right: 8px;
+        }
+
+        .view-deal-button:hover {
+          background-color: var(--color-primary-dark);
+          transform: translateY(-1px);
+        }
+
+        .action-button-container {
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
 
         .wallet-connection-prompt {
