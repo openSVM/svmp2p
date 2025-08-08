@@ -1,0 +1,255 @@
+/**
+ * CORPORATE THEME
+ * Clean professional design with blue palette and standard typography
+ * Modern corporate interface with rounded corners and subtle shadows
+ */
+
+.theme-corporate {
+  /* Corporate Blue Palette */
+  --primary-bg: #FFFFFF;
+  --secondary-bg: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --border-color: #E2E8F0;
+  --text-primary: #1E293B;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --accent-color: #3B82F6;
+  --button-bg: #3B82F6;
+  --button-text: #FFFFFF;
+  --button-hover: #2563EB;
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --error-color: #EF4444;
+  
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 32px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  
+  /* Spacing */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  
+  /* Shapes and Effects */
+  --border-radius: 8px;
+  --border-width: 1px;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  
+  /* Layout */
+  --content-width: 1280px;
+  --sidebar-width: 280px;
+  --header-height: 72px;
+}
+
+/* Global styling for corporate theme */
+.theme-corporate body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+.theme-corporate * {
+  font-family: var(--font-family) !important;
+}
+
+/* Cards and containers */
+.theme-corporate .card,
+.theme-corporate .ascii-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-6);
+}
+
+/* Buttons */
+.theme-corporate .btn,
+.theme-corporate .ascii-btn,
+.theme-corporate button:not(.unstyled) {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-3) var(--spacing-6);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.theme-corporate .btn:hover,
+.theme-corporate .ascii-btn:hover,
+.theme-corporate button:not(.unstyled):hover {
+  background: var(--button-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* Forms */
+.theme-corporate input,
+.theme-corporate select,
+.theme-corporate textarea {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-3);
+  transition: border-color 0.2s ease;
+}
+
+.theme-corporate input:focus,
+.theme-corporate select:focus,
+.theme-corporate textarea:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Headers */
+.theme-corporate h1,
+.theme-corporate h2,
+.theme-corporate h3,
+.theme-corporate h4,
+.theme-corporate h5,
+.theme-corporate h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.theme-corporate h1 { font-size: var(--font-size-3xl); }
+.theme-corporate h2 { font-size: var(--font-size-2xl); }
+.theme-corporate h3 { font-size: var(--font-size-xl); }
+
+/* Navigation */
+.theme-corporate .ascii-nav-tab {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-4) var(--spacing-6);
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.theme-corporate .ascii-nav-tab:hover {
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.theme-corporate .ascii-nav-tab.active {
+  background: var(--accent-color);
+  color: var(--button-text);
+  box-shadow: var(--shadow);
+}
+
+/* Dropdowns */
+.theme-corporate .ascii-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-hover);
+  padding: var(--spacing-2);
+}
+
+.theme-corporate .ascii-dropdown-item {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  border-radius: calc(var(--border-radius) - 2px);
+  padding: var(--spacing-3);
+  margin: var(--spacing-1) 0;
+  transition: all 0.2s ease;
+}
+
+.theme-corporate .ascii-dropdown-item:hover {
+  background: var(--secondary-bg);
+}
+
+.theme-corporate .ascii-dropdown-item.active {
+  background: var(--accent-color);
+  color: var(--button-text);
+}
+
+/* Tables */
+.theme-corporate table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-family);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.theme-corporate th,
+.theme-corporate td {
+  border-bottom: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-4);
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.theme-corporate th {
+  background: var(--secondary-bg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.theme-corporate tbody tr:hover {
+  background: var(--secondary-bg);
+}
+
+/* Status indicators */
+.theme-corporate .status-pending { color: var(--warning-color); }
+.theme-corporate .status-completed { color: var(--success-color); }
+.theme-corporate .status-failed { color: var(--error-color); }
+.theme-corporate .status-cancelled { color: var(--text-muted); }
+
+/* Special elements */
+.theme-corporate .theme-selector-menu {
+  min-width: 280px;
+}
+
+.theme-corporate .theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.theme-corporate .theme-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.theme-corporate .theme-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* Network indicator */
+.theme-corporate .network-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: var(--spacing-2);
+  display: inline-block;
+}

@@ -1,0 +1,192 @@
+/**
+ * GRAYSCALE THEME
+ * Classic ASCII terminal aesthetic with monospace typography and grayscale palette
+ * This preserves the original design as one of the theme options
+ */
+
+.theme-grayscale {
+  /* Grayscale Color Palette */
+  --primary-bg: #F8F9FA;
+  --secondary-bg: #F1F3F5;
+  --card-bg: #FFFFFF;
+  --border-color: #CED4DA;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #ADB5BD;
+  --accent-color: #343A40;
+  --button-bg: #343A40;
+  --button-text: #FFFFFF;
+  --button-hover: #495057;
+  --success-color: #495057;
+  --warning-color: #6C757D;
+  --error-color: #212529;
+  
+  /* Typography */
+  --font-family: 'Courier New', Courier, monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  
+  /* Spacing */
+  --spacing-1: 2px;
+  --spacing-2: 4px;
+  --spacing-3: 6px;
+  --spacing-4: 8px;
+  --spacing-5: 10px;
+  --spacing-6: 12px;
+  --spacing-8: 16px;
+  --spacing-12: 24px;
+  --spacing-16: 32px;
+  
+  /* Shapes and Effects */
+  --border-radius: 0px;
+  --border-width: 1px;
+  --shadow: 2px 2px 0px var(--border-color);
+  --shadow-hover: 3px 3px 0px var(--border-color);
+  
+  /* Layout */
+  --content-width: 1200px;
+  --sidebar-width: 250px;
+  --header-height: 64px;
+}
+
+/* Global styling for grayscale theme */
+.theme-grayscale body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  background-image: radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+.theme-grayscale * {
+  font-family: var(--font-family) !important;
+}
+
+/* Cards and containers */
+.theme-grayscale .card,
+.theme-grayscale .ascii-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+/* Buttons */
+.theme-grayscale .btn,
+.theme-grayscale .ascii-btn,
+.theme-grayscale button:not(.unstyled) {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: var(--border-width) solid var(--accent-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.theme-grayscale .btn:hover,
+.theme-grayscale .ascii-btn:hover,
+.theme-grayscale button:not(.unstyled):hover {
+  background: var(--button-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translate(-1px, -1px);
+}
+
+/* Forms */
+.theme-grayscale input,
+.theme-grayscale select,
+.theme-grayscale textarea {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-3);
+}
+
+/* Headers */
+.theme-grayscale h1,
+.theme-grayscale h2,
+.theme-grayscale h3,
+.theme-grayscale h4,
+.theme-grayscale h5,
+.theme-grayscale h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Navigation */
+.theme-grayscale .ascii-nav-tab {
+  border: var(--border-width) solid var(--border-color);
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  text-transform: uppercase;
+}
+
+.theme-grayscale .ascii-nav-tab.active {
+  background: var(--accent-color);
+  color: var(--button-text);
+}
+
+/* Dropdowns */
+.theme-grayscale .ascii-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hover);
+}
+
+.theme-grayscale .ascii-dropdown-item {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+.theme-grayscale .ascii-dropdown-item:hover {
+  background: var(--secondary-bg);
+}
+
+.theme-grayscale .ascii-dropdown-item.active {
+  background: var(--accent-color);
+  color: var(--button-text);
+}
+
+/* Tables */
+.theme-grayscale table {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+}
+
+.theme-grayscale th,
+.theme-grayscale td {
+  border: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-3);
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.theme-grayscale th {
+  background: var(--secondary-bg);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+/* Status indicators */
+.theme-grayscale .status-pending { color: var(--text-muted); }
+.theme-grayscale .status-completed { color: var(--success-color); }
+.theme-grayscale .status-failed { color: var(--error-color); }
+.theme-grayscale .status-cancelled { color: var(--warning-color); }

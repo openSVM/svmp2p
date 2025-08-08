@@ -1,0 +1,236 @@
+/**
+ * HIGH CONTRAST THEME
+ * Accessibility-focused black and white design with bold fonts and thick borders
+ * Optimized for users with visual impairments
+ */
+
+.theme-high-contrast {
+  /* High Contrast Palette */
+  --primary-bg: #FFFFFF;
+  --secondary-bg: #F0F0F0;
+  --card-bg: #FFFFFF;
+  --border-color: #000000;
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-muted: #666666;
+  --accent-color: #000000;
+  --button-bg: #000000;
+  --button-text: #FFFFFF;
+  --button-hover: #333333;
+  --success-color: #000000;
+  --warning-color: #000000;
+  --error-color: #000000;
+  
+  /* Typography */
+  --font-family: Arial, sans-serif;
+  --font-size-xs: 14px;
+  --font-size-sm: 16px;
+  --font-size-base: 18px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 36px;
+  --font-weight-normal: 700;
+  --font-weight-medium: 700;
+  --font-weight-bold: 900;
+  
+  /* Spacing */
+  --spacing-1: 6px;
+  --spacing-2: 12px;
+  --spacing-3: 18px;
+  --spacing-4: 24px;
+  --spacing-5: 30px;
+  --spacing-6: 36px;
+  --spacing-8: 48px;
+  --spacing-12: 72px;
+  --spacing-16: 96px;
+  
+  /* Shapes and Effects */
+  --border-radius: 0px;
+  --border-width: 3px;
+  --shadow: none;
+  --shadow-hover: none;
+  
+  /* Layout */
+  --content-width: 1000px;
+  --sidebar-width: 250px;
+  --header-height: 80px;
+}
+
+.theme-high-contrast body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.6;
+}
+
+.theme-high-contrast * {
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-normal) !important;
+}
+
+.theme-high-contrast .card,
+.theme-high-contrast .ascii-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-6);
+}
+
+.theme-high-contrast .btn,
+.theme-high-contrast .ascii-btn,
+.theme-high-contrast button:not(.unstyled) {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-4) var(--spacing-6);
+  min-height: 48px;
+  text-transform: uppercase;
+}
+
+.theme-high-contrast .btn:hover,
+.theme-high-contrast .ascii-btn:hover,
+.theme-high-contrast button:not(.unstyled):hover {
+  background: var(--button-hover);
+  border-width: 4px;
+}
+
+.theme-high-contrast input,
+.theme-high-contrast select,
+.theme-high-contrast textarea {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-primary);
+  padding: var(--spacing-4);
+  min-height: 48px;
+}
+
+.theme-high-contrast input:focus,
+.theme-high-contrast select:focus,
+.theme-high-contrast textarea:focus {
+  border-width: 4px;
+  outline: 3px solid var(--accent-color);
+}
+
+.theme-high-contrast h1,
+.theme-high-contrast h2,
+.theme-high-contrast h3,
+.theme-high-contrast h4,
+.theme-high-contrast h5,
+.theme-high-contrast h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.theme-high-contrast .ascii-nav-tab {
+  border: var(--border-width) solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  min-height: 48px;
+}
+
+.theme-high-contrast .ascii-nav-tab.active {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+.theme-high-contrast .ascii-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+}
+
+.theme-high-contrast .ascii-dropdown-item {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-base);
+  padding: var(--spacing-4);
+  border-bottom: var(--border-width) solid var(--border-color);
+  min-height: 48px;
+}
+
+.theme-high-contrast .ascii-dropdown-item:hover {
+  background: var(--secondary-bg);
+  border-width: 2px;
+}
+
+.theme-high-contrast .ascii-dropdown-item.active {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+.theme-high-contrast table {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  border: var(--border-width) solid var(--border-color);
+}
+
+.theme-high-contrast th,
+.theme-high-contrast td {
+  border: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-4);
+  text-align: left;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-base);
+}
+
+.theme-high-contrast th {
+  background: var(--secondary-bg);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+.theme-high-contrast .status-pending,
+.theme-high-contrast .status-completed,
+.theme-high-contrast .status-failed,
+.theme-high-contrast .status-cancelled {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+.theme-high-contrast .theme-selector-menu {
+  min-width: 300px;
+}
+
+.theme-high-contrast .theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.theme-high-contrast .theme-name {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+}
+
+.theme-high-contrast .theme-description {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-normal);
+}
+
+.theme-high-contrast .network-indicator {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border-color);
+  margin-right: var(--spacing-3);
+  display: inline-block;
+}

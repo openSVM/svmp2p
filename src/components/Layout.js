@@ -13,7 +13,7 @@ import { AppContext } from '@/contexts/AppContext';
 // Import components
 import { NetworkSelector } from '@/components/NetworkSelector';
 import LanguageSelector from '@/components/LanguageSelector';
-import ThemeToggle from '@/components/ThemeToggle';
+import ThemeSelector from '@/components/ThemeSelector';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
 import OfflineIndicator from '@/components/OfflineIndicator';
@@ -148,6 +148,9 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             
             {/* Header Controls - Simplified and ASCII styled */}
             <div className="ascii-header-controls">
+              {/* Theme selector */}
+              <ThemeSelector />
+              
               {/* Network selector */}
               <NetworkSelector 
                 networks={networks} 

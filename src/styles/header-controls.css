@@ -42,7 +42,13 @@
 /* ===== Z-INDEX MANAGEMENT ===== */
 /* Ensure dropdowns appear above all other content */
 .network-selector-dropdown,
-.language-selector-dropdown {
+.language-selector-dropdown,
+.ascii-dropdown-menu {
+  z-index: 99999 !important;
+}
+
+/* Ensure theme selector dropdown appears above all content */
+.theme-selector-menu {
   z-index: 99999 !important;
 }
 

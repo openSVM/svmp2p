@@ -1,0 +1,107 @@
+/**
+ * COMPREHENSIVE THEME SYSTEM
+ * Import all available themes for the application
+ * Each theme completely transforms the visual appearance
+ */
+
+/* Import all theme files */
+@import './grayscale.css';
+@import './corporate.css';
+@import './retro.css';
+@import './terminal.css';
+@import './minimal.css';
+@import './cyberpunk.css';
+@import './organic.css';
+@import './high-contrast.css';
+@import './pastel.css';
+@import './blueprint.css';
+
+/* Default theme fallback */
+:root {
+  /* Default to grayscale theme variables if no theme is applied */
+  --primary-bg: #F8F9FA;
+  --secondary-bg: #F1F3F5;
+  --card-bg: #FFFFFF;
+  --border-color: #CED4DA;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #ADB5BD;
+  --accent-color: #343A40;
+  --button-bg: #343A40;
+  --button-text: #FFFFFF;
+  --button-hover: #495057;
+  --success-color: #495057;
+  --warning-color: #6C757D;
+  --error-color: #212529;
+  
+  --font-family: 'Courier New', Courier, monospace;
+  --font-size-base: 14px;
+  --spacing-4: 8px;
+  --border-radius: 0px;
+  --border-width: 1px;
+}
+
+/* Theme selector specific styles */
+.theme-selector-menu {
+  min-width: 280px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.theme-option {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theme-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.theme-description {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Network indicator styles for all themes */
+.network-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Ensure theme transitions are smooth */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Override transitions for specific elements that shouldn't animate */
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
+/* Print styles - use minimal theme for printing */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    border-color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

@@ -1,0 +1,345 @@
+/**
+ * ORGANIC THEME
+ * Earth tones with natural colors, rounded corners, and soft shadows
+ * Inspired by nature with warm, comfortable aesthetics
+ */
+
+.theme-organic {
+  /* Organic Earth Palette */
+  --primary-bg: #FBF9F7;
+  --secondary-bg: #F5F1ED;
+  --card-bg: #FFFFFF;
+  --border-color: #D4C4A8;
+  --text-primary: #3E362E;
+  --text-secondary: #5D5347;
+  --text-muted: #8B7D6B;
+  --accent-color: #8B5A3C;
+  --button-bg: #8B5A3C;
+  --button-text: #FFFFFF;
+  --button-hover: #7A4A2A;
+  --success-color: #6B8E23;
+  --warning-color: #D2691E;
+  --error-color: #CD5C5C;
+  --nature-green: #8FBC8F;
+  --earth-brown: #A0522D;
+  --sand-beige: #F4E8D0;
+  
+  /* Typography */
+  --font-family: 'Lora', Georgia, serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 26px;
+  --font-size-3xl: 32px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  
+  /* Spacing */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  
+  /* Shapes and Effects */
+  --border-radius: 20px;
+  --border-width: 1px;
+  --shadow: 0 6px 20px rgba(139, 90, 60, 0.1);
+  --shadow-hover: 0 12px 32px rgba(139, 90, 60, 0.15);
+  
+  /* Layout */
+  --content-width: 1200px;
+  --sidebar-width: 280px;
+  --header-height: 76px;
+}
+
+.theme-organic body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(139, 90, 60, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(107, 142, 35, 0.03) 0%, transparent 50%);
+}
+
+.theme-organic * {
+  font-family: var(--font-family) !important;
+}
+
+.theme-organic .card,
+.theme-organic .ascii-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-8);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-organic .card::before,
+.theme-organic .ascii-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--nature-green), var(--earth-brown), var(--accent-color));
+  opacity: 0.6;
+}
+
+.theme-organic .card:hover,
+.theme-organic .ascii-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
+
+.theme-organic .btn,
+.theme-organic .ascii-btn,
+.theme-organic button:not(.unstyled) {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-4) var(--spacing-8);
+  transition: all 0.4s ease;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-organic .btn::before,
+.theme-organic .ascii-btn::before,
+.theme-organic button:not(.unstyled)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.theme-organic .btn:hover,
+.theme-organic .ascii-btn:hover,
+.theme-organic button:not(.unstyled):hover {
+  background: var(--button-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.theme-organic .btn:hover::before,
+.theme-organic .ascii-btn:hover::before,
+.theme-organic button:not(.unstyled):hover::before {
+  left: 100%;
+}
+
+.theme-organic input,
+.theme-organic select,
+.theme-organic textarea {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  padding: var(--spacing-4);
+  transition: all 0.3s ease;
+}
+
+.theme-organic input:focus,
+.theme-organic select:focus,
+.theme-organic textarea:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 90, 60, 0.15);
+}
+
+.theme-organic h1,
+.theme-organic h2,
+.theme-organic h3,
+.theme-organic h4,
+.theme-organic h5,
+.theme-organic h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: 1.3;
+  position: relative;
+}
+
+.theme-organic h1::after,
+.theme-organic h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-color), var(--nature-green));
+  border-radius: 2px;
+}
+
+.theme-organic .ascii-nav-tab {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-4) var(--spacing-6);
+  border-radius: var(--border-radius);
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.theme-organic .ascii-nav-tab::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: var(--accent-color);
+  border-radius: 2px;
+  transition: all 0.4s ease;
+  transform: translateX(-50%);
+}
+
+.theme-organic .ascii-nav-tab:hover {
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.theme-organic .ascii-nav-tab:hover::before {
+  width: 80%;
+}
+
+.theme-organic .ascii-nav-tab.active {
+  background: var(--accent-color);
+  color: var(--button-text);
+  box-shadow: var(--shadow);
+}
+
+.theme-organic .ascii-nav-tab.active::before {
+  width: 100%;
+  background: var(--button-text);
+}
+
+.theme-organic .ascii-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-hover);
+  padding: var(--spacing-4);
+  backdrop-filter: blur(10px);
+}
+
+.theme-organic .ascii-dropdown-item {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  border-radius: calc(var(--border-radius) - 8px);
+  padding: var(--spacing-3) var(--spacing-4);
+  margin: var(--spacing-1) 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.theme-organic .ascii-dropdown-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--accent-color);
+  border-radius: calc(var(--border-radius) - 8px);
+  transition: width 0.3s ease;
+}
+
+.theme-organic .ascii-dropdown-item:hover {
+  background: var(--secondary-bg);
+  padding-left: var(--spacing-6);
+}
+
+.theme-organic .ascii-dropdown-item:hover::before {
+  width: 4px;
+}
+
+.theme-organic .ascii-dropdown-item.active {
+  background: var(--accent-color);
+  color: var(--button-text);
+}
+
+.theme-organic table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-family);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.theme-organic th,
+.theme-organic td {
+  border-bottom: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-4) var(--spacing-6);
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.theme-organic th {
+  background: var(--sand-beige);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.theme-organic tbody tr:hover {
+  background: var(--secondary-bg);
+}
+
+.theme-organic .status-pending { color: var(--warning-color); }
+.theme-organic .status-completed { color: var(--success-color); }
+.theme-organic .status-failed { color: var(--error-color); }
+.theme-organic .status-cancelled { color: var(--text-muted); }
+
+.theme-organic .theme-selector-menu {
+  min-width: 300px;
+}
+
+.theme-organic .theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.theme-organic .theme-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.theme-organic .theme-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.theme-organic .network-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: var(--spacing-3);
+  display: inline-block;
+  box-shadow: 0 0 8px rgba(139, 90, 60, 0.3);
+}

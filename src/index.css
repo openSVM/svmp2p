@@ -1,5 +1,6 @@
 /* Import ASCII theme and component styles */
 @import './styles/ascii-theme.css';
+@import './styles/themes/index.css';
 @import './styles/responsive.css';
 @import './styles/components.css';
 @import './styles/wallet-status.css';
