@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import PropertyValueTable from '../common/PropertyValueTable';
 
 /**
  * TransactionHistory component displays the user's transaction history with filtering and sorting
@@ -10,6 +11,7 @@ const TransactionHistory = ({ transactions }) => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
   
   const itemsPerPage = 5;
   
@@ -91,32 +93,124 @@ const TransactionHistory = ({ transactions }) => {
     );
   };
   
+  // Prepare transaction data for PropertyValueTable
+  const getTransactionTableData = () => {
+    if (selectedTransaction) {
+      // Show detailed view of selected transaction
+      return [
+        { property: 'TRANSACTION ID', value: selectedTransaction.id },
+        { property: 'TYPE', value: selectedTransaction.type.toUpperCase(), badge: selectedTransaction.type.toUpperCase(), badgeClassName: `type-badge-${selectedTransaction.type.toLowerCase()}` },
+        { property: 'SOL AMOUNT', value: `${selectedTransaction.solAmount.toFixed(2)} SOL` },
+        { property: 'FIAT AMOUNT', value: `${selectedTransaction.fiatAmount.toFixed(2)} ${selectedTransaction.fiatCurrency}` },
+        { property: 'STATUS', value: selectedTransaction.status.toUpperCase(), badge: selectedTransaction.status.toUpperCase(), badgeClassName: `status-badge-${selectedTransaction.status.toLowerCase()}` },
+        { property: 'DATE CREATED', value: selectedTransaction.createdAt },
+        { property: 'RATE', value: `${(selectedTransaction.fiatAmount / selectedTransaction.solAmount).toFixed(2)} ${selectedTransaction.fiatCurrency}/SOL` },
+      ];
+    }
+
+    // Show list of transactions with clickable rows
+    return paginatedTransactions.map(transaction => ({
+      property: `${transaction.type.toUpperCase()} - ${transaction.id}`,
+      value: (
+        <div 
+          className="transaction-summary clickable"
+          onClick={() => setSelectedTransaction(transaction)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="transaction-amount">
+            {transaction.solAmount.toFixed(2)} SOL → {transaction.fiatAmount.toFixed(2)} {transaction.fiatCurrency}
+          </div>
+          <div className="transaction-meta">
+            <span className={`status-badge status-${transaction.status.toLowerCase()}`}>
+              {transaction.status.toUpperCase()}
+            </span>
+            <span className="transaction-date">{transaction.createdAt}</span>
+          </div>
+        </div>
+      ),
+      className: `transaction-row transaction-${transaction.type.toLowerCase()}`,
+      description: `Click to view details`,
+    }));
+  };
+
+  const handleExportTransactions = () => {
+    // Generate CSV data from filtered transactions
+    const csvData = filteredTransactions.map(tx => ({
+      Type: tx.type,
+      'SOL Amount': tx.solAmount,
+      'Fiat Amount': tx.fiatAmount,
+      Currency: tx.fiatCurrency,
+      Status: tx.status,
+      Date: tx.createdAt
+    }));
+    
+    // Create CSV string
+    const headers = Object.keys(csvData[0] || {});
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => headers.map(header => row[header]).join(','))
+    ].join('\n');
+    
+    // Download CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const transactionActions = (
+    <div className="transaction-actions">
+      {selectedTransaction && (
+        <button 
+          className="button button-ghost button-sm ascii-button-animate"
+          onClick={() => setSelectedTransaction(null)}
+        >
+          ← BACK TO LIST
+        </button>
+      )}
+      <button 
+        className="button button-outline button-sm ascii-button-animate" 
+        onClick={handleExportTransactions}
+      >
+        EXPORT TRANSACTIONS
+      </button>
+    </div>
+  );
+
   return (
-    <div className="transaction-history card">
-      <div className="card-header">
-        <h3 className="card-title">Transaction History</h3>
+    <div className="transaction-history">
+      {/* Filters */}
+      <div className="transaction-filters card">
+        <div className="card-header">
+          <h3 className="card-title">Transaction Filters</h3>
+        </div>
         
-        <div className="transaction-filters">
-          <div className="search-container">
+        <div className="ascii-form-row-4">
+          <div className="ascii-field">
+            <label htmlFor="search">SEARCH</label>
             <input
+              id="search"
               type="text"
-              className="search-input"
               placeholder="Search transactions..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setPage(1); // Reset to first page on search
+                setPage(1);
               }}
             />
           </div>
           
-          <div className="filter-container">
+          <div className="ascii-field">
+            <label htmlFor="filter">TYPE FILTER</label>
             <select 
-              className="filter-select"
+              id="filter"
               value={filter}
               onChange={(e) => {
                 setFilter(e.target.value);
-                setPage(1); // Reset to first page on filter change
+                setPage(1);
               }}
             >
               <option value="all">All Types</option>
@@ -126,122 +220,98 @@ const TransactionHistory = ({ transactions }) => {
               <option value="withdrawal">Withdrawal</option>
             </select>
           </div>
+          
+          <div className="ascii-field">
+            <label htmlFor="sortBy">SORT BY</label>
+            <select 
+              id="sortBy"
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+            >
+              <option value="date">Date</option>
+              <option value="amount">Amount</option>
+              <option value="fiat">Fiat</option>
+              <option value="status">Status</option>
+              <option value="type">Type</option>
+            </select>
+          </div>
+          
+          <div className="ascii-field">
+            <label htmlFor="sortOrder">ORDER</label>
+            <select 
+              id="sortOrder"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="desc">DESC</option>
+              <option value="asc">ASC</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="filter-summary">
+          <span className="results-count">
+            {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''} found
+          </span>
         </div>
       </div>
-      
+
+      {/* Transaction Data */}
       {paginatedTransactions.length === 0 ? (
-        <div className="no-transactions">
-          {searchQuery || filter !== 'all' 
-            ? 'No transactions match your filters.' 
-            : 'No transactions found.'}
+        <div className="no-transactions card">
+          <div className="ascii-form-message">
+            <span className="message-icon">[!]</span>
+            <span className="message-text">
+              {searchQuery || filter !== 'all' 
+                ? 'NO TRANSACTIONS MATCH YOUR FILTERS' 
+                : 'NO TRANSACTIONS FOUND'}
+            </span>
+          </div>
         </div>
       ) : (
         <>
-          <div className="transactions-table">
-            <div className="table-header">
-              <div 
-                className={`col type ${sortBy === 'type' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('type')}
-              >
-                Type{getSortIndicator('type')}
-              </div>
-              <div 
-                className={`col amount ${sortBy === 'amount' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('amount')}
-              >
-                Amount{getSortIndicator('amount')}
-              </div>
-              <div 
-                className={`col fiat ${sortBy === 'fiat' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('fiat')}
-              >
-                Fiat{getSortIndicator('fiat')}
-              </div>
-              <div 
-                className={`col status ${sortBy === 'status' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('status')}
-              >
-                Status{getSortIndicator('status')}
-              </div>
-              <div 
-                className={`col date ${sortBy === 'date' ? 'sorted' : ''}`}
-                onClick={() => handleSortChange('date')}
-              >
-                Date{getSortIndicator('date')}
-              </div>
-              <div className="col actions">
-                Actions
-              </div>
-            </div>
-            
-            {paginatedTransactions.map(transaction => (
-              <div key={transaction.id} className="table-row">
-                <div className={`col type ${transaction.type.toLowerCase()}`}>
-                  {transaction.type}
-                </div>
-                <div className="col amount">
-                  {transaction.solAmount.toFixed(2)} SOL
-                </div>
-                <div className="col fiat">
-                  {transaction.fiatAmount.toFixed(2)} {transaction.fiatCurrency}
-                </div>
-                <div className={`col status status-${transaction.status.toLowerCase().replace(/\s+/g, '-')}`}>
-                  {transaction.status}
-                </div>
-                <div className="col date">
-                  {transaction.createdAt}
-                </div>
-                <div className="col actions">
+          <PropertyValueTable
+            title={selectedTransaction ? `Transaction Details - ${selectedTransaction.id}` : "Transaction History"}
+            data={getTransactionTableData()}
+            actions={transactionActions}
+            className="transaction-data-table"
+          />
+
+          {!selectedTransaction && totalPages > 1 && (
+            <div className="transaction-pagination card">
+              <div className="ascii-form-inline pagination">
+                <div className="ascii-field-inline">
                   <button 
-                    className="button button-ghost button-sm"
-                    onClick={() => alert(`View details for transaction ${transaction.id}`)}
-                    aria-label={`View details for transaction ${transaction.id}`}
+                    className="pagination-button"
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    aria-label="Previous page"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                    </svg>
+                    ← PREV
+                  </button>
+                </div>
+                
+                <div className="ascii-field-inline">
+                  <span className="pagination-info">
+                    PAGE {page} OF {totalPages}
+                  </span>
+                </div>
+                
+                <div className="ascii-field-inline">
+                  <button 
+                    className="pagination-button"
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                    aria-label="Next page"
+                  >
+                    NEXT →
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-          
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button 
-                className="pagination-button"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-                aria-label="Previous page"
-              >
-                &laquo;
-              </button>
-              
-              <span className="pagination-info">
-                Page {page} of {totalPages}
-              </span>
-              
-              <button 
-                className="pagination-button"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-                aria-label="Next page"
-              >
-                &raquo;
-              </button>
             </div>
           )}
         </>
       )}
-      
-      <div className="transaction-actions">
-        <button className="button button-outline button-sm">
-          Export Transactions
-        </button>
-        <button className="button button-ghost button-sm">
-          View All
-        </button>
-      </div>
     </div>
   );
 };

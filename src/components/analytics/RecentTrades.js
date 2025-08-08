@@ -60,6 +60,12 @@ export default function RecentTrades({ trades, network }) {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const handleLoadMoreTrades = () => {
+    // In a real implementation, this would fetch more trades from the API
+    // For now, we'll simulate loading behavior
+    alert('LOAD MORE TRADES: Feature coming soon! This would fetch additional trade history from the protocol.');
+  };
+
   return (
     <div className="recent-trades">
       <div className="trades-header">
@@ -166,7 +172,10 @@ export default function RecentTrades({ trades, network }) {
       </div>
 
       <div className="trades-footer">
-        <button className="load-more-button">
+        <button 
+          className="load-more-button ascii-button-animate" 
+          onClick={handleLoadMoreTrades}
+        >
           Load More Trades
         </button>
         <div className="trades-info">

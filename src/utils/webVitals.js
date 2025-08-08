@@ -38,7 +38,8 @@ const sendToAnalytics = (metric) => {
   }
   
   // Example: Send to custom analytics endpoint
-  if (typeof window !== 'undefined' && window.fetch) {
+  // Note: Disabled for static export - would need external analytics service
+  if (typeof window !== 'undefined' && window.fetch && process.env.NEXT_PUBLIC_ENABLE_ANALYTICS_API === 'true') {
     // Batch analytics calls to avoid performance impact
     if (!window._vitalsQueue) {
       window._vitalsQueue = [];

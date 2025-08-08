@@ -1,13 +1,13 @@
 /**
  * Legacy Wallet Context Provider - Deprecated
  * 
- * This file has been replaced with SwigWalletProvider.
+ * This file has been replaced with PhantomWalletProvider.
  * This is kept for backward compatibility only.
  */
 
-import { SwigWalletProvider, useSwigWallet } from './SwigWalletProvider';
+import { PhantomWalletProvider, usePhantomWallet } from './PhantomWalletProvider';
 
-// Re-export SwigWallet components for backward compatibility
-export { SwigWalletProvider as SafeWalletProvider, useSwigWallet as useSafeWallet };
+// Re-export Phantom components for backward compatibility
+export { PhantomWalletProvider as SafeWalletProvider, usePhantomWallet as useSafeWallet };
 
-export default SwigWalletProvider;
+export default PhantomWalletProvider;

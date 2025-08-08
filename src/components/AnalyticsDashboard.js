@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '@/contexts/AppContext';
-import { useSwigWallet } from '@/contexts/SwigWalletProvider';
+import { usePhantomWallet } from '@/contexts/PhantomWalletProvider';
 import OverviewPanel from '@/components/analytics/OverviewPanel';
 import RecentTrades from '@/components/analytics/RecentTrades';
 import VolumePerDayChart from '@/components/analytics/VolumePerDayChart';
@@ -8,7 +8,7 @@ import TopTraders from '@/components/analytics/TopTraders';
 
 export default function AnalyticsDashboard() {
   const { network, selectedNetwork, networks } = useContext(AppContext);
-  const { connected, publicKey } = useSwigWallet();
+  const { connected, publicKey } = usePhantomWallet();
   const [timeframe, setTimeframe] = useState('24h');
   const [refreshInterval, setRefreshInterval] = useState(null);
   

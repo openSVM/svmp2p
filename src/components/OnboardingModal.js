@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { SwigWalletButton } from './SwigWalletButton';
-import { useSwigWallet } from '../contexts/SwigWalletProvider';
+import { PhantomWalletButton } from './PhantomWalletButton';
+import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import LanguageSelector from './LanguageSelector';
 import { createUserRewardsAccount, hasUserRewardsAccount } from '../utils/rewardTransactions';
 import { REWARD_CONSTANTS, UI_CONFIG } from '../constants/rewardConstants';
 
 const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
-  const { publicKey, connected, wallet } = useSwigWallet();
+  const { publicKey, connected, wallet } = usePhantomWallet();
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -178,7 +178,7 @@ const OnboardingModal = ({ isOpen, onComplete, onSkip }) => {
             </div>
           </div>
           <div className="wallet-connect-section">
-            <SwigWalletButton />
+            <PhantomWalletButton />
           </div>
         </div>
       )

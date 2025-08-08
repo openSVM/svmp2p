@@ -7,8 +7,6 @@ export const AppContext = createContext({
   networks: {},
   selectedNetwork: 'solana',
   setSelectedNetwork: () => {},
-  activeTab: 'buy',
-  setActiveTab: () => {},
 });
 
 // SVM Networks configuration
@@ -58,7 +56,6 @@ const SVM_NETWORKS = {
 export const AppContextProvider = ({ children }) => {
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
-  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
@@ -69,9 +66,7 @@ export const AppContextProvider = ({ children }) => {
     networks: SVM_NETWORKS,
     selectedNetwork,
     setSelectedNetwork,
-    activeTab,
-    setActiveTab,
-  }), [network, selectedNetwork, activeTab]);
+  }), [network, selectedNetwork]);
   
   return (
     <AppContext.Provider value={contextValue}>

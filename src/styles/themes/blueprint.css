@@ -1,0 +1,400 @@
+/**
+ * BLUEPRINT THEME
+ * Technical drawing style with blue on white design
+ * Engineering and architectural blueprint aesthetic
+ */
+
+.theme-blueprint {
+  /* Blueprint Technical Palette */
+  --primary-bg: #FAFCFF;
+  --secondary-bg: #F0F4FF;
+  --card-bg: #FFFFFF;
+  --border-color: #1E40AF;
+  --text-primary: #1E40AF;
+  --text-secondary: #3B82F6;
+  --text-muted: #6B7280;
+  --accent-color: #1E40AF;
+  --button-bg: #1E40AF;
+  --button-text: #FFFFFF;
+  --button-hover: #1D4ED8;
+  --success-color: #059669;
+  --warning-color: #D97706;
+  --error-color: #DC2626;
+  --grid-color: #DBEAFE;
+  
+  /* Typography */
+  --font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 22px;
+  --font-size-3xl: 28px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  
+  /* Spacing */
+  --spacing-1: 2px;
+  --spacing-2: 4px;
+  --spacing-3: 8px;
+  --spacing-4: 12px;
+  --spacing-5: 16px;
+  --spacing-6: 20px;
+  --spacing-8: 24px;
+  --spacing-12: 32px;
+  --spacing-16: 48px;
+  
+  /* Shapes and Effects */
+  --border-radius: 0px;
+  --border-width: 1px;
+  --shadow: 2px 2px 0px var(--border-color);
+  --shadow-hover: 4px 4px 0px var(--border-color);
+  
+  /* Layout */
+  --content-width: 1200px;
+  --sidebar-width: 240px;
+  --header-height: 64px;
+}
+
+.theme-blueprint body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-attachment: fixed;
+}
+
+.theme-blueprint * {
+  font-family: var(--font-family) !important;
+}
+
+.theme-blueprint .card,
+.theme-blueprint .ascii-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  position: relative;
+  padding: var(--spacing-6);
+}
+
+.theme-blueprint .card::before,
+.theme-blueprint .ascii-card::before {
+  content: '';
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color);
+  background: 
+    linear-gradient(45deg, transparent 30%, var(--border-color) 30%, var(--border-color) 70%, transparent 70%),
+    linear-gradient(-45deg, transparent 30%, var(--border-color) 30%, var(--border-color) 70%, transparent 70%);
+  background-size: 4px 4px;
+}
+
+.theme-blueprint .btn,
+.theme-blueprint .ascii-btn,
+.theme-blueprint button:not(.unstyled) {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: var(--spacing-3) var(--spacing-5);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.theme-blueprint .btn::after,
+.theme-blueprint .ascii-btn::after,
+.theme-blueprint button:not(.unstyled)::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 1px dashed var(--border-color);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.theme-blueprint .btn:hover,
+.theme-blueprint .ascii-btn:hover,
+.theme-blueprint button:not(.unstyled):hover {
+  background: var(--button-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translate(-2px, -2px);
+}
+
+.theme-blueprint .btn:hover::after,
+.theme-blueprint .ascii-btn:hover::after,
+.theme-blueprint button:not(.unstyled):hover::after {
+  opacity: 1;
+}
+
+.theme-blueprint input,
+.theme-blueprint select,
+.theme-blueprint textarea {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  padding: var(--spacing-3);
+  position: relative;
+}
+
+.theme-blueprint input:focus,
+.theme-blueprint select:focus,
+.theme-blueprint textarea:focus {
+  outline: none;
+  box-shadow: var(--shadow);
+  border-width: 2px;
+}
+
+.theme-blueprint h1,
+.theme-blueprint h2,
+.theme-blueprint h3,
+.theme-blueprint h4,
+.theme-blueprint h5,
+.theme-blueprint h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.theme-blueprint h1::before { content: '1.0 '; font-size: var(--font-size-sm); }
+.theme-blueprint h2::before { content: '2.0 '; font-size: var(--font-size-sm); }
+.theme-blueprint h3::before { content: '3.0 '; font-size: var(--font-size-sm); }
+.theme-blueprint h4::before { content: '4.0 '; font-size: var(--font-size-sm); }
+
+.theme-blueprint h1::after,
+.theme-blueprint h2::after,
+.theme-blueprint h3::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-color),
+    var(--border-color) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.theme-blueprint .ascii-nav-tab {
+  border: var(--border-width) solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+}
+
+.theme-blueprint .ascii-nav-tab::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  border: 1px dashed var(--border-color);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.theme-blueprint .ascii-nav-tab:hover::before {
+  opacity: 1;
+}
+
+.theme-blueprint .ascii-nav-tab.active {
+  background: var(--button-bg);
+  color: var(--button-text);
+  box-shadow: var(--shadow);
+}
+
+.theme-blueprint .ascii-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hover);
+  position: relative;
+}
+
+.theme-blueprint .ascii-dropdown-menu::after {
+  content: 'REV 1.0';
+  position: absolute;
+  top: var(--spacing-1);
+  right: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.theme-blueprint .ascii-dropdown-item {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px dotted var(--border-color);
+  position: relative;
+}
+
+.theme-blueprint .ascii-dropdown-item::before {
+  content: '→ ';
+  position: absolute;
+  left: var(--spacing-2);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.theme-blueprint .ascii-dropdown-item:hover {
+  background: var(--secondary-bg);
+  padding-left: var(--spacing-6);
+}
+
+.theme-blueprint .ascii-dropdown-item:hover::before {
+  opacity: 1;
+}
+
+.theme-blueprint .ascii-dropdown-item.active {
+  background: var(--button-bg);
+  color: var(--button-text);
+}
+
+.theme-blueprint table {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  border: var(--border-width) solid var(--border-color);
+  position: relative;
+}
+
+.theme-blueprint table::before {
+  content: 'TABLE REF: T-001';
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-normal);
+}
+
+.theme-blueprint th,
+.theme-blueprint td {
+  border: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-3);
+  text-align: left;
+  font-family: var(--font-family);
+  position: relative;
+}
+
+.theme-blueprint th {
+  background: var(--secondary-bg);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.theme-blueprint th::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--border-color),
+    var(--border-color) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+}
+
+.theme-blueprint .status-pending::before { content: '[PEND] '; }
+.theme-blueprint .status-completed::before { content: '[COMP] '; }
+.theme-blueprint .status-failed::before { content: '[FAIL] '; }
+.theme-blueprint .status-cancelled::before { content: '[CANC] '; }
+
+.theme-blueprint .status-pending { color: var(--warning-color); }
+.theme-blueprint .status-completed { color: var(--success-color); }
+.theme-blueprint .status-failed { color: var(--error-color); }
+.theme-blueprint .status-cancelled { color: var(--text-muted); }
+
+.theme-blueprint .theme-selector-menu {
+  min-width: 280px;
+}
+
+.theme-blueprint .theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.theme-blueprint .theme-name {
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.theme-blueprint .theme-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.theme-blueprint .network-indicator {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--border-color);
+  margin-right: var(--spacing-2);
+  display: inline-block;
+  position: relative;
+}
+
+.theme-blueprint .network-indicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+/* Blueprint corner markers */
+.theme-blueprint .card::after,
+.theme-blueprint .ascii-card::after {
+  content: '';
+  position: absolute;
+  bottom: var(--spacing-2);
+  left: var(--spacing-2);
+  width: 12px;
+  height: 12px;
+  border-left: 2px solid var(--border-color);
+  border-bottom: 2px solid var(--border-color);
+}

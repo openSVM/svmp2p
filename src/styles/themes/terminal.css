@@ -1,0 +1,409 @@
+/**
+ * TERMINAL THEME
+ * Classic green on black terminal aesthetic with monospace fonts and glow effects
+ * Authentic hacker/developer terminal experience
+ */
+
+.theme-terminal {
+  /* Terminal Green Palette */
+  --primary-bg: #000000;
+  --secondary-bg: #0A0A0A;
+  --card-bg: #001100;
+  --border-color: #00FF00;
+  --text-primary: #00FF00;
+  --text-secondary: #00AA00;
+  --text-muted: #008800;
+  --accent-color: #00FF00;
+  --button-bg: #003300;
+  --button-text: #00FF00;
+  --button-hover: #004400;
+  --success-color: #00FF00;
+  --warning-color: #FFFF00;
+  --error-color: #FF0000;
+  
+  /* Typography */
+  --font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  
+  /* Spacing */
+  --spacing-1: 2px;
+  --spacing-2: 4px;
+  --spacing-3: 6px;
+  --spacing-4: 8px;
+  --spacing-5: 10px;
+  --spacing-6: 12px;
+  --spacing-8: 16px;
+  --spacing-12: 24px;
+  --spacing-16: 32px;
+  
+  /* Shapes and Effects */
+  --border-radius: 0px;
+  --border-width: 1px;
+  --shadow: 0 0 10px var(--accent-color);
+  --shadow-hover: 0 0 20px var(--accent-color);
+  --glow: 0 0 5px currentColor;
+  
+  /* Layout */
+  --content-width: 1200px;
+  --sidebar-width: 250px;
+  --header-height: 64px;
+}
+
+/* Global styling for terminal theme */
+.theme-terminal body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  text-shadow: var(--glow);
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 0, 0.02) 2px,
+      rgba(0, 255, 0, 0.02) 4px
+    );
+}
+
+.theme-terminal * {
+  font-family: var(--font-family) !important;
+}
+
+/* Cursor effect */
+.theme-terminal body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(0, 255, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Cards and containers */
+.theme-terminal .card,
+.theme-terminal .ascii-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: var(--spacing-4);
+  position: relative;
+}
+
+.theme-terminal .card::before,
+.theme-terminal .ascii-card::before {
+  content: '> ';
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+  color: var(--accent-color);
+  font-weight: var(--font-weight-bold);
+  text-shadow: var(--glow);
+}
+
+/* Buttons */
+.theme-terminal .btn,
+.theme-terminal .ascii-btn,
+.theme-terminal button:not(.unstyled) {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  padding: var(--spacing-3) var(--spacing-4);
+  transition: all 0.2s ease;
+  text-shadow: var(--glow);
+  position: relative;
+}
+
+.theme-terminal .btn::before,
+.theme-terminal .ascii-btn::before,
+.theme-terminal button:not(.unstyled)::before {
+  content: '[';
+  position: absolute;
+  left: var(--spacing-1);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.theme-terminal .btn::after,
+.theme-terminal .ascii-btn::after,
+.theme-terminal button:not(.unstyled)::after {
+  content: ']';
+  position: absolute;
+  right: var(--spacing-1);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.theme-terminal .btn:hover,
+.theme-terminal .ascii-btn:hover,
+.theme-terminal button:not(.unstyled):hover {
+  background: var(--button-hover);
+  box-shadow: var(--shadow-hover);
+  text-shadow: var(--shadow-hover);
+  animation: terminal-blink 1s infinite;
+}
+
+/* Forms */
+.theme-terminal input,
+.theme-terminal select,
+.theme-terminal textarea {
+  background: var(--primary-bg);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  padding: var(--spacing-3);
+  text-shadow: var(--glow);
+}
+
+.theme-terminal input:focus,
+.theme-terminal select:focus,
+.theme-terminal textarea:focus {
+  outline: none;
+  box-shadow: var(--shadow);
+  animation: terminal-cursor 1s infinite;
+}
+
+/* Headers */
+.theme-terminal h1,
+.theme-terminal h2,
+.theme-terminal h3,
+.theme-terminal h4,
+.theme-terminal h5,
+.theme-terminal h6 {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  text-shadow: var(--glow);
+  position: relative;
+}
+
+.theme-terminal h1::before { content: '# '; }
+.theme-terminal h2::before { content: '## '; }
+.theme-terminal h3::before { content: '### '; }
+.theme-terminal h4::before { content: '#### '; }
+.theme-terminal h5::before { content: '##### '; }
+.theme-terminal h6::before { content: '###### '; }
+
+/* Navigation */
+.theme-terminal .ascii-nav-tab {
+  border: var(--border-width) solid var(--border-color);
+  background: var(--button-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  text-shadow: var(--glow);
+  position: relative;
+}
+
+.theme-terminal .ascii-nav-tab::before {
+  content: '$ ';
+  position: absolute;
+  left: var(--spacing-2);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.theme-terminal .ascii-nav-tab:hover {
+  box-shadow: var(--shadow);
+  animation: terminal-blink 2s infinite;
+}
+
+.theme-terminal .ascii-nav-tab.active {
+  background: var(--accent-color);
+  color: var(--primary-bg);
+  text-shadow: none;
+  box-shadow: var(--shadow-hover);
+}
+
+.theme-terminal .ascii-nav-tab.active::before {
+  content: '> ';
+}
+
+/* Dropdowns */
+.theme-terminal .ascii-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hover);
+  padding: var(--spacing-2);
+}
+
+.theme-terminal .ascii-dropdown-item {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  text-shadow: var(--glow);
+  padding: var(--spacing-2) var(--spacing-3);
+  margin: var(--spacing-1) 0;
+  position: relative;
+}
+
+.theme-terminal .ascii-dropdown-item::before {
+  content: '- ';
+  position: absolute;
+  left: var(--spacing-1);
+}
+
+.theme-terminal .ascii-dropdown-item:hover {
+  background: var(--button-bg);
+  box-shadow: inset var(--shadow);
+}
+
+.theme-terminal .ascii-dropdown-item:hover::before {
+  content: '> ';
+  animation: terminal-blink 1s infinite;
+}
+
+.theme-terminal .ascii-dropdown-item.active {
+  background: var(--accent-color);
+  color: var(--primary-bg);
+  text-shadow: none;
+}
+
+.theme-terminal .ascii-dropdown-item.active::before {
+  content: '* ';
+  color: var(--primary-bg);
+}
+
+/* Tables */
+.theme-terminal table {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+}
+
+.theme-terminal th,
+.theme-terminal td {
+  border: var(--border-width) solid var(--border-color);
+  padding: var(--spacing-3);
+  text-align: left;
+  font-family: var(--font-family);
+  text-shadow: var(--glow);
+}
+
+.theme-terminal th {
+  background: var(--button-bg);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  position: relative;
+}
+
+.theme-terminal th::before {
+  content: '| ';
+  position: absolute;
+  left: var(--spacing-1);
+}
+
+.theme-terminal tbody tr:hover {
+  background: var(--button-bg);
+  box-shadow: inset var(--shadow);
+}
+
+/* Status indicators */
+.theme-terminal .status-pending { 
+  color: var(--warning-color); 
+  text-shadow: 0 0 5px currentColor;
+  animation: terminal-blink 2s infinite;
+}
+.theme-terminal .status-completed { 
+  color: var(--success-color); 
+  text-shadow: 0 0 5px currentColor;
+}
+.theme-terminal .status-failed { 
+  color: var(--error-color); 
+  text-shadow: 0 0 5px currentColor;
+  animation: terminal-blink 0.5s infinite;
+}
+.theme-terminal .status-cancelled { color: var(--text-muted); }
+
+/* Special elements */
+.theme-terminal .theme-selector-menu {
+  min-width: 300px;
+}
+
+.theme-terminal .theme-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.theme-terminal .theme-name {
+  font-weight: var(--font-weight-bold);
+  text-shadow: var(--glow);
+}
+
+.theme-terminal .theme-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* Network indicator */
+.theme-terminal .network-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  margin-right: var(--spacing-2);
+  display: inline-block;
+  box-shadow: 0 0 5px currentColor;
+}
+
+/* Terminal-specific elements */
+.theme-terminal .terminal-prompt::before {
+  content: 'user@svmp2p:~$ ';
+  color: var(--accent-color);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Animations */
+@keyframes terminal-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes terminal-cursor {
+  0%, 50% { border-right: 2px solid var(--accent-color); }
+  51%, 100% { border-right: 2px solid transparent; }
+}
+
+@keyframes terminal-scan {
+  0% { transform: translateY(-100vh); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Scanline effect */
+.theme-terminal body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+  opacity: 0.5;
+  animation: terminal-scan 3s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}

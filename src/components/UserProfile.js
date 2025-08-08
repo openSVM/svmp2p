@@ -24,13 +24,13 @@ const LoadingFallback = () => (
  * Optimized for performance with React.memo, lazy loading, and hooks
  * Now uses SafeWallet context to prevent null reference errors
  */
-const UserProfile = ({ wallet: walletProp, network }) => {
+const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onTabChange }) => {
   // Use safe wallet context if no wallet prop provided
   const contextWallet = useSafeWallet();
   const wallet = walletProp || contextWallet;
   
   // Initialize all hooks first (Rules of Hooks)
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [profileData, setProfileData] = useState({
@@ -88,7 +88,7 @@ const UserProfile = ({ wallet: walletProp, network }) => {
           disputeRate: 6.25,
           lastUpdated: new Date().toLocaleDateString()
         },
-        transactions: Array.from({ length: 10 }, (_, i) => ({
+        transactions: Array.from({ length: 5 }, (_, i) => ({
           id: `tx-${i+1}`,
           type: i % 3 === 0 ? 'Buy' : i % 3 === 1 ? 'Sell' : 'Deposit',
           solAmount: Math.random() * 10 + 0.5,
@@ -174,30 +174,43 @@ const UserProfile = ({ wallet: walletProp, network }) => {
     console.log('Saving settings:', newSettings);
   }, []);
 
+  // Handle tab change with URL update
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    if (onTabChange) {
+      onTabChange(newTab);
+    }
+  };
+
+  // Update tab when initialTab changes (for URL navigation)
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
   // Render tabs navigation - memoized to prevent recreation on each render
   const renderTabs = useMemo(() => (
     <div className="profile-tabs">
       <button 
         className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-        onClick={() => setActiveTab('overview')}
+        onClick={() => handleTabChange('overview')}
       >
         Overview
       </button>
       <button 
         className={`tab-button ${activeTab === 'transactions' ? 'active' : ''}`}
-        onClick={() => setActiveTab('transactions')}
+        onClick={() => handleTabChange('transactions')}
       >
         Transactions
       </button>
       <button 
         className={`tab-button ${activeTab === 'stats' ? 'active' : ''}`}
-        onClick={() => setActiveTab('stats')}
+        onClick={() => handleTabChange('stats')}
       >
         Statistics
       </button>
       <button 
         className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
-        onClick={() => setActiveTab('settings')}
+        onClick={() => handleTabChange('settings')}
       >
         Settings
       </button>
@@ -279,7 +292,7 @@ const UserProfile = ({ wallet: walletProp, network }) => {
     }
   }, [wallet, isWalletConnected]);
 
-  // Early return for wallet not connected after all hooks are initialized
+  // Early return for wallet not connected after all hooks are initialized  
   if (!isWalletConnected) {
     console.log('[UserProfile] No wallet connected, returning WalletNotConnected');
     return <WalletNotConnected message="Please connect your wallet to view your profile and transaction history." />;
@@ -323,7 +336,9 @@ UserProfile.propTypes = {
   }),
   network: PropTypes.shape({
     name: PropTypes.string
-  })
+  }),
+  initialTab: PropTypes.string,
+  onTabChange: PropTypes.func
 };
 
 // Export memoized component to prevent unnecessary re-renders

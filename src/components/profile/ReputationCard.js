@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import PropertyValueTable from '../common/PropertyValueTable';
 
 /**
  * ReputationCard component displays the user's reputation metrics and score
@@ -48,122 +49,100 @@ const ReputationCard = ({ reputation }) => {
   
   // Get reputation level based on score
   const getReputationLevel = (score) => {
-    if (score >= 90) return 'Excellent';
-    if (score >= 80) return 'Very Good';
-    if (score >= 70) return 'Good';
-    if (score >= 60) return 'Fair';
-    if (score >= 50) return 'Moderate';
-    if (score >= 40) return 'Developing';
-    if (score >= 30) return 'Basic';
-    return 'New User';
+    if (score >= 90) return 'EXCELLENT';
+    if (score >= 80) return 'VERY GOOD';
+    if (score >= 70) return 'GOOD';
+    if (score >= 60) return 'FAIR';
+    if (score >= 50) return 'MODERATE';
+    if (score >= 40) return 'DEVELOPING';
+    if (score >= 30) return 'BASIC';
+    return 'NEW USER';
   };
   
   // Generate star rating display
   const getStarRating = (score) => {
     const starCount = Math.round(score / 20); // 0-5 stars
-    
-    return (
-      <div className="star-rating" aria-label={`${starCount} out of 5 stars`}>
-        {[...Array(5)].map((_, i) => (
-          <span 
-            key={i} 
-            className={`star ${i < starCount ? 'star-filled' : 'star-empty'}`}
-            aria-hidden="true"
-          >
-            {i < starCount ? '★' : '☆'}
-          </span>
-        ))}
-      </div>
-    );
+    return `${'★'.repeat(starCount)}${'☆'.repeat(5 - starCount)}`;
   };
   
   const score = calculateReputationScore(reputation);
   const level = getReputationLevel(score);
-  
+
+  // Prepare reputation data for PropertyValueTable
+  const reputationData = [
+    { 
+      property: 'REPUTATION SCORE', 
+      value: `${score}/100`,
+      badge: level,
+      badgeClassName: `level-${level.toLowerCase().replace(/\s+/g, '-')}`,
+      description: 'Overall reputation based on trading history and ratings'
+    },
+    { 
+      property: 'STAR RATING', 
+      value: getStarRating(score),
+      valueClassName: 'star-rating'
+    },
+    { 
+      property: 'COMPLETION RATE', 
+      value: `${reputation?.completionRate || 0}%`,
+      valueClassName: reputation?.completionRate >= 90 ? 'excellent' : reputation?.completionRate >= 80 ? 'good' : 'average'
+    },
+    { 
+      property: 'AVERAGE RATING', 
+      value: `${reputation?.averageRating?.toFixed(1) || '0.0'}/5.0`,
+      valueClassName: reputation?.averageRating >= 4.5 ? 'excellent' : reputation?.averageRating >= 4.0 ? 'good' : 'average'
+    },
+    { 
+      property: 'RESPONSE TIME', 
+      value: reputation?.averageResponseTime || 'N/A',
+      description: 'Average time to respond to trade requests'
+    },
+    { 
+      property: 'DISPUTE RATE', 
+      value: `${reputation?.disputeRate || 0}%`,
+      valueClassName: reputation?.disputeRate <= 5 ? 'excellent' : reputation?.disputeRate <= 10 ? 'good' : 'warning',
+      description: 'Percentage of trades that resulted in disputes'
+    },
+    { 
+      property: 'LAST UPDATED', 
+      value: reputation?.lastUpdated || 'Never',
+      valueClassName: 'last-updated'
+    },
+  ];
+
+  // Detailed metrics (shown when expanded)
+  const detailedData = showDetails ? [
+    { property: 'TOTAL TRADES', value: reputation?.totalTrades || 0 },
+    { property: 'SUCCESSFUL TRADES', value: reputation?.successfulTrades || 0, badge: 'SUCCESS', badgeClassName: 'badge-success' },
+    { property: 'DISPUTED TRADES', value: reputation?.disputedTrades || 0, badge: reputation?.disputedTrades > 0 ? 'DISPUTED' : null, badgeClassName: 'badge-warning' },
+    { property: 'DISPUTES WON', value: reputation?.disputesWon || 0, description: 'Disputes resolved in your favor' },
+    { property: 'CALCULATION METHOD', value: 'WEIGHTED FORMULA', description: '40% trade success + 30% dispute resolution + 30% user ratings' },
+  ] : [];
+
+  const reputationActions = (
+    <button 
+      className="button button-ghost button-sm"
+      onClick={() => setShowDetails(!showDetails)}
+    >
+      {showDetails ? 'HIDE DETAILS' : 'SHOW DETAILS'}
+    </button>
+  );
+
   return (
-    <div className="reputation-card card">
-      <div className="reputation-card-header">
-        <h3 className="reputation-card-title">Reputation</h3>
-        <button 
-          className="button button-ghost button-sm"
-          onClick={() => setShowDetails(!showDetails)}
-        >
-          {showDetails ? 'Hide Details' : 'Show Details'}
-        </button>
-      </div>
-      
-      <div className="reputation-score-container">
-        <div className="reputation-score-circle">
-          <svg viewBox="0 0 36 36" className="reputation-score-chart">
-            <path
-              className="reputation-score-bg"
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <path
-              className="reputation-score-fill"
-              strokeDasharray={`${score}, 100`}
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <text x="18" y="20.35" className="reputation-score-text">
-              {score}
-            </text>
-          </svg>
-        </div>
-        
-        <div className="reputation-score-info">
-          <div className="reputation-level">{level}</div>
-          {getStarRating(score)}
-          <div className="reputation-last-updated">
-            Last updated: {reputation?.lastUpdated || 'Never'}
-          </div>
-        </div>
-      </div>
+    <div className="reputation-card">
+      <PropertyValueTable
+        title="Reputation Score"
+        data={reputationData}
+        actions={reputationActions}
+        className="reputation-table"
+      />
       
       {showDetails && (
-        <div className="reputation-details">
-          <div className="reputation-metrics">
-            <div className="reputation-metric">
-              <div className="reputation-metric-label">Completion Rate</div>
-              <div className="reputation-metric-value">
-                {reputation?.completionRate || 0}%
-              </div>
-            </div>
-            
-            <div className="reputation-metric">
-              <div className="reputation-metric-label">Avg. Rating</div>
-              <div className="reputation-metric-value">
-                {reputation?.averageRating?.toFixed(1) || '0.0'}/5.0
-              </div>
-            </div>
-            
-            <div className="reputation-metric">
-              <div className="reputation-metric-label">Response Time</div>
-              <div className="reputation-metric-value">
-                {reputation?.averageResponseTime || 'N/A'}
-              </div>
-            </div>
-            
-            <div className="reputation-metric">
-              <div className="reputation-metric-label">Dispute Rate</div>
-              <div className="reputation-metric-value">
-                {reputation?.disputeRate || 0}%
-              </div>
-            </div>
-          </div>
-          
-          <div className="reputation-explanation">
-            <h4>How is reputation calculated?</h4>
-            <p>
-              Your reputation score is based on your trading history, dispute resolution success,
-              and ratings from other users. Maintain a high completion rate and positive
-              interactions to improve your score.
-            </p>
-          </div>
-        </div>
+        <PropertyValueTable
+          title="Detailed Metrics"
+          data={detailedData}
+          className="reputation-details-table"
+        />
       )}
     </div>
   );

@@ -37,6 +37,23 @@ const ProfileHeader = ({
     }
   };
 
+  const handleEditProfile = () => {
+    // Navigate to profile editing mode or modal
+    alert('EDIT PROFILE: Feature coming soon! This would allow editing display name, bio, and settings.');
+  };
+
+  const handleShareProfile = () => {
+    // Copy profile URL to clipboard or open share modal
+    const profileUrl = `${window.location.origin}/profile`;
+    navigator.clipboard.writeText(profileUrl)
+      .then(() => {
+        alert('Profile URL copied to clipboard!');
+      })
+      .catch(() => {
+        alert('Profile URL: ' + profileUrl);
+      });
+  };
+
   return (
     <div className="profile-header card">
       <div className="profile-header-content">
@@ -101,27 +118,33 @@ const ProfileHeader = ({
             </button>
           </div>
           
-          <div className="profile-meta">
-            <div className="profile-network">
+          <div className="profile-meta ascii-form-row-2">
+            <div className="profile-network ascii-form-field">
               <span className="profile-meta-label">Network:</span>
               <span className="profile-meta-value">{network.name}</span>
             </div>
             
-            <div className="profile-join-date">
+            <div className="profile-join-date ascii-form-field">
               <span className="profile-meta-label">Member since:</span>
               <span className="profile-meta-value">{joinDate}</span>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="profile-actions">
-        <button className="button button-outline button-sm">
-          Edit Profile
-        </button>
-        <button className="button button-ghost button-sm">
-          Share Profile
-        </button>
+        
+        <div className="profile-actions">
+          <button 
+            className="button button-outline button-sm ascii-button-animate" 
+            onClick={handleEditProfile}
+          >
+            Edit Profile
+          </button>
+          <button 
+            className="button button-ghost button-sm ascii-button-animate" 
+            onClick={handleShareProfile}
+          >
+            Share Profile
+          </button>
+        </div>
       </div>
     </div>
   );
