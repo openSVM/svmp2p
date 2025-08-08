@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ProfileHeader from './profile/ProfileHeader';
 import WalletNotConnected from './WalletNotConnected';
 import { useSafeWallet } from '../contexts/WalletContextProvider';
+import UserStatistics from './UserStatistics';
 
 // Lazy load components that aren't needed for initial render
 const ReputationCard = lazy(() => import('./profile/ReputationCard'));
@@ -244,6 +245,10 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
       case 'stats':
         return (
           <div className="profile-stats">
+            {/* Real on-chain statistics */}
+            <UserStatistics />
+            
+            {/* Legacy stats component for comparison */}
             <Suspense fallback={<LoadingFallback />}>
               <TradingStats stats={profileData.tradingStats} />
             </Suspense>

@@ -4,9 +4,9 @@ import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationD
 import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import { useDebounce, VirtualizedList } from '../utils/performance';
 import { useActionDebounce } from '../hooks/useActionDebounce';
-import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS, DEMO_MODE, DEMO_OFFERS } from '../constants/tradingConstants';
+import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
+import { useOffers } from '../hooks/useOnChainData';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
-import DemoIndicator from './DemoIndicator';
 
 // Component for rendering a single offer row
 const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction, network, isWalletConnected, onConnectWalletClick }) => {
@@ -75,15 +75,6 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
   // Render action buttons based on offer status and user role
   const renderActionButtons = () => {
     if (type === 'buy' && offer.status === 'Listed') {
-      if (offer.isDemo && !isWalletConnected) {
-        return (
-          <ConnectWalletPrompt
-            action="buy SOL from real traders"
-            className="offer-action-button connect-wallet-button"
-          />
-        );
-      }
-      
       return (
         <ButtonLoader
           onClick={debouncedAccept}
@@ -154,19 +145,12 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
 
   return (
     <>
-      <div className={`offer-card ${offer.isDemo ? 'demo-offer' : ''}`}>
+      <div className={`offer-card`}>
         <div className="offer-card-header">
           <div className="seller-info">
             <span className="seller-name">
-              {offer.isDemo ? offer.seller : `${offer.seller.substring(0, 4)}...${offer.seller.substring(offer.seller.length - 4)}`}
+              {offer.seller.substring(0, 8)}...{offer.seller.substring(offer.seller.length - 4)}
             </span>
-            {offer.isDemo && (
-              <DemoIndicator 
-                type="inline" 
-                message="Demo" 
-                tooltip="This is sample data for demonstration"
-              />
-            )}
           </div>
           <div className="time-info">
             <span className="time-posted">{timeSincePosted}</span>
@@ -222,12 +206,6 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
   const wallet = usePhantomWallet();
   const { program, network, connection } = useContext(AppContext);
   
-  const [offers, setOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [statusMessage, setStatusMessage] = useState('');
-  const [txStatus, setTxStatus] = useState(null);
-  
   // Filter states
   const [minAmount, setMinAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState('');
@@ -253,6 +231,10 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     action: null
   });
   
+  // Transaction status
+  const [statusMessage, setStatusMessage] = useState('');
+  const [txStatus, setTxStatus] = useState(null);
+  
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -261,6 +243,37 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     onConfirm: () => {},
     variant: 'default'
   });
+
+  // Build filters for the offers hook
+  const offersFilters = useMemo(() => {
+    const filters = {};
+    
+    if (type === 'my' && wallet.publicKey) {
+      filters.seller = wallet.publicKey.toString();
+    }
+    
+    if (selectedCurrency) {
+      filters.currency = selectedCurrency;
+    }
+    
+    if (minAmount) {
+      filters.minAmount = parseFloat(minAmount);
+    }
+    
+    if (maxAmount) {
+      filters.maxAmount = parseFloat(maxAmount);
+    }
+    
+    // For buy offers, only show listed offers
+    if (type === 'buy') {
+      filters.status = 'Listed';
+    }
+    
+    return filters;
+  }, [type, wallet.publicKey, selectedCurrency, minAmount, maxAmount]);
+
+  // Use the real offers hook
+  const { offers, loading, error, refetch } = useOffers(program, offersFilters);
   
   
   // Memoize static data
@@ -329,165 +342,17 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     localStorage.setItem(`svmp2p-last-filters-${type}`, JSON.stringify(currentFilters));
   }, [minAmount, maxAmount, selectedCurrency, selectedPaymentMethod, sortBy, sortDirection, itemsPerPage, type]);
   
-  // Fetch offers on component mount - useCallback to prevent recreation on each render
-  const fetchOffers = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    
-    try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // If wallet is not connected, show demo data
-      if (!wallet.connected && DEMO_MODE.enabled) {
-        setOffers(DEMO_OFFERS);
-        return;
-      }
-      
-      // Mock data for demonstration (real offers for connected users)
-      const mockOffers = [
-        {
-          id: '58JrMFgW3NHLtYnU2vEv9rGBZGNpJhRVQQnKvYVZZdmG',
-          seller: '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin',
-          buyer: null,
-          solAmount: 1.5,
-          fiatAmount: 225,
-          fiatCurrency: 'USD',
-          paymentMethod: 'Bank Transfer',
-          status: 'Listed',
-          createdAt: Date.now() - 3600000,
-          isDemo: false
-        },
-        {
-          id: '7UX2i7SucgLMQcfZ75s3VXmZZY4YRUyJN9X1RgfMoDUi',
-          seller: '2xRW7Ld9XwHegUMeqsS8VxEYbsZYPxnaVdqTSLLNBjAT',
-          buyer: null,
-          solAmount: 0.5,
-          fiatAmount: 75,
-          fiatCurrency: 'USD',
-          paymentMethod: 'PayPal',
-          status: 'Listed',
-          createdAt: Date.now() - 7200000,
-          isDemo: false
-        },
-        {
-          id: '3pRNuDKxwVMgTJAHUZ6SgxMm9iSfaAzKtdKxVbVKsw2U',
-          seller: '4uQeVj5tqViQh7yWWGStvkEG1Zmhx6uasJtWCJziofM',
-          buyer: null,
-          solAmount: 2.0,
-          fiatAmount: 300,
-          fiatCurrency: 'USD',
-          paymentMethod: 'Zelle',
-          status: 'Listed',
-          createdAt: Date.now() - 10800000,
-          isDemo: false
-        },
-        {
-          id: '9sTxzFK2GpJzVGJje3oDqC2QNFpAMvYh1qUQpsCoUsS',
-          seller: '6Yjk8PEgYJVB3DnGw4cUzBH9RWXLmiuw4i3GgUPyUVp8',
-          buyer: null,
-          solAmount: 3.2,
-          fiatAmount: 480,
-          fiatCurrency: 'EUR',
-          paymentMethod: 'Bank Transfer',
-          status: 'Listed',
-          createdAt: Date.now() - 21600000,
-          isDemo: false
-        },
-        {
-          id: '5KDV2s93SRvinJTjVeYzsHPMrsvpTPJVj4i41zJWxUs8',
-          seller: '8NDuR9LispHKCxMEFtQCNbY9A3mWqac4WhUJJ64KfDF7',
-          buyer: null,
-          solAmount: 0.75,
-          fiatAmount: 112.5,
-          fiatCurrency: 'USD',
-          paymentMethod: 'Cash App',
-          status: 'Listed',
-          createdAt: Date.now() - 36000000,
-          isDemo: false
-        },
-        {
-          id: '6wRuMi8VJMHx8dCKQ3wPvBjwEwRKAXNhEGp8CMeBvVXV',
-          seller: '2fg7mSNVVXbQKqKZYoK2Y3ahFZ7zLH8GHjqBMD5D4PHx',
-          buyer: null,
-          solAmount: 1.0,
-          fiatAmount: 150,
-          fiatCurrency: 'GBP',
-          paymentMethod: 'Revolut',
-          status: 'Listed',
-          createdAt: Date.now() - 43200000,
-          isDemo: false
-        },
-        {
-          id: '2rW9EXyaSjY8ETgpV6KYcPK2WvRJGbDELKZjZtpB24ri',
-          seller: '5TtdUkSZ9D7q8NsZ1pj6rWVTntQLbMHuPh1VG6cLhxhF',
-          buyer: null,
-          solAmount: 4.5,
-          fiatAmount: 675,
-          fiatCurrency: 'USD',
-          paymentMethod: 'Venmo',
-          status: 'Listed',
-          createdAt: Date.now() - 86400000,
-          isDemo: false
-        }
-      ];
-      
-      setOffers(mockOffers);
-    } catch (err) {
-      console.error('Error fetching offers:', err);
-      setError(`Failed to fetch offers: ${err.message}`);
-      setTxStatus({
-        status: 'error',
-        message: `Failed to fetch offers: ${err.message}`
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [wallet.connected]);
-  
-  // Use effect with proper dependencies
-  useEffect(() => {
-    fetchOffers();
-  }, [type, network, fetchOffers]);
-  
   // Calculate rate for each offer for sorting purposes
   const offersWithRate = useMemo(() => {
-    return offers.map(offer => ({
+    return filteredOffers.map(offer => ({
       ...offer,
       rate: offer.fiatAmount / offer.solAmount
     }));
-  }, [offers]);
-
-  // Filter offers based on user criteria - memoized to prevent recalculation on every render
-  const filteredOffers = useMemo(() => {
-    return offersWithRate.filter(offer => {
-      // Filter by min amount
-      if (minAmount && offer.solAmount < parseFloat(minAmount)) {
-        return false;
-      }
-      
-      // Filter by max amount
-      if (maxAmount && offer.solAmount > parseFloat(maxAmount)) {
-        return false;
-      }
-      
-      // Filter by currency
-      if (selectedCurrency && offer.fiatCurrency !== selectedCurrency) {
-        return false;
-      }
-      
-      // Filter by payment method
-      if (selectedPaymentMethod && offer.paymentMethod !== selectedPaymentMethod) {
-        return false;
-      }
-      
-      return true;
-    });
-  }, [offersWithRate, minAmount, maxAmount, selectedCurrency, selectedPaymentMethod]);
+  }, [filteredOffers]);
   
   // Sort the filtered offers
   const sortedOffers = useMemo(() => {
-    return [...filteredOffers].sort((a, b) => {
+    return [...offersWithRate].sort((a, b) => {
       let comparison;
       
       switch (sortBy) {
@@ -508,7 +373,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
       
       return sortDirection === 'asc' ? comparison : -comparison;
     });
-  }, [filteredOffers, sortBy, sortDirection]);
+  }, [offersWithRate, sortBy, sortDirection]);
   
   // Get paginated offers
   const paginatedOffers = useMemo(() => {
@@ -673,7 +538,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
       });
       
       // Refresh offers after action
-      fetchOffers();
+      refetch();
     } catch (err) {
       console.error(`Error ${action}ing offer:`, err);
       setError(`Failed to ${action} offer: ${err.message}`);
@@ -687,7 +552,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         action: null
       });
     }
-  }, [fetchOffers]);
+  }, [refetch]);
   
   // Clear transaction status - useCallback to prevent recreation on each render
   const handleClearTxStatus = useCallback(() => {
@@ -841,15 +706,15 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
       </div>
 
       {/* Demo mode banner for non-connected users */}
-      {!wallet.connected && DEMO_MODE.enabled && (
-        <DemoIndicator
-          type="banner"
-          message={DEMO_MODE.sampleDataLabel}
-          tooltip={type === 'buy' ? DEMO_MODE.educationalMessages.browseOnly : 
-                   type === 'my' ? DEMO_MODE.educationalMessages.myOffers :
-                   DEMO_MODE.educationalMessages.createOffer}
-          className="demo-banner-main"
-        />
+      {!wallet.connected && (
+        <div className="wallet-connection-prompt">
+          <ConnectWalletPrompt
+            action={type === 'buy' ? 'buy SOL from real traders' : 
+                   type === 'my' ? 'view and manage your offers' :
+                   'view real trading opportunities'}
+            showAsMessage={true}
+          />
+        </div>
       )}
 
       {error && <div className="error-message">{error}</div>}
@@ -1074,6 +939,10 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           background-color: var(--ascii-neutral-600);
           transform: translateY(-1px);
           box-shadow: var(--shadow-md);
+        }
+
+        .wallet-connection-prompt {
+          margin: 1rem 0;
         }
       `}</style>
     </div>

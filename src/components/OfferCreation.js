@@ -16,14 +16,12 @@ import { useActionDebounce, useInputValidation } from '../hooks/useActionDebounc
 import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../utils/validation';
 import { createLogger } from '../utils/logger';
 import { 
-  MOCK_SOL_PRICES, 
   SUPPORTED_CURRENCIES, 
   SUPPORTED_PAYMENT_METHODS,
-  VALIDATION_CONSTRAINTS,
-  DEMO_MODE 
+  VALIDATION_CONSTRAINTS
 } from '../constants/tradingConstants';
+import { useRealPriceData, useCalculateFiatAmount } from '../hooks/usePriceData';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
-import DemoIndicator from './DemoIndicator';
 
 const logger = createLogger('OfferCreation');
 
@@ -41,6 +39,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  // Get real price data
+  const { prices, loading: pricesLoading, error: pricesError, lastUpdated } = useRealPriceData();
+  const { fiatAmount: calculatedFiatAmount, isValid: priceCalculationValid } = useCalculateFiatAmount(solAmount, fiatCurrency);
   
   // Validation states
   const solValidation = useInputValidation(solAmount, validateSolAmount);
@@ -188,23 +190,25 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     }
   }
   
-  // Calculate fiat amount based on SOL amount (simple conversion for demo)
+  // Calculate fiat amount based on SOL amount using real prices
   const handleSolAmountChange = (e) => {
     const sol = e.target.value;
     setSolAmount(sol);
     
-    if (sol && !isNaN(sol)) {
-      const calculatedFiat = (parseFloat(sol) * MOCK_SOL_PRICES[fiatCurrency]).toFixed(2);
+    if (sol && !isNaN(sol) && prices && prices[fiatCurrency]) {
+      const calculatedFiat = (parseFloat(sol) * prices[fiatCurrency]).toFixed(2);
       setFiatAmount(calculatedFiat);
+    } else if (!sol) {
+      setFiatAmount('');
     }
   };
   
-  // Update fiat amount when currency changes
+  // Update fiat amount when currency changes using real prices
   const handleCurrencyChange = (e) => {
     setFiatCurrency(e.target.value);
-    if (solAmount && !isNaN(solAmount)) {
+    if (solAmount && !isNaN(solAmount) && prices && prices[e.target.value]) {
       // Recalculate fiat amount with new currency
-      const calculatedFiat = (parseFloat(solAmount) * MOCK_SOL_PRICES[e.target.value]).toFixed(2);
+      const calculatedFiat = (parseFloat(solAmount) * prices[e.target.value]).toFixed(2);
       setFiatAmount(calculatedFiat);
     }
   };
@@ -236,16 +240,32 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       </div>
       
       {/* Demo mode banner for non-connected users */}
-      {!wallet.connected && DEMO_MODE.enabled && (
-        <DemoIndicator
-          type="banner"
-          message="Connect Wallet to Create Real Offers"
-          tooltip={DEMO_MODE.educationalMessages.createOffer}
-          className="demo-banner-main"
-        />
+      {!wallet.connected && (
+        <div className="wallet-connection-prompt">
+          <ConnectWalletPrompt
+            action="create real offers and trade on the blockchain"
+            showAsMessage={true}
+          />
+        </div>
       )}
       
       <p>Create an offer to sell SOL for fiat currency</p>
+      
+      {/* Price data status */}
+      {pricesError && (
+        <div className="warning-message">
+          Warning: Unable to fetch current market prices. Please verify amounts manually.
+        </div>
+      )}
+      
+      {prices && lastUpdated && (
+        <div className="price-info">
+          Current SOL price: {prices[fiatCurrency]?.toFixed(2)} {fiatCurrency}
+          <span className="price-updated">
+            (Updated: {lastUpdated.toLocaleTimeString()})
+          </span>
+        </div>
+      )}
       
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
@@ -398,7 +418,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       
       <div className="network-info">
         <p>Network: {network.name}</p>
-        <p>Current SOL price is estimated based on market rates.</p>
+        <p>Prices are fetched from live market data sources.</p>
         <p>Your SOL will be held in escrow until the trade is completed.</p>
       </div>
       
@@ -465,6 +485,36 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           color: #f59e0b;
           font-size: 0.875rem;
           margin-top: 0.25rem;
+        }
+
+        .price-info {
+          background: var(--color-background-alt);
+          border: 1px solid var(--color-border);
+          border-radius: 4px;
+          padding: 12px;
+          margin: 1rem 0;
+          font-size: 0.9rem;
+          color: var(--color-foreground-muted);
+        }
+
+        .price-updated {
+          margin-left: 10px;
+          font-size: 0.8rem;
+          opacity: 0.7;
+        }
+
+        .warning-message {
+          background: #fef3c7;
+          border: 1px solid #f59e0b;
+          color: #92400e;
+          padding: 12px;
+          border-radius: 4px;
+          margin: 1rem 0;
+          font-size: 0.9rem;
+        }
+
+        .wallet-connection-prompt {
+          margin: 1rem 0;
         }
       `}</style>
     </div>
