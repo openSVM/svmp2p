@@ -47,6 +47,16 @@ pub mod p2p_exchange {
         instructions::admin::initialize_admin(ctx)
     }
 
+    /// Update admin authorities for multi-signature support
+    /// Enables upgrading from single admin to multi-sig configuration
+    pub fn update_admin_authorities(
+        ctx: Context<UpdateAdminAuthorities>,
+        secondary_authorities: [Pubkey; 2],
+        required_signatures: u8,
+    ) -> Result<()> {
+        instructions::admin::update_admin_authorities(ctx, secondary_authorities, required_signatures)
+    }
+
     /// Create a new P2P exchange offer with escrowed SOL
     /// 
     /// # Arguments

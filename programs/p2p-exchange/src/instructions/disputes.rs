@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
-use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
+use crate::state::{Admin, EscrowAccount, Offer, Dispute, Vote, Reputation, OfferStatus, DisputeStatus, MAX_DISPUTE_REASON_LEN, MAX_EVIDENCE_URL_LEN, MAX_EVIDENCE_ITEMS};
 use crate::state::{DisputeOpened, JurorsAssigned, EvidenceSubmitted, VoteCast, VerdictExecuted, RewardEligible};
 use crate::errors::ErrorCode;
 use crate::utils::validate_and_process_string;
@@ -353,10 +353,38 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
         return Err(error!(ErrorCode::InvalidDisputeStatus));
     }
 
+    // Critical security fix: Validate that the dispute belongs to this offer
+    if dispute.offer != offer.key() {
+        return Err(error!(ErrorCode::Unauthorized));
+    }
+
+    // Critical security fix: Validate buyer and seller identities
+    if offer.seller != seller.key() {
+        return Err(error!(ErrorCode::Unauthorized));
+    }
+    if let Some(offer_buyer) = offer.buyer {
+        if offer_buyer != buyer.key() {
+            return Err(error!(ErrorCode::Unauthorized));
+        }
+    } else {
+        return Err(error!(ErrorCode::Unauthorized));
+    }
+
     // Determine winner and transfer funds accordingly
     let escrow_balance = escrow_account.to_account_info().lamports();
     
-    if escrow_balance > 0 {
+    // Critical security fix: Validate minimum balance and expected amount
+    let minimum_rent_exempt = Rent::get()?.minimum_balance(EscrowAccount::LEN + 8);
+    if escrow_balance <= minimum_rent_exempt {
+        return Err(error!(ErrorCode::InsufficientFunds));
+    }
+
+    // Calculate transferable amount (total balance minus rent exempt)
+    let transferable_amount = escrow_balance
+        .checked_sub(minimum_rent_exempt)
+        .ok_or(ErrorCode::MathOverflow)?;
+    
+    if transferable_amount > 0 {
         // Explicit tie-breaking logic: ties are rejected
         let recipient = if dispute.votes_for_buyer > dispute.votes_for_seller {
             buyer // Buyer wins
@@ -367,10 +395,15 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
             return Err(error!(ErrorCode::TiedVote));
         };
 
+        // Critical security fix: Validate transfer amount doesn't exceed expected
+        if transferable_amount > offer.amount.checked_add(offer.security_bond).ok_or(ErrorCode::MathOverflow)? {
+            return Err(error!(ErrorCode::InvalidAmount));
+        }
+
         let transfer_instruction = system_instruction::transfer(
             &escrow_account.key(),
             &recipient.key(),
-            escrow_balance,
+            transferable_amount,
         );
 
         let escrow_seeds = &[
@@ -389,11 +422,11 @@ pub fn execute_verdict(ctx: Context<ExecuteVerdict>) -> Result<()> {
             &[escrow_seeds],
         )?;
 
-        // Emit event
+        // Emit event with actual transferred amount
         emit!(VerdictExecuted {
             dispute: dispute.key(),
             winner: recipient.key(),
-            amount: escrow_balance,
+            amount: transferable_amount,
         });
     }
 

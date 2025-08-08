@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke, program::invoke_signed, system_instruction};
-use crate::state::{EscrowAccount, Offer, OfferStatus, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
+use crate::state::{EscrowAccount, Offer, OfferStatus, Reputation, MAX_FIAT_CURRENCY_LEN, MAX_PAYMENT_METHOD_LEN};
 use crate::state::{OfferCreated, OfferAccepted, FiatSent, FiatReceiptConfirmed, SolReleased, RewardEligible};
 use crate::errors::ErrorCode;
 use crate::utils::validate_and_process_string;
@@ -100,13 +100,18 @@ pub fn create_offer(
         return Err(error!(ErrorCode::InputTooLong));
     }
 
+    // Validate amount
+    if amount == 0 || fiat_amount == 0 {
+        return Err(error!(ErrorCode::InvalidAmount));
+    }
+
     let offer = &mut ctx.accounts.offer;
     let seller = &ctx.accounts.seller;
     let escrow_account = &mut ctx.accounts.escrow_account;
 
     // Initialize escrow account
     escrow_account.offer = offer.key();
-    escrow_account.bump = ctx.bumps.get("escrow_account").copied().unwrap();
+    escrow_account.bump = ctx.bumps.escrow_account;
 
     // Initialize offer data
     offer.seller = seller.key();

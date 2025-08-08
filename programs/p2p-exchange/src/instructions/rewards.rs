@@ -184,7 +184,7 @@ pub fn create_reward_token(
     reward_token.min_trade_volume = min_trade_volume;
     reward_token.created_at = clock.unix_timestamp;
     reward_token.last_updated = clock.unix_timestamp;
-    reward_token.bump = *ctx.bumps.get("reward_token").unwrap();
+    reward_token.bump = ctx.bumps.reward_token;
     
     emit!(RewardTokenCreated {
         authority: ctx.accounts.authority.key(),
@@ -206,7 +206,7 @@ pub fn create_user_rewards(ctx: Context<CreateUserRewards>) -> Result<()> {
     user_rewards.governance_votes = 0;
     user_rewards.last_trade_reward = 0;
     user_rewards.last_vote_reward = 0;
-    user_rewards.bump = *ctx.bumps.get("user_rewards").unwrap();
+    user_rewards.bump = ctx.bumps.user_rewards;
     
     Ok(())
 }
