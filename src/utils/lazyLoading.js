@@ -188,7 +188,7 @@ export const withIntersectionLazyLoad = (WrappedComponent, options = {}) => {
       }
 
       return () => observer.disconnect();
-    }, [threshold, rootMargin, shouldLoad]);
+    }, [shouldLoad]);
 
     if (!shouldLoad) {
       return (

@@ -550,6 +550,8 @@ const PhantomWalletProvider = ({ children }) => {
 
   // Cleanup on unmount
   useEffect(() => {
+    const timeouts = reconnectScheduledTimeouts.current;
+    
     return () => {
       // Cancel all reconnection timers on unmount
       reconnectCancelledRef.current = true;
@@ -558,10 +560,10 @@ const PhantomWalletProvider = ({ children }) => {
         clearTimeout(reconnectTimeoutRef.current);
       }
       
-      reconnectScheduledTimeouts.current.forEach(timeoutId => {
+      timeouts.forEach(timeoutId => {
         clearTimeout(timeoutId);
       });
-      reconnectScheduledTimeouts.current.clear();
+      timeouts.clear();
     };
   }, []);
 

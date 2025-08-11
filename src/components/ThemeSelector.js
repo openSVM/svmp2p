@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 const ThemeSelector = () => {
   const [selectedTheme, setSelectedTheme] = useState('grayscale');
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Available themes
-  const themes = [
+  // Available themes - memoized to prevent recreating on each render
+  const themes = useMemo(() => [
     { key: 'grayscale', label: 'GRAYSCALE', description: 'Monospace ASCII terminal style' },
     { key: 'corporate', label: 'CORPORATE', description: 'Clean blue professional design' },
     { key: 'retro', label: 'RETRO', description: '80s neon cyberpunk aesthetic' },
@@ -17,7 +17,7 @@ const ThemeSelector = () => {
     { key: 'high-contrast', label: 'HIGH CONTRAST', description: 'Accessibility black/white' },
     { key: 'pastel', label: 'PASTEL', description: 'Soft colors gentle design' },
     { key: 'blueprint', label: 'BLUEPRINT', description: 'Technical drawing style' },
-  ];
+  ], []);
 
   useEffect(() => {
     // Load saved theme from localStorage
