@@ -6,13 +6,16 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-p2p_exchange = "FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9"
+p2p_exchange = "4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk"
+
+[programs.devnet]
+p2p_exchange = "4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

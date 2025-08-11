@@ -1,29 +1,83 @@
 {
-  "version": "0.1.0",
-  "name": "p2p_exchange",
+  "address": "4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk",
+  "metadata": {
+    "name": "p2p_exchange",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Solana P2P Exchange Program"
+  },
   "instructions": [
     {
-      "name": "createOffer",
+      "name": "initialize_admin",
+      "discriminator": [246, 92, 51, 164, 75, 236, 214, 117],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [97, 100, 109, 105, 110]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_offer",
+      "docs": [
+        "Create a new P2P exchange offer with escrowed SOL",
+        "", 
+        "# Arguments",
+        "* `amount` - SOL amount to sell (in lamports)",
+        "* `fiat_amount` - Fiat currency amount requested",
+        "* `fiat_currency` - Currency code (e.g., \"USD\", max 10 chars)",
+        "* `payment_method` - Payment method description (max 50 chars)",
+        "* `created_at` - Timestamp of creation"
+      ],
+      "discriminator": [156, 251, 124, 162, 86, 190, 80, 180],
       "accounts": [
         {
           "name": "offer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "seller",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "escrow_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [101, 115, 99, 114, 111, 119]
+              },
+              {
+                "kind": "account",
+                "path": "offer"
+              }
+            ]
+          }
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -32,519 +86,350 @@
           "type": "u64"
         },
         {
-          "name": "fiatAmount",
+          "name": "fiat_amount", 
           "type": "u64"
         },
         {
-          "name": "fiatCurrency",
+          "name": "fiat_currency",
           "type": "string"
         },
         {
-          "name": "paymentMethod",
+          "name": "payment_method",
           "type": "string"
         },
         {
-          "name": "createdAt",
+          "name": "created_at",
           "type": "i64"
         }
       ]
     },
     {
-      "name": "listOffer",
+      "name": "list_offer",
+      "discriminator": [8, 169, 132, 155, 105, 18, 123, 156],
       "accounts": [
         {
           "name": "offer",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "seller",
-          "isMut": true,
-          "isSigner": true
+          "signer": true
         }
       ],
       "args": []
     },
     {
-      "name": "acceptOffer",
+      "name": "accept_offer",
+      "docs": [
+        "Accept an offer and lock in security bond",
+        "",
+        "# Arguments",
+        "* `security_bond` - Additional bond amount (in lamports)"
+      ],
+      "discriminator": [227, 82, 234, 131, 1, 18, 48, 2],
       "accounts": [
         {
           "name": "offer",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "buyer",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "escrow_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [101, 115, 99, 114, 111, 119]
+              },
+              {
+                "kind": "account",
+                "path": "offer"
+              }
+            ]
+          }
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
-          "name": "securityBond",
+          "name": "security_bond",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "markFiatSent",
+      "name": "mark_fiat_sent",
+      "discriminator": [154, 85, 49, 144, 31, 192, 83, 7],
       "accounts": [
         {
           "name": "offer",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "buyer",
-          "isMut": true,
-          "isSigner": true
+          "signer": true
         }
       ],
       "args": []
     },
     {
-      "name": "confirmFiatReceipt",
+      "name": "confirm_fiat_receipt",
+      "discriminator": [102, 63, 77, 3, 50, 157, 214, 139],
       "accounts": [
         {
           "name": "offer",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "seller",
-          "isMut": true,
-          "isSigner": true
+          "signer": true
         }
       ],
       "args": []
     },
     {
-      "name": "releaseSol",
+      "name": "release_sol",
+      "discriminator": [221, 26, 175, 138, 184, 99, 77, 11],
       "accounts": [
         {
           "name": "offer",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "seller",
-          "isMut": true,
-          "isSigner": false
+          "writable": true
         },
         {
           "name": "buyer",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
+          "name": "escrow_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [101, 115, 99, 114, 111, 119]
+              },
+              {
+                "kind": "account",
+                "path": "offer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
     },
     {
-      "name": "openDispute",
-      "accounts": [
-        {
-          "name": "dispute",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "offer",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "initiator",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "respondent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "reason",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "assignJurors",
-      "accounts": [
-        {
-          "name": "dispute",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "juror1",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "juror2",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "juror3",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "submitEvidence",
-      "accounts": [
-        {
-          "name": "dispute",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "submitter",
-          "isMut": true,
-          "isSigner": true
-        }
-      ],
-      "args": [
-        {
-          "name": "evidenceUrl",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "castVote",
-      "accounts": [
-        {
-          "name": "dispute",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "juror",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "vote",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "voteForBuyer",
-          "type": "bool"
-        }
-      ]
-    },
-    {
-      "name": "executeVerdict",
-      "accounts": [
-        {
-          "name": "dispute",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "offer",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "escrowAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "buyer",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "seller",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": true
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "createReputation",
+      "name": "create_reputation",
+      "discriminator": [137, 73, 221, 248, 86, 74, 28, 154],
       "accounts": [
         {
           "name": "reputation",
-          "isMut": true,
-          "isSigner": false
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [114, 101, 112, 117, 116, 97, 116, 105, 111, 110]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
         },
         {
           "name": "user",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
-    },
-    {
-      "name": "updateReputation",
-      "accounts": [
-        {
-          "name": "reputation",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "user",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": true,
-          "isSigner": true
-        }
-      ],
-      "args": [
-        {
-          "name": "successfulTrade",
-          "type": "bool"
-        },
-        {
-          "name": "disputeResolved",
-          "type": "bool"
-        },
-        {
-          "name": "disputeWon",
-          "type": "bool"
-        }
-      ]
     }
   ],
   "accounts": [
     {
+      "name": "Admin",
+      "discriminator": [244, 158, 124, 175, 231, 126, 105, 24],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "secondary_authorities",
+            "type": {
+              "array": ["pubkey", 2]
+            }
+          },
+          {
+            "name": "required_signatures",
+            "type": "u8"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "Offer",
+      "discriminator": [91, 59, 154, 112, 84, 10, 177, 20],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "seller",
-            "type": "publicKey"
+            "type": "pubkey"
           },
           {
             "name": "buyer",
-            "type": "publicKey"
+            "type": {
+              "option": "pubkey"
+            }
           },
           {
             "name": "amount",
             "type": "u64"
           },
           {
-            "name": "securityBond",
+            "name": "fiat_amount",
             "type": "u64"
           },
           {
-            "name": "status",
-            "type": "u8"
-          },
-          {
-            "name": "fiatAmount",
-            "type": "u64"
-          },
-          {
-            "name": "fiatCurrency",
+            "name": "fiat_currency",
             "type": "string"
           },
           {
-            "name": "paymentMethod",
-            "type": "string"
-          },
-          {
-            "name": "escrowAccount",
-            "type": "publicKey"
-          },
-          {
-            "name": "createdAt",
-            "type": "i64"
-          },
-          {
-            "name": "updatedAt",
-            "type": "i64"
-          },
-          {
-            "name": "disputeId",
-            "type": {
-              "option": "publicKey"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Dispute",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "offer",
-            "type": "publicKey"
-          },
-          {
-            "name": "initiator",
-            "type": "publicKey"
-          },
-          {
-            "name": "respondent",
-            "type": "publicKey"
-          },
-          {
-            "name": "reason",
+            "name": "payment_method",
             "type": "string"
           },
           {
             "name": "status",
-            "type": "u8"
-          },
-          {
-            "name": "jurors",
             "type": {
-              "array": [
-                "publicKey",
-                3
-              ]
+              "defined": {
+                "name": "OfferStatus"
+              }
             }
           },
           {
-            "name": "evidenceBuyer",
-            "type": {
-              "vec": "string"
-            }
-          },
-          {
-            "name": "evidenceSeller",
-            "type": {
-              "vec": "string"
-            }
-          },
-          {
-            "name": "votesForBuyer",
-            "type": "u8"
-          },
-          {
-            "name": "votesForSeller",
-            "type": "u8"
-          },
-          {
-            "name": "createdAt",
+            "name": "created_at",
             "type": "i64"
           },
           {
-            "name": "resolvedAt",
-            "type": "i64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "Vote",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "dispute",
-            "type": "publicKey"
-          },
-          {
-            "name": "juror",
-            "type": "publicKey"
-          },
-          {
-            "name": "voteForBuyer",
+            "name": "listed",
             "type": "bool"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
           }
         ]
       }
     },
     {
       "name": "Reputation",
+      "discriminator": [236, 235, 213, 86, 101, 202, 71, 45],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "user",
-            "type": "publicKey"
+            "type": "pubkey"
           },
           {
-            "name": "successfulTrades",
+            "name": "successful_trades",
             "type": "u32"
           },
           {
-            "name": "disputedTrades",
+            "name": "disputed_trades",
             "type": "u32"
           },
           {
-            "name": "disputesWon",
-            "type": "u32"
-          },
-          {
-            "name": "disputesLost",
+            "name": "disputes_won",
             "type": "u32"
           },
           {
             "name": "rating",
-            "type": "u8"
+            "type": "f64"
           },
           {
-            "name": "lastUpdated",
+            "name": "last_updated",
             "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "OfferCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "offer",
+            "type": "pubkey"
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "fiat_amount",
+            "type": "u64"
+          },
+          {
+            "name": "fiat_currency",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OfferAccepted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "offer",
+            "type": "pubkey"
+          },
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "security_bond",
+            "type": "u64"
           }
         ]
       }
@@ -566,96 +451,22 @@
             "name": "Accepted"
           },
           {
-            "name": "AwaitingFiatPayment"
-          },
-          {
             "name": "FiatSent"
           },
           {
             "name": "SolReleased"
           },
           {
-            "name": "DisputeOpened"
-          },
-          {
-            "name": "Completed"
+            "name": "Disputed"
           },
           {
             "name": "Cancelled"
-          }
-        ]
-      }
-    },
-    {
-      "name": "DisputeStatus",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Opened"
           },
           {
-            "name": "JurorsAssigned"
-          },
-          {
-            "name": "EvidenceSubmission"
-          },
-          {
-            "name": "Voting"
-          },
-          {
-            "name": "VerdictReached"
-          },
-          {
-            "name": "Resolved"
+            "name": "Completed"
           }
         ]
       }
     }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "InvalidOfferStatus",
-      "msg": "Invalid offer status for this operation"
-    },
-    {
-      "code": 6001,
-      "name": "InvalidDisputeStatus",
-      "msg": "Invalid dispute status for this operation"
-    },
-    {
-      "code": 6002,
-      "name": "Unauthorized",
-      "msg": "You are not authorized to perform this action"
-    },
-    {
-      "code": 6003,
-      "name": "InsufficientFunds",
-      "msg": "Insufficient funds for this operation"
-    },
-    {
-      "code": 6004,
-      "name": "AlreadyVoted",
-      "msg": "Juror has already voted"
-    },
-    {
-      "code": 6005,
-      "name": "NotAJuror",
-      "msg": "You are not a juror for this dispute"
-    },
-    {
-      "code": 6006,
-      "name": "DisputeAlreadyExists",
-      "msg": "A dispute already exists for this offer"
-    },
-    {
-      "code": 6007,
-      "name": "InvalidAmount",
-      "msg": "Invalid amount"
-    }
-  ],
-  "metadata": {
-    "address": "FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9"
-  }
+  ]
 }

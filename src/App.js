@@ -31,7 +31,7 @@ const SVM_NETWORKS = {
   'solana': {
     name: 'Solana',
     endpoint: clusterApiUrl('devnet'),
-    programId: 'FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9',
+    programId: '4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk',
     icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',

@@ -4,7 +4,7 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import idl from '../idl/p2p_exchange.json';
 
 // Program ID from the IDL and Anchor.toml
-const PROGRAM_ID = new PublicKey('FKkTQLgBE9vDZqgXKWrXZfAv5HgCQdsjDZDzPfJosPt9');
+const PROGRAM_ID = new PublicKey('4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk');
 
 /**
  * Hook to create and provide Anchor Program instance
