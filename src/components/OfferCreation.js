@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { SystemProgram, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 // Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
 import { BN } from '@coral-xyz/anchor';
@@ -39,6 +39,23 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [connectionRetrying, setConnectionRetrying] = useState(false);
+  const [connectionAttempts, setConnectionAttempts] = useState(0);
+  
+  // Track connection status for better UX
+  useEffect(() => {
+    // Reset retry state when connection changes
+    if (connection && program) {
+      setConnectionRetrying(false);
+      setConnectionAttempts(0);
+      setError('');
+    }
+  }, [connection, program]);
+
+  // Determine connection status for better UX
+  const isWalletConnected = wallet.connected && wallet.publicKey;
+  const isSmartContractReady = isWalletConnected && program && connection;
+  const hasConnectionIssues = isWalletConnected && (!connection || !program);
   
   // Get real price data
   const { prices, loading: pricesLoading, error: pricesError, lastUpdated } = useRealPriceData();
@@ -61,13 +78,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const handleCreateOffer = async (e) => {
     e.preventDefault();
     
-    if (!wallet.publicKey || !wallet.connected) {
+    if (!isWalletConnected) {
       setError('Please connect your wallet first');
       return;
     }
 
-    if (!program) {
-      setError('Program not initialized. Please ensure your wallet is connected and try again.');
+    if (!isSmartContractReady) {
+      setError('Smart contract connection is not ready. Please check your network connection and try again.');
       return;
     }
     
@@ -84,6 +101,22 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     
     // Show confirmation dialog
     setShowConfirmation(true);
+  };
+
+  const handleRetryConnection = async () => {
+    if (connectionRetrying) return;
+    
+    setConnectionRetrying(true);
+    setConnectionAttempts(prev => prev + 1);
+    setError('');
+    
+    // Add a small delay to show the retry state
+    setTimeout(() => {
+      setConnectionRetrying(false);
+      if (!program) {
+        setError('Unable to establish smart contract connection. This may be due to network restrictions or RPC endpoint issues. Please try again or contact support.');
+      }
+    }, 2000);
   };
   
   // Actual offer creation after confirmation
@@ -398,25 +431,47 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           
           {/* Submit button */}
           <div className="ascii-form-actions">
-            {!wallet.connected ? (
+            {!isWalletConnected ? (
               <ConnectWalletPrompt
                 action="create sell offers"
                 className="create-offer-button connect-wallet-button"
               />
-            ) : !program ? (
-              <button 
-                type="button"
-                disabled={true}
-                className="create-offer-button disabled"
-                title="Initializing smart contract connection..."
-              >
-                Connecting to Smart Contract...
-              </button>
+            ) : hasConnectionIssues ? (
+              <div className="connection-issue-container">
+                <button 
+                  type="button"
+                  disabled={true}
+                  className="create-offer-button disabled connection-issue"
+                  title="Smart contract connection failed"
+                >
+                  Smart Contract Connection Failed
+                </button>
+                <div className="connection-issue-details">
+                  <p>Unable to connect to the Solana blockchain. This may be due to:</p>
+                  <ul>
+                    <li>Network connectivity issues</li>
+                    <li>RPC endpoint problems</li>
+                    <li>Browser security restrictions</li>
+                  </ul>
+                  <ButtonLoader
+                    type="button"
+                    onClick={handleRetryConnection}
+                    isLoading={connectionRetrying}
+                    disabled={connectionRetrying}
+                    loadingText="Retrying..."
+                    variant="secondary"
+                    size="small"
+                    className="retry-connection-button"
+                  >
+                    Retry Connection {connectionAttempts > 0 && `(${connectionAttempts})`}
+                  </ButtonLoader>
+                </div>
+              </div>
             ) : (
               <ButtonLoader
                 type="submit"
                 isLoading={isCreating}
-                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid || !program}
+                disabled={!isSmartContractReady || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
                 loadingText="Creating Offer..."
                 variant="primary"
                 size="medium"
@@ -535,6 +590,54 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
 
         .wallet-connection-prompt {
           margin: 1rem 0;
+        }
+
+        .connection-issue-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .connection-issue {
+          background-color: var(--ascii-neutral-600) !important;
+          color: var(--ascii-red-400) !important;
+          cursor: not-allowed !important;
+        }
+
+        .connection-issue-details {
+          background: var(--color-background-alt);
+          border: 1px solid var(--ascii-yellow-500);
+          border-radius: 4px;
+          padding: 16px;
+          max-width: 400px;
+          text-align: left;
+          font-size: 0.9rem;
+        }
+
+        .connection-issue-details p {
+          margin: 0 0 12px 0;
+          color: var(--ascii-yellow-600);
+          font-weight: 500;
+        }
+
+        .connection-issue-details ul {
+          margin: 0 0 16px 0;
+          padding-left: 20px;
+          color: var(--color-foreground-muted);
+        }
+
+        .connection-issue-details li {
+          margin-bottom: 4px;
+        }
+
+        .retry-connection-button {
+          width: 100%;
+          background-color: var(--ascii-blue-600) !important;
+        }
+
+        .retry-connection-button:hover {
+          background-color: var(--ascii-blue-500) !important;
         }
       `}</style>
     </div>
