@@ -47,7 +47,7 @@ const BuyWorkflowComplete = ({ transaction, onFinish }) => {
         <div className="detail-row">
           <div className="detail-label">Seller:</div>
           <div className="detail-value">
-            {transaction.seller.substring(0, 4)}...{transaction.seller.substring(transaction.seller.length - 4)}
+            {transaction.seller.slice(0, 4)}...{transaction.seller.slice(-4)}
           </div>
         </div>
         

@@ -16,22 +16,18 @@ import { useActionDebounce, useInputValidation } from '../hooks/useActionDebounc
 import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../utils/validation';
 import { createLogger } from '../utils/logger';
 import { 
-  MOCK_SOL_PRICES, 
   SUPPORTED_CURRENCIES, 
   SUPPORTED_PAYMENT_METHODS,
-  VALIDATION_CONSTRAINTS,
-  DEMO_MODE 
+  VALIDATION_CONSTRAINTS
 } from '../constants/tradingConstants';
+import { useRealPriceData, useCalculateFiatAmount } from '../hooks/usePriceData';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
-import DemoIndicator from './DemoIndicator';
 
 const logger = createLogger('OfferCreation');
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = usePhantomWallet();
-  // For Swig wallet, we'll get connection from the wallet context
-  const connection = wallet.getConnection ? wallet.getConnection() : null;
-  const { program, network } = useContext(AppContext);
+  const { program, network, connection } = useContext(AppContext);
   
   const [solAmount, setSolAmount] = useState('');
   const [fiatAmount, setFiatAmount] = useState('');
@@ -44,12 +40,16 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   
+  // Get real price data
+  const { prices, loading: pricesLoading, error: pricesError, lastUpdated } = useRealPriceData();
+  const { fiatAmount: calculatedFiatAmount, isValid: priceCalculationValid } = useCalculateFiatAmount(solAmount, fiatCurrency);
+  
   // Validation states
   const solValidation = useInputValidation(solAmount, validateSolAmount);
   const fiatValidation = useInputValidation(fiatAmount, (value) => validateFiatAmount(value, fiatCurrency));
   const rateValidation = useInputValidation(
     `${solAmount}-${fiatAmount}-${fiatCurrency}`, 
-    () => validateMarketRate(parseFloat(solAmount), parseFloat(fiatAmount), fiatCurrency)
+    () => validateMarketRate(parseFloat(solAmount), parseFloat(fiatAmount), fiatCurrency, prices)
   );
   
   // Debounced action handler
@@ -63,6 +63,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     
     if (!wallet.publicKey || !wallet.connected) {
       setError('Please connect your wallet first');
+      return;
+    }
+
+    if (!program) {
+      setError('Program not initialized. Please ensure your wallet is connected and try again.');
       return;
     }
     
@@ -114,10 +119,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       const now = new BN(Math.floor(Date.now() / 1000));
       
       logger.info('Creating offer', { 
-        solAmountLamports: solAmountLamports.toString(),
+        solAmountLamports: lamports.toString(),
         fiatAmount: parseFloat(fiatAmount),
-        currency: selectedCurrency,
-        paymentMethod: selectedPaymentMethod
+        currency: fiatCurrency,
+        paymentMethod: paymentMethod
       });
       
       // Create offer
@@ -144,7 +149,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         message: 'Offer created successfully! Now listing your offer...'
       });
       
-      logger.info('Listing offer', { offerPubkey: offerKeypair.publicKey.toString() });
+      logger.info('Listing offer', { offerPubkey: offer.publicKey.toString() });
       
       // List offer
       const listTx = await program.methods
@@ -172,8 +177,8 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         error: err.message, 
         solAmount, 
         fiatAmount, 
-        currency: selectedCurrency,
-        paymentMethod: selectedPaymentMethod
+        currency: fiatCurrency,
+        paymentMethod: paymentMethod
       });
       setError(`Failed to create offer: ${err.message}`);
       setTxStatus({
@@ -185,23 +190,38 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     }
   }
   
-  // Calculate fiat amount based on SOL amount (simple conversion for demo)
+  // Calculate fiat amount based on SOL amount using real prices
   const handleSolAmountChange = (e) => {
     const sol = e.target.value;
     setSolAmount(sol);
     
-    if (sol && !isNaN(sol)) {
-      const calculatedFiat = (parseFloat(sol) * MOCK_SOL_PRICES[fiatCurrency]).toFixed(2);
+    if (sol && !isNaN(sol) && prices && prices[fiatCurrency]) {
+      const calculatedFiat = (parseFloat(sol) * prices[fiatCurrency]).toFixed(2);
       setFiatAmount(calculatedFiat);
+    } else if (!sol) {
+      setFiatAmount('');
     }
   };
   
-  // Update fiat amount when currency changes
+  // Calculate SOL amount based on fiat amount using real prices
+  const handleFiatAmountChange = (e) => {
+    const fiat = e.target.value;
+    setFiatAmount(fiat);
+    
+    if (fiat && !isNaN(fiat) && prices && prices[fiatCurrency] && prices[fiatCurrency] > 0) {
+      const calculatedSol = (parseFloat(fiat) / prices[fiatCurrency]).toFixed(6);
+      setSolAmount(calculatedSol);
+    } else if (!fiat) {
+      setSolAmount('');
+    }
+  };
+  
+  // Update fiat amount when currency changes using real prices
   const handleCurrencyChange = (e) => {
     setFiatCurrency(e.target.value);
-    if (solAmount && !isNaN(solAmount)) {
+    if (solAmount && !isNaN(solAmount) && prices && prices[e.target.value]) {
       // Recalculate fiat amount with new currency
-      const calculatedFiat = (parseFloat(solAmount) * MOCK_SOL_PRICES[e.target.value]).toFixed(2);
+      const calculatedFiat = (parseFloat(solAmount) * prices[e.target.value]).toFixed(2);
       setFiatAmount(calculatedFiat);
     }
   };
@@ -233,16 +253,32 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       </div>
       
       {/* Demo mode banner for non-connected users */}
-      {!wallet.connected && DEMO_MODE.enabled && (
-        <DemoIndicator
-          type="banner"
-          message="Connect Wallet to Create Real Offers"
-          tooltip={DEMO_MODE.educationalMessages.createOffer}
-          className="demo-banner-main"
-        />
+      {!wallet.connected && (
+        <div className="wallet-connection-prompt">
+          <ConnectWalletPrompt
+            action="create real offers and trade on the blockchain"
+            showAsMessage={true}
+          />
+        </div>
       )}
       
       <p>Create an offer to sell SOL for fiat currency</p>
+      
+      {/* Price data status */}
+      {pricesError && (
+        <div className="warning-message">
+          Warning: Unable to fetch current market prices. Please verify amounts manually.
+        </div>
+      )}
+      
+      {prices && lastUpdated && (
+        <div className="price-info">
+          Current SOL price: {prices[fiatCurrency]?.toFixed(2)} {fiatCurrency}
+          <span className="price-updated">
+            (Updated: {lastUpdated.toLocaleTimeString()})
+          </span>
+        </div>
+      )}
       
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
@@ -304,7 +340,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 id="fiatAmount"
                 type="number"
                 value={fiatAmount}
-                onChange={(e) => setFiatAmount(e.target.value)}
+                onChange={handleFiatAmountChange}
                 placeholder="0.00"
                 min={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.min}
                 max={VALIDATION_CONSTRAINTS.FIAT_AMOUNT.max}
@@ -367,11 +403,20 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 action="create sell offers"
                 className="create-offer-button connect-wallet-button"
               />
+            ) : !program ? (
+              <button 
+                type="button"
+                disabled={true}
+                className="create-offer-button disabled"
+                title="Initializing smart contract connection..."
+              >
+                Connecting to Smart Contract...
+              </button>
             ) : (
               <ButtonLoader
                 type="submit"
                 isLoading={isCreating}
-                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
+                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid || !program}
                 loadingText="Creating Offer..."
                 variant="primary"
                 size="medium"
@@ -386,7 +431,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       
       <div className="network-info">
         <p>Network: {network.name}</p>
-        <p>Current SOL price is estimated based on market rates.</p>
+        <p>Prices are fetched from live market data sources.</p>
         <p>Your SOL will be held in escrow until the trade is completed.</p>
       </div>
       
@@ -409,9 +454,9 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .guided-workflow-button {
-          background-color: var(--color-primary);
-          color: white;
-          border: none;
+          background-color: var(--ascii-neutral-700);
+          color: var(--ascii-white);
+          border: 1px solid var(--ascii-neutral-800);
           padding: 8px 16px;
           border-radius: 0;
           cursor: pointer;
@@ -419,6 +464,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           display: flex;
           align-items: center;
           gap: 8px;
+          font-family: 'Courier New', Courier, monospace;
+          text-transform: uppercase;
+          transition: all var(--transition-normal);
+          box-shadow: var(--shadow-sm);
         }
 
         .guided-workflow-button::before {
@@ -428,14 +477,17 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: rgba(255, 255, 255, 0.3);
+          background-color: var(--ascii-neutral-500);
+          border: 1px solid var(--ascii-neutral-600);
           border-radius: 0;
           font-size: 0.8rem;
           font-weight: bold;
         }
 
         .guided-workflow-button:hover {
-          background-color: var(--color-primary-dark);
+          background-color: var(--ascii-neutral-600);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
         }
 
         .input-error {
@@ -453,6 +505,36 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           color: #f59e0b;
           font-size: 0.875rem;
           margin-top: 0.25rem;
+        }
+
+        .price-info {
+          background: var(--color-background-alt);
+          border: 1px solid var(--color-border);
+          border-radius: 4px;
+          padding: 12px;
+          margin: 1rem 0;
+          font-size: 0.9rem;
+          color: var(--color-foreground-muted);
+        }
+
+        .price-updated {
+          margin-left: 10px;
+          font-size: 0.8rem;
+          opacity: 0.7;
+        }
+
+        .warning-message {
+          background: #fef3c7;
+          border: 1px solid #f59e0b;
+          color: #92400e;
+          padding: 12px;
+          border-radius: 4px;
+          margin: 1rem 0;
+          font-size: 0.9rem;
+        }
+
+        .wallet-connection-prompt {
+          margin: 1rem 0;
         }
       `}</style>
     </div>

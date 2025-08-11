@@ -14,28 +14,37 @@ const TradingStats = ({ stats }) => {
     router.push('/analytics');
   };
   // Prepare trading statistics data for PropertyValueTable
+  const safeTotalTrades = stats?.totalTrades || 0;
   const tradingStatsData = [
-    { property: 'TOTAL TRADES', value: stats.totalTrades || 0 },
-    { property: 'SUCCESSFUL TRADES', value: stats.successfulTrades || 0, badge: 'SUCCESS', badgeClassName: 'badge-success' },
-    { property: 'COMPLETION RATE', value: `${stats.completionRate || 0}%`, valueClassName: 'completion-rate' },
-    { property: 'TOTAL VOLUME', value: `$${stats.totalVolume?.toFixed(2) || '0.00'}`, valueClassName: 'total-volume' },
-    { property: 'BUY ORDERS', value: stats.buyOrders || 0, description: `${((stats.buyOrders / stats.totalTrades) * 100).toFixed(1)}% of total trades` },
-    { property: 'SELL ORDERS', value: stats.sellOrders || 0, description: `${((stats.sellOrders / stats.totalTrades) * 100).toFixed(1)}% of total trades` },
-    { property: 'DISPUTED TRADES', value: stats.disputedTrades || 0, badge: stats.disputedTrades > 0 ? 'DISPUTED' : null, badgeClassName: 'badge-warning' },
-    { property: 'CANCELLED TRADES', value: stats.cancelledTrades || 0, badge: stats.cancelledTrades > 0 ? 'CANCELLED' : null, badgeClassName: 'badge-error' },
+    { property: 'TOTAL TRADES', value: safeTotalTrades },
+    { property: 'SUCCESSFUL TRADES', value: stats?.successfulTrades || 0, badge: 'SUCCESS', badgeClassName: 'badge-success' },
+    { property: 'COMPLETION RATE', value: `${stats?.completionRate || 0}%`, valueClassName: 'completion-rate' },
+    { property: 'TOTAL VOLUME', value: `$${stats?.totalVolume?.toFixed(2) || '0.00'}`, valueClassName: 'total-volume' },
+    { 
+      property: 'BUY ORDERS', 
+      value: stats?.buyOrders || 0, 
+      description: safeTotalTrades > 0 ? `${(((stats?.buyOrders || 0) / safeTotalTrades) * 100).toFixed(1)}% of total trades` : '0% of total trades'
+    },
+    { 
+      property: 'SELL ORDERS', 
+      value: stats?.sellOrders || 0, 
+      description: safeTotalTrades > 0 ? `${(((stats?.sellOrders || 0) / safeTotalTrades) * 100).toFixed(1)}% of total trades` : '0% of total trades'
+    },
+    { property: 'DISPUTED TRADES', value: stats?.disputedTrades || 0, badge: (stats?.disputedTrades || 0) > 0 ? 'DISPUTED' : null, badgeClassName: 'badge-warning' },
+    { property: 'CANCELLED TRADES', value: stats?.cancelledTrades || 0, badge: (stats?.cancelledTrades || 0) > 0 ? 'CANCELLED' : null, badgeClassName: 'badge-error' },
   ];
 
   // Prepare performance metrics data
   const performanceData = [
-    { property: 'AVERAGE RESPONSE TIME', value: stats.averageResponseTime || 'N/A' },
+    { property: 'AVERAGE RESPONSE TIME', value: stats?.averageResponseTime || 'N/A' },
     { 
       property: 'RESPONSE TIME RATING', 
-      value: stats.responseTimeRating?.toUpperCase() || 'AVERAGE',
-      badge: stats.responseTimeRating?.toUpperCase() || 'AVERAGE',
-      badgeClassName: `rating-${stats.responseTimeRating || 'average'}`
+      value: stats?.responseTimeRating?.toUpperCase() || 'AVERAGE',
+      badge: stats?.responseTimeRating?.toUpperCase() || 'AVERAGE',
+      badgeClassName: `rating-${stats?.responseTimeRating || 'average'}`
     },
-    { property: 'STATISTICS PERIOD START', value: stats.periodStart || '30 days ago' },
-    { property: 'STATISTICS PERIOD END', value: stats.periodEnd || 'Today' },
+    { property: 'STATISTICS PERIOD START', value: stats?.periodStart || '30 days ago' },
+    { property: 'STATISTICS PERIOD END', value: stats?.periodEnd || 'Today' },
   ];
 
   const statsActions = (

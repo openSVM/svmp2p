@@ -21,8 +21,9 @@ export const useOptimisticCollection = (initialItems = [], fetchItems = null) =>
   
   // Add an item optimistically
   const addOptimistically = useCallback((newItem) => {
-    // Generate a temporary ID if none exists
-    const tempId = newItem.id || `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate a deterministic temporary ID if none exists
+    const timestamp = Date.now();
+    const tempId = newItem.id || `temp-${timestamp}-${timestamp.toString(36)}`;
     const itemWithId = { ...newItem, id: tempId, isOptimistic: true };
     
     setItems(prev => [...prev, itemWithId]);

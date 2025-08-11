@@ -121,7 +121,7 @@ const BuyWorkflowSelectOffer = ({ onSelectOffer, availableOffers, selectedCurren
                 <div className="col seller">
                   <div className="seller-info">
                     <span className="seller-name">
-                      {offer.seller.substring(0, 4)}...{offer.seller.substring(offer.seller.length - 4)}
+                      {offer.seller.slice(0, 4)}...{offer.seller.slice(-4)}
                     </span>
                   </div>
                 </div>

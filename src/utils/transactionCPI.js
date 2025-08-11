@@ -6,7 +6,7 @@
  */
 
 import { Transaction, SystemProgram, PublicKey } from '@solana/web3.js';
-import { getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction } from '@solana/spl-token';
 import { createLogger } from './logger';
 
 const logger = createLogger('TransactionCPI');
@@ -68,7 +68,10 @@ const ACCOUNT_DERIVATION = {
    * @returns {Promise<PublicKey>} Associated token account address
    */
   getAssociatedTokenAccount: async (mint, owner) => {
-    return await getAssociatedTokenAddress(mint, owner);
+    return await getAssociatedTokenAddress(
+      mint,
+      owner
+    );
   }
 };
 
@@ -252,10 +255,10 @@ export class TransactionBuilder {
       }
 
       const instruction = createAssociatedTokenAccountInstruction(
-        payer,    // payer
+        payer,        // payer
         tokenAccount, // ata
-        owner,    // owner
-        mint      // mint
+        owner,        // owner
+        mint          // mint
       );
 
       this.transaction.add(instruction);

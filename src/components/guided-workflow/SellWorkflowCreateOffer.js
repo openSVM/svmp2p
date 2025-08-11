@@ -87,7 +87,7 @@ const SellWorkflowCreateOffer = ({ onOfferCreated, onBack }) => {
       try {
         // Create mock offer object
         const newOffer = {
-          id: 'offer_' + Math.random().toString(36).substr(2, 9),
+          id: 'offer_' + Date.now().toString(36) + '_' + Math.floor(performance.now()).toString(36),
           seller: 'Your_Wallet_Address',
           solAmount: parseFloat(solAmount),
           fiatAmount: parseFloat(fiatAmount),

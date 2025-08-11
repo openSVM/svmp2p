@@ -17,19 +17,21 @@ import TradingGuidedWorkflow from './components/guided-workflow/TradingGuidedWor
 import ErrorBoundary from './components/ErrorBoundary';
 import ThemeSelector from './components/ThemeSelector';
 import LanguageSelector from './components/LanguageSelector';
+import ProgramDebugInfo from './components/ProgramDebugInfo';
 
 // Import Phantom wallet utilities
 import { PhantomWalletProvider, usePhantomWallet } from './contexts/PhantomWalletProvider';
 import { PhantomWalletButton } from './components/PhantomWalletButton';
 import { initializeWalletConflictPrevention } from './utils/walletConflictPrevention';
 import { createConnection, getNetworkConnection } from './utils/rpcConnection';
+import { useProgram } from './hooks/useProgram';
 
 // SVM Networks configuration with resilient RPC endpoints
 const SVM_NETWORKS = {
   'solana': {
     name: 'Solana',
     endpoint: clusterApiUrl('devnet'),
-    programId: 'YOUR_SOLANA_PROGRAM_ID',
+    programId: 'ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk',
     icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',
@@ -86,6 +88,17 @@ const AppContent = () => {
   // Use Phantom wallet context instead of Swig wallet
   const wallet = usePhantomWallet();
   
+  // Create enhanced connection with retry logic for rate limits
+  const connection = useMemo(() => {
+    return createConnection(network.endpoint, network.connectionConfig || {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000,
+    });
+  }, [network]);
+
+  // Initialize the Anchor program
+  const program = useProgram(connection, wallet);
+  
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
   const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
@@ -103,7 +116,9 @@ const AppContent = () => {
     activeTab,
     setActiveTab,
     networks: SVM_NETWORKS,
-  }), [network, selectedNetwork, activeTab]);
+    program, // Add program to context
+    connection, // Add connection to context
+  }), [network, selectedNetwork, activeTab, program, connection]);
   
   // Handle starting guided workflow
   const handleStartGuidedWorkflow = (type) => {
@@ -407,23 +422,15 @@ const AppContent = () => {
             </div>
           </div>
         </footer>
+        
+        {/* Debug info for development */}
+        <ProgramDebugInfo />
       </div>
     </AppContext.Provider>
   );
 };
 
 const App = () => {
-  // Define network for connection provider
-  const network = SVM_NETWORKS['solana'];
-  
-  // Create enhanced connection with retry logic for rate limits
-  const connection = useMemo(() => {
-    return createConnection(network.endpoint, network.connectionConfig || {
-      commitment: 'confirmed',
-      confirmTransactionInitialTimeout: 60000,
-    });
-  }, [network]);
-
   // Use ErrorBoundary at the root level to catch any rendering errors
   return (
     <ErrorBoundary fallback={
