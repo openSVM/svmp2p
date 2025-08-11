@@ -41,7 +41,12 @@ export default function AnalyticsDashboard() {
   // Process real blockchain data when it becomes available
   useEffect(() => {
     if (programStats && allOffers && solPrices) {
-      const solPrice = solPrices.usd || 150; // Use USD price, fallback to 150
+      // Only process data when real SOL price is available
+      if (!solPrices.USD || solPrices.USD <= 0) {
+        console.warn('Waiting for valid SOL price data from RPC...');
+        return;
+      }
+      const solPrice = solPrices.USD;
       // Calculate protocol overview from real blockchain data
       const overview = calculateProtocolOverview(programStats, allOffers, solPrice);
       setProtocolOverview(overview);
@@ -94,7 +99,7 @@ export default function AnalyticsDashboard() {
         solAmount: offer.solAmount,
         fiatAmount: offer.fiatAmount,
         currency: offer.fiatCurrency,
-        rate: offer.fiatAmount / offer.solAmount,
+        rate: offer.solAmount > 0 ? offer.fiatAmount / offer.solAmount : 0,
         timestamp: new Date(offer.updatedAt),
         completionTime: offer.status === 'Completed' ? 
           `${Math.floor((offer.updatedAt - offer.createdAt) / 60000)}min` : null,

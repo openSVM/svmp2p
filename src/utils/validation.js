@@ -67,30 +67,47 @@ export const validateFiatAmount = (value, currency = 'USD') => {
  * @param {number} solAmount - SOL amount
  * @param {number} fiatAmount - Fiat amount
  * @param {string} currency - Currency code
+ * @param {Object} marketPrices - Real market prices from price feed (optional)
  * @returns {boolean|string} - true if valid, warning message if suspicious
  */
-export const validateMarketRate = (solAmount, fiatAmount, currency) => {
-  if (!solAmount || !fiatAmount) return true;
+export const validateMarketRate = (solAmount, fiatAmount, currency, marketPrices = null) => {
+  if (!solAmount || !fiatAmount || solAmount <= 0) return true;
   
   const rate = fiatAmount / solAmount;
   
-  // Simple market rate validation (in production, use real market data)
-  const expectedRates = {
-    'USD': { min: 100, max: 200 },
-    'EUR': { min: 90, max: 180 },
-    'GBP': { min: 80, max: 160 },
-    'JPY': { min: 14000, max: 20000 },
-    'CAD': { min: 130, max: 250 },
-    'AUD': { min: 140, max: 280 }
+  // Use real market data if available
+  if (marketPrices && marketPrices[currency]) {
+    const marketRate = marketPrices[currency];
+    const tolerance = 0.5; // 50% tolerance for market rate validation
+    
+    if (rate < marketRate * (1 - tolerance)) {
+      return `Rate seems unusually low (${rate.toFixed(2)} ${currency}/SOL vs market ${marketRate.toFixed(2)}). Please verify.`;
+    }
+    
+    if (rate > marketRate * (1 + tolerance)) {
+      return `Rate seems unusually high (${rate.toFixed(2)} ${currency}/SOL vs market ${marketRate.toFixed(2)}). Please verify.`;
+    }
+    
+    return true;
+  }
+  
+  // Fallback validation ranges when no real market data available
+  const fallbackRates = {
+    'USD': { min: 50, max: 300 },
+    'EUR': { min: 45, max: 270 },
+    'GBP': { min: 40, max: 240 },
+    'JPY': { min: 7000, max: 40000 },
+    'CAD': { min: 65, max: 375 },
+    'AUD': { min: 70, max: 420 }
   };
   
-  const expected = expectedRates[currency] || expectedRates['USD'];
+  const expected = fallbackRates[currency] || fallbackRates['USD'];
   
-  if (rate < expected.min * 0.5) {
+  if (rate < expected.min) {
     return `Rate seems unusually low (${rate.toFixed(2)} ${currency}/SOL). Please verify.`;
   }
   
-  if (rate > expected.max * 2) {
+  if (rate > expected.max) {
     return `Rate seems unusually high (${rate.toFixed(2)} ${currency}/SOL). Please verify.`;
   }
   

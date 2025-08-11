@@ -7,6 +7,7 @@ import { useDebounce, VirtualizedList } from '../utils/performance';
 import { useActionDebounce } from '../hooks/useActionDebounce';
 import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
 import { useOffers } from '../hooks/useOnChainData';
+import { useRealPriceData } from '../hooks/usePriceData';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
 
 // Component for rendering a single offer row
@@ -14,6 +15,9 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
   const isProcessing = processingAction.offerId === offer.id;
   const currentAction = processingAction.action;
   const [showConnectModal, setShowConnectModal] = useState(false);
+  
+  // Get real price data for rate comparison
+  const { prices } = useRealPriceData();
   
   // Debounced action handlers
   const { debouncedCallback: debouncedAccept, isDisabled: isAcceptDisabled } = useActionDebounce(
@@ -47,16 +51,23 @@ const OfferRow = React.memo(({ offer, type, processingAction, handleOfferAction,
     1000
   );
   
-  // Calculate the rate and determine if it's a good rate
-  const rate = (offer.fiatAmount / offer.solAmount).toFixed(2);
-  // This would be better determined by market data, for now just using mock logic
+  // Calculate the rate and determine if it's a good rate (protected against division by zero)
+  const rate = offer.solAmount > 0 ? (offer.fiatAmount / offer.solAmount).toFixed(2) : '0.00';
+  // Determine if it's a good rate using real market data
   const isGoodRate = useMemo(() => {
-    const avgRate = 150; // Mock average rate
+    // Use real price data if available, otherwise don't show rate indicators
+    if (!prices || !prices[offer.fiatCurrency]) {
+      return false; // No rate indicator if no real price data
+    }
+    
+    const marketRate = prices[offer.fiatCurrency];
     const threshold = 0.05; // 5% threshold
+    const numericRate = parseFloat(rate);
+    
     return type === 'buy' 
-      ? rate < avgRate * (1 + threshold) 
-      : rate > avgRate * (1 - threshold);
-  }, [rate, type]);
+      ? numericRate < marketRate * (1 + threshold) 
+      : numericRate > marketRate * (1 - threshold);
+  }, [rate, type, prices, offer.fiatCurrency]);
   
   // Calculate time since posted
   const timeSincePosted = useMemo(() => {
@@ -348,11 +359,11 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     localStorage.setItem(`svmp2p-last-filters-${type}`, JSON.stringify(currentFilters));
   }, [minAmount, maxAmount, selectedCurrency, selectedPaymentMethod, sortBy, sortDirection, itemsPerPage, type]);
   
-  // Calculate rate for each offer for sorting purposes
+  // Calculate rate for each offer for sorting purposes (protected against division by zero)
   const offersWithRate = useMemo(() => {
     return offers.map(offer => ({
       ...offer,
-      rate: offer.fiatAmount / offer.solAmount
+      rate: offer.solAmount > 0 ? offer.fiatAmount / offer.solAmount : 0
     }));
   }, [offers]);
   

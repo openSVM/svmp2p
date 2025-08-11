@@ -49,7 +49,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const fiatValidation = useInputValidation(fiatAmount, (value) => validateFiatAmount(value, fiatCurrency));
   const rateValidation = useInputValidation(
     `${solAmount}-${fiatAmount}-${fiatCurrency}`, 
-    () => validateMarketRate(parseFloat(solAmount), parseFloat(fiatAmount), fiatCurrency)
+    () => validateMarketRate(parseFloat(solAmount), parseFloat(fiatAmount), fiatCurrency, prices)
   );
   
   // Debounced action handler
