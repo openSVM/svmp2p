@@ -48,10 +48,15 @@ set -e
 # Install system dependencies
 sudo apt-get update && sudo apt-get install -y libudev-dev libssl-dev pkg-config build-essential
 
+# Install Solana CLI tools
+sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
 # Install Anchor Version Manager
 cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
 echo 'export PATH="$HOME/.avm/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+export PATH="$HOME/.avm/bin:$HOME/.local/share/solana/install/active_release/bin:$PATH"
 
 # Install and use Anchor 0.31.1
 avm install 0.31.1 && avm use 0.31.1
@@ -127,27 +132,32 @@ sudo apt-get update && sudo apt-get install -y libudev-dev libssl-dev pkg-config
    - Set timeout to 3600+ seconds (60+ minutes) minimum
    - Creates optimized production build in `build/` directory
 
-3. **Install Solana Development Tools** (NEVER CANCEL - takes up to 180 seconds):
+3. **Install Solana Development Tools** (NEVER CANCEL - takes up to 300 seconds):
    ```bash
+   # Install Solana CLI tools
+   sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+   # Add to PATH (critical step)
+   echo 'export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc && export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
    # Install Anchor Version Manager
    cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
    # Add to PATH (critical step)
-   echo 'export PATH="$HOME/.avm/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+   echo 'export PATH="$HOME/.avm/bin:$PATH"' >> ~/.bashrc && export PATH="$HOME/.avm/bin:$HOME/.local/share/solana/install/active_release/bin:$PATH"
    # Install and use Anchor 0.31.1
    avm install 0.31.1 && avm use 0.31.1
    ```
+   - Solana CLI installation takes ~30 seconds
    - AVM installation takes ~77 seconds plus system dependency installation
    - Set timeout to 300+ seconds minimum
-   - PATH configuration is critical for Anchor commands to work
+   - PATH configuration is critical for both Solana and Anchor commands to work
 
-4. **Build Solana Program** (NEVER CANCEL - takes up to 60 seconds):
+4. **Build Solana Program** (NEVER CANCEL - takes up to 600 seconds):
    ```bash
-   cd programs/p2p-exchange && cargo check
+   anchor build
    ```
-   - Takes ~28 seconds for compilation check
-   - Set timeout to 120+ seconds minimum
+   - Takes ~35 seconds for full build with dependencies download
+   - Set timeout to 600+ seconds minimum (first build downloads ~500MB of platform tools)
    - Will show warnings about deprecated modules - this is expected
-   - Returns to repository root: `cd ../..`
+   - Alternative quick check: `cd programs/p2p-exchange && cargo check && cd ../..` (~27 seconds)
 
 ### Development Workflow
 
@@ -224,9 +234,11 @@ npm run build && npm run start
 
 5. **Solana Program Validation:**
    ```bash
-   cd programs/p2p-exchange && cargo check && cd ../..
+   anchor build
    ```
    - Must compile successfully (warnings are acceptable)
+   - First build downloads platform tools (~500MB) and takes up to 10 minutes
+   - Subsequent builds complete in ~35 seconds
 
 ## Common Tasks and Outputs
 
@@ -273,8 +285,10 @@ npm run performance           # Bundle analysis
 - **npm install**: Set timeout to 120+ seconds (observed: 47s)
 - **npm run build**: Set timeout to 3600+ seconds (observed: 31s, but can take 45+ minutes)
 - **npm test**: Set timeout to 2700+ seconds (observed: 31s, but can take 45+ minutes)
+- **Solana CLI install**: Set timeout to 120+ seconds (observed: 30s)
 - **cargo install avm**: Set timeout to 300+ seconds (observed: 77s + deps)
-- **cargo check**: Set timeout to 120+ seconds (observed: 28s)
+- **anchor build**: Set timeout to 600+ seconds (first build: ~35s + 500MB download, can take 10+ minutes)
+- **cargo check**: Set timeout to 120+ seconds (observed: 27s)
 
 ### Known Issues to Document
 - Linting fails on `ProfileSettings_backup.js` with parse error
