@@ -35,7 +35,7 @@ pub mod utils;
 
 use instructions::*;
 
-declare_id!("4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk");
+declare_id!("ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk");
 
 #[program]
 pub mod p2p_exchange {

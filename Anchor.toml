@@ -6,10 +6,10 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-p2p_exchange = "4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk"
+p2p_exchange = "ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk"
 
 [programs.devnet]
-p2p_exchange = "4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk"
+p2p_exchange = "ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk"
 
 [registry]
 url = "https://api.apr.dev"

@@ -15,7 +15,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROGRAM_ID="4eLxPSpK6Qi1AyNx79Ns4DoVqodp85sEphzPtFqLKTRk"
+PROGRAM_ID="ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk"
 NETWORK="devnet"
 KEYPAIR_PATH="./program-keypair.json"
 PROGRAM_SO_PATH="./target/deploy/p2p_exchange.so"
