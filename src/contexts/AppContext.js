@@ -1,5 +1,8 @@
-import React, { createContext, useState, useMemo, useContext } from 'react';
-import { clusterApiUrl } from '@solana/web3.js';
+import React, { createContext, useState, useMemo, useContext, useEffect } from 'react';
+import { Connection } from '@solana/web3.js';
+import { SVM_NETWORKS, getNetworkConfig, getDefaultNetworkConfig } from '../config/networks';
+import { useProgram } from '../hooks/useProgram';
+import { usePhantomWallet } from './PhantomWalletProvider';
 
 // Create a context for global app state
 export const AppContext = createContext({
@@ -7,58 +10,77 @@ export const AppContext = createContext({
   networks: {},
   selectedNetwork: 'solana',
   setSelectedNetwork: () => {},
+  connection: null,
+  program: null,
 });
 
-// SVM Networks configuration
-const SVM_NETWORKS = {
-  'solana': {
-    name: 'Solana',
-    endpoint: clusterApiUrl('devnet'),
-    programId: 'YOUR_SOLANA_PROGRAM_ID',
-    icon: '/assets/images/solana-logo.svg',
-    color: '#9945FF',
-    explorerUrl: 'https://explorer.solana.com',
-  },
-  'sonic': {
-    name: 'Sonic',
-    endpoint: 'https://sonic-api.example.com',
-    programId: 'YOUR_SONIC_PROGRAM_ID',
-    icon: '/assets/images/sonic-logo.svg',
-    color: '#00C2FF',
-    explorerUrl: 'https://explorer.sonic.example.com',
-  },
-  'eclipse': {
-    name: 'Eclipse',
-    endpoint: 'https://eclipse-api.example.com',
-    programId: 'YOUR_ECLIPSE_PROGRAM_ID',
-    icon: '/assets/images/eclipse-logo.svg',
-    color: '#0052FF',
-    explorerUrl: 'https://explorer.eclipse.example.com',
-  },
-  'svmBNB': {
-    name: 'svmBNB',
-    endpoint: 'https://svmbnb-api.example.com',
-    programId: 'YOUR_SVMBNB_PROGRAM_ID',
-    icon: '/assets/images/svmbnb-logo.svg',
-    color: '#F0B90B',
-    explorerUrl: 'https://explorer.svmbnb.example.com',
-  },
-  's00n': {
-    name: 's00n',
-    endpoint: 'https://s00n-api.example.com',
-    programId: 'YOUR_S00N_PROGRAM_ID',
-    icon: '/assets/images/s00n-logo.svg',
-    color: '#00FF9D',
-    explorerUrl: 'https://explorer.s00n.example.com',
-  }
-};
-
 export const AppContextProvider = ({ children }) => {
+  // Get wallet from PhantomWalletProvider
+  const wallet = usePhantomWallet();
+  
   // State for selected network
   const [selectedNetwork, setSelectedNetwork] = useState('solana');
+  const [connection, setConnection] = useState(null);
   
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
+  
+  // Create connection when network changes
+  useEffect(() => {
+    const createConnection = async () => {
+      try {
+        const networkConfig = getNetworkConfig(selectedNetwork);
+        if (!networkConfig) {
+          console.warn('[AppContext] Unknown network selected, falling back to Solana');
+          const defaultConfig = getDefaultNetworkConfig();
+          const conn = new Connection(defaultConfig.endpoint, defaultConfig.connectionConfig);
+          setConnection(conn);
+          return;
+        }
+        
+        // Try primary endpoint first
+        try {
+          const conn = new Connection(networkConfig.endpoint, networkConfig.connectionConfig);
+          // Test the connection
+          await conn.getLatestBlockhash('confirmed');
+          setConnection(conn);
+          console.log(`[AppContext] Connected to ${selectedNetwork} network`);
+        } catch (primaryError) {
+          console.warn(`[AppContext] Primary endpoint failed for ${selectedNetwork}:`, primaryError);
+          
+          // Try fallback endpoints if available
+          if (networkConfig.fallbackEndpoints?.length > 0) {
+            for (const endpoint of networkConfig.fallbackEndpoints) {
+              try {
+                const conn = new Connection(endpoint, networkConfig.connectionConfig);
+                await conn.getLatestBlockhash('confirmed');
+                setConnection(conn);
+                console.log(`[AppContext] Using fallback endpoint: ${endpoint}`);
+                return;
+              } catch (fallbackError) {
+                console.warn('[AppContext] Fallback endpoint failed:', endpoint, fallbackError);
+                continue;
+              }
+            }
+          }
+          
+          // If all endpoints fail, throw the original error
+          throw primaryError;
+        }
+      } catch (error) {
+        console.error('[AppContext] Failed to create connection:', error);
+        // Set a minimal connection for error recovery
+        const defaultConfig = getDefaultNetworkConfig();
+        const conn = new Connection(defaultConfig.endpoint, 'confirmed');
+        setConnection(conn);
+      }
+    };
+    
+    createConnection();
+  }, [selectedNetwork]);
+  
+  // Create program using the useProgram hook
+  const program = useProgram(connection, wallet);
   
   // Context values
   const contextValue = useMemo(() => ({
@@ -66,7 +88,9 @@ export const AppContextProvider = ({ children }) => {
     networks: SVM_NETWORKS,
     selectedNetwork,
     setSelectedNetwork,
-  }), [network, selectedNetwork]);
+    connection,
+    program,
+  }), [network, selectedNetwork, connection, program]);
   
   return (
     <AppContext.Provider value={contextValue}>
