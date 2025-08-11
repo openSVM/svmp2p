@@ -19,6 +19,26 @@ const ThemeSelector = () => {
     { key: 'blueprint', label: 'BLUEPRINT', description: 'Technical drawing style' },
   ], []);
 
+  // Define applyTheme before any useEffect that uses it
+  const applyTheme = useCallback((themeKey) => {
+    const root = document.documentElement;
+    const body = document.body;
+    
+    // Remove all existing theme classes
+    themes.forEach(theme => {
+      root.classList.remove(`theme-${theme.key}`);
+      body.classList.remove(`theme-${theme.key}`);
+    });
+    
+    // Add new theme class
+    root.classList.add(`theme-${themeKey}`);
+    body.classList.add(`theme-${themeKey}`);
+    
+    // Set theme attribute for CSS selectors
+    root.setAttribute('data-theme', themeKey);
+    body.setAttribute('data-theme', themeKey);
+  }, [themes]);
+
   useEffect(() => {
     // Load saved theme from localStorage
     const savedTheme = localStorage.getItem('theme') || 'grayscale';
@@ -39,25 +59,6 @@ const ThemeSelector = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  const applyTheme = useCallback((themeKey) => {
-    const root = document.documentElement;
-    const body = document.body;
-    
-    // Remove all existing theme classes
-    themes.forEach(theme => {
-      root.classList.remove(`theme-${theme.key}`);
-      body.classList.remove(`theme-${theme.key}`);
-    });
-    
-    // Add new theme class
-    root.classList.add(`theme-${themeKey}`);
-    body.classList.add(`theme-${themeKey}`);
-    
-    // Set theme attribute for CSS selectors
-    root.setAttribute('data-theme', themeKey);
-    body.setAttribute('data-theme', themeKey);
-  }, [themes]);
 
   const handleThemeSelect = (themeKey) => {
     setSelectedTheme(themeKey);

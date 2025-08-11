@@ -3,8 +3,8 @@ import { Program, AnchorProvider, Idl } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
 import idl from '../idl/p2p_exchange.json';
 
-// Program ID from the IDL and Anchor.toml
-const PROGRAM_ID = new PublicKey('ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk');
+// Program ID from the deployed program on Solana Devnet
+const PROGRAM_ID = new PublicKey('AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k');
 
 /**
  * Hook to create and provide Anchor Program instance

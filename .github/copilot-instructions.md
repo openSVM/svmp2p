@@ -274,10 +274,12 @@ npm run performance           # Bundle analysis
 ```
 
 ### Anchor Configuration (Anchor.toml)
-- Program ID: `ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk`
+- Program ID: `AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k` (deployed on Solana Devnet)
 - Target: Solana devnet
-- Anchor version: 0.31.1
+- Anchor version: 0.31.1  
 - Cluster: devnet by default
+- Deploy Transaction: `5JdPEHukpbDPhapn6oQi3AULtD4mKJ8XqTUy1HxqmTJDxrMRfSKB33WbzJ6ny8pACpNMbVmeFfSqmrSH9suHZk5T`
+- Explorer: https://explorer.solana.com/address/AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k?cluster=devnet
 
 ## Critical Warnings and Timeouts
 
@@ -308,8 +310,8 @@ npm run performance           # Bundle analysis
 
 ### Smart Contracts
 - **Solana/Anchor 0.31.1**: Rust-based smart contract framework
-- **Rust 1.88.0+**: Systems programming language
-- **Program ID**: ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk
+- **Rust 1.88.0+**: Systems programming language  
+- **Program ID**: `AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k` (deployed on Solana Devnet)
 
 ### Testing
 - **Jest 30.0.0**: Unit testing framework
