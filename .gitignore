@@ -50,3 +50,11 @@ coverage/
 # Rust/Cargo
 target/
 Cargo.lock
+
+# Solana binaries and toolchain (downloaded during build)
+solana-release/
+anchor.tar.gz
+idl_output.json
+
+# Solana cache and platform tools
+.solana/
