@@ -24,6 +24,11 @@ export const Toast = ({
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(100);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => onClose?.(), 300); // Allow fade out animation
+  }, [onClose]);
+
   useEffect(() => {
     if (duration > 0) {
       const interval = setInterval(() => {
@@ -41,11 +46,6 @@ export const Toast = ({
       return () => clearInterval(interval);
     }
   }, [duration, handleClose]);
-
-  const handleClose = useCallback(() => {
-    setIsVisible(false);
-    setTimeout(() => onClose?.(), 300); // Allow fade out animation
-  }, [onClose]);
 
   const getToastIcon = () => {
     switch (type) {

@@ -7,7 +7,7 @@ import './styles/guided-workflow.css';
 import './styles/wallet-connection-guide.css';
 
 // Import components
-import { AppContext } from './AppContext';
+import { AppContext } from './contexts/AppContext';
 import { NetworkSelector } from './components/NetworkSelector';
 import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
