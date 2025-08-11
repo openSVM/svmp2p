@@ -4,9 +4,105 @@ OpenSVM P2P Exchange is a Next.js-based Progressive Web App (PWA) for peer-to-pe
 
 **ALWAYS reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.**
 
+## Environment Preinstallation
+
+For optimal Copilot agent performance, consider setting up preinstalled tools in your development environment using one of these approaches:
+
+### Option 1: Development Container (Recommended)
+Create `.devcontainer/devcontainer.json` to preinstall all dependencies:
+
+```json
+{
+  "name": "OpenSVM P2P Exchange",
+  "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18",
+      "nodeGypDependencies": true
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  },
+  "forwardPorts": [3000, 8899]
+}
+```
+
+Create `.devcontainer/setup.sh`:
+```bash
+#!/bin/bash
+set -e
+
+# Install system dependencies
+sudo apt-get update && sudo apt-get install -y libudev-dev libssl-dev pkg-config build-essential
+
+# Install Anchor Version Manager
+cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
+echo 'export PATH="$HOME/.avm/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Install and use Anchor 0.31.1
+avm install 0.31.1 && avm use 0.31.1
+
+# Install Node.js dependencies
+npm install --legacy-peer-deps
+
+echo "✅ Development environment setup complete!"
+```
+
+### Option 2: GitHub Codespaces Configuration
+Create `.devcontainer/devcontainer.json` for Codespaces with preinstalled tools:
+
+```json
+{
+  "name": "OpenSVM P2P Exchange Codespace",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "bash .devcontainer/setup-codespaces.sh",
+  "remoteUser": "node"
+}
+```
+
+### Option 3: Manual Environment Setup
+If devcontainer is not available, follow the manual steps below, but expect longer setup times.
+
+### Benefits of Preinstallation
+Using preinstalled environments provides several advantages:
+- **Faster agent startup**: No need to install Rust, Anchor, or system dependencies
+- **Consistent environment**: Same setup across all development sessions
+- **Reduced timeout risks**: Eliminates long-running installation commands
+- **Better reliability**: Pre-validated tool versions and configurations
+- **Immediate productivity**: Agent can start working on code immediately
+
+### Using the Development Container
+To use the preinstalled environment:
+
+1. **With GitHub Codespaces**: Click "Code" → "Create codespace" (environment auto-configures)
+2. **With VS Code**: Install "Dev Containers" extension, then "Reopen in Container"
+3. **With GitHub Copilot**: The devcontainer will be automatically detected and used
+
+The setup script runs automatically and takes ~3-5 minutes to complete all installations.
+
 ## Working Effectively
 
-### Prerequisites and System Setup
+### Prerequisites and System Setup (Manual Fallback)
+**Use this section only if preinstallation options above are not available.**
+
 **Install required system dependencies first:**
 ```bash
 sudo apt-get update && sudo apt-get install -y libudev-dev libssl-dev pkg-config build-essential
@@ -141,6 +237,9 @@ npm run build && npm run start
 ├── package.json                 # Dependencies and scripts
 ├── next.config.js              # Next.js PWA configuration  
 ├── Anchor.toml                 # Solana program configuration
+├── .devcontainer/              # Development container setup
+│   ├── devcontainer.json       # VS Code devcontainer config
+│   └── setup.sh               # Environment setup script
 ├── programs/p2p-exchange/      # Rust smart contracts
 ├── src/                        # React frontend source
 ├── public/                     # Static assets
