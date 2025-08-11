@@ -1,29 +1,40 @@
 /**
- * BLUEPRINT THEME
- * Technical drawing style with blue on white design
- * Engineering and architectural blueprint aesthetic
+ * BLUEPRINT THEME - ENHANCED EDITION
+ * Professional technical drawing style with enhanced blueprint aesthetics
+ * Engineering and architectural blueprint design with advanced details
  */
 
 .theme-blueprint {
-  /* Blueprint Technical Palette */
-  --primary-bg: #FAFCFF;
-  --secondary-bg: #F0F4FF;
+  /* Enhanced Blueprint Technical Palette */
+  --primary-bg: #F8FAFC;
+  --secondary-bg: #EBF4FF;
   --card-bg: #FFFFFF;
   --border-color: #1E40AF;
+  --border-secondary: #3B82F6;
+  --border-light: #93C5FD;
   --text-primary: #1E40AF;
-  --text-secondary: #3B82F6;
-  --text-muted: #6B7280;
+  --text-secondary: #2563EB;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
   --accent-color: #1E40AF;
+  --accent-secondary: #3B82F6;
   --button-bg: #1E40AF;
   --button-text: #FFFFFF;
   --button-hover: #1D4ED8;
+  --button-secondary: #3B82F6;
   --success-color: #059669;
   --warning-color: #D97706;
   --error-color: #DC2626;
+  --info-color: #0284C7;
   --grid-color: #DBEAFE;
+  --grid-secondary: #BFDBFE;
+  --blueprint-blue: #1E40AF;
+  --blueprint-light: #EBF4FF;
   
-  /* Typography */
-  --font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+  /* Enhanced Typography */
+  --font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', 'Monaco', 'Menlo', monospace;
+  --font-family-heading: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  --font-family-technical: 'JetBrains Mono', monospace;
   --font-size-xs: 10px;
   --font-size-sm: 12px;
   --font-size-base: 14px;
@@ -31,31 +42,70 @@
   --font-size-xl: 18px;
   --font-size-2xl: 22px;
   --font-size-3xl: 28px;
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-black: 900;
   
-  /* Spacing */
+  /* Technical Drawing Line Styles */
+  --line-thin: 1px;
+  --line-medium: 2px;
+  --line-thick: 3px;
+  --line-construction: 0.5px;
+  
+  /* Enhanced Spacing System */
+  --spacing-0: 0;
+  --spacing-px: 1px;
   --spacing-1: 2px;
   --spacing-2: 4px;
   --spacing-3: 8px;
   --spacing-4: 12px;
   --spacing-5: 16px;
   --spacing-6: 20px;
-  --spacing-8: 24px;
-  --spacing-12: 32px;
+  --spacing-7: 24px;
+  --spacing-8: 28px;
+  --spacing-10: 32px;
+  --spacing-12: 40px;
   --spacing-16: 48px;
+  --spacing-20: 64px;
+  --spacing-24: 80px;
   
-  /* Shapes and Effects */
+  /* Technical Drawing Elements */
+  --blueprint-grid-major: 40px;
+  --blueprint-grid-minor: 8px;
+  --construction-line-opacity: 0.3;
+  --dimension-line-offset: 12px;
+  --annotation-size: 10px;
+  
+  /* Enhanced Shapes and Effects */
   --border-radius: 0px;
-  --border-width: 1px;
-  --shadow: 2px 2px 0px var(--border-color);
-  --shadow-hover: 4px 4px 0px var(--border-color);
+  --border-radius-sm: 0px;
+  --border-radius-md: 0px;
+  --border-width: var(--line-thin);
+  --border-width-thick: var(--line-medium);
+  --border-style: solid;
+  --border-style-dashed: dashed;
+  --border-style-dotted: dotted;
+  --shadow: 3px 3px 0px var(--border-color);
+  --shadow-hover: 5px 5px 0px var(--border-color);
+  --shadow-inset: inset 0 1px 3px rgba(30, 64, 175, 0.1);
+  --shadow-technical: 0 0 0 1px var(--border-color), 2px 2px 0 var(--border-light);
   
-  /* Layout */
-  --content-width: 1200px;
-  --sidebar-width: 240px;
-  --header-height: 64px;
+  /* Blueprint Animation */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* Enhanced Layout */
+  --content-width: 1400px;
+  --content-width-sm: 800px;
+  --content-width-lg: 1600px;
+  --sidebar-width: 280px;
+  --header-height: 72px;
+  --footer-height: 60px;
+  --panel-width: 320px;
 }
 
 .theme-blueprint body {
@@ -63,71 +113,162 @@
   color: var(--text-primary);
   font-family: var(--font-family);
   font-size: var(--font-size-base);
-  line-height: 1.4;
+  line-height: 1.5;
+  font-weight: var(--font-weight-normal);
+  /* Enhanced blueprint grid background */
   background-image: 
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 20px 20px;
+    /* Major grid lines */
+    linear-gradient(var(--grid-color) var(--line-thin), transparent var(--line-thin)),
+    linear-gradient(90deg, var(--grid-color) var(--line-thin), transparent var(--line-thin)),
+    /* Minor grid lines */
+    linear-gradient(var(--grid-secondary) var(--line-construction), transparent var(--line-construction)),
+    linear-gradient(90deg, var(--grid-secondary) var(--line-construction), transparent var(--line-construction));
+  background-size: 
+    var(--blueprint-grid-major) var(--blueprint-grid-major),
+    var(--blueprint-grid-major) var(--blueprint-grid-major),
+    var(--blueprint-grid-minor) var(--blueprint-grid-minor),
+    var(--blueprint-grid-minor) var(--blueprint-grid-minor);
   background-attachment: fixed;
+  position: relative;
+}
+
+/* Blueprint technical border frame */
+.theme-blueprint body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: var(--line-medium) solid var(--border-color);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Blueprint corner registration marks */
+.theme-blueprint body::after {
+  content: '';
+  position: fixed;
+  top: var(--spacing-3);
+  left: var(--spacing-3);
+  width: var(--spacing-6);
+  height: var(--spacing-6);
+  border-left: var(--line-medium) solid var(--border-color);
+  border-top: var(--line-medium) solid var(--border-color);
+  pointer-events: none;
+  z-index: 0;
+  box-shadow: 
+    calc(100vw - var(--spacing-12)) 0 0 var(--border-color),
+    0 calc(100vh - var(--spacing-12)) 0 var(--border-color),
+    calc(100vw - var(--spacing-12)) calc(100vh - var(--spacing-12)) 0 var(--border-color);
 }
 
 .theme-blueprint * {
   font-family: var(--font-family) !important;
 }
 
+/* Enhanced blueprint cards with technical details */
 .theme-blueprint .card,
 .theme-blueprint .ascii-card {
   background: var(--card-bg);
-  border: var(--border-width) solid var(--border-color);
+  border: var(--border-width-thick) solid var(--border-color);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-technical);
   position: relative;
-  padding: var(--spacing-6);
+  padding: var(--spacing-8);
+  margin: var(--spacing-5);
+  z-index: 1;
 }
 
+/* Enhanced technical drawing symbols */
 .theme-blueprint .card::before,
 .theme-blueprint .ascii-card::before {
-  content: '';
+  content: attr(data-drawing-ref) '⊞';
   position: absolute;
   top: var(--spacing-2);
-  right: var(--spacing-2);
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border-color);
-  background: 
-    linear-gradient(45deg, transparent 30%, var(--border-color) 30%, var(--border-color) 70%, transparent 70%),
-    linear-gradient(-45deg, transparent 30%, var(--border-color) 30%, var(--border-color) 70%, transparent 70%);
-  background-size: 4px 4px;
+  right: var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-muted);
+  font-family: var(--font-family-technical);
+  border: var(--line-thin) solid var(--border-light);
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--blueprint-light);
+  letter-spacing: 1px;
 }
 
+/* Blueprint dimension lines */
+.theme-blueprint .card::after,
+.theme-blueprint .ascii-card::after {
+  content: '';
+  position: absolute;
+  bottom: var(--spacing-2);
+  left: var(--spacing-2);
+  right: var(--spacing-2);
+  height: var(--line-construction);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-light),
+    var(--border-light) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  opacity: var(--construction-line-opacity);
+}
+
+/* Enhanced blueprint buttons with technical annotations */
 .theme-blueprint .btn,
 .theme-blueprint .ascii-btn,
 .theme-blueprint button:not(.unstyled) {
   background: var(--button-bg);
   color: var(--button-text);
-  border: var(--border-width) solid var(--border-color);
+  border: var(--border-width-thick) solid var(--border-color);
   border-radius: var(--border-radius);
   font-family: var(--font-family);
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: var(--spacing-3) var(--spacing-5);
-  transition: all 0.2s ease;
+  padding: var(--spacing-4) var(--spacing-6);
+  transition: all var(--transition-normal);
   position: relative;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
 }
 
+/* Technical drawing annotation overlay */
+.theme-blueprint .btn::before,
+.theme-blueprint .ascii-btn::before,
+.theme-blueprint button:not(.unstyled)::before {
+  content: '';
+  position: absolute;
+  top: -var(--spacing-2);
+  left: -var(--spacing-2);
+  right: -var(--spacing-2);
+  bottom: -var(--spacing-2);
+  border: var(--line-construction) dashed var(--border-light);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: -1;
+}
+
+/* Construction lines on hover */
 .theme-blueprint .btn::after,
 .theme-blueprint .ascii-btn::after,
 .theme-blueprint button:not(.unstyled)::after {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 1px dashed var(--border-color);
+  top: 50%;
+  left: -var(--spacing-8);
+  right: -var(--spacing-8);
+  height: var(--line-construction);
+  background: var(--border-light);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-normal);
+  transform: translateY(-50%);
+  z-index: -1;
 }
 
 .theme-blueprint .btn:hover,
@@ -136,14 +277,33 @@
   background: var(--button-hover);
   box-shadow: var(--shadow-hover);
   transform: translate(-2px, -2px);
+  border-color: var(--accent-secondary);
 }
 
+.theme-blueprint .btn:hover::before,
+.theme-blueprint .ascii-btn:hover::before,
+.theme-blueprint button:not(.unstyled):hover::before,
 .theme-blueprint .btn:hover::after,
 .theme-blueprint .ascii-btn:hover::after,
 .theme-blueprint button:not(.unstyled):hover::after {
   opacity: 1;
 }
 
+/* Secondary button style */
+.theme-blueprint .btn.btn-secondary,
+.theme-blueprint .ascii-btn.btn-secondary {
+  background: transparent;
+  color: var(--button-bg);
+  border-color: var(--button-bg);
+}
+
+.theme-blueprint .btn.btn-secondary:hover,
+.theme-blueprint .ascii-btn.btn-secondary:hover {
+  background: var(--blueprint-light);
+  color: var(--button-hover);
+}
+
+/* Enhanced form elements with technical styling */
 .theme-blueprint input,
 .theme-blueprint select,
 .theme-blueprint textarea {
@@ -153,55 +313,136 @@
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--text-primary);
-  padding: var(--spacing-3);
+  padding: var(--spacing-4);
   position: relative;
+  transition: all var(--transition-normal);
+  min-height: 44px;
+}
+
+.theme-blueprint input::placeholder,
+.theme-blueprint textarea::placeholder {
+  color: var(--text-light);
+  font-style: italic;
 }
 
 .theme-blueprint input:focus,
 .theme-blueprint select:focus,
 .theme-blueprint textarea:focus {
   outline: none;
-  box-shadow: var(--shadow);
-  border-width: 2px;
+  box-shadow: var(--shadow-technical);
+  border-width: var(--border-width-thick);
+  border-color: var(--accent-secondary);
+  background: var(--blueprint-light);
 }
 
+/* Technical input labels */
+.theme-blueprint label {
+  font-family: var(--font-family-technical);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-2);
+  display: block;
+  position: relative;
+}
+
+.theme-blueprint label::before {
+  content: '▸ ';
+  color: var(--accent-color);
+  font-weight: var(--font-weight-black);
+}
+
+/* Enhanced technical drawing typography */
 .theme-blueprint h1,
 .theme-blueprint h2,
 .theme-blueprint h3,
 .theme-blueprint h4,
 .theme-blueprint h5,
 .theme-blueprint h6 {
-  font-family: var(--font-family);
+  font-family: var(--font-family-heading);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 2px;
   position: relative;
+  margin-bottom: var(--spacing-6);
+  margin-top: var(--spacing-8);
 }
 
-.theme-blueprint h1::before { content: '1.0 '; font-size: var(--font-size-sm); }
-.theme-blueprint h2::before { content: '2.0 '; font-size: var(--font-size-sm); }
-.theme-blueprint h3::before { content: '3.0 '; font-size: var(--font-size-sm); }
-.theme-blueprint h4::before { content: '4.0 '; font-size: var(--font-size-sm); }
+/* Technical drawing section numbering */
+.theme-blueprint h1::before { 
+  content: '1.0 SECTION: '; 
+  font-size: var(--font-size-sm); 
+  color: var(--text-muted);
+  display: block;
+  font-weight: var(--font-weight-normal);
+  margin-bottom: var(--spacing-1);
+}
+.theme-blueprint h2::before { 
+  content: '2.0 SUBSECTION: '; 
+  font-size: var(--font-size-sm); 
+  color: var(--text-muted);
+  display: block;
+  font-weight: var(--font-weight-normal);
+  margin-bottom: var(--spacing-1);
+}
+.theme-blueprint h3::before { 
+  content: '3.0 DETAIL: '; 
+  font-size: var(--font-size-sm); 
+  color: var(--text-muted);
+  display: block;
+  font-weight: var(--font-weight-normal);
+  margin-bottom: var(--spacing-1);
+}
+.theme-blueprint h4::before { 
+  content: '4.0 NOTE: '; 
+  font-size: var(--font-size-sm); 
+  color: var(--text-muted);
+  display: block;
+  font-weight: var(--font-weight-normal);
+  margin-bottom: var(--spacing-1);
+}
 
+/* Enhanced technical underlines */
 .theme-blueprint h1::after,
 .theme-blueprint h2::after,
 .theme-blueprint h3::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: -var(--spacing-2);
   left: 0;
   right: 0;
-  height: 1px;
+  height: var(--line-medium);
   background: repeating-linear-gradient(
     90deg,
     var(--border-color),
-    var(--border-color) 4px,
-    transparent 4px,
-    transparent 8px
+    var(--border-color) 6px,
+    transparent 6px,
+    transparent 12px
   );
 }
 
+.theme-blueprint h4::after,
+.theme-blueprint h5::after,
+.theme-blueprint h6::after {
+  content: '';
+  position: absolute;
+  bottom: -var(--spacing-1);
+  left: 0;
+  right: 0;
+  height: var(--line-construction);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-light),
+    var(--border-light) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+}
+
+/* Enhanced navigation with blueprint aesthetics */
 .theme-blueprint .ascii-nav-tab {
   border: var(--border-width) solid var(--border-color);
   background: var(--card-bg);
@@ -211,45 +452,101 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
+  padding: var(--spacing-4) var(--spacing-6);
+  transition: all var(--transition-normal);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Technical tab indicators */
 .theme-blueprint .ascii-nav-tab::before {
+  content: '▸';
+  position: absolute;
+  left: var(--spacing-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-color);
+  font-weight: var(--font-weight-black);
+  opacity: 0;
+  transition: all var(--transition-normal);
+}
+
+.theme-blueprint .ascii-nav-tab::after {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  border: 1px dashed var(--border-color);
+  top: var(--spacing-1);
+  left: var(--spacing-1);
+  right: var(--spacing-1);
+  bottom: var(--spacing-1);
+  border: var(--line-construction) dashed var(--border-light);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-normal);
+}
+
+.theme-blueprint .ascii-nav-tab:hover {
+  background: var(--blueprint-light);
+  border-color: var(--accent-secondary);
+  padding-left: var(--spacing-8);
 }
 
 .theme-blueprint .ascii-nav-tab:hover::before {
   opacity: 1;
 }
 
+.theme-blueprint .ascii-nav-tab:hover::after {
+  opacity: 1;
+}
+
 .theme-blueprint .ascii-nav-tab.active {
   background: var(--button-bg);
   color: var(--button-text);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-technical);
+  border-color: var(--accent-color);
 }
 
+.theme-blueprint .ascii-nav-tab.active::before {
+  color: var(--button-text);
+  opacity: 1;
+}
+
+/* Enhanced dropdown menus with technical annotations */
 .theme-blueprint .ascii-dropdown-menu {
   background: var(--card-bg);
-  border: var(--border-width) solid var(--border-color);
+  border: var(--border-width-thick) solid var(--border-color);
   box-shadow: var(--shadow-hover);
   position: relative;
+  padding: var(--spacing-4);
+  z-index: 100;
 }
 
-.theme-blueprint .ascii-dropdown-menu::after {
-  content: 'REV 1.0';
+.theme-blueprint .ascii-dropdown-menu::before {
+  content: 'MENU REF: M-001';
   position: absolute;
   top: var(--spacing-1);
-  right: var(--spacing-2);
+  left: var(--spacing-3);
   font-size: var(--font-size-xs);
   color: var(--text-muted);
   font-weight: var(--font-weight-normal);
+  font-family: var(--font-family-technical);
+  background: var(--blueprint-light);
+  padding: var(--spacing-1) var(--spacing-2);
+  border: var(--line-construction) solid var(--border-light);
+}
+
+.theme-blueprint .ascii-dropdown-menu::after {
+  content: 'REV 2.0';
+  position: absolute;
+  top: var(--spacing-1);
+  right: var(--spacing-3);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-normal);
+  font-family: var(--font-family-technical);
+  background: var(--blueprint-light);
+  padding: var(--spacing-1) var(--spacing-2);
+  border: var(--line-construction) solid var(--border-light);
 }
 
 .theme-blueprint .ascii-dropdown-item {
@@ -258,56 +555,122 @@
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px dotted var(--border-color);
+  border-bottom: var(--line-construction) dotted var(--border-light);
   position: relative;
+  padding: var(--spacing-3) var(--spacing-5);
+  transition: all var(--transition-normal);
+  margin-top: var(--spacing-6);
+}
+
+.theme-blueprint .ascii-dropdown-item:first-child {
+  margin-top: var(--spacing-8);
 }
 
 .theme-blueprint .ascii-dropdown-item::before {
-  content: '→ ';
+  content: '▸ ';
   position: absolute;
-  left: var(--spacing-2);
+  left: var(--spacing-3);
+  color: var(--accent-color);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: all var(--transition-normal);
+  font-weight: var(--font-weight-black);
+}
+
+.theme-blueprint .ascii-dropdown-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -var(--spacing-1);
+  height: var(--line-construction);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-light),
+    var(--border-light) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  opacity: 0;
+  transition: opacity var(--transition-normal);
 }
 
 .theme-blueprint .ascii-dropdown-item:hover {
-  background: var(--secondary-bg);
-  padding-left: var(--spacing-6);
+  background: var(--blueprint-light);
+  padding-left: var(--spacing-8);
+  border-color: var(--accent-secondary);
 }
 
 .theme-blueprint .ascii-dropdown-item:hover::before {
   opacity: 1;
 }
 
+.theme-blueprint .ascii-dropdown-item:hover::after {
+  opacity: 1;
+}
+
 .theme-blueprint .ascii-dropdown-item.active {
   background: var(--button-bg);
   color: var(--button-text);
+  border-color: var(--accent-color);
 }
 
+.theme-blueprint .ascii-dropdown-item.active::before {
+  color: var(--button-text);
+  opacity: 1;
+}
+
+/* Enhanced technical tables with blueprint styling */
 .theme-blueprint table {
   border-collapse: collapse;
   font-family: var(--font-family);
-  border: var(--border-width) solid var(--border-color);
+  border: var(--border-width-thick) solid var(--border-color);
   position: relative;
+  width: 100%;
+  background: var(--card-bg);
+  margin: var(--spacing-6) 0;
 }
 
 .theme-blueprint table::before {
-  content: 'TABLE REF: T-001';
+  content: 'TABLE REF: T-' counter(table-counter, decimal-leading-zero);
+  counter-increment: table-counter;
   position: absolute;
-  top: -20px;
+  top: calc(-1 * var(--spacing-8));
   left: 0;
   font-size: var(--font-size-xs);
   color: var(--text-muted);
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-technical);
+  background: var(--blueprint-light);
+  padding: var(--spacing-1) var(--spacing-3);
+  border: var(--line-construction) solid var(--border-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.theme-blueprint table::after {
+  content: 'SCALE: 1:1';
+  position: absolute;
+  top: calc(-1 * var(--spacing-8));
+  right: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-technical);
+  background: var(--blueprint-light);
+  padding: var(--spacing-1) var(--spacing-3);
+  border: var(--line-construction) solid var(--border-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .theme-blueprint th,
 .theme-blueprint td {
   border: var(--border-width) solid var(--border-color);
-  padding: var(--spacing-3);
+  padding: var(--spacing-4);
   text-align: left;
   font-family: var(--font-family);
   position: relative;
+  vertical-align: top;
 }
 
 .theme-blueprint th {
@@ -315,6 +678,14 @@
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 1px;
+  color: var(--text-primary);
+  border-bottom-width: var(--border-width-thick);
+}
+
+.theme-blueprint th::before {
+  content: '■ ';
+  color: var(--accent-color);
+  font-weight: var(--font-weight-black);
 }
 
 .theme-blueprint th::after {
@@ -323,40 +694,87 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 1px;
+  width: var(--line-construction);
   background: repeating-linear-gradient(
     180deg,
-    var(--border-color),
-    var(--border-color) 2px,
-    transparent 2px,
-    transparent 4px
+    var(--border-light),
+    var(--border-light) 3px,
+    transparent 3px,
+    transparent 6px
   );
 }
 
-.theme-blueprint .status-pending::before { content: '[PEND] '; }
-.theme-blueprint .status-completed::before { content: '[COMP] '; }
-.theme-blueprint .status-failed::before { content: '[FAIL] '; }
-.theme-blueprint .status-cancelled::before { content: '[CANC] '; }
+.theme-blueprint td:hover {
+  background: var(--blueprint-light);
+}
 
-.theme-blueprint .status-pending { color: var(--warning-color); }
-.theme-blueprint .status-completed { color: var(--success-color); }
-.theme-blueprint .status-failed { color: var(--error-color); }
-.theme-blueprint .status-cancelled { color: var(--text-muted); }
+/* Initialize table counter */
+.theme-blueprint {
+  counter-reset: table-counter;
+}
 
+/* Enhanced status indicators with technical annotations */
+.theme-blueprint .status-pending::before { 
+  content: '[PEND] '; 
+  font-family: var(--font-family-technical);
+  font-weight: var(--font-weight-bold);
+}
+.theme-blueprint .status-completed::before { 
+  content: '[COMP] '; 
+  font-family: var(--font-family-technical);
+  font-weight: var(--font-weight-bold);
+}
+.theme-blueprint .status-failed::before { 
+  content: '[FAIL] '; 
+  font-family: var(--font-family-technical);
+  font-weight: var(--font-weight-bold);
+}
+.theme-blueprint .status-cancelled::before { 
+  content: '[CANC] '; 
+  font-family: var(--font-family-technical);
+  font-weight: var(--font-weight-bold);
+}
+
+.theme-blueprint .status-pending { 
+  color: var(--warning-color); 
+  border-left: var(--line-thick) solid var(--warning-color);
+  padding-left: var(--spacing-3);
+}
+.theme-blueprint .status-completed { 
+  color: var(--success-color); 
+  border-left: var(--line-thick) solid var(--success-color);
+  padding-left: var(--spacing-3);
+}
+.theme-blueprint .status-failed { 
+  color: var(--error-color); 
+  border-left: var(--line-thick) solid var(--error-color);
+  padding-left: var(--spacing-3);
+}
+.theme-blueprint .status-cancelled { 
+  color: var(--text-muted); 
+  border-left: var(--line-thick) solid var(--text-muted);
+  padding-left: var(--spacing-3);
+}
+
+/* Enhanced theme selector menu */
 .theme-blueprint .theme-selector-menu {
-  min-width: 280px;
+  min-width: 320px;
+  max-height: 480px;
+  overflow-y: auto;
 }
 
 .theme-blueprint .theme-option-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-1);
+  gap: var(--spacing-2);
+  padding: var(--spacing-1);
 }
 
 .theme-blueprint .theme-name {
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-family: var(--font-family-technical);
 }
 
 .theme-blueprint .theme-description {
@@ -364,15 +782,29 @@
   color: var(--text-muted);
   text-transform: none;
   letter-spacing: normal;
+  font-weight: var(--font-weight-normal);
+  font-style: italic;
 }
 
+/* Enhanced network indicator */
 .theme-blueprint .network-indicator {
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--border-color);
-  margin-right: var(--spacing-2);
+  width: 12px;
+  height: 12px;
+  border: var(--line-thin) solid var(--border-color);
+  margin-right: var(--spacing-3);
   display: inline-block;
   position: relative;
+  background: var(--card-bg);
+}
+
+.theme-blueprint .network-indicator::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: var(--line-construction) dashed var(--border-light);
 }
 
 .theme-blueprint .network-indicator::after {
@@ -380,21 +812,107 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
   background: currentColor;
   transform: translate(-50%, -50%);
+  border: var(--line-construction) solid var(--card-bg);
 }
 
-/* Blueprint corner markers */
-.theme-blueprint .card::after,
-.theme-blueprint .ascii-card::after {
+.theme-blueprint .network-indicator.connected::after {
+  background: var(--success-color);
+  box-shadow: 0 0 var(--spacing-2) var(--success-color);
+}
+
+.theme-blueprint .network-indicator.disconnected::after {
+  background: var(--error-color);
+}
+
+.theme-blueprint .network-indicator.connecting::after {
+  background: var(--warning-color);
+  animation: blueprint-pulse 2s infinite;
+}
+
+@keyframes blueprint-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Blueprint technical annotations for special elements */
+.theme-blueprint .technical-annotation {
+  position: relative;
+  display: inline-block;
+}
+
+.theme-blueprint .technical-annotation::before {
+  content: attr(data-ref);
+  position: absolute;
+  top: -var(--spacing-6);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-family: var(--font-family-technical);
+  background: var(--blueprint-light);
+  padding: var(--spacing-1) var(--spacing-2);
+  border: var(--line-construction) solid var(--border-light);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  z-index: 10;
+}
+
+.theme-blueprint .technical-annotation:hover::before {
+  opacity: 1;
+}
+
+/* Blueprint corner markers for layout elements */
+.theme-blueprint .layout-container {
+  position: relative;
+}
+
+.theme-blueprint .layout-container::before,
+.theme-blueprint .layout-container::after {
   content: '';
   position: absolute;
-  bottom: var(--spacing-2);
-  left: var(--spacing-2);
-  width: 12px;
-  height: 12px;
-  border-left: 2px solid var(--border-color);
-  border-bottom: 2px solid var(--border-color);
+  width: var(--spacing-4);
+  height: var(--spacing-4);
+  border-color: var(--border-light);
+  border-style: solid;
+  border-width: 0;
+  opacity: var(--construction-line-opacity);
+}
+
+.theme-blueprint .layout-container::before {
+  top: 0;
+  left: 0;
+  border-top-width: var(--line-construction);
+  border-left-width: var(--line-construction);
+}
+
+.theme-blueprint .layout-container::after {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: var(--line-construction);
+  border-right-width: var(--line-construction);
+}
+
+/* Enhanced scrollbar styling */
+.theme-blueprint *::-webkit-scrollbar {
+  width: var(--spacing-3);
+  height: var(--spacing-3);
+}
+
+.theme-blueprint *::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+  border: var(--line-construction) solid var(--border-light);
+}
+
+.theme-blueprint *::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border: var(--line-construction) solid var(--card-bg);
+}
+
+.theme-blueprint *::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
 }

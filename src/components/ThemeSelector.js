@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 const ThemeSelector = () => {
-  const [selectedTheme, setSelectedTheme] = useState('grayscale');
+  const [selectedTheme, setSelectedTheme] = useState('blueprint');
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   // Available themes - memoized to prevent recreating on each render
   const themes = useMemo(() => [
+    { key: 'blueprint', label: 'BLUEPRINT', description: 'Enhanced technical drawing style' },
     { key: 'grayscale', label: 'GRAYSCALE', description: 'Monospace ASCII terminal style' },
     { key: 'corporate', label: 'CORPORATE', description: 'Clean blue professional design' },
     { key: 'retro', label: 'RETRO', description: '80s neon cyberpunk aesthetic' },
@@ -16,7 +17,6 @@ const ThemeSelector = () => {
     { key: 'organic', label: 'ORGANIC', description: 'Earth tones natural design' },
     { key: 'high-contrast', label: 'HIGH CONTRAST', description: 'Accessibility black/white' },
     { key: 'pastel', label: 'PASTEL', description: 'Soft colors gentle design' },
-    { key: 'blueprint', label: 'BLUEPRINT', description: 'Technical drawing style' },
   ], []);
 
   // Define applyTheme before any useEffect that uses it
@@ -41,7 +41,7 @@ const ThemeSelector = () => {
 
   useEffect(() => {
     // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('theme') || 'grayscale';
+    const savedTheme = localStorage.getItem('theme') || 'blueprint';
     setSelectedTheme(savedTheme);
     applyTheme(savedTheme);
   }, [applyTheme]);
