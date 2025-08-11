@@ -1,4 +1,4 @@
-import React, { createContext, useState, useMemo } from 'react';
+import React, { createContext, useState, useMemo, useContext } from 'react';
 import { clusterApiUrl } from '@solana/web3.js';
 
 // Create a context for global app state
@@ -70,7 +70,18 @@ export const AppContextProvider = ({ children }) => {
   
   return (
     <AppContext.Provider value={contextValue}>
-      {typeof children === 'function' ? children(contextValue) : children}
+      {children}
     </AppContext.Provider>
   );
+};
+
+// Hook to use AppContext
+export const useAppContext = () => {
+  const context = useContext(AppContext);
+  
+  if (!context) {
+    throw new Error('useAppContext must be used within an AppContextProvider');
+  }
+  
+  return context;
 };

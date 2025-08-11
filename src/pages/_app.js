@@ -77,13 +77,11 @@ export default function App({ Component, pageProps }) {
       }
     >
       <AppContextProvider>
-        {({ network }) => (
-          <PhantomWalletProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </PhantomWalletProvider>
-        )}
+        <PhantomWalletProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </PhantomWalletProvider>
       </AppContextProvider>
     </ErrorBoundary>
   );
