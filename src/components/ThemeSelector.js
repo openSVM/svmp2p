@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 const ThemeSelector = () => {
   const [selectedTheme, setSelectedTheme] = useState('grayscale');
@@ -24,7 +24,7 @@ const ThemeSelector = () => {
     const savedTheme = localStorage.getItem('theme') || 'grayscale';
     setSelectedTheme(savedTheme);
     applyTheme(savedTheme);
-  }, []);
+  }, [applyTheme]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,7 +40,7 @@ const ThemeSelector = () => {
     };
   }, []);
 
-  const applyTheme = (themeKey) => {
+  const applyTheme = useCallback((themeKey) => {
     const root = document.documentElement;
     const body = document.body;
     
@@ -57,7 +57,7 @@ const ThemeSelector = () => {
     // Set theme attribute for CSS selectors
     root.setAttribute('data-theme', themeKey);
     body.setAttribute('data-theme', themeKey);
-  };
+  }, [themes]);
 
   const handleThemeSelect = (themeKey) => {
     setSelectedTheme(themeKey);

@@ -372,7 +372,7 @@ ASCIIFormTable.propTypes = {
   className: PropTypes.string,
 };
 
-export default {
+const ASCIIFormComponents = {
   ASCIIForm,
   ASCIIFormHeader,
   ASCIIFormRow,
@@ -390,3 +390,5 @@ export default {
   DisputeFormLayout,
   ProfileFormLayout,
 };
+
+export default ASCIIFormComponents;

@@ -37,7 +37,7 @@ export const useProgram = (connection, wallet) => {
       console.error('Error creating program:', error);
       return null;
     }
-  }, [connection, wallet, wallet?.publicKey]);
+  }, [connection, wallet]);
 };
 
 /**

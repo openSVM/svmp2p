@@ -111,7 +111,7 @@ const RewardDashboard = () => {
                 clearUserCache(publicKey);
             }
         };
-    }, [fetchData]);
+    }, [fetchData, publicKey]);
 
     // Update auto-claim configuration
     useEffect(() => {

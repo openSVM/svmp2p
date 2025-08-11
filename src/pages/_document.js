@@ -15,9 +15,7 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" 
         />
         
-        {/* Preload critical CSS */}
-        <link rel="preload" href="/css/critical.css" as="style" onLoad="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="/css/critical.css" /></noscript>
+        {/* Critical CSS will be handled by Next.js CSS imports */}
         
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//api.devnet.solana.com" />

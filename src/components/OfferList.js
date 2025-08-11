@@ -489,6 +489,46 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     localStorage.setItem(`svmp2p-saved-searches-${type}`, JSON.stringify(updatedSearches));
   }, [savedSearches, type]);
   
+  // Actual implementation of the offer action after confirmation
+  const processOfferAction = useCallback(async (offerId, action) => {
+    setProcessingAction({
+      offerId,
+      action
+    });
+    
+    setTxStatus({
+      status: 'pending',
+      message: `Processing ${action}...`
+    });
+    
+    try {
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mock successful transaction
+      setStatusMessage(`Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`);
+      setTxStatus({
+        status: 'success',
+        message: `Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`
+      });
+      
+      // Refresh offers after action
+      refetch();
+    } catch (err) {
+      console.error(`Error ${action}ing offer:`, err);
+      setError(`Failed to ${action} offer: ${err.message}`);
+      setTxStatus({
+        status: 'error',
+        message: `Failed to ${action} offer: ${err.message}`
+      });
+    } finally {
+      setProcessingAction({
+        offerId: null,
+        action: null
+      });
+    }
+  }, [refetch]);
+
   // Handle offer actions (accept, cancel, etc.) - useCallback to prevent recreation on each render
   const handleOfferAction = useCallback(async (offerId, action) => {
     if (!wallet.publicKey) {
@@ -529,48 +569,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
       // For other actions without confirmation
       processOfferAction(offerId, action);
     }
-  }, [wallet.publicKey]);
+  }, [wallet.publicKey, processOfferAction]);
 
-  // Actual implementation of the offer action after confirmation
-  const processOfferAction = useCallback(async (offerId, action) => {
-    setProcessingAction({
-      offerId,
-      action
-    });
-    
-    setTxStatus({
-      status: 'pending',
-      message: `Processing ${action}...`
-    });
-    
-    try {
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock successful transaction
-      setStatusMessage(`Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`);
-      setTxStatus({
-        status: 'success',
-        message: `Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`
-      });
-      
-      // Refresh offers after action
-      refetch();
-    } catch (err) {
-      console.error(`Error ${action}ing offer:`, err);
-      setError(`Failed to ${action} offer: ${err.message}`);
-      setTxStatus({
-        status: 'error',
-        message: `Failed to ${action} offer: ${err.message}`
-      });
-    } finally {
-      setProcessingAction({
-        offerId: null,
-        action: null
-      });
-    }
-  }, [refetch]);
-  
   // Clear transaction status - useCallback to prevent recreation on each render
   const handleClearTxStatus = useCallback(() => {
     setTxStatus(null);
