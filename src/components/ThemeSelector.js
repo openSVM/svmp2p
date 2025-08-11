@@ -70,9 +70,9 @@ const ThemeSelector = () => {
   const currentTheme = themes.find(theme => theme.key === selectedTheme);
 
   return (
-    <div className="ascii-dropdown-container" ref={dropdownRef}>
+    <div className="app-dropdown-container" ref={dropdownRef}>
       <button 
-        className="ascii-header-control ascii-dropdown-trigger"
+        className="app-header-control app-dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -82,11 +82,11 @@ const ThemeSelector = () => {
       </button>
       
       {isOpen && (
-        <div className="ascii-dropdown-menu theme-selector-menu">
+        <div className="app-dropdown-menu theme-selector-menu">
           {themes.map((theme) => (
             <button
               key={theme.key}
-              className={`ascii-dropdown-item theme-option ${theme.key === selectedTheme ? 'active' : ''}`}
+              className={`app-dropdown-item theme-option ${theme.key === selectedTheme ? 'active' : ''}`}
               onClick={() => handleThemeSelect(theme.key)}
             >
               <div className="theme-option-content">

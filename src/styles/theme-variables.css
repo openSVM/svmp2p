@@ -1,0 +1,631 @@
+/**
+ * COMPREHENSIVE THEME VARIABLE SYSTEM
+ * This file defines all theme-agnostic CSS custom properties that replace hardcoded ASCII classes
+ * Every component should use these variables instead of hardcoded theme-specific classes
+ */
+
+/* Root variables that all themes should override */
+:root {
+  /* Theme-agnostic component variables */
+  --app-header-bg: var(--primary-bg, #F8F9FA);
+  --app-header-border: var(--border-color, #CED4DA);
+  --app-header-height: 60px;
+  
+  --app-nav-tab-bg: transparent;
+  --app-nav-tab-color: var(--text-secondary, #495057);
+  --app-nav-tab-active-bg: var(--accent-color, #343A40);
+  --app-nav-tab-active-color: var(--button-text, #FFFFFF);
+  --app-nav-tab-hover-bg: var(--secondary-bg, #F1F3F5);
+  
+  --app-button-bg: var(--button-bg, #343A40);
+  --app-button-color: var(--button-text, #FFFFFF);
+  --app-button-hover-bg: var(--button-hover, #495057);
+  --app-button-disabled-bg: var(--text-muted, #ADB5BD);
+  --app-button-disabled-color: var(--text-secondary, #495057);
+  
+  --app-form-bg: var(--card-bg, #FFFFFF);
+  --app-form-border: var(--border-color, #CED4DA);
+  --app-form-header-bg: var(--secondary-bg, #F1F3F5);
+  --app-form-header-color: var(--text-primary, #212529);
+  
+  --app-input-bg: var(--card-bg, #FFFFFF);
+  --app-input-border: var(--border-color, #CED4DA);
+  --app-input-color: var(--text-primary, #212529);
+  --app-input-focus-border: var(--accent-color, #343A40);
+  
+  --app-dropdown-bg: var(--card-bg, #FFFFFF);
+  --app-dropdown-border: var(--border-color, #CED4DA);
+  --app-dropdown-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --app-dropdown-item-hover-bg: var(--secondary-bg, #F1F3F5);
+  
+  --app-wallet-status-bg: var(--secondary-bg, #F1F3F5);
+  --app-wallet-status-border: var(--border-color, #CED4DA);
+  --app-wallet-status-error-color: var(--error-color, #DC3545);
+  --app-wallet-status-success-color: var(--success-color, #28A745);
+  --app-wallet-status-warning-color: var(--warning-color, #FFC107);
+  
+  --app-logo-color: var(--text-primary, #212529);
+  --app-logo-size: var(--font-size-2xl, 20px);
+  
+  /* Status indicators */
+  --app-status-dot-size: 8px;
+  --app-status-connected-color: var(--success-color, #28A745);
+  --app-status-connecting-color: var(--warning-color, #FFC107);
+  --app-status-error-color: var(--error-color, #DC3545);
+  --app-status-disconnected-color: var(--text-muted, #ADB5BD);
+  
+  /* Typography scales that ensure consistent sizing across themes */
+  --app-font-family: var(--font-family, 'Courier New', Courier, monospace);
+  --app-font-size-xs: max(10px, min(0.75rem, 12px));
+  --app-font-size-sm: max(12px, min(0.875rem, 14px));
+  --app-font-size-base: max(14px, min(1rem, 16px));
+  --app-font-size-lg: max(16px, min(1.125rem, 18px));
+  --app-font-size-xl: max(18px, min(1.25rem, 20px));
+  --app-font-size-2xl: max(20px, min(1.5rem, 24px));
+  --app-font-size-3xl: max(24px, min(1.875rem, 30px));
+  
+  /* Spacing scales that maintain layout integrity */
+  --app-spacing-1: max(2px, min(0.25rem, 4px));
+  --app-spacing-2: max(4px, min(0.5rem, 8px));
+  --app-spacing-3: max(6px, min(0.75rem, 12px));
+  --app-spacing-4: max(8px, min(1rem, 16px));
+  --app-spacing-5: max(10px, min(1.25rem, 20px));
+  --app-spacing-6: max(12px, min(1.5rem, 24px));
+  --app-spacing-8: max(16px, min(2rem, 32px));
+  --app-spacing-12: max(24px, min(3rem, 48px));
+  --app-spacing-16: max(32px, min(4rem, 64px));
+  
+  /* Button and component sizing */
+  --app-button-height-sm: max(28px, min(2rem, 32px));
+  --app-button-height-md: max(36px, min(2.5rem, 40px));
+  --app-button-height-lg: max(44px, min(3rem, 48px));
+  
+  --app-button-padding-x-sm: var(--app-spacing-3);
+  --app-button-padding-x-md: var(--app-spacing-4);
+  --app-button-padding-x-lg: var(--app-spacing-6);
+  
+  --app-button-padding-y-sm: var(--app-spacing-1);
+  --app-button-padding-y-md: var(--app-spacing-2);
+  --app-button-padding-y-lg: var(--app-spacing-3);
+  
+  /* Layout dimensions */
+  --app-content-max-width: 1200px;
+  --app-sidebar-width: 250px;
+  --app-form-max-width: 600px;
+  
+  /* Border and shape consistency */
+  --app-border-radius: var(--border-radius, 0px);
+  --app-border-width: var(--border-width, 1px);
+  
+  /* Animation and transitions */
+  --app-transition-fast: 0.15s ease;
+  --app-transition-normal: 0.25s ease;
+  --app-transition-slow: 0.35s ease;
+  
+  /* Z-index scale */
+  --app-z-dropdown: 1000;
+  --app-z-modal: 1050;
+  --app-z-toast: 1100;
+  --app-z-tooltip: 1150;
+}
+
+/* Theme-aware component classes that replace ASCII classes */
+.app-header {
+  background-color: var(--app-header-bg);
+  border-bottom: var(--app-border-width) solid var(--app-header-border);
+  height: var(--app-header-height);
+  font-family: var(--app-font-family);
+}
+
+.app-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  max-width: var(--app-content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--app-spacing-4);
+}
+
+.app-logo-section {
+  display: flex;
+  align-items: center;
+  gap: var(--app-spacing-3);
+}
+
+.app-logo-image {
+  width: var(--app-spacing-8);
+  height: var(--app-spacing-8);
+}
+
+.app-logo-text {
+  font-size: var(--app-logo-size);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--app-logo-color);
+  margin: 0;
+  font-family: var(--app-font-family);
+  text-transform: uppercase;
+}
+
+.app-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: var(--app-spacing-6);
+}
+
+.app-nav-tabs {
+  display: flex;
+  gap: var(--app-spacing-1);
+}
+
+.app-nav-tab {
+  background: var(--app-nav-tab-bg);
+  color: var(--app-nav-tab-color);
+  border: var(--app-border-width) solid transparent;
+  padding: var(--app-button-padding-y-md) var(--app-button-padding-x-md);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-sm);
+  font-weight: var(--font-weight-medium, 500);
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--app-border-radius);
+  transition: all var(--app-transition-normal);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  height: var(--app-button-height-md);
+}
+
+.app-nav-tab:hover {
+  background-color: var(--app-nav-tab-hover-bg);
+}
+
+.app-nav-tab.active {
+  background-color: var(--app-nav-tab-active-bg);
+  color: var(--app-nav-tab-active-color);
+}
+
+.app-header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--app-spacing-3);
+}
+
+.app-header-control {
+  background: var(--app-button-bg);
+  color: var(--app-button-color);
+  border: var(--app-border-width) solid var(--app-button-bg);
+  padding: var(--app-button-padding-y-sm) var(--app-button-padding-x-sm);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-xs);
+  font-weight: var(--font-weight-medium, 500);
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--app-border-radius);
+  transition: all var(--app-transition-normal);
+  height: var(--app-button-height-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: max-content;
+}
+
+.app-header-control:hover {
+  background-color: var(--app-button-hover-bg);
+}
+
+.app-header-control:disabled {
+  background-color: var(--app-button-disabled-bg);
+  color: var(--app-button-disabled-color);
+  cursor: not-allowed;
+}
+
+/* Dropdown components */
+.app-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.app-dropdown-trigger {
+  /* Inherits from app-header-control */
+}
+
+.app-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--app-dropdown-bg);
+  border: var(--app-border-width) solid var(--app-dropdown-border);
+  border-radius: var(--app-border-radius);
+  box-shadow: var(--app-dropdown-shadow);
+  z-index: var(--app-z-dropdown);
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.app-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--app-spacing-3) var(--app-spacing-4);
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-sm);
+  color: var(--app-input-color);
+  cursor: pointer;
+  transition: background-color var(--app-transition-fast);
+}
+
+.app-dropdown-item:hover {
+  background-color: var(--app-dropdown-item-hover-bg);
+}
+
+.app-dropdown-item.active {
+  background-color: var(--app-nav-tab-active-bg);
+  color: var(--app-nav-tab-active-color);
+}
+
+/* Form components */
+.app-form {
+  background: var(--app-form-bg);
+  border: var(--app-border-width) solid var(--app-form-border);
+  border-radius: var(--app-border-radius);
+  max-width: var(--app-form-max-width);
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.app-form-header {
+  background: var(--app-form-header-bg);
+  color: var(--app-form-header-color);
+  padding: var(--app-spacing-4);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-base);
+  font-weight: var(--font-weight-bold, 700);
+  text-transform: uppercase;
+  border-bottom: var(--app-border-width) solid var(--app-form-border);
+}
+
+.app-form-content {
+  padding: var(--app-spacing-6);
+}
+
+.app-form-row {
+  display: flex;
+  gap: var(--app-spacing-4);
+  margin-bottom: var(--app-spacing-4);
+}
+
+.app-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-spacing-4);
+  margin-bottom: var(--app-spacing-4);
+}
+
+.app-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.app-field label {
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-xs);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--app-form-header-color);
+  margin-bottom: var(--app-spacing-2);
+  text-transform: uppercase;
+}
+
+.app-field input,
+.app-field select,
+.app-field textarea {
+  background: var(--app-input-bg);
+  border: var(--app-border-width) solid var(--app-input-border);
+  border-radius: var(--app-border-radius);
+  padding: var(--app-spacing-3);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-sm);
+  color: var(--app-input-color);
+  height: var(--app-button-height-md);
+}
+
+.app-field input:focus,
+.app-field select:focus,
+.app-field textarea:focus {
+  outline: none;
+  border-color: var(--app-input-focus-border);
+}
+
+.app-field-error-message {
+  color: var(--app-wallet-status-error-color);
+  font-size: var(--app-font-size-xs);
+  margin-top: var(--app-spacing-1);
+  font-family: var(--app-font-family);
+}
+
+.app-field-help {
+  color: var(--app-wallet-status-warning-color);
+  font-size: var(--app-font-size-xs);
+  margin-top: var(--app-spacing-1);
+  font-family: var(--app-font-family);
+}
+
+.app-form-actions {
+  margin-top: var(--app-spacing-6);
+  display: flex;
+  justify-content: center;
+  gap: var(--app-spacing-4);
+}
+
+/* Wallet status components */
+.app-wallet-status {
+  display: flex;
+  align-items: center;
+  gap: var(--app-spacing-2);
+  background: var(--app-wallet-status-bg);
+  border: var(--app-border-width) solid var(--app-wallet-status-border);
+  border-radius: var(--app-border-radius);
+  padding: var(--app-spacing-2) var(--app-spacing-3);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-xs);
+  text-transform: uppercase;
+}
+
+.app-status-dot {
+  width: var(--app-status-dot-size);
+  height: var(--app-status-dot-size);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.app-status-connected {
+  background-color: var(--app-status-connected-color);
+}
+
+.app-status-connecting {
+  background-color: var(--app-status-connecting-color);
+  animation: pulse 1.5s infinite;
+}
+
+.app-status-error {
+  background-color: var(--app-status-error-color);
+}
+
+.app-status-disconnected {
+  background-color: var(--app-status-disconnected-color);
+}
+
+.app-wallet-connected {
+  color: var(--app-status-connected-color);
+}
+
+.app-wallet-connecting {
+  color: var(--app-status-connecting-color);
+}
+
+.app-wallet-error {
+  color: var(--app-status-error-color);
+}
+
+.app-wallet-disconnected {
+  color: var(--app-status-disconnected-color);
+}
+
+/* Button variants */
+.app-button {
+  background: var(--app-button-bg);
+  color: var(--app-button-color);
+  border: var(--app-border-width) solid var(--app-button-bg);
+  border-radius: var(--app-border-radius);
+  font-family: var(--app-font-family);
+  font-weight: var(--font-weight-medium, 500);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--app-transition-normal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.app-button:hover:not(:disabled) {
+  background-color: var(--app-button-hover-bg);
+}
+
+.app-button:disabled {
+  background-color: var(--app-button-disabled-bg);
+  color: var(--app-button-disabled-color);
+  cursor: not-allowed;
+}
+
+.app-button-sm {
+  height: var(--app-button-height-sm);
+  padding: var(--app-button-padding-y-sm) var(--app-button-padding-x-sm);
+  font-size: var(--app-font-size-xs);
+}
+
+.app-button-md {
+  height: var(--app-button-height-md);
+  padding: var(--app-button-padding-y-md) var(--app-button-padding-x-md);
+  font-size: var(--app-font-size-sm);
+}
+
+.app-button-lg {
+  height: var(--app-button-height-lg);
+  padding: var(--app-button-padding-y-lg) var(--app-button-padding-x-lg);
+  font-size: var(--app-font-size-base);
+}
+
+/* Mobile navigation */
+.app-nav-mobile {
+  display: none;
+  background: var(--app-header-bg);
+  border-bottom: var(--app-border-width) solid var(--app-header-border);
+  padding: var(--app-spacing-2);
+}
+
+.app-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--app-spacing-2);
+  max-width: var(--app-content-max-width);
+  margin: 0 auto;
+}
+
+.app-nav-button {
+  background: var(--app-nav-tab-bg);
+  color: var(--app-nav-tab-color);
+  border: var(--app-border-width) solid var(--app-nav-tab-hover-bg);
+  padding: var(--app-button-padding-y-sm) var(--app-button-padding-x-sm);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-xs);
+  font-weight: var(--font-weight-medium, 500);
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: var(--app-border-radius);
+  transition: all var(--app-transition-normal);
+  height: var(--app-button-height-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-nav-button:hover {
+  background-color: var(--app-nav-tab-hover-bg);
+}
+
+.app-nav-button.active {
+  background-color: var(--app-nav-tab-active-bg);
+  color: var(--app-nav-tab-active-color);
+  border-color: var(--app-nav-tab-active-bg);
+}
+
+/* Error containers */
+.app-error-container {
+  background: var(--app-wallet-status-bg);
+  border: var(--app-border-width) solid var(--app-wallet-status-error-color);
+  border-radius: var(--app-border-radius);
+  padding: var(--app-spacing-3);
+  text-align: center;
+  color: var(--app-wallet-status-error-color);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-xs);
+}
+
+.app-retry-button {
+  background: var(--app-wallet-status-error-color);
+  color: var(--app-button-text);
+  border: none;
+  padding: var(--app-spacing-1) var(--app-spacing-2);
+  font-family: var(--app-font-family);
+  font-size: var(--app-font-size-xs);
+  cursor: pointer;
+  border-radius: var(--app-border-radius);
+  margin-top: var(--app-spacing-2);
+}
+
+.app-wallet-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--app-spacing-2);
+}
+
+.app-wallet-retry {
+  background: var(--app-wallet-status-error-color);
+  color: var(--app-button-text);
+  border: none;
+  border-radius: var(--app-border-radius);
+  width: var(--app-button-height-sm);
+  height: var(--app-button-height-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--app-font-size-sm);
+}
+.app-text-primary {
+  color: var(--text-primary);
+}
+
+.app-text-secondary {
+  color: var(--text-secondary);
+}
+
+.app-text-muted {
+  color: var(--text-muted);
+}
+
+.app-bg-primary {
+  background-color: var(--primary-bg);
+}
+
+.app-bg-secondary {
+  background-color: var(--secondary-bg);
+}
+
+.app-bg-card {
+  background-color: var(--card-bg);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-nav-desktop {
+    display: none;
+  }
+  
+  .app-nav-mobile {
+    display: block;
+  }
+  
+  .app-header-content {
+    padding: 0 var(--app-spacing-3);
+  }
+  
+  .app-nav-tabs {
+    gap: var(--app-spacing-1);
+  }
+  
+  .app-nav-tab {
+    padding: var(--app-button-padding-y-sm) var(--app-button-padding-x-sm);
+    font-size: var(--app-font-size-xs);
+  }
+  
+  .app-form-row-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-header-controls {
+    gap: var(--app-spacing-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-logo-text {
+    font-size: var(--app-font-size-lg);
+  }
+  
+  .app-nav-tab {
+    padding: var(--app-spacing-2);
+  }
+  
+  .app-header-control {
+    padding: var(--app-spacing-1) var(--app-spacing-2);
+  }
+  
+  .app-nav-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -145,8 +145,8 @@ const AppContent = () => {
   const renderWalletStatus = () => {
     if (wallet.error) {
       return (
-        <div className="ascii-wallet-status ascii-wallet-error" title={wallet.error}>
-          <span className="ascii-status-dot ascii-status-error"></span>
+        <div className="app-wallet-status app-wallet-error" title={wallet.error}>
+          <span className="app-status-dot app-status-error"></span>
           <span>ERROR</span>
         </div>
       );
@@ -154,8 +154,8 @@ const AppContent = () => {
 
     if (wallet.connecting || wallet.connectionState === 'connecting') {
       return (
-        <div className="ascii-wallet-status ascii-wallet-connecting">
-          <span className="ascii-status-dot ascii-status-connecting"></span>
+        <div className="app-wallet-status app-wallet-connecting">
+          <span className="app-status-dot app-status-connecting"></span>
           <span>CONNECTING...</span>
         </div>
       );
@@ -163,16 +163,16 @@ const AppContent = () => {
 
     if (wallet.connected) {
       return (
-        <div className="ascii-wallet-status ascii-wallet-connected">
-          <span className="ascii-status-dot ascii-status-connected"></span>
+        <div className="app-wallet-status app-wallet-connected">
+          <span className="app-status-dot app-status-connected"></span>
           <span>CONNECTED</span>
         </div>
       );
     }
 
     return (
-      <div className="ascii-wallet-status ascii-wallet-disconnected">
-        <span className="ascii-status-dot ascii-status-disconnected"></span>
+      <div className="app-wallet-status app-wallet-disconnected">
+        <span className="app-status-dot app-status-disconnected"></span>
         <span>DISCONNECTED</span>
       </div>
     );
@@ -181,49 +181,49 @@ const AppContent = () => {
   return (
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
-        <header className="ascii-header">
-          <div className="ascii-header-content">
-            <div className="ascii-logo-section">
+        <header className="app-header">
+          <div className="app-header-content">
+            <div className="app-logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange"
-                className="ascii-logo-image"
+                className="app-logo-image"
                 width={24}
                 height={24}
                 priority
               />
-              <h1 className="ascii-logo-text">OPENSVM P2P</h1>
+              <h1 className="app-logo-text">OPENSVM P2P</h1>
             </div>
             
             {/* Consolidated Navigation */}
-            <nav className="ascii-nav-desktop">
-              <div className="ascii-nav-tabs">
+            <nav className="app-nav-desktop">
+              <div className="app-nav-tabs">
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'buy' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'buy' ? 'active' : ''}`}
                   onClick={() => handleNavClick('buy')}
                 >
                   BUY
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'sell' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'sell' ? 'active' : ''}`}
                   onClick={() => handleNavClick('sell')}
                 >
                   SELL
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'myoffers' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'myoffers' ? 'active' : ''}`}
                   onClick={() => handleNavClick('myoffers')}
                 >
                   MY OFFERS
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'disputes' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'disputes' ? 'active' : ''}`}
                   onClick={() => handleNavClick('disputes')}
                 >
                   DISPUTES
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
                   onClick={() => handleNavClick('profile')}
                 >
                   PROFILE
@@ -232,7 +232,7 @@ const AppContent = () => {
             </nav>
             
             {/* Header Controls */}
-            <div className="ascii-header-controls">
+            <div className="app-header-controls">
               {/* Theme selector */}
               <ThemeSelector />
               
@@ -251,7 +251,7 @@ const AppContent = () => {
                 href={network.explorerUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="ascii-header-control ascii-explorer-link"
+                className="app-header-control app-explorer-link"
               >
                 {network.name.toUpperCase()} EXPLORER
               </a>
@@ -263,17 +263,17 @@ const AppContent = () => {
               />
               
               <ErrorBoundary fallback={
-                <div className="ascii-error-container">
+                <div className="app-error-container">
                   <p>WALLET ERROR</p>
-                  <button onClick={() => wallet.reconnect()} className="ascii-retry-button">RETRY</button>
+                  <button onClick={() => wallet.reconnect()} className="app-retry-button">RETRY</button>
                 </div>
               }>
-                <div className="ascii-wallet-wrapper">
+                <div className="app-wallet-wrapper">
                   {renderWalletStatus()}
                   <PhantomWalletButton />
                   {wallet.error && (
                     <button 
-                      className="ascii-wallet-retry" 
+                      className="app-wallet-retry" 
                       onClick={() => wallet.reconnect()}
                       title="Retry connection"
                     >
@@ -286,35 +286,35 @@ const AppContent = () => {
           </div>
         </header>
 
-        {/* Mobile Navigation - ASCII Styled */}
-        <nav className="ascii-nav-mobile">
-          <div className="ascii-nav-grid">
+        {/* Mobile Navigation */}
+        <nav className="app-nav-mobile">
+          <div className="app-nav-grid">
             <button
-              className={`ascii-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
               onClick={() => handleNavClick('buy')}
             >
               BUY
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
               onClick={() => handleNavClick('sell')}
             >
               SELL
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
               onClick={() => handleNavClick('myoffers')}
             >
               MY OFFERS
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
               onClick={() => handleNavClick('disputes')}
             >
               DISPUTES
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
               onClick={() => handleNavClick('profile')}
             >
               PROFILE

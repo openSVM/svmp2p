@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { SystemProgram, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 // Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
 import { BN } from '@coral-xyz/anchor';
-import { AppContext } from '../contexts/AppContext';
+import { AppContext, CONNECTION_STATUS } from '../contexts/AppContext';
 import { 
   ButtonLoader, 
   TransactionConfirmation, 
@@ -27,7 +27,15 @@ const logger = createLogger('OfferCreation');
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = usePhantomWallet();
-  const { program, network, connection } = useContext(AppContext);
+  const { 
+    program, 
+    network, 
+    connection, 
+    connectionStatus, 
+    connectionError, 
+    retryConnection, 
+    connectionAttempts 
+  } = useContext(AppContext);
   
   const [solAmount, setSolAmount] = useState('');
   const [fiatAmount, setFiatAmount] = useState('');
@@ -39,23 +47,37 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [connectionRetrying, setConnectionRetrying] = useState(false);
-  const [connectionAttempts, setConnectionAttempts] = useState(0);
+  
+  // Connection status tracking
+  const isWalletConnected = wallet.connected && wallet.publicKey;
+  const isSmartContractReady = isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED;
+  const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
+  const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
+  const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
   
   // Track connection status for better UX
   useEffect(() => {
-    // Reset retry state when connection changes
-    if (connection && program) {
-      setConnectionRetrying(false);
-      setConnectionAttempts(0);
+    // Clear errors when connection improves
+    if (connectionStatus === CONNECTION_STATUS.CONNECTED && error && error.includes('Smart contract connection')) {
       setError('');
     }
-  }, [connection, program]);
+  }, [connectionStatus, error]);
 
   // Determine connection status for better UX
-  const isWalletConnected = wallet.connected && wallet.publicKey;
-  const isSmartContractReady = isWalletConnected && program && connection;
-  const hasConnectionIssues = isWalletConnected && (!connection || !program);
+  const getConnectionStatusMessage = () => {
+    switch (connectionStatus) {
+      case CONNECTION_STATUS.CONNECTING:
+        return 'Connecting to Solana blockchain...';
+      case CONNECTION_STATUS.RETRYING:
+        return `Retrying connection... (Attempt ${connectionAttempts}/${5})`;
+      case CONNECTION_STATUS.FAILED:
+        return connectionError || 'Failed to connect to Solana blockchain';
+      case CONNECTION_STATUS.CONNECTED:
+        return 'Connected to Solana blockchain';
+      default:
+        return 'Disconnected from blockchain';
+    }
+  };
   
   // Get real price data
   const { prices, loading: pricesLoading, error: pricesError, lastUpdated } = useRealPriceData();
@@ -104,19 +126,9 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   };
 
   const handleRetryConnection = async () => {
-    if (connectionRetrying) return;
-    
-    setConnectionRetrying(true);
-    setConnectionAttempts(prev => prev + 1);
+    if (isConnectionRetrying) return;
     setError('');
-    
-    // Add a small delay to show the retry state
-    setTimeout(() => {
-      setConnectionRetrying(false);
-      if (!program) {
-        setError('Unable to establish smart contract connection. This may be due to network restrictions or RPC endpoint issues. Please try again or contact support.');
-      }
-    }, 2000);
+    retryConnection();
   };
   
   // Actual offer creation after confirmation
@@ -334,13 +346,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         />
       )}
       
-      <div className="ascii-form">
-        <div className="ascii-form-header">CREATE SELL OFFER</div>
+      <div className="app-form">
+        <div className="app-form-header">CREATE SELL OFFER</div>
         
-        <form onSubmit={handleCreateOffer}>
+        <form onSubmit={handleCreateOffer} className="app-form-content">
           {/* Primary amount fields in one row */}
-          <div className="ascii-form-row-2">
-            <div className="ascii-field">
+          <div className="app-form-row-2">
+            <div className="app-field">
               <label htmlFor="solAmount">
                 <Tooltip content="Enter the amount of SOL you want to sell">
                   <span>SOL AMOUNT</span>
@@ -359,11 +371,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 className={!solValidation.isValid ? 'input-error' : ''}
               />
               {!solValidation.isValid && (
-                <div className="ascii-field-error-message">{solValidation.error}</div>
+                <div className="app-field-error-message">{solValidation.error}</div>
               )}
             </div>
             
-            <div className="ascii-field">
+            <div className="app-field">
               <label htmlFor="fiatAmount">
                 <Tooltip content="The amount in fiat currency you will receive">
                   <span>FIAT AMOUNT</span>
@@ -382,17 +394,17 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 className={!fiatValidation.isValid ? 'input-error' : ''}
               />
               {!fiatValidation.isValid && (
-                <div className="ascii-field-error-message">{fiatValidation.error}</div>
+                <div className="app-field-error-message">{fiatValidation.error}</div>
               )}
               {rateValidation.error && (
-                <div className="ascii-field-help">{rateValidation.error}</div>
+                <div className="app-field-help">{rateValidation.error}</div>
               )}
             </div>
           </div>
           
           {/* Currency and payment method in one row */}
-          <div className="ascii-form-row-2">
-            <div className="ascii-field">
+          <div className="app-form-row-2">
+            <div className="app-field">
               <label htmlFor="fiatCurrency">
                 <Tooltip content="Select the currency you want to receive">
                   <span>CURRENCY</span>
@@ -410,7 +422,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
               </select>
             </div>
             
-            <div className="ascii-field">
+            <div className="app-field">
               <label htmlFor="paymentMethod">
                 <Tooltip content="Select how you want to receive payment">
                   <span>PAYMENT METHOD</span>
@@ -430,42 +442,62 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           </div>
           
           {/* Submit button */}
-          <div className="ascii-form-actions">
+          <div className="app-form-actions">
             {!isWalletConnected ? (
               <ConnectWalletPrompt
                 action="create sell offers"
                 className="create-offer-button connect-wallet-button"
               />
-            ) : hasConnectionIssues ? (
+            ) : !isSmartContractReady ? (
               <div className="connection-issue-container">
                 <button 
                   type="button"
                   disabled={true}
                   className="create-offer-button disabled connection-issue"
-                  title="Smart contract connection failed"
+                  title={getConnectionStatusMessage()}
                 >
-                  Smart Contract Connection Failed
+                  {isConnectionConnecting && 'Connecting to Smart Contract...'}
+                  {isConnectionRetrying && `Retrying Connection (${connectionAttempts}/5)`}
+                  {isConnectionFailed && 'Smart Contract Connection Failed'}
                 </button>
-                <div className="connection-issue-details">
-                  <p>Unable to connect to the Solana blockchain. This may be due to:</p>
-                  <ul>
-                    <li>Network connectivity issues</li>
-                    <li>RPC endpoint problems</li>
-                    <li>Browser security restrictions</li>
-                  </ul>
-                  <ButtonLoader
-                    type="button"
-                    onClick={handleRetryConnection}
-                    isLoading={connectionRetrying}
-                    disabled={connectionRetrying}
-                    loadingText="Retrying..."
-                    variant="secondary"
-                    size="small"
-                    className="retry-connection-button"
-                  >
-                    Retry Connection {connectionAttempts > 0 && `(${connectionAttempts})`}
-                  </ButtonLoader>
-                </div>
+                
+                {(isConnectionFailed || isConnectionRetrying) && (
+                  <div className="connection-issue-details">
+                    <p className="connection-status-message">
+                      {getConnectionStatusMessage()}
+                    </p>
+                    
+                    {isConnectionFailed && (
+                      <>
+                        <p>This may be due to:</p>
+                        <ul>
+                          <li>Network connectivity issues</li>
+                          <li>Solana RPC endpoint problems</li>
+                          <li>Browser security restrictions</li>
+                          <li>Temporary blockchain network issues</li>
+                        </ul>
+                      </>
+                    )}
+                    
+                    {(isConnectionFailed || isConnectionRetrying) && (
+                      <ButtonLoader
+                        type="button"
+                        onClick={handleRetryConnection}
+                        isLoading={isConnectionRetrying}
+                        disabled={isConnectionRetrying}
+                        loadingText="Retrying..."
+                        variant="secondary"
+                        size="small"
+                        className="retry-connection-button"
+                      >
+                        {isConnectionRetrying ? 
+                          `Retrying... (${connectionAttempts}/5)` : 
+                          `Retry Connection${connectionAttempts > 0 ? ` (${connectionAttempts})` : ''}`
+                        }
+                      </ButtonLoader>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <ButtonLoader
@@ -613,6 +645,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           max-width: 400px;
           text-align: left;
           font-size: 0.9rem;
+        }
+
+        .connection-status-message {
+          margin: 0 0 12px 0;
+          color: var(--ascii-blue-600);
+          font-weight: 500;
+          font-size: 0.95rem;
         }
 
         .connection-issue-details p {
