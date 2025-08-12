@@ -228,10 +228,9 @@
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-3) var(--spacing-8);
   transition: all var(--transition-normal);
   position: relative;
-  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -313,10 +312,9 @@
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   color: var(--text-primary);
-  padding: var(--spacing-4);
+  padding: var(--spacing-3);
   position: relative;
   transition: all var(--transition-normal);
-  min-height: 44px;
 }
 
 .theme-blueprint input::placeholder,
@@ -452,9 +450,8 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-3) var(--spacing-6);
   transition: all var(--transition-normal);
-  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;

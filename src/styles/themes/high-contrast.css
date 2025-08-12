@@ -89,8 +89,7 @@
   font-family: var(--font-family);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-base);
-  padding: var(--spacing-4) var(--spacing-6);
-  min-height: 48px;
+  padding: var(--spacing-3) var(--spacing-6);
   text-transform: uppercase;
 }
 
@@ -111,8 +110,7 @@
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   color: var(--text-primary);
-  padding: var(--spacing-4);
-  min-height: 48px;
+  padding: var(--spacing-3);
 }
 
 .theme-high-contrast input:focus,
@@ -142,7 +140,6 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-base);
   text-transform: uppercase;
-  min-height: 48px;
 }
 
 .theme-high-contrast .ascii-nav-tab.active {
@@ -160,9 +157,8 @@
   font-family: var(--font-family);
   font-weight: var(--font-weight-normal);
   font-size: var(--font-size-base);
-  padding: var(--spacing-4);
+  padding: var(--spacing-3);
   border-bottom: var(--border-width) solid var(--border-color);
-  min-height: 48px;
 }
 
 .theme-high-contrast .ascii-dropdown-item:hover {

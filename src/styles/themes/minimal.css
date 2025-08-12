@@ -99,7 +99,6 @@
   padding: var(--spacing-3) var(--spacing-6);
   transition: all 0.2s ease;
   box-shadow: var(--shadow);
-  min-height: 40px;
 }
 
 .theme-minimal .btn:hover,
@@ -135,9 +134,8 @@
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   color: var(--text-primary);
-  padding: var(--spacing-4);
+  padding: var(--spacing-3);
   transition: all 0.2s ease;
-  min-height: 44px;
 }
 
 .theme-minimal input:focus,
@@ -190,11 +188,10 @@
   font-family: var(--font-family);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-sm);
-  padding: var(--spacing-4) var(--spacing-6);
+  padding: var(--spacing-3) var(--spacing-6);
   margin: 0 var(--spacing-1);
   border-radius: var(--border-radius);
   transition: all 0.2s ease;
-  min-height: 44px;
 }
 
 .theme-minimal .ascii-nav-tab:hover {
@@ -227,7 +224,6 @@
   margin: var(--spacing-1) 0;
   border-radius: calc(var(--border-radius) - 2px);
   transition: all 0.2s ease;
-  min-height: 36px;
   display: flex;
   align-items: center;
 }
