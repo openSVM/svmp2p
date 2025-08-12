@@ -23,11 +23,14 @@ class EnhancedErrorBoundary extends React.Component {
   static getDerivedStateFromError(error) {
     const category = classifyError(error);
     
-    // Don't show error boundary for external errors
-    if (shouldSuppressError(error)) {
+    // Don't show error boundary for external errors or recoverable errors
+    if (shouldSuppressError(error) || category !== ERROR_CATEGORIES.APPLICATION) {
+      // Log the error but don't break the UI
+      console.warn('[ErrorBoundary] Recoverable error suppressed:', error.message);
       return null;
     }
     
+    // Only show error boundary for true application errors
     return {
       hasError: true,
       error,
@@ -38,8 +41,8 @@ class EnhancedErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     const category = classifyError(error);
     
-    // Log error with appropriate level based on category
-    if (category === ERROR_CATEGORIES.APPLICATION) {
+    // Only handle true application errors with full error boundary UI
+    if (category === ERROR_CATEGORIES.APPLICATION && !shouldSuppressError(error)) {
       logError(error, 'ErrorBoundary caught application error');
       this.setState({
         error,
@@ -47,8 +50,8 @@ class EnhancedErrorBoundary extends React.Component {
         errorCategory: category
       });
     } else {
-      // External errors - just log for debugging
-      logError(error, 'ErrorBoundary caught external error', 'debug');
+      // External/recoverable errors - just log for debugging without breaking UI
+      logError(error, 'ErrorBoundary caught recoverable error', 'debug');
     }
   }
 

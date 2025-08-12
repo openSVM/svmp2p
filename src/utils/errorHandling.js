@@ -55,6 +55,16 @@ export const classifyError = (error) => {
     return ERROR_CATEGORIES.CUSTOM_ELEMENT;
   }
   
+  // Check for initialization errors that are typically recoverable
+  if (message.includes('Cannot access') && message.includes('before initialization')) {
+    return ERROR_CATEGORIES.BROWSER_EXTENSION; // Treat as external, not app-breaking
+  }
+  
+  // Check for queue-related errors that are typically recoverable
+  if (message.includes('removeFromQueue') || message.includes('Queue')) {
+    return ERROR_CATEGORIES.BROWSER_EXTENSION; // Treat as external, not app-breaking
+  }
+  
   // Check for network/connection errors
   if (message.includes('fetch') || message.includes('network') ||
       message.includes('timeout') || message.includes('CORS')) {
@@ -72,9 +82,23 @@ export const shouldSuppressError = (error) => {
   const stack = error?.stack || '';
   
   // Check against known external errors
-  return KNOWN_EXTERNAL_ERRORS.some(knownError => 
+  if (KNOWN_EXTERNAL_ERRORS.some(knownError => 
     message.includes(knownError) || stack.includes(knownError)
-  );
+  )) {
+    return true;
+  }
+  
+  // Also suppress common React hook dependency errors that are recoverable
+  if (message.includes('Cannot access') && message.includes('before initialization')) {
+    return true;
+  }
+  
+  // Suppress queue-related errors that are typically recoverable
+  if (message.includes('removeFromQueue') || message.includes('Queue')) {
+    return true;
+  }
+  
+  return false;
 };
 
 /**

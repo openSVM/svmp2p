@@ -5,6 +5,11 @@ export const useOfflineState = () => {
   const [offlineQueue, setOfflineQueue] = useState([]);
   const [syncStatus, setSyncStatus] = useState('idle'); // 'idle', 'syncing', 'success', 'error'
 
+  // Remove an item from the queue - define before useEffect to avoid hoisting issues
+  const removeFromQueue = useCallback((id) => {
+    setOfflineQueue(prev => prev.filter(item => item.id !== id));
+  }, []);
+
   useEffect(() => {
     // Set initial online status
     setIsOnline(navigator.onLine);
@@ -91,10 +96,7 @@ export const useOfflineState = () => {
     return queueItem.id;
   }, []);
 
-  // Remove an item from the queue
-  const removeFromQueue = useCallback((id) => {
-    setOfflineQueue(prev => prev.filter(item => item.id !== id));
-  }, []);
+  // Remove an item from the queue - already defined above
 
   // Clear all queued actions
   const clearQueue = useCallback(() => {
