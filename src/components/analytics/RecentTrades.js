@@ -173,7 +173,7 @@ export default function RecentTrades({ trades, network }) {
 
       <div className="trades-footer">
         <button 
-          className="load-more-button ascii-button-animate" 
+          className="load-more-button" 
           onClick={handleLoadMoreTrades}
         >
           Load More Trades

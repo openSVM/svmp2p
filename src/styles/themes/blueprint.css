@@ -171,13 +171,19 @@
 .theme-blueprint .card,
 .theme-blueprint .ascii-card {
   background: var(--card-bg);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-technical);
   position: relative;
   padding: var(--spacing-8);
   margin: var(--spacing-5);
   z-index: 1;
+}
+
+/* Profile dropdown container positioning fix */
+.theme-blueprint .ascii-dropdown-container {
+  position: relative;
+  display: inline-block;
 }
 
 /* Enhanced technical drawing symbols */
@@ -222,7 +228,7 @@
 .theme-blueprint button:not(.unstyled) {
   background: var(--button-bg);
   color: var(--button-text);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius);
   font-family: var(--font-family);
   font-weight: var(--font-weight-bold);
@@ -235,6 +241,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
+  box-shadow: var(--shadow-technical);
 }
 
 /* Technical drawing annotation overlay */
@@ -511,23 +518,26 @@
 /* Enhanced dropdown menus with technical annotations */
 .theme-blueprint .ascii-dropdown-menu {
   background: var(--card-bg);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hover);
-  position: relative;
+  position: absolute;
   padding: var(--spacing-4);
-  z-index: 100;
+  z-index: 99999;
   /* Ensure dropdown always expands downward from navbar */
   top: 100%;
+  left: 0;
   bottom: auto;
   transform: none;
+  min-width: 200px;
 }
 
 /* Theme selector dropdown in blueprint theme */
 .theme-blueprint .app-dropdown-menu {
   background: var(--card-bg);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hover);
-  z-index: 100;
+  z-index: 99999;
+}
 }
 
 .theme-blueprint .ascii-dropdown-menu::before {
@@ -799,12 +809,12 @@
 /* Profile settings theme selector specific styling */
 .theme-blueprint .profile-theme-selector .app-dropdown-trigger {
   box-shadow: var(--shadow-technical);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
 }
 
 .theme-blueprint .profile-theme-selector .app-dropdown-menu {
   box-shadow: var(--shadow-hover);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
 }
 
 /* Enhanced network indicator */
