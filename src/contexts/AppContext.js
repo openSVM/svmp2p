@@ -112,7 +112,7 @@ export const AppContextProvider = ({ children }) => {
       
       const errorMessage = `All ${endpoints.length} endpoints failed. Error type: ${errorType}. Last error: ${errorDetails}`;
       console.error('[AppContext] All endpoints failed:', errorMessage);
-      // Don't throw error in development - create fallback connection instead
+      throw new Error(errorMessage);
       
     } catch (error) {
       console.error('[AppContext] Connection creation failed:', error);
@@ -137,17 +137,7 @@ export const AppContextProvider = ({ children }) => {
         }, delay);
       } else {
         setConnectionStatus(CONNECTION_STATUS.FAILED);
-        // Create a minimal connection for development/testing purposes
-        try {
-          const defaultConfig = getDefaultNetworkConfig();
-          console.log('[AppContext] Creating fallback connection for UI testing');
-          const conn = new Connection(defaultConfig.endpoint, 'confirmed');
-          setConnection(conn);
-        } catch (fallbackError) {
-          console.error('[AppContext] Even fallback connection failed:', fallbackError);
-          // Create a null connection to at least allow UI testing
-          setConnection(null);
-        }
+        console.error('[AppContext] Connection failed after max retries:', error.message);
       }
     }
   }, [selectedNetwork, connectionAttempts]);

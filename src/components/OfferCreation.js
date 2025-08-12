@@ -47,11 +47,10 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [devnetBypass, setDevnetBypass] = useState(false);
   
   // Connection status tracking
   const isWalletConnected = wallet.connected && wallet.publicKey;
-  const isSmartContractReady = (isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED) || devnetBypass;
+  const isSmartContractReady = isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED;
   const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
   const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
   const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
@@ -66,10 +65,9 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       hasProgram: !!program,
       hasConnection: !!connection,
       connectionStatus,
-      isSmartContractReady,
-      devnetBypass
+      isSmartContractReady
     });
-  }, [isWalletConnected, wallet, program, connection, connectionStatus, isSmartContractReady, devnetBypass]);
+  }, [isWalletConnected, wallet, program, connection, connectionStatus, isSmartContractReady]);
   
   // Track connection status for better UX
   useEffect(() => {
@@ -121,8 +119,8 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       return;
     }
 
-    if (!isSmartContractReady && !devnetBypass) {
-      setError('Smart contract connection is not ready. Please check your devnet connection and try again.');
+    if (!isSmartContractReady) {
+      setError('Smart contract connection is not ready. Please check your Solana devnet connection and try again.');
       return;
     }
     
@@ -495,7 +493,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                         </ul>
                         
                         <div className="devnet-notice">
-                          <p><strong>Note:</strong> If devnet endpoints are temporarily unavailable, you can continue in simulation mode for interface testing. Smart contract features will be simulated.</p>
+                          <p><strong>Important:</strong> Solana devnet is required for trading operations. Please ensure you have a stable internet connection and try refreshing the page if the issue persists.</p>
                         </div>
                       </>
                     )}
@@ -517,22 +515,6 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                             `Retry Connection${connectionAttempts > 0 ? ` (${connectionAttempts})` : ''}`
                           }
                         </ButtonLoader>
-                        
-                        {isConnectionFailed && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              // Enable devnet bypass for UI testing when endpoints are unavailable
-                              setDevnetBypass(true);
-                              setError('');
-                              console.log('[OfferCreation] Devnet bypass enabled - simulating connection for UI testing');
-                            }}
-                            className="devnet-bypass-button"
-                            title="Continue with simulation mode (devnet features simulated)"
-                          >
-                            Continue Without Devnet (Simulation Mode)
-                          </button>
-                        )}
                       </div>
                     )}
                   </div>
