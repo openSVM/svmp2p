@@ -1302,7 +1302,7 @@ html:not(.dark) .onboarding-modal *,
   line-height: var(--line-height-relaxed);
 }
 
-.development-notice {
+.devnet-notice {
   background-color: var(--color-warning-light);
   border: 1px solid var(--color-warning);
   border-radius: var(--radius-md);
@@ -1310,7 +1310,7 @@ html:not(.dark) .onboarding-modal *,
   margin-top: var(--spacing-3);
 }
 
-.development-notice p {
+.devnet-notice p {
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-warning-dark);
@@ -1350,7 +1350,7 @@ html:not(.dark) .onboarding-modal *,
   transform: none;
 }
 
-.dev-bypass-button {
+.devnet-bypass-button {
   background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   color: white;
   border: 1px solid var(--color-accent);
@@ -1365,20 +1365,20 @@ html:not(.dark) .onboarding-modal *,
   overflow: hidden;
 }
 
-.dev-bypass-button:hover {
+.devnet-bypass-button:hover {
   background: linear-gradient(135deg, var(--color-accent-dark) 0%, var(--color-accent) 100%);
   border-color: var(--color-accent-dark);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.dev-bypass-button::before {
-  content: '🚧';
+.devnet-bypass-button::before {
+  content: '🌐';
   margin-right: var(--spacing-2);
   font-size: var(--font-size-sm);
 }
 
-.dev-bypass-button::after {
+.devnet-bypass-button::after {
   content: '';
   position: absolute;
   top: -50%;
@@ -1391,7 +1391,7 @@ html:not(.dark) .onboarding-modal *,
   transition: opacity var(--transition-normal) ease, transform var(--transition-normal) ease;
 }
 
-.dev-bypass-button:hover::after {
+.devnet-bypass-button:hover::after {
   opacity: 1;
   transform: scale(1);
 }
@@ -1413,7 +1413,7 @@ html:not(.dark) .onboarding-modal *,
   }
   
   .retry-connection-button,
-  .dev-bypass-button {
+  .devnet-bypass-button {
     font-size: var(--font-size-xs);
     padding: var(--spacing-2) var(--spacing-3);
   }
@@ -1423,7 +1423,7 @@ html:not(.dark) .onboarding-modal *,
     gap: var(--spacing-3);
   }
   
-  .development-notice {
+  .devnet-notice {
     padding: var(--spacing-2);
   }
 }

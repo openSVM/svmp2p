@@ -47,11 +47,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [devMode, setDevMode] = useState(false);
+  const [devnetBypass, setDevnetBypass] = useState(false);
   
   // Connection status tracking
   const isWalletConnected = wallet.connected && wallet.publicKey;
-  const isSmartContractReady = (isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED) || devMode;
+  const isSmartContractReady = (isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED) || devnetBypass;
   const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
   const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
   const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
@@ -67,9 +67,9 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       hasConnection: !!connection,
       connectionStatus,
       isSmartContractReady,
-      devMode
+      devnetBypass
     });
-  }, [isWalletConnected, wallet, program, connection, connectionStatus, isSmartContractReady, devMode]);
+  }, [isWalletConnected, wallet, program, connection, connectionStatus, isSmartContractReady, devnetBypass]);
   
   // Track connection status for better UX
   useEffect(() => {
@@ -83,15 +83,15 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const getConnectionStatusMessage = () => {
     switch (connectionStatus) {
       case CONNECTION_STATUS.CONNECTING:
-        return 'Connecting to Solana blockchain...';
+        return 'Connecting to Solana devnet...';
       case CONNECTION_STATUS.RETRYING:
-        return `Retrying connection... (Attempt ${connectionAttempts}/${5})`;
+        return `Retrying devnet connection... (Attempt ${connectionAttempts}/${5})`;
       case CONNECTION_STATUS.FAILED:
-        return connectionError || 'Failed to connect to Solana blockchain';
+        return connectionError || 'Failed to connect to Solana devnet';
       case CONNECTION_STATUS.CONNECTED:
-        return 'Connected to Solana blockchain';
+        return 'Connected to Solana devnet';
       default:
-        return 'Disconnected from blockchain';
+        return 'Disconnected from Solana devnet';
     }
   };
   
@@ -121,8 +121,8 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       return;
     }
 
-    if (!isSmartContractReady && !devMode) {
-      setError('Smart contract connection is not ready. Please check your network connection and try again.');
+    if (!isSmartContractReady && !devnetBypass) {
+      setError('Smart contract connection is not ready. Please check your devnet connection and try again.');
       return;
     }
     
@@ -472,9 +472,9 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                   className="create-offer-button disabled connection-issue"
                   title={getConnectionStatusMessage()}
                 >
-                  {isConnectionConnecting && 'Connecting to Smart Contract...'}
-                  {isConnectionRetrying && `Retrying Connection (${connectionAttempts}/5)`}
-                  {isConnectionFailed && 'Smart Contract Connection Failed'}
+                  {isConnectionConnecting && 'Connecting to Solana Devnet...'}
+                  {isConnectionRetrying && `Retrying Devnet Connection (${connectionAttempts}/5)`}
+                  {isConnectionFailed && 'Solana Devnet Connection Failed'}
                 </button>
                 
                 {(isConnectionFailed || isConnectionRetrying) && (
@@ -485,17 +485,17 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                     
                     {isConnectionFailed && (
                       <>
-                        <p>This may be due to:</p>
+                        <p>Unable to connect to the Solana devnet. This may be due to:</p>
                         <ul>
                           <li>Network connectivity issues</li>
-                          <li>Solana RPC endpoint problems</li>
+                          <li>Solana devnet RPC endpoint problems</li>
                           <li>Browser security restrictions (CORS)</li>
-                          <li>Temporary blockchain network issues</li>
-                          <li>Development environment limitations</li>
+                          <li>Temporary devnet network issues</li>
+                          <li>Firewall or proxy blocking devnet endpoints</li>
                         </ul>
                         
-                        <div className="development-notice">
-                          <p><strong>Development Note:</strong> If you're testing the UI, you can continue without a live blockchain connection. Core functionality will be simulated.</p>
+                        <div className="devnet-notice">
+                          <p><strong>Note:</strong> If devnet endpoints are temporarily unavailable, you can continue in simulation mode for interface testing. Smart contract features will be simulated.</p>
                         </div>
                       </>
                     )}
@@ -522,15 +522,15 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                           <button
                             type="button"
                             onClick={() => {
-                              // Enable development mode for UI testing
-                              setDevMode(true);
+                              // Enable devnet bypass for UI testing when endpoints are unavailable
+                              setDevnetBypass(true);
                               setError('');
-                              console.log('[OfferCreation] Development mode enabled for UI testing');
+                              console.log('[OfferCreation] Devnet bypass enabled - simulating connection for UI testing');
                             }}
-                            className="dev-bypass-button"
-                            title="Continue with UI testing (blockchain features disabled)"
+                            className="devnet-bypass-button"
+                            title="Continue with simulation mode (devnet features simulated)"
                           >
-                            Continue Without Blockchain (UI Test Mode)
+                            Continue Without Devnet (Simulation Mode)
                           </button>
                         )}
                       </div>
