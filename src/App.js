@@ -88,6 +88,15 @@ const AppContent = () => {
   // Use Phantom wallet context instead of Swig wallet
   const wallet = usePhantomWallet();
   
+  // State for selected network (must be declared before using in useMemo)
+  const [selectedNetwork, setSelectedNetwork] = useState('solana');
+  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
+  const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
+  const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
+  
+  // Get network configuration
+  const network = SVM_NETWORKS[selectedNetwork];
+  
   // Create enhanced connection with retry logic for rate limits
   const connection = useMemo(() => {
     return createConnection(network.endpoint, network.connectionConfig || {
@@ -98,15 +107,6 @@ const AppContent = () => {
 
   // Initialize the Anchor program
   const program = useProgram(connection, wallet);
-  
-  // State for selected network
-  const [selectedNetwork, setSelectedNetwork] = useState('solana');
-  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
-  const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
-  const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
-  
-  // Get network configuration
-  const network = SVM_NETWORKS[selectedNetwork];
   
   // Context values
   const contextValue = useMemo(() => ({
