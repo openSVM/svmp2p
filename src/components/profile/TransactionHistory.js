@@ -165,14 +165,14 @@ const TransactionHistory = ({ transactions }) => {
     <div className="transaction-actions">
       {selectedTransaction && (
         <button 
-          className="button button-ghost button-sm ascii-button-animate"
+          className="button button-ghost button-sm app-button-animate"
           onClick={() => setSelectedTransaction(null)}
         >
           ← BACK TO LIST
         </button>
       )}
       <button 
-        className="button button-outline button-sm ascii-button-animate" 
+        className="button button-outline button-sm app-button-animate" 
         onClick={handleExportTransactions}
       >
         EXPORT TRANSACTIONS
@@ -188,8 +188,8 @@ const TransactionHistory = ({ transactions }) => {
           <h3 className="card-title">Transaction Filters</h3>
         </div>
         
-        <div className="ascii-form-row-4">
-          <div className="ascii-field">
+        <div className="app-form-row-4">
+          <div className="app-form-field">
             <label htmlFor="search">SEARCH</label>
             <input
               id="search"
@@ -203,7 +203,7 @@ const TransactionHistory = ({ transactions }) => {
             />
           </div>
           
-          <div className="ascii-field">
+          <div className="app-form-field">
             <label htmlFor="filter">TYPE FILTER</label>
             <select 
               id="filter"
@@ -221,7 +221,7 @@ const TransactionHistory = ({ transactions }) => {
             </select>
           </div>
           
-          <div className="ascii-field">
+          <div className="app-form-field">
             <label htmlFor="sortBy">SORT BY</label>
             <select 
               id="sortBy"
@@ -236,7 +236,7 @@ const TransactionHistory = ({ transactions }) => {
             </select>
           </div>
           
-          <div className="ascii-field">
+          <div className="app-form-field">
             <label htmlFor="sortOrder">ORDER</label>
             <select 
               id="sortOrder"
@@ -259,7 +259,7 @@ const TransactionHistory = ({ transactions }) => {
       {/* Transaction Data */}
       {paginatedTransactions.length === 0 ? (
         <div className="no-transactions card">
-          <div className="ascii-form-message">
+          <div className="app-form-message">
             <span className="message-icon">[!]</span>
             <span className="message-text">
               {searchQuery || filter !== 'all' 
@@ -279,8 +279,8 @@ const TransactionHistory = ({ transactions }) => {
 
           {!selectedTransaction && totalPages > 1 && (
             <div className="transaction-pagination card">
-              <div className="ascii-form-inline pagination">
-                <div className="ascii-field-inline">
+              <div className="app-form-inline pagination">
+                <div className="app-form-field-inline">
                   <button 
                     className="pagination-button"
                     disabled={page === 1}
@@ -291,13 +291,13 @@ const TransactionHistory = ({ transactions }) => {
                   </button>
                 </div>
                 
-                <div className="ascii-field-inline">
+                <div className="app-form-field-inline">
                   <span className="pagination-info">
                     PAGE {page} OF {totalPages}
                   </span>
                 </div>
                 
-                <div className="ascii-field-inline">
+                <div className="app-form-field-inline">
                   <button 
                     className="pagination-button"
                     disabled={page === totalPages}

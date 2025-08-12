@@ -518,3 +518,314 @@
 .skip-to-content:focus {
   top: 6px;
 }
+
+/* App.js Specific Theme-Aware Styles */
+
+/* Guided Workflow Styles */
+.app-guided-workflow-error {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--error-border, var(--border-color));
+  padding: var(--spacing-4, 16px);
+  margin: var(--spacing-4, 16px);
+  border-radius: var(--border-radius, 0px);
+  text-align: center;
+}
+
+.app-error-recovery-button {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border: var(--border-width, 1px) solid var(--accent-color);
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  margin-top: var(--spacing-3, 12px);
+  transition: all 0.1s ease;
+}
+
+.app-error-recovery-button:hover {
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+.app-guided-workflow-container {
+  background-color: var(--secondary-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  margin: var(--spacing-4, 16px);
+  overflow: hidden;
+}
+
+.app-guided-workflow-header {
+  background-color: var(--card-bg);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-guided-workflow-header h2 {
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.app-exit-workflow-button {
+  background-color: var(--secondary-bg);
+  color: var(--text-secondary);
+  border: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.app-exit-workflow-button:hover {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* Content Container Styles */
+.app-content-container {
+  flex: 1;
+  padding: var(--spacing-4, 16px);
+  background-color: var(--primary-bg);
+}
+
+.app-content-transition-wrapper {
+  transition: opacity 0.2s ease;
+}
+
+.app-fade-in {
+  animation: appFadeIn 0.3s ease;
+}
+
+@keyframes appFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Footer Styles */
+.app-footer {
+  background-color: var(--secondary-bg);
+  border-top: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+}
+
+.app-footer-content {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+}
+
+.app-footer-desktop {
+  display: none;
+}
+
+.app-footer-mobile {
+  display: block;
+}
+
+.app-footer-section {
+  margin-bottom: var(--spacing-3, 12px);
+}
+
+.app-footer-section:last-child {
+  margin-bottom: 0;
+}
+
+.app-footer-network,
+.app-footer-description,
+.app-footer-text {
+  font-family: var(--font-family);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.app-footer-network {
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-bold, 700);
+}
+
+.app-footer-description {
+  font-size: var(--font-size-xs, 11px);
+  margin-top: var(--spacing-1, 4px);
+}
+
+.app-footer-text {
+  font-size: var(--font-size-xs, 11px);
+}
+
+/* Global Error Styles */
+.app-global-error-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  padding: var(--spacing-4, 16px);
+  text-align: center;
+}
+
+.app-global-error-container h1 {
+  font-size: var(--font-size-xl, 18px);
+  font-weight: var(--font-weight-bold, 700);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.app-global-error-content {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  padding: var(--spacing-4, 16px);
+  max-width: 400px;
+}
+
+.app-global-error-content h2 {
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  margin-bottom: var(--spacing-3, 12px);
+}
+
+.app-global-error-content p {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.app-button {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border: var(--border-width, 1px) solid var(--accent-color);
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.app-button:hover {
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+/* Additional Theme-Aware Form Elements */
+.app-form-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 4px);
+}
+
+.app-form-field label {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs, 11px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.app-form-field input,
+.app-form-field select,
+.app-form-field textarea {
+  background-color: var(--input-bg, var(--card-bg));
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-primary);
+  padding: var(--spacing-2, 8px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+}
+
+.app-form-field input:focus,
+.app-form-field select:focus,
+.app-form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background-color: var(--primary-bg);
+}
+
+.app-form-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  justify-content: space-between;
+  padding: var(--spacing-3, 12px);
+}
+
+.app-form-field-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+}
+
+.app-form-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+  padding: var(--spacing-3, 12px);
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  text-align: center;
+  justify-content: center;
+}
+
+.app-button-animate {
+  transition: all 0.1s ease;
+}
+
+.app-button-animate:hover {
+  transform: translateY(-1px);
+}
+
+/* Desktop Footer Layout */
+@media (min-width: 768px) {
+  .app-footer-desktop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .app-footer-mobile {
+    display: none;
+  }
+  
+  .app-footer-section {
+    margin-bottom: 0;
+  }
+  
+  .app-footer-copyright {
+    text-align: right;
+  }
+}

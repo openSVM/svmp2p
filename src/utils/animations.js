@@ -2,7 +2,7 @@
  * Animation utilities for enhancing UI interactions
  */
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 
 /**
  * Hook to add a click ripple effect to elements
@@ -19,7 +19,7 @@ export const useRippleEffect = (options = {}) => {
   
   const elementRef = useRef(null);
   
-  const createRipple = (event) => {
+  const createRipple = useCallback((event) => {
     const element = elementRef.current;
     if (!element) return;
     
@@ -58,7 +58,7 @@ export const useRippleEffect = (options = {}) => {
         element.removeChild(ripple);
       }
     }, duration);
-  };
+  }, [color, duration, centered]);
   
   // Setup and cleanup
   useEffect(() => {

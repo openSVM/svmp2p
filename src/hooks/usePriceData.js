@@ -234,10 +234,12 @@ export const formatPrice = (amount, currency) => {
   })}`;
 };
 
-export default {
+const priceDataHooks = {
   useRealPriceData,
   useCalculateFiatAmount,
   useCalculateSolAmount,
   getCurrencySymbol,
   formatPrice
 };
+
+export default priceDataHooks;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import PropertyValueTable from '../common/PropertyValueTable';
 import ThemeSelector from '../ThemeSelector';
@@ -8,8 +8,8 @@ import ThemeSelector from '../ThemeSelector';
  * including theme and language preferences
  */
 const ProfileSettings = ({ settings, onSaveSettings }) => {
-  // Initialize with safe defaults if settings is null/undefined
-  const defaultSettings = {
+  // Initialize with safe defaults if settings is null/undefined - using useMemo to prevent dependency issues
+  const defaultSettings = useMemo(() => ({
     displayName: '',
     bio: '',
     showReputationScore: true,
@@ -19,7 +19,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
     notificationFrequency: 'immediate',
     privateProfile: false,
     hideWalletAddress: false,
-  };
+  }), []);
   
   const safeSettings = settings || defaultSettings;
   const [profileSettings, setProfileSettings] = useState(safeSettings);

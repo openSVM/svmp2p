@@ -325,11 +325,11 @@ const AppContent = () => {
         <main className="app-main">
           {isGuidedWorkflow ? (
             <ErrorBoundary fallback={
-              <div className="ascii-guided-workflow-error">
+              <div className="app-guided-workflow-error">
                 <h2>GUIDED WORKFLOW ERROR</h2>
                 <p>Something went wrong with the guided workflow. Please try again or use the manual interface.</p>
                 <button 
-                  className="ascii-error-recovery-button"
+                  className="app-error-recovery-button"
                   onClick={handleCompleteGuidedWorkflow}
                 >
                   EXIT TO MANUAL INTERFACE
@@ -337,7 +337,7 @@ const AppContent = () => {
               </div>
             }>
               <div 
-                className="ascii-guided-workflow-container"
+                className="app-guided-workflow-container"
                 role="region" 
                 aria-label="Guided trading workflow"
                 tabIndex="-1"
@@ -348,10 +348,10 @@ const AppContent = () => {
                   }
                 }}
               >
-                <div className="ascii-guided-workflow-header">
+                <div className="app-guided-workflow-header">
                   <h2>{guidedWorkflowType === 'buy' ? 'BUY SOL' : 'SELL SOL'} - GUIDED WORKFLOW</h2>
                   <button 
-                    className="ascii-exit-workflow-button"
+                    className="app-exit-workflow-button"
                     onClick={handleCompleteGuidedWorkflow}
                     aria-label="Exit guided workflow and return to manual interface"
                   >
@@ -365,9 +365,9 @@ const AppContent = () => {
               </div>
             </ErrorBoundary>
           ) : (
-            <div className="ascii-content-container">
+            <div className="app-content-container">
               <ErrorBoundary>
-                <div key={activeTab} className="ascii-content-transition-wrapper ascii-fade-in">
+                <div key={activeTab} className="app-content-transition-wrapper app-fade-in">
                   {activeTab === 'buy' && (
                     <OfferList 
                       type="buy" 
@@ -391,33 +391,33 @@ const AppContent = () => {
           )}
         </main>
         
-        <footer className="ascii-footer">
-          <div className="ascii-footer-content">
+        <footer className="app-footer">
+          <div className="app-footer-content">
             {/* Desktop layout */}
-            <div className="ascii-footer-desktop">
+            <div className="app-footer-desktop">
               {/* Left: Network info */}
-              <div className="ascii-footer-section">
-                <p className="ascii-footer-network">NETWORK: {network.name.toUpperCase()}</p>
-                <p className="ascii-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
+              <div className="app-footer-section">
+                <p className="app-footer-network">NETWORK: {network.name.toUpperCase()}</p>
+                <p className="app-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
               </div>
               
               {/* Right: Copyright */}
-              <div className="ascii-footer-section ascii-footer-copyright">
-                <p className="ascii-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
+              <div className="app-footer-section app-footer-copyright">
+                <p className="app-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
               </div>
             </div>
             
             {/* Mobile layout */}
-            <div className="ascii-footer-mobile">
+            <div className="app-footer-mobile">
               {/* Network info */}
-              <div className="ascii-footer-section">
-                <p className="ascii-footer-network">NETWORK: {network.name.toUpperCase()}</p>
-                <p className="ascii-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
+              <div className="app-footer-section">
+                <p className="app-footer-network">NETWORK: {network.name.toUpperCase()}</p>
+                <p className="app-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
               </div>
               
               {/* Copyright */}
-              <div className="ascii-footer-section ascii-footer-copyright">
-                <p className="ascii-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
+              <div className="app-footer-section app-footer-copyright">
+                <p className="app-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
               </div>
             </div>
           </div>
@@ -434,13 +434,13 @@ const App = () => {
   // Use ErrorBoundary at the root level to catch any rendering errors
   return (
     <ErrorBoundary fallback={
-      <div className="ascii-global-error-container">
+      <div className="app-global-error-container">
         <h1>OPENSVM P2P EXCHANGE</h1>
-        <div className="ascii-global-error-content">
+        <div className="app-global-error-content">
           <h2>SOMETHING WENT WRONG</h2>
           <p>We're sorry, but the application couldn't be loaded properly.</p>
           <button 
-            className="ascii-button" 
+            className="app-button" 
             onClick={() => window.location.reload()}
           >
             REFRESH APPLICATION

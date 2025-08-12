@@ -427,9 +427,11 @@ function getDisputeStatusString(status) {
   return statusMap[status] || 'Unknown';
 }
 
-export default {
+const onChainDataHooks = {
   useOffers,
   useUserReputation,
   useProgramStatistics,
   useUserHistory
 };
+
+export default onChainDataHooks;
