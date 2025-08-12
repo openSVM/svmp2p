@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import PropertyValueTable from '../common/PropertyValueTable';
+import ThemeSelector from '../ThemeSelector';
+import LanguageSelector from '../LanguageSelector';
 
 /**
- * ProfileSettings component allows users to customize their profile settings
+ * ProfileSettings component allows users to customize their profile settings,
+ * including theme and language preferences
  */
 const ProfileSettings = ({ settings, onSaveSettings }) => {
   const [profileSettings, setProfileSettings] = useState(settings);
   const [isEditing, setIsEditing] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('blueprint');
+  const [currentLanguage, setCurrentLanguage] = useState('en');
   
+  // Load theme and language from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'blueprint';
+    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+    setCurrentTheme(savedTheme);
+    setCurrentLanguage(savedLanguage);
+  }, []);
+
   // Handle input change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,6 +38,66 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
     setIsEditing(false);
   };
 
+  // Handle theme change
+  const handleThemeChange = (themeKey) => {
+    setCurrentTheme(themeKey);
+    localStorage.setItem('theme', themeKey);
+    // Theme will be applied by the ThemeSelector component
+  };
+
+  // Handle language change
+  const handleLanguageChange = (languageCode) => {
+    setCurrentLanguage(languageCode);
+    localStorage.setItem('preferred-language', languageCode);
+  };
+
+  // Available languages
+  const languages = [
+    { code: 'en', name: 'English', country: '🇺🇸' },
+    { code: 'es', name: 'Español', country: '🇪🇸' },
+    { code: 'fr', name: 'Français', country: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+    { code: 'ja', name: '日本語', country: '🇯🇵' },
+    { code: 'ko', name: '한국어', country: '🇰🇷' },
+    { code: 'zh', name: '中文', country: '🇨🇳' }
+  ];
+
+  // Get current language name
+  const getCurrentLanguageName = () => {
+    const lang = languages.find(l => l.code === currentLanguage);
+    return lang ? `${lang.country} ${lang.name}` : '🇺🇸 English';
+  };
+
+  // Get current theme name
+  const getCurrentThemeName = () => {
+    const themeNames = {
+      'blueprint': 'BLUEPRINT',
+      'grayscale': 'GRAYSCALE', 
+      'corporate': 'CORPORATE',
+      'retro': 'RETRO',
+      'terminal': 'TERMINAL',
+      'minimal': 'MINIMAL',
+      'cyberpunk': 'CYBERPUNK',
+      'organic': 'ORGANIC',
+      'high-contrast': 'HIGH CONTRAST',
+      'pastel': 'PASTEL'
+    };
+    return themeNames[currentTheme] || 'BLUEPRINT';
+  };
+
+  // Prepare interface preferences data
+  const interfacePreferencesData = [
+    { 
+      property: 'THEME', 
+      value: getCurrentThemeName(),
+      description: 'Visual appearance and styling'
+    },
+    { 
+      property: 'LANGUAGE', 
+      value: getCurrentLanguageName(),
+      description: 'Interface language and locale'
+    },
+  ];
   // Prepare display preferences data
   const displayPreferencesData = [
     { 
@@ -130,6 +203,32 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
           <div className="ascii-form-header">EDIT PROFILE SETTINGS</div>
           
           <form onSubmit={handleSubmit}>
+            <div className="ascii-form-section">
+              <div className="ascii-form-section-title">INTERFACE PREFERENCES</div>
+              
+              <div className="ascii-form-row-2">
+                <div className="ascii-field">
+                  <label>THEME</label>
+                  <div className="theme-selector-container">
+                    <ThemeSelector />
+                  </div>
+                  <div className="ascii-field-help">Choose your preferred visual theme</div>
+                </div>
+                
+                <div className="ascii-field">
+                  <label>LANGUAGE</label>
+                  <div className="language-selector-container">
+                    <LanguageSelector
+                      languages={languages}
+                      currentLocale={currentLanguage}
+                      onLanguageChange={handleLanguageChange}
+                    />
+                  </div>
+                  <div className="ascii-field-help">Select your preferred language</div>
+                </div>
+              </div>
+            </div>
+
             <div className="ascii-form-section">
               <div className="ascii-form-section-title">DISPLAY PREFERENCES</div>
               
@@ -293,6 +392,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
 
   return (
     <div className="profile-settings">
+      <PropertyValueTable
+        title="Interface Preferences"
+        data={interfacePreferencesData}
+        className="interface-preferences-table"
+      />
+      
       <PropertyValueTable
         title="Display Preferences"
         data={displayPreferencesData}

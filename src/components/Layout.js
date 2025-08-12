@@ -12,8 +12,6 @@ import { AppContext } from '@/contexts/AppContext';
 
 // Import components
 import { NetworkSelector } from '@/components/NetworkSelector';
-import LanguageSelector from '@/components/LanguageSelector';
-import ThemeSelector from '@/components/ThemeSelector';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
 import OfflineIndicator from '@/components/OfflineIndicator';
@@ -32,7 +30,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const router = useRouter();
   const { connected, publicKey } = usePhantomWallet();
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [currentLocale, setCurrentLocale] = useState('en');
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -67,13 +64,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const handleOnboardingSkip = () => {
     localStorage.setItem('onboarding-completed', 'true');
     setShowOnboarding(false);
-  };
-
-  const handleLanguageChange = (locale) => {
-    setCurrentLocale(locale);
-    localStorage.setItem('preferred-language', locale);
-    // In a real app, you'd use next-i18next router here
-    logger.debug('Language changed', { locale });
   };
 
   // Top navbar items (main navigation sections)
@@ -146,31 +136,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               </div>
             </nav>
             
-            {/* Header Controls - Simplified and ASCII styled */}
+            {/* Header Controls - Simplified */}
             <div className="ascii-header-controls">
-              {/* Theme selector */}
-              <ThemeSelector />
-              
               {/* Network selector */}
               <NetworkSelector 
                 networks={networks} 
                 selectedNetwork={selectedNetwork} 
                 onSelectNetwork={setSelectedNetwork} 
-              />
-              
-              {/* Language selector */}
-              <LanguageSelector
-                languages={[
-                  { code: 'en', name: 'English', country: '🇺🇸' },
-                  { code: 'es', name: 'Español', country: '🇪🇸' },
-                  { code: 'fr', name: 'Français', country: '🇫🇷' },
-                  { code: 'de', name: 'Deutsch', country: '🇩🇪' },
-                  { code: 'ja', name: '日本語', country: '🇯🇵' },
-                  { code: 'ko', name: '한국어', country: '🇰🇷' },
-                  { code: 'zh', name: '中文', country: '🇨🇳' }
-                ]}
-                currentLocale={currentLocale}
-                onLanguageChange={handleLanguageChange}
               />
               
               {/* Connected wallet info */}
