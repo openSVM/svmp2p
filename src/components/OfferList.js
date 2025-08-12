@@ -932,20 +932,19 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         }
 
         .guided-workflow-button {
-          background-color: var(--ascii-neutral-700);
-          color: var(--ascii-white);
-          border: 1px solid var(--ascii-neutral-800);
-          padding: 8px 16px;
-          border-radius: 0;
+          background-color: var(--card-bg);
+          color: var(--text-primary);
+          border: var(--border-width, 1px) solid var(--border-color);
+          padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+          border-radius: var(--border-radius, 0px);
           cursor: pointer;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 14px);
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-family: 'Courier New', Courier, monospace;
+          gap: var(--spacing-2, 8px);
           text-transform: uppercase;
-          transition: all var(--transition-normal);
-          box-shadow: var(--shadow-sm);
+          transition: all var(--transition-normal, 0.2s);
+          box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.1));
         }
 
         .guided-workflow-button::before {
@@ -955,17 +954,17 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: var(--ascii-neutral-500);
-          border: 1px solid var(--ascii-neutral-600);
-          border-radius: 0;
-          font-size: 0.8rem;
-          font-weight: bold;
+          background-color: var(--secondary-bg);
+          border: var(--border-width, 1px) solid var(--border-color);
+          border-radius: var(--border-radius, 0px);
+          font-size: var(--font-size-xs, 12px);
+          font-weight: var(--font-weight-bold, 700);
         }
 
         .guided-workflow-button:hover {
-          background-color: var(--ascii-neutral-600);
+          background-color: var(--secondary-bg);
           transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
+          box-shadow: var(--shadow-md, 0 2px 4px rgba(0,0,0,0.15));
         }
 
         .view-deal-button {

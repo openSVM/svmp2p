@@ -123,6 +123,118 @@ export default function HelpPage() {
         </section>
         
         <section className="help-section">
+          <h2>Advanced Troubleshooting</h2>
+          <div className="help-item">
+            <h3>🔧 Connection Issues</h3>
+            <div className="faq-item">
+              <strong>Q: "All endpoints failed" error when trying to connect</strong>
+              <p>A: This indicates network connectivity issues with Solana devnet. Try:</p>
+              <ul>
+                <li>Check your internet connection</li>
+                <li>Refresh the page and retry</li>
+                <li>Clear browser cache and cookies</li>
+                <li>Try using a VPN if regional restrictions apply</li>
+                <li>Check if your firewall is blocking WebSocket connections</li>
+              </ul>
+            </div>
+            
+            <div className="faq-item">
+              <strong>Q: Wallet connection stuck on "Connecting to Smart Contract..."</strong>
+              <p>A: This usually means the Solana program is unreachable. Solutions:</p>
+              <ul>
+                <li>Ensure you're connected to Solana Devnet (not Mainnet)</li>
+                <li>Check that your wallet has devnet SOL for transaction fees</li>
+                <li>Try disconnecting and reconnecting your wallet</li>
+                <li>Refresh the page to reset the connection state</li>
+              </ul>
+            </div>
+
+            <div className="faq-item">
+              <strong>Q: Console shows wallet extension errors</strong>
+              <p>A: Multiple wallet extensions can conflict. Try:</p>
+              <ul>
+                <li>Disable all wallet extensions except Phantom</li>
+                <li>Use an incognito/private browser window</li>
+                <li>Clear browser extension data and restart browser</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="help-item">
+            <h3>🎨 Theme and Display Issues</h3>
+            <div className="faq-item">
+              <strong>Q: Theme not changing or UI looks broken</strong>
+              <p>A: Theme switching is controlled from Profile Settings:</p>
+              <ul>
+                <li>Navigate to PROFILE page in the main navigation</li>
+                <li>Scroll to "Interface Preferences" section</li>
+                <li>Select your preferred theme from the dropdown</li>
+                <li>Refresh the page if changes don't apply immediately</li>
+              </ul>
+            </div>
+
+            <div className="faq-item">
+              <strong>Q: Mobile layout appears broken</strong>
+              <p>A: Ensure your browser supports modern CSS features:</p>
+              <ul>
+                <li>Update your mobile browser to the latest version</li>
+                <li>Clear browser cache and reload the page</li>
+                <li>Try rotating device orientation (portrait/landscape)</li>
+                <li>Report the issue with your device/browser details</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="help-item">
+            <h3>💰 Trading and Transaction Issues</h3>
+            <div className="faq-item">
+              <strong>Q: "Insufficient funds" error when creating offers</strong>
+              <p>A: You need devnet SOL for transaction fees:</p>
+              <ul>
+                <li>Request devnet SOL from a Solana faucet</li>
+                <li>Ensure you have at least 0.01 SOL for fees</li>
+                <li>Check that you're on the correct network (Devnet)</li>
+              </ul>
+            </div>
+
+            <div className="faq-item">
+              <strong>Q: Payment methods don't show for my currency</strong>
+              <p>A: Payment methods are region-specific:</p>
+              <ul>
+                <li>Select your local currency from the dropdown</li>
+                <li>Payment methods will update automatically</li>
+                <li>If your region isn't supported, try selecting a neighboring country's currency</li>
+                <li>Contact support to request additional payment methods</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="help-section">
+          <h2>Developer Resources</h2>
+          <div className="help-item">
+            <h3>🔗 Important Links</h3>
+            <ul>
+              <li><strong>Smart Contract:</strong> <a href="https://explorer.solana.com/address/AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k?cluster=devnet" target="_blank" rel="noopener noreferrer">View on Solana Explorer</a></li>
+              <li><strong>GitHub Repository:</strong> Source code and issue reporting</li>
+              <li><strong>Devnet Faucet:</strong> <a href="https://faucet.solana.com/" target="_blank" rel="noopener noreferrer">Get test SOL</a></li>
+              <li><strong>Solana Documentation:</strong> <a href="https://docs.solana.com/" target="_blank" rel="noopener noreferrer">Learn about Solana</a></li>
+            </ul>
+          </div>
+
+          <div className="help-item">
+            <h3>📊 Network Status</h3>
+            <p>Current network information:</p>
+            <ul>
+              <li><strong>Network:</strong> Solana Devnet</li>
+              <li><strong>RPC Endpoint:</strong> https://api.devnet.solana.com</li>
+              <li><strong>Program Version:</strong> v1.0.0 (Anchor 0.31.1)</li>
+              <li><strong>Supported Wallets:</strong> Phantom, Solflare, Slope</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="help-section">
           <h2>Contact Support</h2>
           <div className="help-item">
             <h3>📞 Get Help</h3>
@@ -131,11 +243,24 @@ export default function HelpPage() {
               <li><strong>GitHub Issues:</strong> Report bugs or request features</li>
               <li><strong>Community Discord:</strong> Join our developer community</li>
               <li><strong>Documentation:</strong> Comprehensive guides and API reference</li>
+              <li><strong>Email Support:</strong> Contact the development team</li>
             </ul>
             
             <div className="support-notice">
               <p><strong>⚠️ Development Notice:</strong> This is a development version running on Solana Devnet. Do not use real funds.</p>
             </div>
+          </div>
+          
+          <div className="help-item">
+            <h3>🐛 Reporting Issues</h3>
+            <p>When reporting issues, please include:</p>
+            <ul>
+              <li>Your browser type and version</li>
+              <li>Steps to reproduce the problem</li>
+              <li>Console error messages (if any)</li>
+              <li>Screenshots of the issue</li>
+              <li>Your wallet type and connection status</li>
+            </ul>
           </div>
         </section>
       </div>

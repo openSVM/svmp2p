@@ -74,7 +74,7 @@ const ActivityFeed = ({ activities }) => {
 
   const activityActions = (
     <button 
-      className="button button-ghost button-sm ascii-button-animate" 
+      className="button button-ghost button-sm" 
       onClick={handleViewAllActivity}
     >
       VIEW ALL ACTIVITY
