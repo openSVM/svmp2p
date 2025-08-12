@@ -133,49 +133,33 @@ export const safeExecute = async (fn, context = '', fallback = null) => {
  * Setup global error handling for wallet extensions
  */
 export const setupGlobalErrorHandling = () => {
-  // Handle unhandled promise rejections
+  // Only set up basic error handling without overriding console methods
+  // to prevent interference with application initialization
+  
+  // Handle unhandled promise rejections from external sources
   window.addEventListener('unhandledrejection', (event) => {
-    if (shouldSuppressError(event.reason)) {
-      event.preventDefault(); // Prevent console noise
+    const error = event.reason;
+    if (shouldSuppressError(error)) {
+      // Don't prevent the error, just log it quietly
       if (process.env.NODE_ENV === 'development') {
-        console.debug('[SUPPRESSED REJECTION]:', event.reason);
+        console.debug('[EXTERNAL REJECTION]:', error);
       }
+      // Note: We don't call event.preventDefault() to avoid breaking other error handling
     }
   });
   
-  // Handle general window errors
+  // Handle general window errors from external sources
   window.addEventListener('error', (event) => {
-    if (shouldSuppressError(event.error)) {
-      event.preventDefault(); // Prevent console noise
+    const error = event.error;
+    if (shouldSuppressError(error) && event.filename && 
+        (event.filename.includes('extension') || event.filename.includes('inpage.js'))) {
+      // Only suppress errors that are clearly from browser extensions
       if (process.env.NODE_ENV === 'development') {
-        console.debug('[SUPPRESSED ERROR]:', event.error);
+        console.debug('[EXTERNAL ERROR]:', error);
       }
+      // Note: We don't call event.preventDefault() to avoid breaking application errors
     }
   });
-  
-  // Override console.error for external error filtering
-  const originalConsoleError = console.error;
-  console.error = (...args) => {
-    // Check if any argument contains external error patterns
-    const hasExternalError = args.some(arg => {
-      if (typeof arg === 'string') {
-        return KNOWN_EXTERNAL_ERRORS.some(pattern => arg.includes(pattern));
-      }
-      if (arg instanceof Error) {
-        return shouldSuppressError(arg);
-      }
-      return false;
-    });
-    
-    if (hasExternalError) {
-      if (process.env.NODE_ENV === 'development') {
-        console.debug('[FILTERED ERROR]:', ...args);
-      }
-      return;
-    }
-    
-    originalConsoleError.apply(console, args);
-  };
   
   console.log('[ErrorHandling] Global error filtering initialized');
 };

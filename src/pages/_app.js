@@ -43,8 +43,11 @@ export default function App({ Component, pageProps }) {
 
   // Initialize performance monitoring
   useEffect(() => {
-    // Setup global error handling first to catch external script errors
-    setupGlobalErrorHandling();
+    // Only setup error handling in browser environment
+    if (typeof window !== 'undefined') {
+      // Setup global error handling first to catch external script errors
+      setupGlobalErrorHandling();
+    }
     
     // Initialize Web Vitals monitoring
     initWebVitals();
