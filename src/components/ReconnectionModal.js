@@ -137,19 +137,19 @@ export const ReconnectionModal = ({ isVisible, progress, onCancel }) => {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold text-gray-700" aria-live="polite">
+                <span className="reconnection-timer-text" aria-live="polite">
                   {nextRetryIn}
                 </span>
               </div>
             </div>
             
-            <h3 id="reconnection-title" className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 id="reconnection-title" className="reconnection-title">
               Connection Lost
             </h3>
-            <p id="reconnection-description" className="text-gray-600 mb-4">
+            <p id="reconnection-description" className="reconnection-description">
               Attempting to reconnect in {nextRetryIn} second{nextRetryIn !== 1 ? 's' : ''}...
             </p>
-            <p className="text-sm text-gray-500 mb-6" aria-live="polite">
+            <p className="reconnection-attempt-info" aria-live="polite">
               Attempt {attempt} of {maxAttempts}
             </p>
           </>
@@ -158,13 +158,13 @@ export const ReconnectionModal = ({ isVisible, progress, onCancel }) => {
             {/* Connecting display */}
             <div className="spinner" aria-hidden="true"></div>
             
-            <h3 id="reconnection-title" className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 id="reconnection-title" className="reconnection-title">
               Reconnecting...
             </h3>
-            <p id="reconnection-description" className="text-gray-600 mb-4">
+            <p id="reconnection-description" className="reconnection-description">
               Attempting to restore connection
             </p>
-            <p className="text-sm text-gray-500 mb-6" aria-live="polite">
+            <p className="reconnection-attempt-info" aria-live="polite">
               Attempt {attempt} of {maxAttempts}
             </p>
           </>
@@ -174,14 +174,14 @@ export const ReconnectionModal = ({ isVisible, progress, onCancel }) => {
           <div className="flex gap-3 justify-center">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              className="reconnection-cancel-button"
               aria-label="Cancel reconnection"
             >
               Cancel
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="reconnection-refresh-button"
               aria-label="Refresh page to retry connection"
             >
               Refresh Page

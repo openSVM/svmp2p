@@ -145,14 +145,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             </div>
             
             {/* Desktop Navigation - Theme-Aware with Full Width */}
-            <nav className="app-nav-desktop">
+            <nav className="app-nav-desktop touch-friendly">
               <div className="app-nav-tabs">
                 {/* Primary navigation items */}
                 {topNavItems.map((item) => (
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`app-nav-tab ${router.pathname === item.href ? 'active' : ''}`}
+                    className={`app-nav-tab touch-feedback ${router.pathname === item.href ? 'active' : ''}`}
                   >
                     {item.label}
                   </Link>
@@ -195,14 +195,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         </header>
 
         {/* Mobile Navigation - Theme-Aware Grid Layout */}
-        <nav className="app-nav-mobile">
+        <nav className="app-nav-mobile touch-friendly">
           <div className="app-nav-grid">
             {/* All navigation items in mobile grid */}
             {mobileNavItems.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}
-                className={`app-nav-button ${router.pathname === item.href ? 'active' : ''}`}
+                className={`app-nav-button touch-feedback ${router.pathname === item.href ? 'active' : ''}`}
               >
                 {item.label}
               </Link>
@@ -222,8 +222,8 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         {/* Footer */}
         <footer className="app-footer">
           <div className="container">
-            <div className="text-center">
-              <p className="text-sm text-foreground-muted">
+            <div className="app-footer-center">
+              <p className="app-footer-copyright">
                 © 2025 OpenSVM P2P Exchange. All rights reserved.
               </p>
             </div>

@@ -912,3 +912,101 @@
     text-align: right;
   }
 }
+
+/* ReconnectionModal Theme-Aware Styles */
+.reconnection-timer-text {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+}
+
+.reconnection-title {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2, 8px);
+}
+
+.reconnection-description {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.reconnection-attempt-info {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-6, 24px);
+}
+
+.reconnection-cancel-button {
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  color: var(--text-secondary);
+  background: none;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 4px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Touch-friendly */
+  min-width: 44px;
+}
+
+.reconnection-cancel-button:hover {
+  color: var(--text-primary);
+  background-color: var(--secondary-bg);
+}
+
+.reconnection-cancel-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.reconnection-refresh-button {
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border: none;
+  border-radius: var(--border-radius, 4px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Touch-friendly */
+  min-width: 44px;
+}
+
+.reconnection-refresh-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.reconnection-refresh-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+/* Responsive adjustments for ReconnectionModal */
+@media (max-width: 768px) {
+  .reconnection-timer-text {
+    font-size: 1.5rem;
+  }
+  
+  .reconnection-title {
+    font-size: 1rem;
+  }
+  
+  .reconnection-cancel-button,
+  .reconnection-refresh-button {
+    padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+    font-size: var(--font-size-sm, 0.875rem);
+  }
+}
+
+/* Footer Styles */
+.app-footer-center {
+  text-align: center;
+}
+
+.app-footer-copyright {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-muted);
+  margin: 0;
+}
