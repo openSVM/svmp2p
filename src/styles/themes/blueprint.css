@@ -173,7 +173,7 @@
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow-technical);
+  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
   position: relative;
   padding: var(--spacing-8);
   margin: var(--spacing-5);
@@ -241,7 +241,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
-  box-shadow: var(--shadow-technical);
+  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
 }
 
 /* Technical drawing annotation overlay */
@@ -335,7 +335,7 @@
 .theme-blueprint textarea:focus {
   outline: none;
   box-shadow: var(--shadow-technical);
-  border-width: var(--border-width-thick);
+  border-width: var(--border-width);
   border-color: var(--accent-secondary);
   background: var(--blueprint-light);
 }
@@ -519,7 +519,7 @@
 .theme-blueprint .ascii-dropdown-menu {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
   position: absolute;
   padding: var(--spacing-4);
   z-index: 99999;
@@ -535,9 +535,8 @@
 .theme-blueprint .app-dropdown-menu {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
   z-index: 99999;
-}
 }
 
 .theme-blueprint .ascii-dropdown-menu::before {
@@ -642,7 +641,7 @@
 .theme-blueprint table {
   border-collapse: collapse;
   font-family: var(--font-family);
-  border: var(--border-width-thick) solid var(--border-color);
+  border: var(--border-width) solid var(--border-color);
   position: relative;
   width: 100%;
   background: var(--card-bg);
@@ -698,7 +697,7 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--text-primary);
-  border-bottom-width: var(--border-width-thick);
+  border-bottom-width: var(--border-width);
 }
 
 .theme-blueprint th::before {
