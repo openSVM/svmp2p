@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
-const ThemeSelector = () => {
-  const [selectedTheme, setSelectedTheme] = useState('blueprint');
+const ThemeSelector = ({ 
+  value, 
+  onChange, 
+  className = "app-dropdown-container"
+}) => {
+  const [selectedTheme, setSelectedTheme] = useState(value || 'blueprint');
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -40,11 +44,19 @@ const ThemeSelector = () => {
   }, [themes]);
 
   useEffect(() => {
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('theme') || 'blueprint';
+    // Load saved theme from localStorage or use passed value
+    const savedTheme = value || localStorage.getItem('theme') || 'blueprint';
     setSelectedTheme(savedTheme);
     applyTheme(savedTheme);
-  }, [applyTheme]);
+  }, [applyTheme, value]);
+
+  // Update when external value changes
+  useEffect(() => {
+    if (value && value !== selectedTheme) {
+      setSelectedTheme(value);
+      applyTheme(value);
+    }
+  }, [value, selectedTheme, applyTheme]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -65,12 +77,17 @@ const ThemeSelector = () => {
     localStorage.setItem('theme', themeKey);
     applyTheme(themeKey);
     setIsOpen(false);
+    
+    // Call external onChange if provided
+    if (onChange) {
+      onChange(themeKey);
+    }
   };
 
   const currentTheme = themes.find(theme => theme.key === selectedTheme);
 
   return (
-    <div className="app-dropdown-container" ref={dropdownRef}>
+    <div className={className} ref={dropdownRef}>
       <button 
         className="app-header-control app-dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}

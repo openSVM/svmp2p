@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import PropertyValueTable from '../common/PropertyValueTable';
 import ThemeSelector from '../ThemeSelector';
-import LanguageSelector from '../LanguageSelector';
 
 /**
  * ProfileSettings component allows users to customize their profile settings,
@@ -26,14 +25,11 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
   const [profileSettings, setProfileSettings] = useState(safeSettings);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('blueprint');
-  const [currentLanguage, setCurrentLanguage] = useState('en');
   
-  // Load theme and language from localStorage on component mount
+  // Load theme from localStorage on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'blueprint';
-    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
     setCurrentTheme(savedTheme);
-    setCurrentLanguage(savedLanguage);
   }, []);
   
   // Update profileSettings when settings prop changes
@@ -65,26 +61,19 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
     // Theme will be applied by the ThemeSelector component
   };
 
-  // Handle language change
-  const handleLanguageChange = (languageCode) => {
-    setCurrentLanguage(languageCode);
-    localStorage.setItem('preferred-language', languageCode);
-  };
-
-  // Available languages
-  const languages = [
-    { code: 'en', name: 'English', country: '🇺🇸' },
-    { code: 'es', name: 'Español', country: '🇪🇸' },
-    { code: 'fr', name: 'Français', country: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
-    { code: 'ja', name: '日本語', country: '🇯🇵' },
-    { code: 'ko', name: '한국어', country: '🇰🇷' },
-    { code: 'zh', name: '中文', country: '🇨🇳' }
-  ];
-
-  // Get current language name
+  // Get current language name from localStorage
   const getCurrentLanguageName = () => {
-    const lang = languages.find(l => l.code === currentLanguage);
+    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+    const languages = [
+      { code: 'en', name: 'English', country: '🇺🇸' },
+      { code: 'es', name: 'Español', country: '🇪🇸' },
+      { code: 'fr', name: 'Français', country: '🇫🇷' },
+      { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+      { code: 'ja', name: '日本語', country: '🇯🇵' },
+      { code: 'ko', name: '한국어', country: '🇰🇷' },
+      { code: 'zh', name: '中文', country: '🇨🇳' }
+    ];
+    const lang = languages.find(l => l.code === savedLanguage);
     return lang ? `${lang.country} ${lang.name}` : '🇺🇸 English';
   };
 
@@ -110,12 +99,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
     { 
       property: 'THEME', 
       value: getCurrentThemeName(),
-      description: 'Visual appearance and styling'
+      description: 'Current visual theme - use theme selector to change'
     },
     { 
       property: 'LANGUAGE', 
       value: getCurrentLanguageName(),
-      description: 'Interface language and locale'
+      description: 'Interface language - change in header navigation'
     },
   ];
   // Prepare display preferences data
@@ -226,28 +215,71 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
             <div className="ascii-form-section">
               <div className="ascii-form-section-title">INTERFACE PREFERENCES</div>
               
-              <div className="ascii-form-row-2">
+              <div className="ascii-form-row-1">
                 <div className="ascii-field">
                   <label>THEME</label>
                   <div className="theme-selector-container">
-                    <ThemeSelector />
+                    <ThemeSelector 
+                      value={currentTheme}
+                      onChange={handleThemeChange}
+                      className="profile-theme-selector"
+                    />
                   </div>
                   <div className="ascii-field-help">Choose your preferred visual theme</div>
                 </div>
-                
-                <div className="ascii-field">
-                  <label>LANGUAGE</label>
-                  <div className="language-selector-container">
-                    <LanguageSelector
-                      languages={languages}
-                      currentLocale={currentLanguage}
-                      onLanguageChange={handleLanguageChange}
-                    />
-                  </div>
-                  <div className="ascii-field-help">Select your preferred language</div>
-                </div>
+              </div>
+              
+              <div className="ascii-form-info">
+                <p>💡 Language settings have been moved to the header navigation for easier access.</p>
+                <p>You can change your language preference using the language selector in the top navigation bar.</p>
               </div>
             </div>
+
+            <style jsx>{`
+              .profile-theme-selector {
+                width: 100%;
+                background: var(--color-background);
+                border: 1px solid var(--color-border);
+                border-radius: 0;
+              }
+              
+              .profile-theme-selector .app-header-control {
+                width: 100%;
+                background: var(--color-background);
+                border: 1px solid var(--color-border);
+                color: var(--color-foreground);
+                padding: 8px 12px;
+                border-radius: 0;
+                font-family: inherit;
+                font-size: 14px;
+                text-align: left;
+              }
+              
+              .profile-theme-selector .app-dropdown-menu {
+                width: 100%;
+                max-width: none;
+                left: 0 !important;
+                right: 0;
+              }
+              
+              .ascii-form-info {
+                background: var(--color-background-alt);
+                border: 1px solid var(--color-border);
+                border-radius: 4px;
+                padding: 12px;
+                margin-top: 16px;
+                font-size: 0.9rem;
+                color: var(--color-foreground-muted);
+              }
+              
+              .ascii-form-info p {
+                margin: 0 0 8px 0;
+              }
+              
+              .ascii-form-info p:last-child {
+                margin-bottom: 0;
+              }
+            `}</style>
 
             <div className="ascii-form-section">
               <div className="ascii-form-section-title">DISPLAY PREFERENCES</div>

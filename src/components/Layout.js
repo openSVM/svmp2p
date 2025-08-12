@@ -12,6 +12,7 @@ import { AppContext } from '@/contexts/AppContext';
 
 // Import components
 import { NetworkSelector } from '@/components/NetworkSelector';
+import LanguageSelector from '@/components/LanguageSelector';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
 import OfflineIndicator from '@/components/OfflineIndicator';
@@ -30,6 +31,32 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const router = useRouter();
   const { connected, publicKey } = usePhantomWallet();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // Language selector state
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  
+  // Available languages
+  const languages = [
+    { code: 'en', name: 'English', country: '🇺🇸' },
+    { code: 'es', name: 'Español', country: '🇪🇸' },
+    { code: 'fr', name: 'Français', country: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+    { code: 'ja', name: '日本語', country: '🇯🇵' },
+    { code: 'ko', name: '한국어', country: '🇰🇷' },
+    { code: 'zh', name: '中文', country: '🇨🇳' }
+  ];
+  
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+    setCurrentLanguage(savedLanguage);
+  }, []);
+  
+  // Handle language change
+  const handleLanguageChange = (languageCode) => {
+    setCurrentLanguage(languageCode);
+    localStorage.setItem('preferred-language', languageCode);
+  };
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -138,6 +165,13 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
             
             {/* Header Controls - Simplified */}
             <div className="ascii-header-controls">
+              {/* Language selector */}
+              <LanguageSelector
+                languages={languages}
+                currentLocale={currentLanguage}
+                onLanguageChange={handleLanguageChange}
+              />
+              
               {/* Network selector */}
               <NetworkSelector 
                 networks={networks} 

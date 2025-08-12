@@ -5,7 +5,7 @@ import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationD
 import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import { useDebounce, VirtualizedList } from '../utils/performance';
 import { useActionDebounce } from '../hooks/useActionDebounce';
-import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
+import { SUPPORTED_CURRENCIES, getPaymentMethodsForCurrency } from '../constants/tradingConstants';
 import { useOffers } from '../hooks/useOnChainData';
 import { useRealPriceData } from '../hooks/usePriceData';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
@@ -295,7 +295,17 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
   
   // Memoize static data
   const currencies = useMemo(() => ['', ...SUPPORTED_CURRENCIES], []);
-  const paymentMethods = useMemo(() => ['', ...SUPPORTED_PAYMENT_METHODS], []);
+  
+  // Get all unique payment methods from all currencies for filtering
+  const allPaymentMethods = useMemo(() => {
+    const methodSet = new Set();
+    SUPPORTED_CURRENCIES.forEach(currency => {
+      const methods = getPaymentMethodsForCurrency(currency);
+      methods.forEach(method => methodSet.add(method));
+    });
+    return ['', ...Array.from(methodSet).sort()];
+  }, []);
+  
   const sortOptions = useMemo(() => [
     { value: 'createdAt', label: 'Date Posted' },
     { value: 'solAmount', label: 'SOL Amount' },
@@ -838,7 +848,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                   aria-label="Select payment method"
                 >
-                  {paymentMethods.map(method => (
+                  {allPaymentMethods.map(method => (
                     <option key={method} value={method}>{method || 'All Payment Methods'}</option>
                   ))}
                 </select>

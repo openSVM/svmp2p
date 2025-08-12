@@ -17,7 +17,7 @@ import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../ut
 import { createLogger } from '../utils/logger';
 import { 
   SUPPORTED_CURRENCIES, 
-  SUPPORTED_PAYMENT_METHODS,
+  getPaymentMethodsForCurrency,
   VALIDATION_CONSTRAINTS
 } from '../constants/tradingConstants';
 import { useRealPriceData, useCalculateFiatAmount } from '../hooks/usePriceData';
@@ -54,6 +54,16 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
   const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
   const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
+  
+  // Get payment methods for selected currency
+  const availablePaymentMethods = getPaymentMethodsForCurrency(fiatCurrency);
+  
+  // Update payment method when currency changes to ensure it's valid
+  useEffect(() => {
+    if (!availablePaymentMethods.includes(paymentMethod)) {
+      setPaymentMethod(availablePaymentMethods[0] || 'Bank Transfer');
+    }
+  }, [fiatCurrency, availablePaymentMethods, paymentMethod]);
   
   // Debug info for development
   useEffect(() => {
@@ -448,7 +458,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 required
               >
-                {SUPPORTED_PAYMENT_METHODS.map(method => (
+                {availablePaymentMethods.map(method => (
                   <option key={method} value={method}>{method}</option>
                 ))}
               </select>
