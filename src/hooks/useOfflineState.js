@@ -68,7 +68,7 @@ export const useOfflineState = () => {
         navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
       }
     };
-  }, []);
+  }, [removeFromQueue]);
 
   // Queue an action for when we come back online
   const queueAction = useCallback((action) => {

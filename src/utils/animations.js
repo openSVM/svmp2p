@@ -102,7 +102,7 @@ export const useRippleEffect = (options = {}) => {
         element.removeEventListener('click', createRipple);
       }
     };
-  }, [centered, color, duration]);
+  }, [centered, color, duration, createRipple]);
   
   return { ref: elementRef };
 };

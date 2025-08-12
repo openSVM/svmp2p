@@ -36,7 +36,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
   useEffect(() => {
     const safeSettings = settings || defaultSettings;
     setProfileSettings(safeSettings);
-  }, [settings]);
+  }, [settings, defaultSettings]);
 
   // Handle input change
   const handleChange = (e) => {

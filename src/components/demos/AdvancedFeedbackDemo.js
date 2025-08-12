@@ -116,7 +116,7 @@ const AdvancedFeedbackDemo = () => {
 
       return () => clearInterval(interval);
     }
-  }, [currentTransaction]);
+  }, [currentTransaction, transactionSteps]);
 
   // Add notification helper
   const addNotification = (notificationData) => {
