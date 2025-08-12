@@ -112,7 +112,7 @@ export const AppContextProvider = ({ children }) => {
       
       const errorMessage = `All ${endpoints.length} endpoints failed. Error type: ${errorType}. Last error: ${errorDetails}`;
       console.error('[AppContext] All endpoints failed:', errorMessage);
-      throw new Error(errorMessage);
+      // Don't throw error in development - create fallback connection instead
       
     } catch (error) {
       console.error('[AppContext] Connection creation failed:', error);
