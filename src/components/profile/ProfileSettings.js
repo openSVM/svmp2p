@@ -9,7 +9,21 @@ import LanguageSelector from '../LanguageSelector';
  * including theme and language preferences
  */
 const ProfileSettings = ({ settings, onSaveSettings }) => {
-  const [profileSettings, setProfileSettings] = useState(settings);
+  // Initialize with safe defaults if settings is null/undefined
+  const defaultSettings = {
+    displayName: '',
+    bio: '',
+    showReputationScore: true,
+    showTransactionHistory: false,
+    emailNotifications: true,
+    browserNotifications: true,
+    notificationFrequency: 'immediate',
+    privateProfile: false,
+    hideWalletAddress: false,
+  };
+  
+  const safeSettings = settings || defaultSettings;
+  const [profileSettings, setProfileSettings] = useState(safeSettings);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTheme, setCurrentTheme] = useState('blueprint');
   const [currentLanguage, setCurrentLanguage] = useState('en');
@@ -21,6 +35,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
     setCurrentTheme(savedTheme);
     setCurrentLanguage(savedLanguage);
   }, []);
+  
+  // Update profileSettings when settings prop changes
+  useEffect(() => {
+    const safeSettings = settings || defaultSettings;
+    setProfileSettings(safeSettings);
+  }, [settings]);
 
   // Handle input change
   const handleChange = (e) => {
@@ -185,7 +205,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
           <button 
             className="button button-secondary button-sm"
             onClick={() => {
-              setProfileSettings(settings);
+              setProfileSettings(safeSettings);
               setIsEditing(false);
             }}
           >
@@ -377,7 +397,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                 type="button" 
                 className="ascii-button-secondary"
                 onClick={() => {
-                  setProfileSettings(settings);
+                  setProfileSettings(safeSettings);
                   setIsEditing(false);
                 }}
               >
@@ -436,17 +456,7 @@ ProfileSettings.propTypes = {
 };
 
 ProfileSettings.defaultProps = {
-  settings: {
-    displayName: '',
-    bio: '',
-    showReputationScore: true,
-    showTransactionHistory: false,
-    emailNotifications: true,
-    browserNotifications: true,
-    notificationFrequency: 'immediate',
-    privateProfile: false,
-    hideWalletAddress: false,
-  },
+  settings: null, // Allow null settings, component will use defaults
 };
 
 export default ProfileSettings;
