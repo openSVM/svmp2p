@@ -208,15 +208,15 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
   if (isEditing) {
     return (
       <div className="profile-settings-edit">
-        <div className="ascii-form">
-          <div className="ascii-form-header">EDIT PROFILE SETTINGS</div>
+        <div className="app-form">
+          <div className="app-form-header">EDIT PROFILE SETTINGS</div>
           
           <form onSubmit={handleSubmit}>
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">INTERFACE PREFERENCES</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">INTERFACE PREFERENCES</div>
               
-              <div className="ascii-form-row-1">
-                <div className="ascii-field">
+              <div className="app-form-row-1">
+                <div className="app-field">
                   <label>THEME</label>
                   <div className="theme-selector-container">
                     <ThemeSelector 
@@ -225,11 +225,11 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                       className="profile-theme-selector"
                     />
                   </div>
-                  <div className="ascii-field-help">Choose your preferred visual theme</div>
+                  <div className="app-field-help">Choose your preferred visual theme</div>
                 </div>
               </div>
               
-              <div className="ascii-form-info">
+              <div className="app-form-info">
                 <p>💡 Language settings have been moved to the header navigation for easier access.</p>
                 <p>You can change your language preference using the language selector in the top navigation bar.</p>
               </div>
@@ -262,30 +262,30 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                 right: 0;
               }
               
-              .ascii-form-info {
-                background: var(--color-background-alt);
-                border: 1px solid var(--color-border);
-                border-radius: 4px;
+              .app-form-info {
+                background: var(--secondary-bg);
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius, 0px);
                 padding: 12px;
                 margin-top: 16px;
-                font-size: 0.9rem;
-                color: var(--color-foreground-muted);
+                font-size: var(--font-size-sm, 12px);
+                color: var(--text-muted);
               }
               
-              .ascii-form-info p {
+              .app-form-info p {
                 margin: 0 0 8px 0;
               }
               
-              .ascii-form-info p:last-child {
+              .app-form-info p:last-child {
                 margin-bottom: 0;
               }
             `}</style>
 
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">DISPLAY PREFERENCES</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">DISPLAY PREFERENCES</div>
               
-              <div className="ascii-form-row-2">
-                <div className="ascii-field">
+              <div className="app-form-row-2">
+                <div className="app-field">
                   <label htmlFor="displayName">DISPLAY NAME</label>
                   <input
                     type="text"
@@ -296,10 +296,10 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                     placeholder="Enter display name"
                     maxLength={30}
                   />
-                  <div className="ascii-field-help">This name will be displayed to other users</div>
+                  <div className="app-field-help">This name will be displayed to other users</div>
                 </div>
                 
-                <div className="ascii-field">
+                <div className="app-field">
                   <label htmlFor="bio">BIO</label>
                   <textarea
                     id="bio"
@@ -310,15 +310,15 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                     maxLength={160}
                     rows={3}
                   />
-                  <div className="ascii-field-help">
+                  <div className="app-field-help">
                     {160 - (profileSettings.bio?.length || 0)} characters remaining
                   </div>
                 </div>
               </div>
               
-              <div className="ascii-form-row-2">
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+              <div className="app-form-row-2">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="showReputationScore"
@@ -329,8 +329,8 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                   </label>
                 </div>
                 
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="showTransactionHistory"
@@ -343,12 +343,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
               </div>
             </div>
             
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">NOTIFICATION SETTINGS</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">NOTIFICATION SETTINGS</div>
               
-              <div className="ascii-form-row-3">
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+              <div className="app-form-row-3">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="emailNotifications"
@@ -359,8 +359,8 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                   </label>
                 </div>
                 
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="browserNotifications"
@@ -371,7 +371,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                   </label>
                 </div>
                 
-                <div className="ascii-field">
+                <div className="app-field">
                   <label htmlFor="notificationFrequency">FREQUENCY</label>
                   <select
                     id="notificationFrequency"
@@ -388,12 +388,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
               </div>
             </div>
             
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">PRIVACY SETTINGS</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">PRIVACY SETTINGS</div>
               
-              <div className="ascii-form-row-2">
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+              <div className="app-form-row-2">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="privateProfile"
@@ -402,13 +402,13 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                     />
                     MAKE PROFILE PRIVATE
                   </label>
-                  <div className="ascii-field-help">
+                  <div className="app-field-help">
                     Only users you've traded with can see your profile
                   </div>
                 </div>
                 
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="hideWalletAddress"
@@ -421,13 +421,13 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
               </div>
             </div>
             
-            <div className="ascii-form-actions">
-              <button type="submit" className="ascii-button-primary">
+            <div className="app-form-actions">
+              <button type="submit" className="app-button-primary">
                 SAVE SETTINGS
               </button>
               <button 
                 type="button" 
-                className="ascii-button-secondary"
+                className="app-button-secondary"
                 onClick={() => {
                   setProfileSettings(safeSettings);
                   setIsEditing(false);

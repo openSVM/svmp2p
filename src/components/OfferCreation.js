@@ -572,20 +572,19 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .guided-workflow-button {
-          background-color: var(--ascii-neutral-700);
-          color: var(--ascii-white);
-          border: 1px solid var(--ascii-neutral-800);
+          background-color: var(--button-bg);
+          color: var(--button-text);
+          border: 1px solid var(--border-color);
           padding: 8px 16px;
-          border-radius: 0;
+          border-radius: var(--border-radius, 0px);
           cursor: pointer;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 12px);
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: 'Courier New', Courier, monospace;
-          text-transform: uppercase;
-          transition: all var(--transition-normal);
-          box-shadow: var(--shadow-sm);
+          font-family: var(--font-family);
+          transition: all 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .guided-workflow-button::before {
@@ -595,60 +594,60 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: var(--ascii-neutral-500);
-          border: 1px solid var(--ascii-neutral-600);
-          border-radius: 0;
-          font-size: 0.8rem;
-          font-weight: bold;
+          background-color: var(--secondary-bg);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius, 0px);
+          font-size: var(--font-size-xs, 10px);
+          font-weight: var(--font-weight-bold, 700);
         }
 
         .guided-workflow-button:hover {
-          background-color: var(--ascii-neutral-600);
+          background-color: var(--button-hover);
           transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .input-error {
-          border-color: #ef4444 !important;
-          box-shadow: 0 0 0 1px #ef4444;
+          border-color: var(--error-color) !important;
+          box-shadow: 0 0 0 1px var(--error-color);
         }
 
         .validation-error {
-          color: #ef4444;
-          font-size: 0.875rem;
+          color: var(--error-color);
+          font-size: var(--font-size-sm, 12px);
           margin-top: 0.25rem;
         }
 
         .validation-warning {
-          color: #f59e0b;
-          font-size: 0.875rem;
+          color: var(--warning-color);
+          font-size: var(--font-size-sm, 12px);
           margin-top: 0.25rem;
         }
 
         .price-info {
-          background: var(--color-background-alt);
-          border: 1px solid var(--color-border);
-          border-radius: 4px;
+          background: var(--secondary-bg);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius, 0px);
           padding: 12px;
           margin: 1rem 0;
-          font-size: 0.9rem;
-          color: var(--color-foreground-muted);
+          font-size: var(--font-size-sm, 12px);
+          color: var(--text-muted);
         }
 
         .price-updated {
           margin-left: 10px;
-          font-size: 0.8rem;
+          font-size: var(--font-size-xs, 10px);
           opacity: 0.7;
         }
 
         .warning-message {
-          background: #fef3c7;
-          border: 1px solid #f59e0b;
-          color: #92400e;
+          background: var(--secondary-bg);
+          border: 1px solid var(--warning-color);
+          color: var(--warning-color);
           padding: 12px;
-          border-radius: 4px;
+          border-radius: var(--border-radius, 0px);
           margin: 1rem 0;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 12px);
         }
 
         .wallet-connection-prompt {
@@ -663,38 +662,38 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .connection-issue {
-          background-color: var(--ascii-neutral-600) !important;
-          color: var(--ascii-red-400) !important;
+          background-color: var(--secondary-bg) !important;
+          color: var(--error-color) !important;
           cursor: not-allowed !important;
         }
 
         .connection-issue-details {
-          background: var(--color-background-alt);
-          border: 1px solid var(--ascii-yellow-500);
-          border-radius: 4px;
+          background: var(--secondary-bg);
+          border: 1px solid var(--warning-color);
+          border-radius: var(--border-radius, 0px);
           padding: 16px;
           max-width: 400px;
           text-align: left;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 12px);
         }
 
         .connection-status-message {
           margin: 0 0 12px 0;
-          color: var(--ascii-blue-600);
-          font-weight: 500;
-          font-size: 0.95rem;
+          color: var(--accent-color);
+          font-weight: var(--font-weight-medium, 500);
+          font-size: var(--font-size-sm, 12px);
         }
 
         .connection-issue-details p {
           margin: 0 0 12px 0;
-          color: var(--ascii-yellow-600);
-          font-weight: 500;
+          color: var(--warning-color);
+          font-weight: var(--font-weight-medium, 500);
         }
 
         .connection-issue-details ul {
           margin: 0 0 16px 0;
           padding-left: 20px;
-          color: var(--color-foreground-muted);
+          color: var(--text-muted);
         }
 
         .connection-issue-details li {
@@ -703,11 +702,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
 
         .retry-connection-button {
           width: 100%;
-          background-color: var(--ascii-blue-600) !important;
+          background-color: var(--accent-color) !important;
         }
 
         .retry-connection-button:hover {
-          background-color: var(--ascii-blue-500) !important;
+          background-color: var(--button-hover) !important;
         }
       `}</style>
     </div>
