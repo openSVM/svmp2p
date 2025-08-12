@@ -12,6 +12,7 @@ import { ToastContainer } from '../components/Toast';
 import { ReconnectionModal } from '../components/ReconnectionModal';
 import { SVM_NETWORKS, getNetworkConfig, getDefaultNetworkConfig } from '../config/networks';
 import { ERROR_CATEGORIES } from '../hooks/useToast';
+import { safeExecute, logError } from '../utils/errorHandling';
 
 // Maximum number of reconnection attempts
 const MAX_RECONNECT_ATTEMPTS = 3;
@@ -151,40 +152,46 @@ const PhantomWalletProvider = ({ children }) => {
     return baseDelay + (baseDelay * jitter);
   }, []);
 
-  // Detect Phantom wallet
+  // Detect Phantom wallet with error protection
   const detectPhantomWallet = useCallback(() => {
-    if (typeof window === 'undefined') return null;
-    
-    // Check for Phantom's Solana provider
-    if (window.phantom?.solana) {
-      return window.phantom.solana;
-    }
-    
-    // Check for legacy solana provider
-    if (window.solana?.isPhantom) {
-      return window.solana;
-    }
-    
-    return null;
+    return safeExecute(() => {
+      if (typeof window === 'undefined') return null;
+      
+      // Check for Phantom's Solana provider
+      if (window.phantom?.solana) {
+        return window.phantom.solana;
+      }
+      
+      // Check for legacy solana provider
+      if (window.solana?.isPhantom) {
+        return window.solana;
+      }
+      
+      return null;
+    }, 'detectPhantomWallet', null);
   }, []);
 
-  // Connect to Phantom wallet
+  // Connect to Phantom wallet with enhanced error handling
   const connect = useCallback(async () => {
     try {
       setConnecting(true);
       setError(null);
       setConnectionState('connecting');
 
-      const phantomWallet = detectPhantomWallet();
+      const phantomWallet = await detectPhantomWallet();
       
       if (!phantomWallet) {
         throw new Error('Phantom wallet not found. Please install Phantom browser extension.');
       }
 
-      // Connect to Phantom
-      const response = await phantomWallet.connect();
+      // Connect to Phantom with safe execution
+      const response = await safeExecute(
+        () => phantomWallet.connect(),
+        'phantom-wallet-connect',
+        null
+      );
       
-      if (response.publicKey) {
+      if (response?.publicKey) {
         const pubKey = new PublicKey(response.publicKey.toString());
         const address = pubKey.toString();
         
@@ -207,7 +214,7 @@ const PhantomWalletProvider = ({ children }) => {
         throw new Error('Failed to get public key from Phantom wallet');
       }
     } catch (err) {
-      console.error('[PhantomWalletProvider] Connection failed:', err);
+      logError(err, 'PhantomWalletProvider connection');
       const errorMsg = err.message || 'Failed to connect to Phantom wallet';
       setError(errorMsg);
       setConnectionState('error');
@@ -245,9 +252,9 @@ const PhantomWalletProvider = ({ children }) => {
     }
   }, [detectPhantomWallet, toast]);
 
-  // Disconnect from Phantom wallet
+  // Disconnect from Phantom wallet with error protection
   const disconnect = useCallback(async () => {
-    try {
+    return safeExecute(async () => {
       if (wallet && wallet.disconnect) {
         await wallet.disconnect();
       }
@@ -268,12 +275,12 @@ const PhantomWalletProvider = ({ children }) => {
       });
       
       console.log('[PhantomWalletProvider] Disconnected from Phantom wallet');
-    } catch (err) {
-      console.error('[PhantomWalletProvider] Disconnect failed:', err);
+    }, 'phantom-wallet-disconnect').catch((err) => {
+      logError(err, 'PhantomWalletProvider disconnect');
       const errorMsg = err.message || 'Disconnect failed';
       setError(errorMsg);
       toast.criticalError(`Disconnect failed: ${errorMsg}`);
-    }
+    });
   }, [wallet, toast]);
 
   // Sign transaction
@@ -483,11 +490,11 @@ const PhantomWalletProvider = ({ children }) => {
     console.log('[PhantomWalletProvider] Reconnection cancelled by user');
   }, []);
 
-  // Check for existing connection on mount
+  // Check for existing connection on mount with error protection
   useEffect(() => {
     const checkExistingConnection = async () => {
-      try {
-        const phantomWallet = detectPhantomWallet();
+      return safeExecute(async () => {
+        const phantomWallet = await detectPhantomWallet();
         const wasConnected = localStorage.getItem('phantomConnected') === 'true';
         
         if (phantomWallet && wasConnected) {
@@ -509,41 +516,50 @@ const PhantomWalletProvider = ({ children }) => {
             localStorage.removeItem('phantomAddress');
           }
         }
-      } catch (error) {
-        console.warn('[PhantomWalletProvider] Failed to restore connection:', error);
+      }, 'phantom-wallet-restore-connection').catch((error) => {
+        logError(error, 'PhantomWalletProvider restore connection');
         localStorage.removeItem('phantomConnected');
         localStorage.removeItem('phantomAddress');
-      }
+      });
     };
     
     checkExistingConnection();
   }, [detectPhantomWallet]);
 
-  // Listen for account changes
+  // Listen for account changes with error protection
   useEffect(() => {
     if (wallet && connected) {
       const handleAccountChanged = (publicKey) => {
-        if (publicKey) {
-          const pubKey = new PublicKey(publicKey.toString());
-          const address = pubKey.toString();
-          
-          setPublicKey(pubKey);
-          setWalletAddress(address);
-          localStorage.setItem('phantomAddress', address);
-          
-          toast.info('Phantom wallet account changed', { 
-            category: ERROR_CATEGORIES.SUCCESS 
-          });
-        } else {
-          // Account disconnected
-          disconnect();
-        }
+        safeExecute(() => {
+          if (publicKey) {
+            const pubKey = new PublicKey(publicKey.toString());
+            const address = pubKey.toString();
+            
+            setPublicKey(pubKey);
+            setWalletAddress(address);
+            localStorage.setItem('phantomAddress', address);
+            
+            toast.info('Phantom wallet account changed', { 
+              category: ERROR_CATEGORIES.SUCCESS 
+            });
+          } else {
+            // Account disconnected
+            disconnect();
+          }
+        }, 'phantom-wallet-account-change').catch((error) => {
+          logError(error, 'PhantomWalletProvider account change handler');
+        });
       };
       
-      wallet.on('accountChanged', handleAccountChanged);
+      // Safe event listener attachment
+      safeExecute(() => {
+        wallet.on('accountChanged', handleAccountChanged);
+      }, 'phantom-wallet-event-listener');
       
       return () => {
-        wallet.off('accountChanged', handleAccountChanged);
+        safeExecute(() => {
+          wallet.off('accountChanged', handleAccountChanged);
+        }, 'phantom-wallet-event-cleanup');
       };
     }
   }, [wallet, connected, disconnect, toast]);

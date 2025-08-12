@@ -5,6 +5,9 @@ import dynamic from 'next/dynamic';
 import { initWebVitals } from '@/utils/webVitals';
 import { analyzeBundleSize } from '@/utils/lazyLoading';
 
+// Import error handling for external script conflicts
+import { setupGlobalErrorHandling } from '@/utils/errorHandling';
+
 // Import styles - order matters for CSS
 // IMPORTANT: In CSS files, all @import statements must be at the top of the file
 // with proper formatting and line breaks between them and the first CSS rule.
@@ -33,13 +36,16 @@ import { PhantomWalletProvider } from '@/contexts/PhantomWalletProvider';
 // Import Layout
 import Layout from '@/components/Layout';
 
-// Dynamically import ErrorBoundary to prevent SSR issues
-const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary'), { ssr: false });
+// Dynamically import EnhancedErrorBoundary to prevent SSR issues
+const ErrorBoundary = dynamic(() => import('@/components/EnhancedErrorBoundary'), { ssr: false });
 
 export default function App({ Component, pageProps }) {
 
   // Initialize performance monitoring
   useEffect(() => {
+    // Setup global error handling first to catch external script errors
+    setupGlobalErrorHandling();
+    
     // Initialize Web Vitals monitoring
     initWebVitals();
     
