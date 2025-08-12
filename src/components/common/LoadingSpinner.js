@@ -42,8 +42,8 @@ const LoadingSpinner = ({ size = 'medium', color = 'primary', text = 'Loading...
         }
         
         .spinner-circle {
-          border-radius: 0;
-          border: 3px solid var(--ascii-neutral-300);
+          border-radius: var(--border-radius, 0px);
+          border: 3px solid var(--border-color);
           border-top-color: currentColor;
           animation: spin 0.8s linear infinite;
         }
@@ -67,34 +67,33 @@ const LoadingSpinner = ({ size = 'medium', color = 'primary', text = 'Loading...
         }
         
         .spinner-primary {
-          color: var(--ascii-neutral-700);
+          color: var(--accent-color);
         }
         
         .spinner-secondary {
-          color: var(--ascii-neutral-600);
+          color: var(--text-secondary);
         }
         
         .spinner-success {
-          color: var(--ascii-neutral-800);
+          color: var(--success-color);
         }
         
         .spinner-danger {
-          color: var(--ascii-neutral-900);
+          color: var(--error-color);
         }
         
         .spinner-warning {
-          color: var(--ascii-neutral-600);
+          color: var(--warning-color);
         }
         
         .spinner-info {
-          color: var(--ascii-neutral-700);
+          color: var(--info-color);
         }
         
         .spinner-text {
-          margin-top: 0.5rem;
-          font-size: 0.875rem;
-          color: var(--ascii-neutral-600);
-          font-family: 'Courier New', Courier, monospace;
+          margin-top: var(--spacing-2, 8px);
+          font-size: var(--font-size-sm, 14px);
+          color: var(--text-secondary);
           text-transform: uppercase;
         }
         

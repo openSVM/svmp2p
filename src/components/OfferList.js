@@ -5,7 +5,7 @@ import { LoadingSpinner, ButtonLoader, TransactionStatus, Tooltip, ConfirmationD
 import { usePhantomWallet } from '../contexts/PhantomWalletProvider';
 import { useDebounce, VirtualizedList } from '../utils/performance';
 import { useActionDebounce } from '../hooks/useActionDebounce';
-import { SUPPORTED_CURRENCIES, SUPPORTED_PAYMENT_METHODS } from '../constants/tradingConstants';
+import { SUPPORTED_CURRENCIES, getPaymentMethodsForCurrency } from '../constants/tradingConstants';
 import { useOffers } from '../hooks/useOnChainData';
 import { useRealPriceData } from '../hooks/usePriceData';
 import ConnectWalletPrompt from './ConnectWalletPrompt';
@@ -295,7 +295,17 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
   
   // Memoize static data
   const currencies = useMemo(() => ['', ...SUPPORTED_CURRENCIES], []);
-  const paymentMethods = useMemo(() => ['', ...SUPPORTED_PAYMENT_METHODS], []);
+  
+  // Get all unique payment methods from all currencies for filtering
+  const allPaymentMethods = useMemo(() => {
+    const methodSet = new Set();
+    SUPPORTED_CURRENCIES.forEach(currency => {
+      const methods = getPaymentMethodsForCurrency(currency);
+      methods.forEach(method => methodSet.add(method));
+    });
+    return ['', ...Array.from(methodSet).sort()];
+  }, []);
+  
   const sortOptions = useMemo(() => [
     { value: 'createdAt', label: 'Date Posted' },
     { value: 'solAmount', label: 'SOL Amount' },
@@ -489,6 +499,46 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
     localStorage.setItem(`svmp2p-saved-searches-${type}`, JSON.stringify(updatedSearches));
   }, [savedSearches, type]);
   
+  // Actual implementation of the offer action after confirmation
+  const processOfferAction = useCallback(async (offerId, action) => {
+    setProcessingAction({
+      offerId,
+      action
+    });
+    
+    setTxStatus({
+      status: 'pending',
+      message: `Processing ${action}...`
+    });
+    
+    try {
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Mock successful transaction
+      setStatusMessage(`Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`);
+      setTxStatus({
+        status: 'success',
+        message: `Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`
+      });
+      
+      // Refresh offers after action
+      refetch();
+    } catch (err) {
+      console.error(`Error ${action}ing offer:`, err);
+      setError(`Failed to ${action} offer: ${err.message}`);
+      setTxStatus({
+        status: 'error',
+        message: `Failed to ${action} offer: ${err.message}`
+      });
+    } finally {
+      setProcessingAction({
+        offerId: null,
+        action: null
+      });
+    }
+  }, [refetch]);
+
   // Handle offer actions (accept, cancel, etc.) - useCallback to prevent recreation on each render
   const handleOfferAction = useCallback(async (offerId, action) => {
     if (!wallet.publicKey) {
@@ -529,48 +579,8 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
       // For other actions without confirmation
       processOfferAction(offerId, action);
     }
-  }, [wallet.publicKey]);
+  }, [wallet.publicKey, processOfferAction]);
 
-  // Actual implementation of the offer action after confirmation
-  const processOfferAction = useCallback(async (offerId, action) => {
-    setProcessingAction({
-      offerId,
-      action
-    });
-    
-    setTxStatus({
-      status: 'pending',
-      message: `Processing ${action}...`
-    });
-    
-    try {
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Mock successful transaction
-      setStatusMessage(`Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`);
-      setTxStatus({
-        status: 'success',
-        message: `Successfully ${action === 'accept' ? 'accepted' : action + 'ed'} offer`
-      });
-      
-      // Refresh offers after action
-      refetch();
-    } catch (err) {
-      console.error(`Error ${action}ing offer:`, err);
-      setError(`Failed to ${action} offer: ${err.message}`);
-      setTxStatus({
-        status: 'error',
-        message: `Failed to ${action} offer: ${err.message}`
-      });
-    } finally {
-      setProcessingAction({
-        offerId: null,
-        action: null
-      });
-    }
-  }, [refetch]);
-  
   // Clear transaction status - useCallback to prevent recreation on each render
   const handleClearTxStatus = useCallback(() => {
     setTxStatus(null);
@@ -838,7 +848,7 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
                   onChange={(e) => setSelectedPaymentMethod(e.target.value)}
                   aria-label="Select payment method"
                 >
-                  {paymentMethods.map(method => (
+                  {allPaymentMethods.map(method => (
                     <option key={method} value={method}>{method || 'All Payment Methods'}</option>
                   ))}
                 </select>
@@ -922,20 +932,19 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
         }
 
         .guided-workflow-button {
-          background-color: var(--ascii-neutral-700);
-          color: var(--ascii-white);
-          border: 1px solid var(--ascii-neutral-800);
-          padding: 8px 16px;
-          border-radius: 0;
+          background-color: var(--card-bg);
+          color: var(--text-primary);
+          border: var(--border-width, 1px) solid var(--border-color);
+          padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+          border-radius: var(--border-radius, 0px);
           cursor: pointer;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 14px);
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-family: 'Courier New', Courier, monospace;
+          gap: var(--spacing-2, 8px);
           text-transform: uppercase;
-          transition: all var(--transition-normal);
-          box-shadow: var(--shadow-sm);
+          transition: all var(--transition-normal, 0.2s);
+          box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.1));
         }
 
         .guided-workflow-button::before {
@@ -945,17 +954,17 @@ const OfferList = ({ type = 'buy', onStartGuidedWorkflow}) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: var(--ascii-neutral-500);
-          border: 1px solid var(--ascii-neutral-600);
-          border-radius: 0;
-          font-size: 0.8rem;
-          font-weight: bold;
+          background-color: var(--secondary-bg);
+          border: var(--border-width, 1px) solid var(--border-color);
+          border-radius: var(--border-radius, 0px);
+          font-size: var(--font-size-xs, 12px);
+          font-weight: var(--font-weight-bold, 700);
         }
 
         .guided-workflow-button:hover {
-          background-color: var(--ascii-neutral-600);
+          background-color: var(--secondary-bg);
           transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
+          box-shadow: var(--shadow-md, 0 2px 4px rgba(0,0,0,0.15));
         }
 
         .view-deal-button {

@@ -186,7 +186,7 @@ const UserProfile = ({ wallet: walletProp, network, initialTab = 'overview', onT
       setError('An error occurred while loading your profile');
       setLoading(false);
     }
-  }, [isWalletConnected]); // Remove fetchProfileData to prevent infinite re-renders
+  }, [isWalletConnected, fetchProfileData]);
 
   // Handle settings update - optimized with useCallback
   const handleSaveSettings = useCallback((newSettings) => {

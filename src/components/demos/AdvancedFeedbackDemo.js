@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   TransactionProgressIndicator, 
   TransactionAnalytics, 
@@ -40,8 +40,8 @@ const AdvancedFeedbackDemo = () => {
     }
   ]);
 
-  // Demo transaction steps
-  const transactionSteps = [
+  // Demo transaction steps using useMemo to prevent dependency issues
+  const transactionSteps = useMemo(() => [
     {
       title: 'Validating Transaction',
       description: 'Checking transaction parameters and user balance',
@@ -62,7 +62,7 @@ const AdvancedFeedbackDemo = () => {
       description: 'Transaction successfully processed',
       details: 'Funds transferred and transaction recorded'
     }
-  ];
+  ], []);
 
   const [progressData, setProgressData] = useState({
     currentStepIndex: 0,
@@ -116,7 +116,7 @@ const AdvancedFeedbackDemo = () => {
 
       return () => clearInterval(interval);
     }
-  }, [currentTransaction]);
+  }, [currentTransaction, transactionSteps]);
 
   // Add notification helper
   const addNotification = (notificationData) => {

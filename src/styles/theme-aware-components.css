@@ -1,0 +1,1012 @@
+/**
+ * THEME-AWARE COMPONENT STYLES
+ * All component styles use CSS variables that change with the selected theme
+ * This replaces hardcoded ASCII classes with flexible theme system
+ */
+
+/* Layout Components */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+}
+
+/* Header Styles */
+.app-header {
+  background-color: var(--secondary-bg);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  gap: var(--spacing-3, 12px);
+}
+
+/* Logo Section */
+.app-logo-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+  flex-shrink: 0;
+}
+
+.app-logo-image {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.app-logo-text {
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Navigation Styles */
+.app-nav-desktop {
+  display: none;
+  flex: 1;
+  margin: 0 var(--spacing-4, 16px);
+}
+
+.app-nav-tabs {
+  display: flex;
+  gap: var(--spacing-2, 8px);
+  align-items: center;
+}
+
+.app-nav-tab {
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+}
+
+.app-nav-tab:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.app-nav-tab.active {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border-color: var(--accent-color);
+}
+
+/* Header Controls */
+.app-header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+  flex-shrink: 0;
+}
+
+.app-header-control {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-secondary);
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+}
+
+.app-header-control:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.app-wallet-status {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs, 10px);
+  color: var(--text-muted);
+  padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+  background-color: var(--secondary-bg);
+  border-radius: var(--border-radius, 0px);
+}
+
+.app-wallet-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile Navigation */
+.app-nav-mobile {
+  display: block;
+  background-color: var(--secondary-bg);
+  border-top: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-2, 8px);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+}
+
+.app-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-1, 4px);
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+}
+
+.app-nav-button {
+  padding: var(--spacing-2, 8px);
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs, 10px);
+  font-weight: var(--font-weight-medium, 500);
+  text-align: center;
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-nav-button:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.app-nav-button.active {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border-color: var(--accent-color);
+}
+
+/* Main Content */
+.app-main {
+  flex: 1;
+  padding: var(--spacing-4, 16px) 0;
+  margin-bottom: 80px; /* Space for mobile nav */
+}
+
+/* Footer */
+.app-footer {
+  background-color: var(--secondary-bg);
+  border-top: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-3, 12px);
+  margin-top: auto;
+}
+
+/* Form Components */
+.app-form {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  padding: var(--spacing-4, 16px);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.app-form-header {
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-3, 12px);
+  padding-bottom: var(--spacing-2, 8px);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+}
+
+.app-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-section {
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.app-form-section-title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base, 14px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2, 8px);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  padding-bottom: var(--spacing-1, 4px);
+}
+
+/* Form Layout */
+.app-form-row-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-row-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-2, 8px);
+}
+
+.app-form-row-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-2, 8px);
+}
+
+/* Form Fields */
+.app-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 4px);
+}
+
+.app-field label {
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--text-primary);
+}
+
+.app-field input,
+.app-field textarea,
+.app-field select {
+  background-color: var(--secondary-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-primary);
+  padding: var(--spacing-2, 8px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+}
+
+.app-field input:focus,
+.app-field textarea:focus,
+.app-field select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background-color: var(--card-bg);
+}
+
+.app-field-help {
+  font-size: var(--font-size-xs, 10px);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.app-field-error-message {
+  font-size: var(--font-size-xs, 10px);
+  color: var(--error-color);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.app-field-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+}
+
+/* Checkbox Styles */
+.app-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.app-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-color);
+}
+
+/* Button Styles */
+.app-button-primary,
+.app-button-secondary {
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.app-button-primary {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border-color: var(--accent-color);
+}
+
+.app-button-primary:hover {
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+.app-button-secondary {
+  background-color: var(--secondary-bg);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+.app-button-secondary:hover {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* Form Actions */
+.app-form-actions {
+  display: flex;
+  gap: var(--spacing-3, 12px);
+  justify-content: flex-end;
+  margin-top: var(--spacing-4, 16px);
+  padding-top: var(--spacing-3, 12px);
+  border-top: var(--border-width, 1px) solid var(--border-color);
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 768px) {
+  .app-nav-desktop {
+    display: flex;
+  }
+  
+  .app-nav-mobile {
+    display: none;
+  }
+  
+  .app-main {
+    margin-bottom: 0;
+  }
+  
+  .app-nav-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .app-form-row-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .app-form-row-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .app-form-row-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-header-content {
+    gap: var(--spacing-4, 16px);
+  }
+  
+  .app-logo-text {
+    font-size: var(--font-size-xl, 18px);
+  }
+  
+  .app-nav-tab {
+    padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+    font-size: var(--font-size-base, 14px);
+  }
+}
+
+/* Theme-Aware Dropdown Styles */
+.app-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.app-dropdown-trigger {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-secondary);
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+}
+
+.app-dropdown-trigger:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.app-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 60;
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.app-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.app-dropdown-item:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
+.app-dropdown-item.active {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+}
+
+/* Content Utilities */
+.container {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  padding: 0 var(--spacing-3, 12px);
+}
+
+.content-container {
+  padding: var(--spacing-4, 16px) var(--spacing-3, 12px);
+}
+
+.content-transition-wrapper {
+  transition: opacity 0.2s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.text-sm {
+  font-size: var(--font-size-sm, 12px);
+}
+
+.text-foreground-muted {
+  color: var(--text-muted);
+}
+
+/* Skip to content accessibility */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--accent-color);
+  color: var(--button-text);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: var(--border-radius, 0px);
+}
+
+.skip-to-content:focus {
+  top: 6px;
+}
+
+/* App.js Specific Theme-Aware Styles */
+
+/* Guided Workflow Styles */
+.app-guided-workflow-error {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--error-border, var(--border-color));
+  padding: var(--spacing-4, 16px);
+  margin: var(--spacing-4, 16px);
+  border-radius: var(--border-radius, 0px);
+  text-align: center;
+}
+
+.app-error-recovery-button {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border: var(--border-width, 1px) solid var(--accent-color);
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  margin-top: var(--spacing-3, 12px);
+  transition: all 0.1s ease;
+}
+
+.app-error-recovery-button:hover {
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+.app-guided-workflow-container {
+  background-color: var(--secondary-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  margin: var(--spacing-4, 16px);
+  overflow: hidden;
+}
+
+.app-guided-workflow-header {
+  background-color: var(--card-bg);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-guided-workflow-header h2 {
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.app-exit-workflow-button {
+  background-color: var(--secondary-bg);
+  color: var(--text-secondary);
+  border: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.app-exit-workflow-button:hover {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* Content Container Styles */
+.app-content-container {
+  flex: 1;
+  padding: var(--spacing-4, 16px);
+  background-color: var(--primary-bg);
+}
+
+.app-content-transition-wrapper {
+  transition: opacity 0.2s ease;
+}
+
+.app-fade-in {
+  animation: appFadeIn 0.3s ease;
+}
+
+@keyframes appFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Footer Styles */
+.app-footer {
+  background-color: var(--secondary-bg);
+  border-top: var(--border-width, 1px) solid var(--border-color);
+  padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+}
+
+.app-footer-content {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+}
+
+.app-footer-desktop {
+  display: none;
+}
+
+.app-footer-mobile {
+  display: block;
+}
+
+.app-footer-section {
+  margin-bottom: var(--spacing-3, 12px);
+}
+
+.app-footer-section:last-child {
+  margin-bottom: 0;
+}
+
+.app-footer-network,
+.app-footer-description,
+.app-footer-text {
+  font-family: var(--font-family);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.app-footer-network {
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-bold, 700);
+}
+
+.app-footer-description {
+  font-size: var(--font-size-xs, 11px);
+  margin-top: var(--spacing-1, 4px);
+}
+
+.app-footer-text {
+  font-size: var(--font-size-xs, 11px);
+}
+
+/* Global Error Styles */
+.app-global-error-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  padding: var(--spacing-4, 16px);
+  text-align: center;
+}
+
+.app-global-error-container h1 {
+  font-size: var(--font-size-xl, 18px);
+  font-weight: var(--font-weight-bold, 700);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.app-global-error-content {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  padding: var(--spacing-4, 16px);
+  max-width: 400px;
+}
+
+.app-global-error-content h2 {
+  font-size: var(--font-size-lg, 16px);
+  font-weight: var(--font-weight-bold, 700);
+  margin-bottom: var(--spacing-3, 12px);
+}
+
+.app-global-error-content p {
+  font-size: var(--font-size-sm, 12px);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.app-button {
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border: var(--border-width, 1px) solid var(--accent-color);
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  border-radius: var(--border-radius, 0px);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.app-button:hover {
+  background-color: var(--button-hover);
+  border-color: var(--button-hover);
+}
+
+/* Additional Theme-Aware Form Elements */
+.app-form-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-3, 12px);
+}
+
+.app-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1, 4px);
+}
+
+.app-form-field label {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs, 11px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.app-form-field input,
+.app-form-field select,
+.app-form-field textarea {
+  background-color: var(--input-bg, var(--card-bg));
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-primary);
+  padding: var(--spacing-2, 8px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+}
+
+.app-form-field input:focus,
+.app-form-field select:focus,
+.app-form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background-color: var(--primary-bg);
+}
+
+.app-form-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3, 12px);
+  justify-content: space-between;
+  padding: var(--spacing-3, 12px);
+}
+
+.app-form-field-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+}
+
+.app-form-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+  padding: var(--spacing-3, 12px);
+  color: var(--text-secondary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  text-align: center;
+  justify-content: center;
+}
+
+.app-button-animate {
+  transition: all 0.1s ease;
+}
+
+.app-button-animate:hover {
+  transform: translateY(-1px);
+}
+
+/* Table Styles */
+.app-table {
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  overflow: hidden;
+}
+
+.app-table-header {
+  background-color: var(--secondary-bg);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.app-table-col {
+  padding: var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.app-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  transition: background-color 0.1s ease;
+}
+
+.app-table-row:last-child {
+  border-bottom: none;
+}
+
+.app-table-row:hover {
+  background-color: var(--secondary-bg);
+}
+
+.app-table-row .app-table-col {
+  padding: var(--spacing-3, 12px);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--text-primary);
+}
+
+.property-name {
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--text-secondary);
+}
+
+.property-description {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--text-muted);
+  margin-top: var(--spacing-1, 4px);
+}
+
+.property-value {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+}
+
+/* Desktop Footer Layout */
+@media (min-width: 768px) {
+  .app-footer-desktop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .app-footer-mobile {
+    display: none;
+  }
+  
+  .app-footer-section {
+    margin-bottom: 0;
+  }
+  
+  .app-footer-copyright {
+    text-align: right;
+  }
+}
+
+/* ReconnectionModal Theme-Aware Styles */
+.reconnection-timer-text {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-primary);
+}
+
+.reconnection-title {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2, 8px);
+}
+
+.reconnection-description {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-4, 16px);
+}
+
+.reconnection-attempt-info {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-6, 24px);
+}
+
+.reconnection-cancel-button {
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  color: var(--text-secondary);
+  background: none;
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 4px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Touch-friendly */
+  min-width: 44px;
+}
+
+.reconnection-cancel-button:hover {
+  color: var(--text-primary);
+  background-color: var(--secondary-bg);
+}
+
+.reconnection-cancel-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.reconnection-refresh-button {
+  padding: var(--spacing-2, 8px) var(--spacing-4, 16px);
+  background-color: var(--accent-color);
+  color: var(--button-text);
+  border: none;
+  border-radius: var(--border-radius, 4px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px; /* Touch-friendly */
+  min-width: 44px;
+}
+
+.reconnection-refresh-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.reconnection-refresh-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+/* Responsive adjustments for ReconnectionModal */
+@media (max-width: 768px) {
+  .reconnection-timer-text {
+    font-size: 1.5rem;
+  }
+  
+  .reconnection-title {
+    font-size: 1rem;
+  }
+  
+  .reconnection-cancel-button,
+  .reconnection-refresh-button {
+    padding: var(--spacing-3, 12px) var(--spacing-4, 16px);
+    font-size: var(--font-size-sm, 0.875rem);
+  }
+}
+
+/* Footer Styles */
+.app-footer-center {
+  text-align: center;
+}
+
+.app-footer-copyright {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--text-muted);
+  margin: 0;
+}

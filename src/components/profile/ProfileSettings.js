@@ -1,14 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import PropertyValueTable from '../common/PropertyValueTable';
+import ThemeSelector from '../ThemeSelector';
 
 /**
- * ProfileSettings component allows users to customize their profile settings
+ * ProfileSettings component allows users to customize their profile settings,
+ * including theme and language preferences
  */
 const ProfileSettings = ({ settings, onSaveSettings }) => {
-  const [profileSettings, setProfileSettings] = useState(settings);
-  const [isEditing, setIsEditing] = useState(false);
+  // Initialize with safe defaults if settings is null/undefined - using useMemo to prevent dependency issues
+  const defaultSettings = useMemo(() => ({
+    displayName: '',
+    bio: '',
+    showReputationScore: true,
+    showTransactionHistory: false,
+    emailNotifications: true,
+    browserNotifications: true,
+    notificationFrequency: 'immediate',
+    privateProfile: false,
+    hideWalletAddress: false,
+  }), []);
   
+  const safeSettings = settings || defaultSettings;
+  const [profileSettings, setProfileSettings] = useState(safeSettings);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('blueprint');
+  
+  // Load theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'blueprint';
+    setCurrentTheme(savedTheme);
+  }, []);
+  
+  // Update profileSettings when settings prop changes
+  useEffect(() => {
+    const safeSettings = settings || defaultSettings;
+    setProfileSettings(safeSettings);
+  }, [settings, defaultSettings]);
+
   // Handle input change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,6 +54,59 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
     setIsEditing(false);
   };
 
+  // Handle theme change
+  const handleThemeChange = (themeKey) => {
+    setCurrentTheme(themeKey);
+    localStorage.setItem('theme', themeKey);
+    // Theme will be applied by the ThemeSelector component
+  };
+
+  // Get current language name from localStorage
+  const getCurrentLanguageName = () => {
+    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+    const languages = [
+      { code: 'en', name: 'English', country: '🇺🇸' },
+      { code: 'es', name: 'Español', country: '🇪🇸' },
+      { code: 'fr', name: 'Français', country: '🇫🇷' },
+      { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+      { code: 'ja', name: '日本語', country: '🇯🇵' },
+      { code: 'ko', name: '한국어', country: '🇰🇷' },
+      { code: 'zh', name: '中文', country: '🇨🇳' }
+    ];
+    const lang = languages.find(l => l.code === savedLanguage);
+    return lang ? `${lang.country} ${lang.name}` : '🇺🇸 English';
+  };
+
+  // Get current theme name
+  const getCurrentThemeName = () => {
+    const themeNames = {
+      'blueprint': 'BLUEPRINT',
+      'grayscale': 'GRAYSCALE', 
+      'corporate': 'CORPORATE',
+      'retro': 'RETRO',
+      'terminal': 'TERMINAL',
+      'minimal': 'MINIMAL',
+      'cyberpunk': 'CYBERPUNK',
+      'organic': 'ORGANIC',
+      'high-contrast': 'HIGH CONTRAST',
+      'pastel': 'PASTEL'
+    };
+    return themeNames[currentTheme] || 'BLUEPRINT';
+  };
+
+  // Prepare interface preferences data
+  const interfacePreferencesData = [
+    { 
+      property: 'THEME', 
+      value: getCurrentThemeName(),
+      description: 'Current visual theme - use theme selector to change'
+    },
+    { 
+      property: 'LANGUAGE', 
+      value: getCurrentLanguageName(),
+      description: 'Interface language - change in header navigation'
+    },
+  ];
   // Prepare display preferences data
   const displayPreferencesData = [
     { 
@@ -112,7 +194,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
           <button 
             className="button button-secondary button-sm"
             onClick={() => {
-              setProfileSettings(settings);
+              setProfileSettings(safeSettings);
               setIsEditing(false);
             }}
           >
@@ -126,15 +208,150 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
   if (isEditing) {
     return (
       <div className="profile-settings-edit">
-        <div className="ascii-form">
-          <div className="ascii-form-header">EDIT PROFILE SETTINGS</div>
+        <div className="app-form">
+          <div className="app-form-header">EDIT PROFILE SETTINGS</div>
           
           <form onSubmit={handleSubmit}>
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">DISPLAY PREFERENCES</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">INTERFACE PREFERENCES</div>
               
-              <div className="ascii-form-row-2">
-                <div className="ascii-field">
+              <div className="app-form-row-1">
+                <div className="app-field">
+                  <label>THEME</label>
+                  <div className="theme-selector-container">
+                    <ThemeSelector 
+                      value={currentTheme}
+                      onChange={handleThemeChange}
+                      className="profile-theme-selector"
+                    />
+                  </div>
+                  <div className="app-field-help">Choose your preferred visual theme</div>
+                </div>
+              </div>
+              
+              <div className="app-form-info">
+                <p>💡 Language settings have been moved to the header navigation for easier access.</p>
+                <p>You can change your language preference using the language selector in the top navigation bar.</p>
+              </div>
+            </div>
+
+            <style jsx>{`
+              .profile-theme-selector {
+                width: 100%;
+                background: var(--card-bg, var(--color-background));
+                border: 1px solid var(--border-color, var(--color-border));
+                border-radius: var(--border-radius, 0);
+                position: relative;
+              }
+              
+              .profile-theme-selector .app-header-control,
+              .profile-theme-selector .app-dropdown-trigger {
+                width: 100%;
+                background: var(--card-bg, var(--color-background));
+                border: 1px solid var(--border-color, var(--color-border));
+                color: var(--text-primary, var(--color-foreground));
+                padding: 8px 12px;
+                border-radius: var(--border-radius, 0);
+                font-family: var(--font-family, inherit);
+                font-size: 14px;
+                text-align: left;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              }
+              
+              .profile-theme-selector .app-header-control:hover,
+              .profile-theme-selector .app-dropdown-trigger:hover {
+                background: var(--secondary-bg, var(--color-background-alt));
+                border-color: var(--accent-color, var(--color-primary));
+              }
+              
+              .profile-theme-selector .app-dropdown-menu,
+              .profile-theme-selector .theme-selector-menu {
+                width: 100%;
+                max-width: none;
+                left: 0 !important;
+                right: 0;
+                position: absolute;
+                top: 100%;
+                background: var(--card-bg, var(--color-background));
+                border: 1px solid var(--border-color, var(--color-border));
+                box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+                z-index: 1000;
+                max-height: 200px;
+                overflow-y: auto;
+                border-radius: var(--border-radius, 0);
+                padding: 4px;
+              }
+              
+              .profile-theme-selector .app-dropdown-item,
+              .profile-theme-selector .theme-option {
+                width: 100%;
+                background: transparent;
+                border: none;
+                padding: 8px 12px;
+                text-align: left;
+                cursor: pointer;
+                color: var(--text-primary, var(--color-foreground));
+                font-family: var(--font-family, inherit);
+                font-size: 14px;
+                border-radius: var(--border-radius, 0);
+                margin: 0;
+              }
+              
+              .profile-theme-selector .app-dropdown-item:hover,
+              .profile-theme-selector .theme-option:hover {
+                background: var(--secondary-bg, var(--color-background-alt));
+              }
+              
+              .profile-theme-selector .app-dropdown-item.active,
+              .profile-theme-selector .theme-option.active {
+                background: var(--accent-color, var(--color-primary));
+                color: var(--button-text, white);
+              }
+              
+              .profile-theme-selector .theme-option-content {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+              }
+              
+              .profile-theme-selector .theme-name {
+                font-weight: bold;
+                font-size: 14px;
+              }
+              
+              .profile-theme-selector .theme-description {
+                font-size: 12px;
+                opacity: 0.8;
+                font-style: italic;
+              }
+              
+              .app-form-info {
+                background: var(--secondary-bg, var(--color-background-alt));
+                border: 1px solid var(--border-color, var(--color-border));
+                border-radius: var(--border-radius, 0px);
+                padding: 12px;
+                margin-top: 16px;
+                font-size: var(--font-size-sm, 12px);
+                color: var(--text-muted, var(--color-foreground-muted));
+              }
+              
+              .app-form-info p {
+                margin: 0 0 8px 0;
+              }
+              
+              .app-form-info p:last-child {
+                margin-bottom: 0;
+              }
+            `}</style>
+
+            <div className="app-form-section">
+              <div className="app-form-section-title">DISPLAY PREFERENCES</div>
+              
+              <div className="app-form-row-2">
+                <div className="app-field">
                   <label htmlFor="displayName">DISPLAY NAME</label>
                   <input
                     type="text"
@@ -145,10 +362,10 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                     placeholder="Enter display name"
                     maxLength={30}
                   />
-                  <div className="ascii-field-help">This name will be displayed to other users</div>
+                  <div className="app-field-help">This name will be displayed to other users</div>
                 </div>
                 
-                <div className="ascii-field">
+                <div className="app-field">
                   <label htmlFor="bio">BIO</label>
                   <textarea
                     id="bio"
@@ -159,15 +376,15 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                     maxLength={160}
                     rows={3}
                   />
-                  <div className="ascii-field-help">
+                  <div className="app-field-help">
                     {160 - (profileSettings.bio?.length || 0)} characters remaining
                   </div>
                 </div>
               </div>
               
-              <div className="ascii-form-row-2">
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+              <div className="app-form-row-2">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="showReputationScore"
@@ -178,8 +395,8 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                   </label>
                 </div>
                 
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="showTransactionHistory"
@@ -192,12 +409,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
               </div>
             </div>
             
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">NOTIFICATION SETTINGS</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">NOTIFICATION SETTINGS</div>
               
-              <div className="ascii-form-row-3">
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+              <div className="app-form-row-3">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="emailNotifications"
@@ -208,8 +425,8 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                   </label>
                 </div>
                 
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="browserNotifications"
@@ -220,7 +437,7 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                   </label>
                 </div>
                 
-                <div className="ascii-field">
+                <div className="app-field">
                   <label htmlFor="notificationFrequency">FREQUENCY</label>
                   <select
                     id="notificationFrequency"
@@ -237,12 +454,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
               </div>
             </div>
             
-            <div className="ascii-form-section">
-              <div className="ascii-form-section-title">PRIVACY SETTINGS</div>
+            <div className="app-form-section">
+              <div className="app-form-section-title">PRIVACY SETTINGS</div>
               
-              <div className="ascii-form-row-2">
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+              <div className="app-form-row-2">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="privateProfile"
@@ -251,13 +468,13 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                     />
                     MAKE PROFILE PRIVATE
                   </label>
-                  <div className="ascii-field-help">
+                  <div className="app-field-help">
                     Only users you've traded with can see your profile
                   </div>
                 </div>
                 
-                <div className="ascii-field-inline">
-                  <label className="ascii-checkbox">
+                <div className="app-field-inline">
+                  <label className="app-checkbox">
                     <input
                       type="checkbox"
                       name="hideWalletAddress"
@@ -270,15 +487,15 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
               </div>
             </div>
             
-            <div className="ascii-form-actions">
-              <button type="submit" className="ascii-button-primary">
+            <div className="app-form-actions">
+              <button type="submit" className="app-button-primary">
                 SAVE SETTINGS
               </button>
               <button 
                 type="button" 
-                className="ascii-button-secondary"
+                className="app-button-secondary"
                 onClick={() => {
-                  setProfileSettings(settings);
+                  setProfileSettings(safeSettings);
                   setIsEditing(false);
                 }}
               >
@@ -293,6 +510,12 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
 
   return (
     <div className="profile-settings">
+      <PropertyValueTable
+        title="Interface Preferences"
+        data={interfacePreferencesData}
+        className="interface-preferences-table"
+      />
+      
       <PropertyValueTable
         title="Display Preferences"
         data={displayPreferencesData}
@@ -331,17 +554,7 @@ ProfileSettings.propTypes = {
 };
 
 ProfileSettings.defaultProps = {
-  settings: {
-    displayName: '',
-    bio: '',
-    showReputationScore: true,
-    showTransactionHistory: false,
-    emailNotifications: true,
-    browserNotifications: true,
-    notificationFrequency: 'immediate',
-    privateProfile: false,
-    hideWalletAddress: false,
-  },
+  settings: null, // Allow null settings, component will use defaults
 };
 
 export default ProfileSettings;

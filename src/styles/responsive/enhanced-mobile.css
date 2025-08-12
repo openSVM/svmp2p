@@ -591,3 +591,105 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
   }
 }
+
+/* Small Mobile Devices (480px and below) */
+@media (max-width: 480px) {
+  :root {
+    --header-height-small-mobile: 50px;
+    --spacing-small-mobile: 6px;
+    --font-size-tiny-mobile: 11px;
+  }
+  
+  .app-header {
+    height: var(--header-height-small-mobile) !important;
+    padding: 0 var(--spacing-small-mobile) !important;
+  }
+  
+  .app-logo-text {
+    font-size: var(--font-size-tiny-mobile) !important;
+  }
+  
+  .app-nav-mobile {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--spacing-small-mobile) !important;
+  }
+  
+  .app-nav-button {
+    font-size: var(--font-size-tiny-mobile) !important;
+    padding: 6px !important;
+  }
+  
+  .container {
+    padding-left: var(--spacing-small-mobile) !important;
+    padding-right: var(--spacing-small-mobile) !important;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  h3 {
+    font-size: 1.125rem !important;
+  }
+}
+
+/* Touch-friendly improvements for mobile devices */
+@media (max-width: 768px) {
+  /* Touch-friendly button and interactive element sizing */
+  .touch-friendly button,
+  .touch-friendly a,
+  .touch-friendly input,
+  .touch-friendly select,
+  .touch-friendly textarea {
+    min-height: 44px; /* Minimum touch target size recommended by Apple and Google */
+    min-width: 44px;
+  }
+  
+  /* Enhanced active states for touch devices */
+  .touch-friendly button:active,
+  .touch-friendly a:active,
+  .touch-friendly .nav-button:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+    transition: all 0.1s ease;
+  }
+  
+  /* Touch feedback animations */
+  .touch-feedback {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .touch-feedback::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+  }
+  
+  .touch-feedback:active::after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+  }
+  
+  /* Improved touch scrolling for mobile */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}

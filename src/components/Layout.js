@@ -13,7 +13,6 @@ import { AppContext } from '@/contexts/AppContext';
 // Import components
 import { NetworkSelector } from '@/components/NetworkSelector';
 import LanguageSelector from '@/components/LanguageSelector';
-import ThemeSelector from '@/components/ThemeSelector';
 import OnboardingModal from '@/components/OnboardingModal';
 import PWAInstallButton from '@/components/PWAInstallButton';
 import OfflineIndicator from '@/components/OfflineIndicator';
@@ -32,7 +31,32 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const router = useRouter();
   const { connected, publicKey } = usePhantomWallet();
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [currentLocale, setCurrentLocale] = useState('en');
+  
+  // Language selector state
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  
+  // Available languages
+  const languages = [
+    { code: 'en', name: 'English', country: '🇺🇸' },
+    { code: 'es', name: 'Español', country: '🇪🇸' },
+    { code: 'fr', name: 'Français', country: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', country: '🇩🇪' },
+    { code: 'ja', name: '日本語', country: '🇯🇵' },
+    { code: 'ko', name: '한국어', country: '🇰🇷' },
+    { code: 'zh', name: '中文', country: '🇨🇳' }
+  ];
+  
+  // Load language from localStorage on component mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+    setCurrentLanguage(savedLanguage);
+  }, []);
+  
+  // Handle language change
+  const handleLanguageChange = (languageCode) => {
+    setCurrentLanguage(languageCode);
+    localStorage.setItem('preferred-language', languageCode);
+  };
 
   // Check if user needs onboarding
   useEffect(() => {
@@ -67,13 +91,6 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
   const handleOnboardingSkip = () => {
     localStorage.setItem('onboarding-completed', 'true');
     setShowOnboarding(false);
-  };
-
-  const handleLanguageChange = (locale) => {
-    setCurrentLocale(locale);
-    localStorage.setItem('preferred-language', locale);
-    // In a real app, you'd use next-i18next router here
-    logger.debug('Language changed', { locale });
   };
 
   // Top navbar items (main navigation sections)
@@ -111,31 +128,31 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
       </a>
 
       <div className="app-layout">
-        {/* ASCII Header with proper responsive design */}
-        <header className="ascii-header">
-          <div className="ascii-header-content">
+        {/* Theme-Aware Header with proper responsive design */}
+        <header className="app-header">
+          <div className="app-header-content">
             {/* Logo Section */}
-            <div className="ascii-logo-section">
+            <div className="app-logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange" 
-                className="ascii-logo-image"
+                className="app-logo-image"
                 width={20}
                 height={20}
                 priority
               />
-              <h1 className="ascii-logo-text">OPENSVM P2P</h1>
+              <h1 className="app-logo-text">OPENSVM P2P</h1>
             </div>
             
-            {/* Desktop Navigation - ASCII Styled with Full Width */}
-            <nav className="ascii-nav-desktop">
-              <div className="ascii-nav-tabs">
+            {/* Desktop Navigation - Theme-Aware with Full Width */}
+            <nav className="app-nav-desktop touch-friendly">
+              <div className="app-nav-tabs">
                 {/* Primary navigation items */}
                 {topNavItems.map((item) => (
                   <Link
                     key={item.key}
                     href={item.href}
-                    className={`ascii-nav-tab ${router.pathname === item.href ? 'active' : ''}`}
+                    className={`app-nav-tab touch-feedback ${router.pathname === item.href ? 'active' : ''}`}
                   >
                     {item.label}
                   </Link>
@@ -146,10 +163,14 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
               </div>
             </nav>
             
-            {/* Header Controls - Simplified and ASCII styled */}
-            <div className="ascii-header-controls">
-              {/* Theme selector */}
-              <ThemeSelector />
+            {/* Header Controls - Simplified */}
+            <div className="app-header-controls">
+              {/* Language selector */}
+              <LanguageSelector
+                languages={languages}
+                currentLocale={currentLanguage}
+                onLanguageChange={handleLanguageChange}
+              />
               
               {/* Network selector */}
               <NetworkSelector 
@@ -158,45 +179,30 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
                 onSelectNetwork={setSelectedNetwork} 
               />
               
-              {/* Language selector */}
-              <LanguageSelector
-                languages={[
-                  { code: 'en', name: 'English', country: '🇺🇸' },
-                  { code: 'es', name: 'Español', country: '🇪🇸' },
-                  { code: 'fr', name: 'Français', country: '🇫🇷' },
-                  { code: 'de', name: 'Deutsch', country: '🇩🇪' },
-                  { code: 'ja', name: '日本語', country: '🇯🇵' },
-                  { code: 'ko', name: '한국어', country: '🇰🇷' },
-                  { code: 'zh', name: '中文', country: '🇨🇳' }
-                ]}
-                currentLocale={currentLocale}
-                onLanguageChange={handleLanguageChange}
-              />
-              
               {/* Connected wallet info */}
               {connected && publicKey && (
-                <span className="ascii-wallet-status">
+                <span className="app-wallet-status">
                   {publicKey.toString().slice(0, 6)}...{publicKey.toString().slice(-4)}
                 </span>
               )}
               
               {/* Phantom wallet connection button */}
-              <div className="ascii-wallet-container">
+              <div className="app-wallet-container">
                 <PhantomWalletButton />
               </div>
             </div>
           </div>
         </header>
 
-        {/* Mobile Navigation - ASCII Grid Layout */}
-        <nav className="ascii-nav-mobile">
-          <div className="ascii-nav-grid">
+        {/* Mobile Navigation - Theme-Aware Grid Layout */}
+        <nav className="app-nav-mobile touch-friendly">
+          <div className="app-nav-grid">
             {/* All navigation items in mobile grid */}
             {mobileNavItems.map((item) => (
               <Link
                 key={item.key}
                 href={item.href}
-                className={`ascii-nav-button ${router.pathname === item.href ? 'active' : ''}`}
+                className={`app-nav-button touch-feedback ${router.pathname === item.href ? 'active' : ''}`}
               >
                 {item.label}
               </Link>
@@ -216,8 +222,8 @@ export default function Layout({ children, title = 'OpenSVM P2P Exchange' }) {
         {/* Footer */}
         <footer className="app-footer">
           <div className="container">
-            <div className="text-center">
-              <p className="text-sm text-foreground-muted">
+            <div className="app-footer-center">
+              <p className="app-footer-copyright">
                 © 2025 OpenSVM P2P Exchange. All rights reserved.
               </p>
             </div>

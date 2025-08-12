@@ -438,4 +438,5 @@ describe('Performance Tests', () => {
   });
 });
 
-export default 'Enhanced Reward System Tests';
+const testDescription = 'Enhanced Reward System Tests';
+export default testDescription;

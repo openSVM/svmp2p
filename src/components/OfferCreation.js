@@ -1,8 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { SystemProgram, Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 // Import BN from @coral-xyz/anchor as a fallback for @project-serum/anchor
 import { BN } from '@coral-xyz/anchor';
-import { AppContext } from '../contexts/AppContext';
+import { AppContext, CONNECTION_STATUS } from '../contexts/AppContext';
 import { 
   ButtonLoader, 
   TransactionConfirmation, 
@@ -17,7 +17,7 @@ import { validateSolAmount, validateFiatAmount, validateMarketRate } from '../ut
 import { createLogger } from '../utils/logger';
 import { 
   SUPPORTED_CURRENCIES, 
-  SUPPORTED_PAYMENT_METHODS,
+  getPaymentMethodsForCurrency,
   VALIDATION_CONSTRAINTS
 } from '../constants/tradingConstants';
 import { useRealPriceData, useCalculateFiatAmount } from '../hooks/usePriceData';
@@ -27,7 +27,15 @@ const logger = createLogger('OfferCreation');
 
 const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const wallet = usePhantomWallet();
-  const { program, network, connection } = useContext(AppContext);
+  const { 
+    program, 
+    network, 
+    connection, 
+    connectionStatus, 
+    connectionError, 
+    retryConnection, 
+    connectionAttempts 
+  } = useContext(AppContext);
   
   const [solAmount, setSolAmount] = useState('');
   const [fiatAmount, setFiatAmount] = useState('');
@@ -39,6 +47,61 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  
+  // Connection status tracking
+  const isWalletConnected = wallet.connected && wallet.publicKey;
+  const isSmartContractReady = isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED;
+  const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
+  const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
+  const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
+  
+  // Get payment methods for selected currency
+  const availablePaymentMethods = getPaymentMethodsForCurrency(fiatCurrency);
+  
+  // Update payment method when currency changes to ensure it's valid
+  useEffect(() => {
+    if (!availablePaymentMethods.includes(paymentMethod)) {
+      setPaymentMethod(availablePaymentMethods[0] || 'Bank Transfer');
+    }
+  }, [fiatCurrency, availablePaymentMethods, paymentMethod]);
+  
+  // Debug info for development
+  useEffect(() => {
+    console.log('[OfferCreation] Debug info:', {
+      isWalletConnected,
+      hasWallet: !!wallet,
+      walletConnected: wallet.connected,
+      hasWalletPublicKey: !!(wallet && wallet.publicKey),
+      hasProgram: !!program,
+      hasConnection: !!connection,
+      connectionStatus,
+      isSmartContractReady
+    });
+  }, [isWalletConnected, wallet, program, connection, connectionStatus, isSmartContractReady]);
+  
+  // Track connection status for better UX
+  useEffect(() => {
+    // Clear errors when connection improves
+    if (connectionStatus === CONNECTION_STATUS.CONNECTED && error && error.includes('Smart contract connection')) {
+      setError('');
+    }
+  }, [connectionStatus, error]);
+
+  // Determine connection status for better UX
+  const getConnectionStatusMessage = () => {
+    switch (connectionStatus) {
+      case CONNECTION_STATUS.CONNECTING:
+        return 'Connecting to Solana devnet...';
+      case CONNECTION_STATUS.RETRYING:
+        return `Retrying devnet connection... (Attempt ${connectionAttempts}/${5})`;
+      case CONNECTION_STATUS.FAILED:
+        return connectionError || 'Failed to connect to Solana devnet';
+      case CONNECTION_STATUS.CONNECTED:
+        return 'Connected to Solana devnet';
+      default:
+        return 'Disconnected from Solana devnet';
+    }
+  };
   
   // Get real price data
   const { prices, loading: pricesLoading, error: pricesError, lastUpdated } = useRealPriceData();
@@ -61,13 +124,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const handleCreateOffer = async (e) => {
     e.preventDefault();
     
-    if (!wallet.publicKey || !wallet.connected) {
+    if (!isWalletConnected) {
       setError('Please connect your wallet first');
       return;
     }
 
-    if (!program) {
-      setError('Program not initialized. Please ensure your wallet is connected and try again.');
+    if (!isSmartContractReady) {
+      setError('Smart contract connection is not ready. Please check your Solana devnet connection and try again.');
       return;
     }
     
@@ -84,6 +147,12 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
     
     // Show confirmation dialog
     setShowConfirmation(true);
+  };
+
+  const handleRetryConnection = async () => {
+    if (isConnectionRetrying) return;
+    setError('');
+    retryConnection();
   };
   
   // Actual offer creation after confirmation
@@ -301,13 +370,13 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         />
       )}
       
-      <div className="ascii-form">
-        <div className="ascii-form-header">CREATE SELL OFFER</div>
+      <div className="app-form">
+        <div className="app-form-header">CREATE SELL OFFER</div>
         
-        <form onSubmit={handleCreateOffer}>
+        <form onSubmit={handleCreateOffer} className="app-form-content">
           {/* Primary amount fields in one row */}
-          <div className="ascii-form-row-2">
-            <div className="ascii-field">
+          <div className="app-form-row-2">
+            <div className="app-field">
               <label htmlFor="solAmount">
                 <Tooltip content="Enter the amount of SOL you want to sell">
                   <span>SOL AMOUNT</span>
@@ -326,11 +395,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 className={!solValidation.isValid ? 'input-error' : ''}
               />
               {!solValidation.isValid && (
-                <div className="ascii-field-error-message">{solValidation.error}</div>
+                <div className="app-field-error-message">{solValidation.error}</div>
               )}
             </div>
             
-            <div className="ascii-field">
+            <div className="app-field">
               <label htmlFor="fiatAmount">
                 <Tooltip content="The amount in fiat currency you will receive">
                   <span>FIAT AMOUNT</span>
@@ -349,17 +418,17 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 className={!fiatValidation.isValid ? 'input-error' : ''}
               />
               {!fiatValidation.isValid && (
-                <div className="ascii-field-error-message">{fiatValidation.error}</div>
+                <div className="app-field-error-message">{fiatValidation.error}</div>
               )}
               {rateValidation.error && (
-                <div className="ascii-field-help">{rateValidation.error}</div>
+                <div className="app-field-help">{rateValidation.error}</div>
               )}
             </div>
           </div>
           
           {/* Currency and payment method in one row */}
-          <div className="ascii-form-row-2">
-            <div className="ascii-field">
+          <div className="app-form-row-2">
+            <div className="app-field">
               <label htmlFor="fiatCurrency">
                 <Tooltip content="Select the currency you want to receive">
                   <span>CURRENCY</span>
@@ -377,7 +446,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
               </select>
             </div>
             
-            <div className="ascii-field">
+            <div className="app-field">
               <label htmlFor="paymentMethod">
                 <Tooltip content="Select how you want to receive payment">
                   <span>PAYMENT METHOD</span>
@@ -389,7 +458,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 required
               >
-                {SUPPORTED_PAYMENT_METHODS.map(method => (
+                {availablePaymentMethods.map(method => (
                   <option key={method} value={method}>{method}</option>
                 ))}
               </select>
@@ -397,26 +466,75 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           </div>
           
           {/* Submit button */}
-          <div className="ascii-form-actions">
-            {!wallet.connected ? (
+          <div className="app-form-actions">
+            {!isWalletConnected ? (
               <ConnectWalletPrompt
                 action="create sell offers"
                 className="create-offer-button connect-wallet-button"
               />
-            ) : !program ? (
-              <button 
-                type="button"
-                disabled={true}
-                className="create-offer-button disabled"
-                title="Initializing smart contract connection..."
-              >
-                Connecting to Smart Contract...
-              </button>
+            ) : !isSmartContractReady ? (
+              <div className="connection-issue-container">
+                <button 
+                  type="button"
+                  disabled={true}
+                  className="create-offer-button disabled connection-issue"
+                  title={getConnectionStatusMessage()}
+                >
+                  {isConnectionConnecting && 'Connecting to Solana Devnet...'}
+                  {isConnectionRetrying && `Retrying Devnet Connection (${connectionAttempts}/5)`}
+                  {isConnectionFailed && 'Solana Devnet Connection Failed'}
+                </button>
+                
+                {(isConnectionFailed || isConnectionRetrying) && (
+                  <div className="connection-issue-details">
+                    <p className="connection-status-message">
+                      {getConnectionStatusMessage()}
+                    </p>
+                    
+                    {isConnectionFailed && (
+                      <>
+                        <p>Unable to connect to the Solana devnet. This may be due to:</p>
+                        <ul>
+                          <li>Network connectivity issues</li>
+                          <li>Solana devnet RPC endpoint problems</li>
+                          <li>Browser security restrictions (CORS)</li>
+                          <li>Temporary devnet network issues</li>
+                          <li>Firewall or proxy blocking devnet endpoints</li>
+                        </ul>
+                        
+                        <div className="devnet-notice">
+                          <p><strong>Important:</strong> Solana devnet is required for trading operations. Please ensure you have a stable internet connection and try refreshing the page if the issue persists.</p>
+                        </div>
+                      </>
+                    )}
+                    
+                    {(isConnectionFailed || isConnectionRetrying) && (
+                      <div className="connection-retry-options">
+                        <ButtonLoader
+                          type="button"
+                          onClick={handleRetryConnection}
+                          isLoading={isConnectionRetrying}
+                          disabled={isConnectionRetrying}
+                          loadingText="Retrying..."
+                          variant="secondary"
+                          size="small"
+                          className="retry-connection-button"
+                        >
+                          {isConnectionRetrying ? 
+                            `Retrying... (${connectionAttempts}/5)` : 
+                            `Retry Connection${connectionAttempts > 0 ? ` (${connectionAttempts})` : ''}`
+                          }
+                        </ButtonLoader>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             ) : (
               <ButtonLoader
                 type="submit"
                 isLoading={isCreating}
-                disabled={!wallet.connected || !wallet.publicKey || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid || !program}
+                disabled={!isSmartContractReady || isActionDisabled || !solValidation.isValid || !fiatValidation.isValid}
                 loadingText="Creating Offer..."
                 variant="primary"
                 size="medium"
@@ -454,20 +572,19 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
         }
 
         .guided-workflow-button {
-          background-color: var(--ascii-neutral-700);
-          color: var(--ascii-white);
-          border: 1px solid var(--ascii-neutral-800);
+          background-color: var(--button-bg);
+          color: var(--button-text);
+          border: 1px solid var(--border-color);
           padding: 8px 16px;
-          border-radius: 0;
+          border-radius: var(--border-radius, 0px);
           cursor: pointer;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 12px);
           display: flex;
           align-items: center;
           gap: 8px;
-          font-family: 'Courier New', Courier, monospace;
-          text-transform: uppercase;
-          transition: all var(--transition-normal);
-          box-shadow: var(--shadow-sm);
+          font-family: var(--font-family);
+          transition: all 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .guided-workflow-button::before {
@@ -477,64 +594,119 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
           justify-content: center;
           width: 18px;
           height: 18px;
-          background-color: var(--ascii-neutral-500);
-          border: 1px solid var(--ascii-neutral-600);
-          border-radius: 0;
-          font-size: 0.8rem;
-          font-weight: bold;
+          background-color: var(--secondary-bg);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius, 0px);
+          font-size: var(--font-size-xs, 10px);
+          font-weight: var(--font-weight-bold, 700);
         }
 
         .guided-workflow-button:hover {
-          background-color: var(--ascii-neutral-600);
+          background-color: var(--button-hover);
           transform: translateY(-1px);
-          box-shadow: var(--shadow-md);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .input-error {
-          border-color: #ef4444 !important;
-          box-shadow: 0 0 0 1px #ef4444;
+          border-color: var(--error-color) !important;
+          box-shadow: 0 0 0 1px var(--error-color);
         }
 
         .validation-error {
-          color: #ef4444;
-          font-size: 0.875rem;
+          color: var(--error-color);
+          font-size: var(--font-size-sm, 12px);
           margin-top: 0.25rem;
         }
 
         .validation-warning {
-          color: #f59e0b;
-          font-size: 0.875rem;
+          color: var(--warning-color);
+          font-size: var(--font-size-sm, 12px);
           margin-top: 0.25rem;
         }
 
         .price-info {
-          background: var(--color-background-alt);
-          border: 1px solid var(--color-border);
-          border-radius: 4px;
+          background: var(--secondary-bg);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius, 0px);
           padding: 12px;
           margin: 1rem 0;
-          font-size: 0.9rem;
-          color: var(--color-foreground-muted);
+          font-size: var(--font-size-sm, 12px);
+          color: var(--text-muted);
         }
 
         .price-updated {
           margin-left: 10px;
-          font-size: 0.8rem;
+          font-size: var(--font-size-xs, 10px);
           opacity: 0.7;
         }
 
         .warning-message {
-          background: #fef3c7;
-          border: 1px solid #f59e0b;
-          color: #92400e;
+          background: var(--secondary-bg);
+          border: 1px solid var(--warning-color);
+          color: var(--warning-color);
           padding: 12px;
-          border-radius: 4px;
+          border-radius: var(--border-radius, 0px);
           margin: 1rem 0;
-          font-size: 0.9rem;
+          font-size: var(--font-size-sm, 12px);
         }
 
         .wallet-connection-prompt {
           margin: 1rem 0;
+        }
+
+        .connection-issue-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          align-items: center;
+        }
+
+        .connection-issue {
+          background-color: var(--secondary-bg) !important;
+          color: var(--error-color) !important;
+          cursor: not-allowed !important;
+        }
+
+        .connection-issue-details {
+          background: var(--secondary-bg);
+          border: 1px solid var(--warning-color);
+          border-radius: var(--border-radius, 0px);
+          padding: 16px;
+          max-width: 400px;
+          text-align: left;
+          font-size: var(--font-size-sm, 12px);
+        }
+
+        .connection-status-message {
+          margin: 0 0 12px 0;
+          color: var(--accent-color);
+          font-weight: var(--font-weight-medium, 500);
+          font-size: var(--font-size-sm, 12px);
+        }
+
+        .connection-issue-details p {
+          margin: 0 0 12px 0;
+          color: var(--warning-color);
+          font-weight: var(--font-weight-medium, 500);
+        }
+
+        .connection-issue-details ul {
+          margin: 0 0 16px 0;
+          padding-left: 20px;
+          color: var(--text-muted);
+        }
+
+        .connection-issue-details li {
+          margin-bottom: 4px;
+        }
+
+        .retry-connection-button {
+          width: 100%;
+          background-color: var(--accent-color) !important;
+        }
+
+        .retry-connection-button:hover {
+          background-color: var(--button-hover) !important;
         }
       `}</style>
     </div>

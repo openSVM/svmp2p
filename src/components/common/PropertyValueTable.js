@@ -13,7 +13,7 @@ const PropertyValueTable = ({ title, data, className = '', actions = null }) => 
             <h3 className="card-title">{title}</h3>
           </div>
         )}
-        <div className="ascii-form-message no-data">
+        <div className="app-form-message no-data">
           <span className="message-icon">[!]</span>
           <span className="message-text">NO DATA AVAILABLE</span>
         </div>
@@ -30,21 +30,21 @@ const PropertyValueTable = ({ title, data, className = '', actions = null }) => 
         </div>
       )}
       
-      <div className="ascii-table">
-        <div className="ascii-table-header">
-          <div className="ascii-table-col property-col">PROPERTY</div>
-          <div className="ascii-table-col value-col">VALUE</div>
+      <div className="app-table">
+        <div className="app-table-header">
+          <div className="app-table-col property-col">PROPERTY</div>
+          <div className="app-table-col value-col">VALUE</div>
         </div>
         
         {data.map((item, index) => (
-          <div key={index} className={`ascii-table-row ${item.className || ''}`}>
-            <div className="ascii-table-col property-col">
+          <div key={index} className={`app-table-row ${item.className || ''}`}>
+            <div className="app-table-col property-col">
               <span className="property-name">{item.property}</span>
               {item.description && (
                 <div className="property-description">{item.description}</div>
               )}
             </div>
-            <div className="ascii-table-col value-col">
+            <div className="app-table-col value-col">
               <span className={`property-value ${item.valueClassName || ''}`}>
                 {item.value}
               </span>

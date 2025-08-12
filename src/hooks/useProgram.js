@@ -3,8 +3,8 @@ import { Program, AnchorProvider, Idl } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
 import idl from '../idl/p2p_exchange.json';
 
-// Program ID from the IDL and Anchor.toml
-const PROGRAM_ID = new PublicKey('ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk');
+// Program ID from the deployed program on Solana Devnet
+const PROGRAM_ID = new PublicKey('AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k');
 
 /**
  * Hook to create and provide Anchor Program instance
@@ -14,7 +14,16 @@ const PROGRAM_ID = new PublicKey('ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk')
  */
 export const useProgram = (connection, wallet) => {
   return useMemo(() => {
+    console.log('[useProgram] Creating program with:', {
+      hasConnection: !!connection,
+      hasWallet: !!wallet,
+      hasWalletPublicKey: !!(wallet && wallet.publicKey),
+      walletConnected: wallet ? wallet.connected : false,
+      programId: PROGRAM_ID.toString()
+    });
+    
     if (!connection || !wallet || !wallet.publicKey) {
+      console.log('[useProgram] Missing requirements for program creation');
       return null;
     }
 
@@ -32,12 +41,13 @@ export const useProgram = (connection, wallet) => {
       // Create program instance
       const program = new Program(idl, PROGRAM_ID, provider);
       
+      console.log('[useProgram] Program created successfully:', program.programId.toString());
       return program;
     } catch (error) {
-      console.error('Error creating program:', error);
+      console.error('[useProgram] Error creating program:', error);
       return null;
     }
-  }, [connection, wallet, wallet?.publicKey]);
+  }, [connection, wallet]);
 };
 
 /**

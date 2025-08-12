@@ -2,7 +2,7 @@
  * Toast notification component for user feedback
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const TOAST_DURATION = 5000; // 5 seconds
 
@@ -24,6 +24,11 @@ export const Toast = ({
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(100);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => onClose?.(), 300); // Allow fade out animation
+  }, [onClose]);
+
   useEffect(() => {
     if (duration > 0) {
       const interval = setInterval(() => {
@@ -40,12 +45,7 @@ export const Toast = ({
 
       return () => clearInterval(interval);
     }
-  }, [duration]);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(() => onClose?.(), 300); // Allow fade out animation
-  };
+  }, [duration, handleClose]);
 
   const getToastIcon = () => {
     switch (type) {

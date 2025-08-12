@@ -37,9 +37,9 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
   };
 
   return (
-    <div className="ascii-dropdown-container" ref={dropdownRef}>
+    <div className="app-dropdown-container" ref={dropdownRef}>
       <button 
-        className="ascii-header-control ascii-dropdown-trigger"
+        className="app-header-control app-dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
@@ -53,11 +53,11 @@ export const NetworkSelector = ({ networks, selectedNetwork, onSelectNetwork }) 
       </button>
       
       {isOpen && (
-        <div className="ascii-dropdown-menu">
+        <div className="app-dropdown-menu">
           {Object.entries(networks).map(([key, networkOption]) => (
             <button
               key={key}
-              className={`ascii-dropdown-item ${key === selectedNetwork ? 'active' : ''}`}
+              className={`app-dropdown-item ${key === selectedNetwork ? 'active' : ''}`}
               onClick={() => handleNetworkSelect(key)}
             >
               <div 

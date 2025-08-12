@@ -3319,6 +3319,14 @@ button:focus-visible {
   font-family: 'Courier New', Courier, monospace !important;
 }
 
+/* Blueprint theme specific dropdown positioning */
+.theme-blueprint .ascii-dropdown-menu {
+  /* Ensure dropdown always expands downward from navbar */
+  top: 100%;
+  bottom: auto;
+  transform: none;
+}
+
 /* Dropdown items */
 .ascii-dropdown-item {
   display: block;

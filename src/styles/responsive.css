@@ -4,6 +4,7 @@
 @import './responsive/enhanced-mobile.css';
 @import './responsive/component-mobile.css';
 @import './responsive/responsive-utilities.css';
+@import './responsive/tablet-enhancements.css';
 
 /* ASCII Layout Overrides */
 .app-layout-sidebar {

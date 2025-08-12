@@ -292,7 +292,33 @@ async function handleStaticAsset(request) {
   }
 }
 
-// Background sync for offline transaction queuing
+// Handle generic requests
+async function handleGenericRequest(request) {
+  try {
+    // Try network first
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse.ok) {
+      return networkResponse;
+    }
+    
+    throw new Error(`Generic request response not ok: ${networkResponse.status}`);
+  } catch (error) {
+    console.log('[SW] Generic request network failed:', error.message);
+    
+    // Try cache as fallback
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // If no cache available, return a generic error
+    return new Response('Resource not available offline', {
+      status: 503,
+      statusText: 'Service Unavailable'
+    });
+  }
+}
 self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync triggered:', event.tag);
   

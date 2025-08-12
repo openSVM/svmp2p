@@ -15,9 +15,7 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" 
         />
         
-        {/* Preload critical CSS */}
-        <link rel="preload" href="/css/critical.css" as="style" onLoad="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="/css/critical.css" /></noscript>
+        {/* Critical CSS will be handled by Next.js CSS imports */}
         
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//api.devnet.solana.com" />
@@ -61,8 +59,8 @@ export default function Document() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
 
-        {/* Optimized Security Headers */}
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; worker-src 'self';" />
+        {/* Enhanced Security Headers for external script conflicts */}
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' chrome-extension:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; worker-src 'self'; object-src 'none';" />
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
         <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
@@ -97,6 +95,47 @@ export default function Document() {
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              // Enhanced error handling for wallet extension conflicts
+              window.addEventListener('error', function(event) {
+                // Known external errors to suppress
+                const externalErrors = [
+                  'Cannot access \'m\' before initialization',
+                  'Could not establish connection',
+                  'custom element',
+                  'already been defined',
+                  'inpage.js',
+                  'binanceInjectedProvider',
+                  'webcomponents-ce.js'
+                ];
+                
+                const shouldSuppress = externalErrors.some(pattern => 
+                  event.message?.includes(pattern) || event.error?.message?.includes(pattern)
+                );
+                
+                if (shouldSuppress) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  return false;
+                }
+              });
+              
+              window.addEventListener('unhandledrejection', function(event) {
+                const reason = event.reason?.message || event.reason?.toString() || '';
+                const externalErrors = [
+                  'Cannot access \'m\' before initialization',
+                  'inpage.js',
+                  'runtime.lastError'
+                ];
+                
+                const shouldSuppress = externalErrors.some(pattern => reason.includes(pattern));
+                
+                if (shouldSuppress) {
+                  event.preventDefault();
+                  return false;
+                }
+              });
+              
+              // Service Worker registration
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
                   navigator.serviceWorker.register('/sw.js').catch(function() {

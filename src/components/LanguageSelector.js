@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // Custom SVG Icon Component (replace with your actual SVG path data)
 const DropdownIcon = ({ className }) => (
@@ -38,7 +38,7 @@ const LanguageSelector = ({
     { code: 'en', name: 'English', country: 'US' }; // Fallback default
 
   // Calculate dropdown position
-  const calculateDropdownPosition = () => {
+  const calculateDropdownPosition = useCallback(() => {
     if (triggerRef.current) {
       const buttonRect = triggerRef.current.getBoundingClientRect();
       const dropdownWidth = 200; // Approximate dropdown width
@@ -58,7 +58,7 @@ const LanguageSelector = ({
       
       setDropdownPosition({ top, left });
     }
-  };
+  }, [safeLanguages.length]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -93,7 +93,7 @@ const LanguageSelector = ({
         window.removeEventListener('scroll', calculateDropdownPosition);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, calculateDropdownPosition]);
   
   // Keyboard navigation
   const handleKeyDown = (event) => {

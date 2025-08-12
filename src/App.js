@@ -7,7 +7,7 @@ import './styles/guided-workflow.css';
 import './styles/wallet-connection-guide.css';
 
 // Import components
-import { AppContext } from './AppContext';
+import { AppContext } from './contexts/AppContext';
 import { NetworkSelector } from './components/NetworkSelector';
 import { OfferCreation } from './components/OfferCreation';
 import { OfferList } from './components/OfferList';
@@ -31,7 +31,7 @@ const SVM_NETWORKS = {
   'solana': {
     name: 'Solana',
     endpoint: clusterApiUrl('devnet'),
-    programId: 'ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk',
+    programId: 'AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k',
     icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',
@@ -88,6 +88,15 @@ const AppContent = () => {
   // Use Phantom wallet context instead of Swig wallet
   const wallet = usePhantomWallet();
   
+  // State for selected network (must be declared before using in useMemo)
+  const [selectedNetwork, setSelectedNetwork] = useState('solana');
+  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
+  const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
+  const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
+  
+  // Get network configuration
+  const network = SVM_NETWORKS[selectedNetwork];
+  
   // Create enhanced connection with retry logic for rate limits
   const connection = useMemo(() => {
     return createConnection(network.endpoint, network.connectionConfig || {
@@ -98,15 +107,6 @@ const AppContent = () => {
 
   // Initialize the Anchor program
   const program = useProgram(connection, wallet);
-  
-  // State for selected network
-  const [selectedNetwork, setSelectedNetwork] = useState('solana');
-  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'sell', 'myoffers', 'disputes', 'profile'
-  const [isGuidedWorkflow, setIsGuidedWorkflow] = useState(false);
-  const [guidedWorkflowType, setGuidedWorkflowType] = useState(null); // 'buy' or 'sell'
-  
-  // Get network configuration
-  const network = SVM_NETWORKS[selectedNetwork];
   
   // Context values
   const contextValue = useMemo(() => ({
@@ -145,8 +145,8 @@ const AppContent = () => {
   const renderWalletStatus = () => {
     if (wallet.error) {
       return (
-        <div className="ascii-wallet-status ascii-wallet-error" title={wallet.error}>
-          <span className="ascii-status-dot ascii-status-error"></span>
+        <div className="app-wallet-status app-wallet-error" title={wallet.error}>
+          <span className="app-status-dot app-status-error"></span>
           <span>ERROR</span>
         </div>
       );
@@ -154,8 +154,8 @@ const AppContent = () => {
 
     if (wallet.connecting || wallet.connectionState === 'connecting') {
       return (
-        <div className="ascii-wallet-status ascii-wallet-connecting">
-          <span className="ascii-status-dot ascii-status-connecting"></span>
+        <div className="app-wallet-status app-wallet-connecting">
+          <span className="app-status-dot app-status-connecting"></span>
           <span>CONNECTING...</span>
         </div>
       );
@@ -163,16 +163,16 @@ const AppContent = () => {
 
     if (wallet.connected) {
       return (
-        <div className="ascii-wallet-status ascii-wallet-connected">
-          <span className="ascii-status-dot ascii-status-connected"></span>
+        <div className="app-wallet-status app-wallet-connected">
+          <span className="app-status-dot app-status-connected"></span>
           <span>CONNECTED</span>
         </div>
       );
     }
 
     return (
-      <div className="ascii-wallet-status ascii-wallet-disconnected">
-        <span className="ascii-status-dot ascii-status-disconnected"></span>
+      <div className="app-wallet-status app-wallet-disconnected">
+        <span className="app-status-dot app-status-disconnected"></span>
         <span>DISCONNECTED</span>
       </div>
     );
@@ -181,49 +181,49 @@ const AppContent = () => {
   return (
     <AppContext.Provider value={contextValue}>
       <div className="app-container">
-        <header className="ascii-header">
-          <div className="ascii-header-content">
-            <div className="ascii-logo-section">
+        <header className="app-header">
+          <div className="app-header-content">
+            <div className="app-logo-section">
               <Image 
                 src="/images/opensvm-logo.svg" 
                 alt="OpenSVM P2P Exchange"
-                className="ascii-logo-image"
+                className="app-logo-image"
                 width={24}
                 height={24}
                 priority
               />
-              <h1 className="ascii-logo-text">OPENSVM P2P</h1>
+              <h1 className="app-logo-text">OPENSVM P2P</h1>
             </div>
             
             {/* Consolidated Navigation */}
-            <nav className="ascii-nav-desktop">
-              <div className="ascii-nav-tabs">
+            <nav className="app-nav-desktop">
+              <div className="app-nav-tabs">
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'buy' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'buy' ? 'active' : ''}`}
                   onClick={() => handleNavClick('buy')}
                 >
                   BUY
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'sell' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'sell' ? 'active' : ''}`}
                   onClick={() => handleNavClick('sell')}
                 >
                   SELL
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'myoffers' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'myoffers' ? 'active' : ''}`}
                   onClick={() => handleNavClick('myoffers')}
                 >
                   MY OFFERS
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'disputes' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'disputes' ? 'active' : ''}`}
                   onClick={() => handleNavClick('disputes')}
                 >
                   DISPUTES
                 </button>
                 <button
-                  className={`ascii-nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                  className={`app-nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
                   onClick={() => handleNavClick('profile')}
                 >
                   PROFILE
@@ -232,7 +232,7 @@ const AppContent = () => {
             </nav>
             
             {/* Header Controls */}
-            <div className="ascii-header-controls">
+            <div className="app-header-controls">
               {/* Theme selector */}
               <ThemeSelector />
               
@@ -251,7 +251,7 @@ const AppContent = () => {
                 href={network.explorerUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="ascii-header-control ascii-explorer-link"
+                className="app-header-control app-explorer-link"
               >
                 {network.name.toUpperCase()} EXPLORER
               </a>
@@ -263,17 +263,17 @@ const AppContent = () => {
               />
               
               <ErrorBoundary fallback={
-                <div className="ascii-error-container">
+                <div className="app-error-container">
                   <p>WALLET ERROR</p>
-                  <button onClick={() => wallet.reconnect()} className="ascii-retry-button">RETRY</button>
+                  <button onClick={() => wallet.reconnect()} className="app-retry-button">RETRY</button>
                 </div>
               }>
-                <div className="ascii-wallet-wrapper">
+                <div className="app-wallet-wrapper">
                   {renderWalletStatus()}
                   <PhantomWalletButton />
                   {wallet.error && (
                     <button 
-                      className="ascii-wallet-retry" 
+                      className="app-wallet-retry" 
                       onClick={() => wallet.reconnect()}
                       title="Retry connection"
                     >
@@ -286,35 +286,35 @@ const AppContent = () => {
           </div>
         </header>
 
-        {/* Mobile Navigation - ASCII Styled */}
-        <nav className="ascii-nav-mobile">
-          <div className="ascii-nav-grid">
+        {/* Mobile Navigation */}
+        <nav className="app-nav-mobile">
+          <div className="app-nav-grid">
             <button
-              className={`ascii-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'buy' ? 'active' : ''}`}
               onClick={() => handleNavClick('buy')}
             >
               BUY
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'sell' ? 'active' : ''}`}
               onClick={() => handleNavClick('sell')}
             >
               SELL
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'myoffers' ? 'active' : ''}`}
               onClick={() => handleNavClick('myoffers')}
             >
               MY OFFERS
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'disputes' ? 'active' : ''}`}
               onClick={() => handleNavClick('disputes')}
             >
               DISPUTES
             </button>
             <button
-              className={`ascii-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
+              className={`app-nav-button ${activeTab === 'profile' ? 'active' : ''}`}
               onClick={() => handleNavClick('profile')}
             >
               PROFILE
@@ -325,11 +325,11 @@ const AppContent = () => {
         <main className="app-main">
           {isGuidedWorkflow ? (
             <ErrorBoundary fallback={
-              <div className="ascii-guided-workflow-error">
+              <div className="app-guided-workflow-error">
                 <h2>GUIDED WORKFLOW ERROR</h2>
                 <p>Something went wrong with the guided workflow. Please try again or use the manual interface.</p>
                 <button 
-                  className="ascii-error-recovery-button"
+                  className="app-error-recovery-button"
                   onClick={handleCompleteGuidedWorkflow}
                 >
                   EXIT TO MANUAL INTERFACE
@@ -337,7 +337,7 @@ const AppContent = () => {
               </div>
             }>
               <div 
-                className="ascii-guided-workflow-container"
+                className="app-guided-workflow-container"
                 role="region" 
                 aria-label="Guided trading workflow"
                 tabIndex="-1"
@@ -348,10 +348,10 @@ const AppContent = () => {
                   }
                 }}
               >
-                <div className="ascii-guided-workflow-header">
+                <div className="app-guided-workflow-header">
                   <h2>{guidedWorkflowType === 'buy' ? 'BUY SOL' : 'SELL SOL'} - GUIDED WORKFLOW</h2>
                   <button 
-                    className="ascii-exit-workflow-button"
+                    className="app-exit-workflow-button"
                     onClick={handleCompleteGuidedWorkflow}
                     aria-label="Exit guided workflow and return to manual interface"
                   >
@@ -365,9 +365,9 @@ const AppContent = () => {
               </div>
             </ErrorBoundary>
           ) : (
-            <div className="ascii-content-container">
+            <div className="app-content-container">
               <ErrorBoundary>
-                <div key={activeTab} className="ascii-content-transition-wrapper ascii-fade-in">
+                <div key={activeTab} className="app-content-transition-wrapper app-fade-in">
                   {activeTab === 'buy' && (
                     <OfferList 
                       type="buy" 
@@ -391,33 +391,33 @@ const AppContent = () => {
           )}
         </main>
         
-        <footer className="ascii-footer">
-          <div className="ascii-footer-content">
+        <footer className="app-footer">
+          <div className="app-footer-content">
             {/* Desktop layout */}
-            <div className="ascii-footer-desktop">
+            <div className="app-footer-desktop">
               {/* Left: Network info */}
-              <div className="ascii-footer-section">
-                <p className="ascii-footer-network">NETWORK: {network.name.toUpperCase()}</p>
-                <p className="ascii-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
+              <div className="app-footer-section">
+                <p className="app-footer-network">NETWORK: {network.name.toUpperCase()}</p>
+                <p className="app-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
               </div>
               
               {/* Right: Copyright */}
-              <div className="ascii-footer-section ascii-footer-copyright">
-                <p className="ascii-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
+              <div className="app-footer-section app-footer-copyright">
+                <p className="app-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
               </div>
             </div>
             
             {/* Mobile layout */}
-            <div className="ascii-footer-mobile">
+            <div className="app-footer-mobile">
               {/* Network info */}
-              <div className="ascii-footer-section">
-                <p className="ascii-footer-network">NETWORK: {network.name.toUpperCase()}</p>
-                <p className="ascii-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
+              <div className="app-footer-section">
+                <p className="app-footer-network">NETWORK: {network.name.toUpperCase()}</p>
+                <p className="app-footer-description">SMART CONTRACT SECURED TRADES WITH DECENTRALIZED DISPUTE RESOLUTION.</p>
               </div>
               
               {/* Copyright */}
-              <div className="ascii-footer-section ascii-footer-copyright">
-                <p className="ascii-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
+              <div className="app-footer-section app-footer-copyright">
+                <p className="app-footer-text">© 2025 OPENSVM P2P EXCHANGE. ALL RIGHTS RESERVED.</p>
               </div>
             </div>
           </div>
@@ -434,13 +434,13 @@ const App = () => {
   // Use ErrorBoundary at the root level to catch any rendering errors
   return (
     <ErrorBoundary fallback={
-      <div className="ascii-global-error-container">
+      <div className="app-global-error-container">
         <h1>OPENSVM P2P EXCHANGE</h1>
-        <div className="ascii-global-error-content">
+        <div className="app-global-error-content">
           <h2>SOMETHING WENT WRONG</h2>
           <p>We're sorry, but the application couldn't be loaded properly.</p>
           <button 
-            className="ascii-button" 
+            className="app-button" 
             onClick={() => window.location.reload()}
           >
             REFRESH APPLICATION

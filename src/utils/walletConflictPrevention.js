@@ -1,20 +1,173 @@
 /**
- * Wallet Provider Conflict Prevention Utility
+ * Wallet Provider Conflict Prevention and External Script Error Handling Utility
  * 
- * Purpose: Handles conflicts between MetaMask, Phantom, and other wallet extensions
- * that can occur when multiple browser wallet extensions try to inject providers
- * into the same window.ethereum object.
+ * Purpose: 
+ * 1. Handles conflicts between MetaMask, Phantom, and other wallet extensions
+ * 2. Filters and suppresses external script errors from wallet extensions
+ * 3. Provides clean console experience while preserving application error visibility
  * 
  * Security Considerations:
  * - Only accesses browser wallet APIs, never stores or handles private keys
  * - Uses read-only provider detection to avoid security risks
  * - Implements safe property access patterns to prevent injection attacks
+ * - Enhanced error filtering without affecting application debugging
  * 
- * @fileoverview This utility prevents wallet provider conflicts in the browser
+ * @fileoverview This utility prevents wallet provider conflicts and external script noise
  */
 
-// Global state flag to prevent multiple conflict resolution attempts
+// Global state flags
 let walletConflictResolved = false;
+let errorFilteringEnabled = false;
+
+/**
+ * Known external script error patterns to filter
+ * These are common errors from wallet extensions that are not application errors
+ */
+const EXTERNAL_SCRIPT_ERROR_PATTERNS = [
+  // Wallet extension initialization errors
+  /Cannot access ['`]m['`] before initialization/,
+  /inpage\.js/,
+  /content[\-_]?script/,
+  
+  // Browser extension connection errors
+  /Could not establish connection\. Receiving end does not exist/,
+  /runtime\.lastError/,
+  
+  // Wallet provider conflicts
+  /Cannot read properties? of null \(reading ['`]type['`]\)/,
+  /Custom element.*already.*defined/,
+  /webcomponents[\-_]ce\.js/,
+  
+  // Binance and other wallet extension errors
+  /binanceInjectedProvider/,
+  /metamask.*inpage/,
+  /phantom.*inpage/,
+  
+  // Browser extension DOM conflicts
+  /mce[\-_]autosize[\-_]textarea/,
+  /already been defined/,
+  
+  // Network and extension communication errors
+  /Extension context invalidated/,
+  /Cannot access before initialization.*wallet/,
+  /Provider.*not.*available/
+];
+
+/**
+ * Enhanced error filtering system for external script conflicts
+ */
+const setupAdvancedErrorFiltering = () => {
+  if (errorFilteringEnabled || typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    // Store original console methods for application errors
+    const originalError = console.error;
+    const originalWarn = console.warn;
+    
+    // Enhanced console.error filtering
+    console.error = function(...args) {
+      const errorMessage = args.join(' ').toString();
+      
+      // Check if this is a known external script error
+      const isExternalError = EXTERNAL_SCRIPT_ERROR_PATTERNS.some(pattern => 
+        pattern.test(errorMessage)
+      );
+      
+      // Only suppress external errors, allow application errors through
+      if (!isExternalError) {
+        originalError.apply(console, args);
+      } else {
+        // Store filtered errors for debugging if needed
+        if (window.DEBUG_WALLET_ERRORS) {
+          originalError.apply(console, ['[FILTERED WALLET ERROR]', ...args]);
+        }
+      }
+    };
+
+    // Enhanced console.warn filtering for wallet warnings
+    console.warn = function(...args) {
+      const warnMessage = args.join(' ').toString();
+      
+      const isExternalWarning = EXTERNAL_SCRIPT_ERROR_PATTERNS.some(pattern => 
+        pattern.test(warnMessage)
+      );
+      
+      if (!isExternalWarning) {
+        originalWarn.apply(console, args);
+      } else if (window.DEBUG_WALLET_ERRORS) {
+        originalWarn.apply(console, ['[FILTERED WALLET WARNING]', ...args]);
+      }
+    };
+
+    // Global error handler for unhandled errors
+    const originalErrorHandler = window.onerror;
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errorString = message.toString();
+      
+      // Filter external script errors in global handler
+      const isExternalError = EXTERNAL_SCRIPT_ERROR_PATTERNS.some(pattern => 
+        pattern.test(errorString)
+      ) || (source && (
+        source.includes('inpage.js') ||
+        source.includes('content-script') ||
+        source.includes('extension')
+      ));
+      
+      if (!isExternalError) {
+        // Allow application errors to be handled normally
+        if (originalErrorHandler) {
+          return originalErrorHandler.call(this, message, source, lineno, colno, error);
+        }
+        return false;
+      }
+      
+      // Suppress external errors
+      return true;
+    };
+
+    // Enhanced promise rejection handler
+    const originalUnhandledRejection = window.onunhandledpromiserejection;
+    window.onunhandledpromiserejection = function(event) {
+      const reason = event.reason?.toString() || '';
+      
+      const isExternalError = EXTERNAL_SCRIPT_ERROR_PATTERNS.some(pattern => 
+        pattern.test(reason)
+      );
+      
+      if (!isExternalError) {
+        if (originalUnhandledRejection) {
+          return originalUnhandledRejection.call(this, event);
+        }
+        return false;
+      }
+      
+      // Prevent external promise rejections from appearing in console
+      event.preventDefault();
+      return true;
+    };
+
+    errorFilteringEnabled = true;
+    
+    // Helpful debug flag for developers
+    if (typeof window !== 'undefined') {
+      window.enableWalletErrorDebugging = () => {
+        window.DEBUG_WALLET_ERRORS = true;
+        console.log('[Debug] Wallet extension error debugging enabled');
+      };
+      
+      window.disableWalletErrorDebugging = () => {
+        window.DEBUG_WALLET_ERRORS = false;
+        console.log('[Debug] Wallet extension error debugging disabled');
+      };
+    }
+
+  } catch (error) {
+    // Fallback: if error filtering setup fails, don't break the application
+    console.warn('[Wallet Conflict Prevention] Could not setup error filtering:', error);
+  }
+};
 
 /**
  * Prevents wallet provider conflicts by managing window.ethereum access
@@ -207,6 +360,9 @@ export const initializeWalletConflictPrevention = () => {
   if (typeof window === 'undefined') {
     return;
   }
+
+  // Initialize advanced error filtering immediately
+  setupAdvancedErrorFiltering();
 
   /**
    * Strategy 1: Run when DOM content is loaded

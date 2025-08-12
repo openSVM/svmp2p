@@ -146,22 +146,21 @@ const RewardWidget = ({ compact = false }) => {
 // Extract styles into a separate function for reusability
 const getWidgetStyles = (compact) => `
                 .reward-widget {
-                    background: var(--ascii-neutral-700);
-                    color: var(--ascii-white);
-                    border: 1px solid var(--ascii-neutral-800);
-                    border-radius: 0;
+                    background: var(--card-bg);
+                    color: var(--text-primary);
+                    border: var(--border-width, 1px) solid var(--border-color);
+                    border-radius: var(--border-radius, 0px);
                     padding: ${compact ? '8px 12px' : '12px 16px'};
                     cursor: pointer;
-                    transition: all var(--transition-normal);
+                    transition: all var(--transition-normal, 0.2s);
                     min-width: ${compact ? '120px' : '160px'};
-                    box-shadow: var(--shadow-md);
-                    font-family: 'Courier New', Courier, monospace;
+                    box-shadow: var(--shadow-md, 0 2px 4px rgba(0,0,0,0.1));
                 }
 
                 .reward-widget:hover {
                     transform: translateY(-1px);
-                    background: var(--ascii-neutral-600);
-                    box-shadow: var(--shadow-lg);
+                    background: var(--secondary-bg);
+                    box-shadow: var(--shadow-lg, 0 4px 8px rgba(0,0,0,0.15));
                 }
 
                 .widget-content {
@@ -182,15 +181,15 @@ const getWidgetStyles = (compact) => `
 
                 .widget-label {
                     font-size: ${compact ? '10px' : '12px'};
-                    color: var(--ascii-neutral-300);
-                    font-weight: 500;
+                    color: var(--text-secondary);
+                    font-weight: var(--font-weight-medium, 500);
                     text-transform: uppercase;
                 }
 
                 .widget-value {
                     font-size: ${compact ? '12px' : '14px'};
-                    font-weight: 600;
-                    color: var(--ascii-white);
+                    font-weight: var(--font-weight-bold, 600);
+                    color: var(--text-primary);
                 }
 
                 .widget-progress {
@@ -203,28 +202,28 @@ const getWidgetStyles = (compact) => `
                 .progress-bar {
                     width: 100%;
                     height: 4px;
-                    background: var(--ascii-neutral-500);
-                    border: 1px solid var(--ascii-neutral-400);
-                    border-radius: 0;
+                    background: var(--secondary-bg);
+                    border: var(--border-width, 1px) solid var(--border-color);
+                    border-radius: var(--border-radius, 0px);
                     overflow: hidden;
                 }
 
                 .progress-fill {
                     height: 100%;
-                    background: var(--ascii-white);
-                    transition: width var(--transition-normal);
+                    background: var(--accent-color);
+                    transition: width var(--transition-normal, 0.2s);
                 }
 
                 .progress-text {
-                    font-size: 10px;
-                    color: var(--ascii-neutral-300);
+                    font-size: var(--font-size-xs, 10px);
+                    color: var(--text-secondary);
                     text-align: center;
                     text-transform: uppercase;
                 }
 
                 .reward-widget.error {
-                    border-color: var(--ascii-red);
-                    background: rgba(220, 38, 127, 0.1);
+                    border-color: var(--error-color);
+                    background: var(--error-bg, rgba(220, 38, 127, 0.1));
                 }
             `;
 

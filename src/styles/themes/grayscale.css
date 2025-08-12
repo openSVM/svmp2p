@@ -21,7 +21,7 @@
   --warning-color: #6C757D;
   --error-color: #212529;
   
-  /* Typography */
+  /* Typography - controlled sizing */
   --font-family: 'Courier New', Courier, monospace;
   --font-size-xs: 10px;
   --font-size-sm: 12px;
@@ -34,7 +34,7 @@
   --font-weight-medium: 500;
   --font-weight-bold: 700;
   
-  /* Spacing */
+  /* Consistent spacing */
   --spacing-1: 2px;
   --spacing-2: 4px;
   --spacing-3: 6px;

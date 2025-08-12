@@ -1,0 +1,30 @@
+{
+  "name": "OpenSVM P2P Exchange",
+  "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18",
+      "nodeGypDependencies": true
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "ms-vscode.vscode-typescript-next",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-eslint",
+        "GitHub.copilot"
+      ]
+    }
+  },
+  "forwardPorts": [3000, 8899],
+  "remoteUser": "vscode"
+}

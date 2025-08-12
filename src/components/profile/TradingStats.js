@@ -49,7 +49,7 @@ const TradingStats = ({ stats }) => {
 
   const statsActions = (
     <button 
-      className="button button-ghost button-sm ascii-button-animate" 
+      className="button button-ghost button-sm app-button-animate" 
       onClick={handleViewDetailedAnalytics}
     >
       VIEW DETAILED ANALYTICS

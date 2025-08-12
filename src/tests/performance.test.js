@@ -277,4 +277,5 @@ describe('Performance Optimizations', () => {
   });
 });
 
-export default {};
+const performanceTestModule = {};
+export default performanceTestModule;
