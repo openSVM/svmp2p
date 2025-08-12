@@ -51,10 +51,25 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   
   // Connection status tracking
   const isWalletConnected = wallet.connected && wallet.publicKey;
-  const isSmartContractReady = isWalletConnected && (program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED || devMode);
+  const isSmartContractReady = (isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED) || devMode;
   const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
   const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
   const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
+  
+  // Debug info for development
+  useEffect(() => {
+    console.log('[OfferCreation] Debug info:', {
+      isWalletConnected,
+      hasWallet: !!wallet,
+      walletConnected: wallet.connected,
+      hasWalletPublicKey: !!(wallet && wallet.publicKey),
+      hasProgram: !!program,
+      hasConnection: !!connection,
+      connectionStatus,
+      isSmartContractReady,
+      devMode
+    });
+  }, [isWalletConnected, wallet, program, connection, connectionStatus, isSmartContractReady, devMode]);
   
   // Track connection status for better UX
   useEffect(() => {

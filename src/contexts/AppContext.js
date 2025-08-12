@@ -52,8 +52,10 @@ export const AppContextProvider = ({ children }) => {
       setConnectionStatus(CONNECTION_STATUS.CONNECTING);
       setConnectionError(null);
       setConnectionAttempts(0);
+      console.log('[AppContext] Starting connection creation for network:', selectedNetwork);
     } else {
       setConnectionStatus(CONNECTION_STATUS.RETRYING);
+      console.log('[AppContext] Retrying connection, attempt:', connectionAttempts + 1);
     }
     
     try {
@@ -61,11 +63,13 @@ export const AppContextProvider = ({ children }) => {
       if (!networkConfig) {
         console.warn('[AppContext] Unknown network selected, falling back to Solana');
         const defaultConfig = getDefaultNetworkConfig();
+        console.log('[AppContext] Using default endpoint:', defaultConfig.endpoint);
         const conn = new Connection(defaultConfig.endpoint, defaultConfig.connectionConfig);
         await testConnection(conn);
         setConnection(conn);
         setConnectionStatus(CONNECTION_STATUS.CONNECTED);
         setConnectionError(null);
+        console.log('[AppContext] Default connection successful');
         return conn;
       }
       
@@ -106,7 +110,9 @@ export const AppContextProvider = ({ children }) => {
                        lastError?.message?.includes('timeout') ? 'TIMEOUT' :
                        lastError?.message?.includes('fetch') ? 'NETWORK' : 'RPC';
       
-      throw new Error(`All ${endpoints.length} endpoints failed. Error type: ${errorType}. Last error: ${errorDetails}`);
+      const errorMessage = `All ${endpoints.length} endpoints failed. Error type: ${errorType}. Last error: ${errorDetails}`;
+      console.error('[AppContext] All endpoints failed:', errorMessage);
+      throw new Error(errorMessage);
       
     } catch (error) {
       console.error('[AppContext] Connection creation failed:', error);
@@ -222,6 +228,23 @@ export const AppContextProvider = ({ children }) => {
   
   // Create program using the useProgram hook
   const program = useProgram(connection, wallet);
+  
+  // Debug program creation
+  useEffect(() => {
+    console.log('[AppContext] Program creation debug:', {
+      hasConnection: !!connection,
+      hasWallet: !!wallet,
+      hasWalletPublicKey: !!(wallet && wallet.publicKey),
+      walletConnected: wallet ? wallet.connected : false,
+      hasProgram: !!program,
+      connectionStatus,
+      selectedNetwork
+    });
+    
+    if (connection && wallet && wallet.publicKey && wallet.connected && !program) {
+      console.warn('[AppContext] All requirements met but program is null - possible useProgram hook issue');
+    }
+  }, [connection, wallet, program, connectionStatus, selectedNetwork]);
   
   // Context values
   const contextValue = useMemo(() => ({
