@@ -13,18 +13,20 @@ import { clusterApiUrl } from '@solana/web3.js';
 export const SVM_NETWORKS = {
   'solana': {
     name: 'Solana',
-    endpoint: clusterApiUrl('devnet'),
+    endpoint: 'https://api.devnet.solana.com',
     programId: 'AqSnWdAnJgdnHzXpUApk9ctPUhaLiikNrrgecbm3YH2k',
     icon: '/images/solana-logo.svg',
     color: '#9945FF',
     explorerUrl: 'https://explorer.solana.com',
     fallbackEndpoints: [
-      'https://api.devnet.solana.com',
-      'https://solana-devnet-rpc.allthatnode.com',
+      'https://devnet.helius-rpc.com/?api-key=',
+      'https://rpc.ankr.com/solana_devnet',
+      'https://solana-devnet.g.alchemy.com/v2/demo',
+      clusterApiUrl('devnet'),
     ],
     connectionConfig: {
       commitment: 'confirmed',
-      confirmTransactionInitialTimeout: 60000,
+      confirmTransactionInitialTimeout: 30000,
     }
   },
   'sonic': {

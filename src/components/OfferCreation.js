@@ -47,10 +47,11 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
   const [txHash, setTxHash] = useState('');
   const [txStatus, setTxStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [devMode, setDevMode] = useState(false);
   
   // Connection status tracking
   const isWalletConnected = wallet.connected && wallet.publicKey;
-  const isSmartContractReady = isWalletConnected && program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED;
+  const isSmartContractReady = isWalletConnected && (program && connection && connectionStatus === CONNECTION_STATUS.CONNECTED || devMode);
   const isConnectionFailed = connectionStatus === CONNECTION_STATUS.FAILED;
   const isConnectionRetrying = connectionStatus === CONNECTION_STATUS.RETRYING;
   const isConnectionConnecting = connectionStatus === CONNECTION_STATUS.CONNECTING;
@@ -105,7 +106,7 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
       return;
     }
 
-    if (!isSmartContractReady) {
+    if (!isSmartContractReady && !devMode) {
       setError('Smart contract connection is not ready. Please check your network connection and try again.');
       return;
     }
@@ -473,28 +474,51 @@ const OfferCreation = ({ onStartGuidedWorkflow }) => {
                         <ul>
                           <li>Network connectivity issues</li>
                           <li>Solana RPC endpoint problems</li>
-                          <li>Browser security restrictions</li>
+                          <li>Browser security restrictions (CORS)</li>
                           <li>Temporary blockchain network issues</li>
+                          <li>Development environment limitations</li>
                         </ul>
+                        
+                        <div className="development-notice">
+                          <p><strong>Development Note:</strong> If you're testing the UI, you can continue without a live blockchain connection. Core functionality will be simulated.</p>
+                        </div>
                       </>
                     )}
                     
                     {(isConnectionFailed || isConnectionRetrying) && (
-                      <ButtonLoader
-                        type="button"
-                        onClick={handleRetryConnection}
-                        isLoading={isConnectionRetrying}
-                        disabled={isConnectionRetrying}
-                        loadingText="Retrying..."
-                        variant="secondary"
-                        size="small"
-                        className="retry-connection-button"
-                      >
-                        {isConnectionRetrying ? 
-                          `Retrying... (${connectionAttempts}/5)` : 
-                          `Retry Connection${connectionAttempts > 0 ? ` (${connectionAttempts})` : ''}`
-                        }
-                      </ButtonLoader>
+                      <div className="connection-retry-options">
+                        <ButtonLoader
+                          type="button"
+                          onClick={handleRetryConnection}
+                          isLoading={isConnectionRetrying}
+                          disabled={isConnectionRetrying}
+                          loadingText="Retrying..."
+                          variant="secondary"
+                          size="small"
+                          className="retry-connection-button"
+                        >
+                          {isConnectionRetrying ? 
+                            `Retrying... (${connectionAttempts}/5)` : 
+                            `Retry Connection${connectionAttempts > 0 ? ` (${connectionAttempts})` : ''}`
+                          }
+                        </ButtonLoader>
+                        
+                        {isConnectionFailed && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Enable development mode for UI testing
+                              setDevMode(true);
+                              setError('');
+                              console.log('[OfferCreation] Development mode enabled for UI testing');
+                            }}
+                            className="dev-bypass-button"
+                            title="Continue with UI testing (blockchain features disabled)"
+                          >
+                            Continue Without Blockchain (UI Test Mode)
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}

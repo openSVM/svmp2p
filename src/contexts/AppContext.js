@@ -46,7 +46,7 @@ export const AppContextProvider = ({ children }) => {
   // Get network configuration
   const network = SVM_NETWORKS[selectedNetwork];
   
-  // Enhanced connection creation with retry logic
+  // Enhanced connection creation with retry logic and development fallback
   const createConnection = useCallback(async (isRetry = false) => {
     if (!isRetry) {
       setConnectionStatus(CONNECTION_STATUS.CONNECTING);
@@ -101,7 +101,12 @@ export const AppContextProvider = ({ children }) => {
       }
       
       // All endpoints failed
-      throw new Error(`All endpoints failed. Last error: ${lastError?.message || 'Unknown error'}`);
+      const errorDetails = lastError?.message || 'Unknown error';
+      const errorType = lastError?.message?.includes('CORS') ? 'CORS' :
+                       lastError?.message?.includes('timeout') ? 'TIMEOUT' :
+                       lastError?.message?.includes('fetch') ? 'NETWORK' : 'RPC';
+      
+      throw new Error(`All ${endpoints.length} endpoints failed. Error type: ${errorType}. Last error: ${errorDetails}`);
       
     } catch (error) {
       console.error('[AppContext] Connection creation failed:', error);
@@ -126,39 +131,71 @@ export const AppContextProvider = ({ children }) => {
         }, delay);
       } else {
         setConnectionStatus(CONNECTION_STATUS.FAILED);
-        // Create a minimal connection for error recovery
+        // Create a minimal connection for development/testing purposes
         try {
           const defaultConfig = getDefaultNetworkConfig();
+          console.log('[AppContext] Creating fallback connection for UI testing');
           const conn = new Connection(defaultConfig.endpoint, 'confirmed');
           setConnection(conn);
         } catch (fallbackError) {
           console.error('[AppContext] Even fallback connection failed:', fallbackError);
+          // Create a null connection to at least allow UI testing
+          setConnection(null);
         }
       }
     }
   }, [selectedNetwork, connectionAttempts]);
   
-  // Test connection health
+  // Test connection health with improved error diagnostics
   const testConnection = async (conn) => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
     
     try {
-      // Test basic connectivity
-      const blockhash = await conn.getLatestBlockhash('confirmed');
+      // Test basic connectivity with a simpler method first
+      const version = await Promise.race([
+        conn.getVersion(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Connection timeout')), 5000)
+        )
+      ]);
+      
+      if (!version) {
+        throw new Error('Unable to get RPC version - endpoint may be down');
+      }
+      
+      // If version check passes, try blockhash
+      const blockhash = await Promise.race([
+        conn.getLatestBlockhash('confirmed'),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Blockhash timeout')), 3000)
+        )
+      ]);
+      
       clearTimeout(timeoutId);
       
       if (!blockhash?.blockhash) {
-        throw new Error('Invalid response from RPC endpoint');
+        throw new Error('Invalid blockhash response from RPC endpoint');
       }
       
       return true;
     } catch (error) {
       clearTimeout(timeoutId);
+      
+      // Provide more specific error messages
       if (error.name === 'AbortError') {
         throw new Error('Connection timeout - RPC endpoint is not responding');
       }
-      throw error;
+      
+      if (error.message.includes('fetch')) {
+        throw new Error('Network error - unable to reach RPC endpoint (CORS or connectivity issue)');
+      }
+      
+      if (error.message.includes('timeout')) {
+        throw new Error('RPC endpoint timeout - server is responding slowly');
+      }
+      
+      throw new Error(`RPC connection test failed: ${error.message}`);
     }
   };
   

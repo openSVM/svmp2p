@@ -1260,3 +1260,170 @@ html:not(.dark) .onboarding-modal *,
 .dark .feature-item:hover {
   background-color: var(--color-background-alt);
 }
+
+/* Connection Issue Styles for OfferCreation */
+.connection-issue-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  background-color: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-4);
+}
+
+.connection-issue-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.connection-status-message {
+  font-size: var(--font-size-base);
+  color: var(--color-foreground);
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+}
+
+.connection-issue-details ul {
+  margin: var(--spacing-2) 0;
+  padding-left: var(--spacing-6);
+  color: var(--color-foreground-muted);
+}
+
+.connection-issue-details li {
+  margin-bottom: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.development-notice {
+  background-color: var(--color-warning-light);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3);
+  margin-top: var(--spacing-3);
+}
+
+.development-notice p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-warning-dark);
+  font-style: italic;
+}
+
+.connection-retry-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-3);
+}
+
+.retry-connection-button {
+  background-color: var(--color-secondary);
+  color: white;
+  border: 1px solid var(--color-secondary);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.retry-connection-button:hover:not(:disabled) {
+  background-color: var(--color-secondary-dark);
+  border-color: var(--color-secondary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.retry-connection-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dev-bypass-button {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+  color: white;
+  border: 1px solid var(--color-accent);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.dev-bypass-button:hover {
+  background: linear-gradient(135deg, var(--color-accent-dark) 0%, var(--color-accent) 100%);
+  border-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.dev-bypass-button::before {
+  content: '🚧';
+  margin-right: var(--spacing-2);
+  font-size: var(--font-size-sm);
+}
+
+.dev-bypass-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity var(--transition-normal) ease, transform var(--transition-normal) ease;
+}
+
+.dev-bypass-button:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Connection button states */
+.create-offer-button.disabled.connection-issue {
+  background-color: var(--color-error);
+  color: white;
+  border-color: var(--color-error);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .connection-retry-options {
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  
+  .retry-connection-button,
+  .dev-bypass-button {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+  
+  .connection-issue-container {
+    padding: var(--spacing-3);
+    gap: var(--spacing-3);
+  }
+  
+  .development-notice {
+    padding: var(--spacing-2);
+  }
+}
