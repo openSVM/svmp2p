@@ -238,7 +238,7 @@ export const isLocaleSupported = (locale) => translations.hasOwnProperty(locale)
 // Initialize locale on module load
 initializeLocale();
 
-export default {
+const i18nModule = {
   setLocale,
   getLocale,
   t,
@@ -248,3 +248,5 @@ export default {
   isLocaleSupported,
   initializeLocale
 };
+
+export default i18nModule;

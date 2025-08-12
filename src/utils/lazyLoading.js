@@ -296,7 +296,7 @@ export const analyzeBundleSize = () => {
   });
 };
 
-export default {
+const lazyLoadingModule = {
   createLazyComponent,
   usePreloader,
   withIntersectionLazyLoad,
@@ -304,3 +304,5 @@ export default {
   useIdlePreloader,
   analyzeBundleSize,
 };
+
+export default lazyLoadingModule;

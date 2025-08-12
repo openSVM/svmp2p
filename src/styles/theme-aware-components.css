@@ -100,6 +100,27 @@
   flex-shrink: 0;
 }
 
+.app-header-control {
+  background-color: var(--card-bg);
+  border: var(--border-width, 1px) solid var(--border-color);
+  color: var(--text-secondary);
+  padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-medium, 500);
+  cursor: pointer;
+  border-radius: var(--border-radius, 0px);
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+}
+
+.app-header-control:hover {
+  background-color: var(--secondary-bg);
+  color: var(--text-primary);
+}
+
 .app-wallet-status {
   font-family: var(--font-family);
   font-size: var(--font-size-xs, 10px);
@@ -807,6 +828,68 @@
 
 .app-button-animate:hover {
   transform: translateY(-1px);
+}
+
+/* Table Styles */
+.app-table {
+  border: var(--border-width, 1px) solid var(--border-color);
+  border-radius: var(--border-radius, 0px);
+  overflow: hidden;
+}
+
+.app-table-header {
+  background-color: var(--secondary-bg);
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.app-table-col {
+  padding: var(--spacing-3, 12px);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm, 12px);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.app-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: var(--border-width, 1px) solid var(--border-color);
+  transition: background-color 0.1s ease;
+}
+
+.app-table-row:last-child {
+  border-bottom: none;
+}
+
+.app-table-row:hover {
+  background-color: var(--secondary-bg);
+}
+
+.app-table-row .app-table-col {
+  padding: var(--spacing-3, 12px);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--text-primary);
+}
+
+.property-name {
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--text-secondary);
+}
+
+.property-description {
+  font-size: var(--font-size-xs, 11px);
+  color: var(--text-muted);
+  margin-top: var(--spacing-1, 4px);
+}
+
+.property-value {
+  font-family: var(--font-family);
+  color: var(--text-primary);
 }
 
 /* Desktop Footer Layout */

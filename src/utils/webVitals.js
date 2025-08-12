@@ -195,10 +195,12 @@ export const observePerformance = (callback) => {
   }
 };
 
-export default {
+const webVitalsModule = {
   initWebVitals,
   getPerformanceMetrics,
   usePerformanceMonitoring,
   observePerformance,
   VITALS_CONFIG,
 };
+
+export default webVitalsModule;
