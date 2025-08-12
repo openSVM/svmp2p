@@ -89,8 +89,13 @@ const ThemeSelector = ({
   return (
     <div className={className} ref={dropdownRef}>
       <button 
+        type="button"
         className="app-header-control app-dropdown-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label={`Current theme: ${currentTheme?.label}`}
@@ -102,9 +107,14 @@ const ThemeSelector = ({
         <div className="app-dropdown-menu theme-selector-menu">
           {themes.map((theme) => (
             <button
+              type="button"
               key={theme.key}
               className={`app-dropdown-item theme-option ${theme.key === selectedTheme ? 'active' : ''}`}
-              onClick={() => handleThemeSelect(theme.key)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleThemeSelect(theme.key);
+              }}
             >
               <div className="theme-option-content">
                 <span className="theme-name">{theme.label}</span>

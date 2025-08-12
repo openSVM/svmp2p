@@ -88,10 +88,10 @@
   --border-style: solid;
   --border-style-dashed: dashed;
   --border-style-dotted: dotted;
-  --shadow: 0 0 8px rgba(30, 64, 175, 0.4), 3px 3px 0px var(--border-color);
-  --shadow-hover: 0 0 12px rgba(30, 64, 175, 0.6), 5px 5px 0px var(--border-color);
-  --shadow-inset: inset 0 1px 3px rgba(30, 64, 175, 0.1);
-  --shadow-technical: 0 0 6px rgba(30, 64, 175, 0.3), 0 0 0 1px var(--border-color), 2px 2px 0 var(--border-light);
+  --shadow: 3px 3px 0px var(--border-color);
+  --shadow-hover: 5px 5px 0px var(--border-color);
+  --shadow-inset: inset 2px 2px 0px var(--border-light);
+  --shadow-technical: 2px 2px 0px var(--border-color);
   
   /* Blueprint Animation */
   --transition-fast: 0.15s ease;
@@ -173,7 +173,7 @@
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
   border-radius: var(--border-radius);
-  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
+  box-shadow: 3px 3px 0px var(--border-color);
   position: relative;
   padding: var(--spacing-8);
   margin: var(--spacing-5);
@@ -241,7 +241,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-2);
-  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
+  box-shadow: 3px 3px 0px var(--border-color);
 }
 
 /* Technical drawing annotation overlay */
@@ -334,7 +334,7 @@
 .theme-blueprint select:focus,
 .theme-blueprint textarea:focus {
   outline: none;
-  box-shadow: var(--shadow-technical);
+  box-shadow: 2px 2px 0px var(--border-color);
   border-width: var(--border-width);
   border-color: var(--accent-secondary);
   background: var(--blueprint-light);
@@ -506,7 +506,7 @@
 .theme-blueprint .ascii-nav-tab.active {
   background: var(--button-bg);
   color: var(--button-text);
-  box-shadow: var(--shadow-technical);
+  box-shadow: 2px 2px 0px var(--border-color);
   border-color: var(--accent-color);
 }
 
@@ -519,7 +519,7 @@
 .theme-blueprint .ascii-dropdown-menu {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
-  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
+  box-shadow: 3px 3px 0px var(--border-color);
   position: absolute;
   padding: var(--spacing-4);
   z-index: 99999;
@@ -535,7 +535,7 @@
 .theme-blueprint .app-dropdown-menu {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border-color);
-  box-shadow: 0 0 8px rgba(30, 64, 175, 0.4);
+  box-shadow: 3px 3px 0px var(--border-color);
   z-index: 99999;
 }
 
@@ -779,7 +779,7 @@
   min-width: 320px;
   max-height: 480px;
   overflow-y: auto;
-  box-shadow: var(--shadow-technical);
+  box-shadow: 3px 3px 0px var(--border-color);
 }
 
 .theme-blueprint .theme-option-content {
@@ -807,12 +807,12 @@
 
 /* Profile settings theme selector specific styling */
 .theme-blueprint .profile-theme-selector .app-dropdown-trigger {
-  box-shadow: var(--shadow-technical);
+  box-shadow: 3px 3px 0px var(--border-color);
   border: var(--border-width) solid var(--border-color);
 }
 
 .theme-blueprint .profile-theme-selector .app-dropdown-menu {
-  box-shadow: var(--shadow-hover);
+  box-shadow: 3px 3px 0px var(--border-color);
   border: var(--border-width) solid var(--border-color);
 }
 
@@ -851,7 +851,7 @@
 
 .theme-blueprint .network-indicator.connected::after {
   background: var(--success-color);
-  box-shadow: 0 0 var(--spacing-2) var(--success-color);
+  box-shadow: 2px 2px 0px var(--success-color);
 }
 
 .theme-blueprint .network-indicator.disconnected::after {

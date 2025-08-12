@@ -281,6 +281,51 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
                 z-index: 1000;
                 max-height: 200px;
                 overflow-y: auto;
+                border-radius: var(--border-radius, 0);
+                padding: 4px;
+              }
+              
+              .profile-theme-selector .app-dropdown-item,
+              .profile-theme-selector .theme-option {
+                width: 100%;
+                background: transparent;
+                border: none;
+                padding: 8px 12px;
+                text-align: left;
+                cursor: pointer;
+                color: var(--text-primary, var(--color-foreground));
+                font-family: var(--font-family, inherit);
+                font-size: 14px;
+                border-radius: var(--border-radius, 0);
+                margin: 0;
+              }
+              
+              .profile-theme-selector .app-dropdown-item:hover,
+              .profile-theme-selector .theme-option:hover {
+                background: var(--secondary-bg, var(--color-background-alt));
+              }
+              
+              .profile-theme-selector .app-dropdown-item.active,
+              .profile-theme-selector .theme-option.active {
+                background: var(--accent-color, var(--color-primary));
+                color: var(--button-text, white);
+              }
+              
+              .profile-theme-selector .theme-option-content {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+              }
+              
+              .profile-theme-selector .theme-name {
+                font-weight: bold;
+                font-size: 14px;
+              }
+              
+              .profile-theme-selector .theme-description {
+                font-size: 12px;
+                opacity: 0.8;
+                font-style: italic;
               }
               
               .app-form-info {
