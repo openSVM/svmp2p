@@ -88,10 +88,10 @@
   --border-style: solid;
   --border-style-dashed: dashed;
   --border-style-dotted: dotted;
-  --shadow: 3px 3px 0px var(--border-color);
-  --shadow-hover: 5px 5px 0px var(--border-color);
+  --shadow: 0 0 8px rgba(30, 64, 175, 0.4), 3px 3px 0px var(--border-color);
+  --shadow-hover: 0 0 12px rgba(30, 64, 175, 0.6), 5px 5px 0px var(--border-color);
   --shadow-inset: inset 0 1px 3px rgba(30, 64, 175, 0.1);
-  --shadow-technical: 0 0 0 1px var(--border-color), 2px 2px 0 var(--border-light);
+  --shadow-technical: 0 0 6px rgba(30, 64, 175, 0.3), 0 0 0 1px var(--border-color), 2px 2px 0 var(--border-light);
   
   /* Blueprint Animation */
   --transition-fast: 0.15s ease;
@@ -516,6 +516,18 @@
   position: relative;
   padding: var(--spacing-4);
   z-index: 100;
+  /* Ensure dropdown always expands downward from navbar */
+  top: 100%;
+  bottom: auto;
+  transform: none;
+}
+
+/* Theme selector dropdown in blueprint theme */
+.theme-blueprint .app-dropdown-menu {
+  background: var(--card-bg);
+  border: var(--border-width-thick) solid var(--border-color);
+  box-shadow: var(--shadow-hover);
+  z-index: 100;
 }
 
 .theme-blueprint .ascii-dropdown-menu::before {
@@ -758,6 +770,7 @@
   min-width: 320px;
   max-height: 480px;
   overflow-y: auto;
+  box-shadow: var(--shadow-technical);
 }
 
 .theme-blueprint .theme-option-content {
@@ -781,6 +794,17 @@
   letter-spacing: normal;
   font-weight: var(--font-weight-normal);
   font-style: italic;
+}
+
+/* Profile settings theme selector specific styling */
+.theme-blueprint .profile-theme-selector .app-dropdown-trigger {
+  box-shadow: var(--shadow-technical);
+  border: var(--border-width-thick) solid var(--border-color);
+}
+
+.theme-blueprint .profile-theme-selector .app-dropdown-menu {
+  box-shadow: var(--shadow-hover);
+  border: var(--border-width-thick) solid var(--border-color);
 }
 
 /* Enhanced network indicator */

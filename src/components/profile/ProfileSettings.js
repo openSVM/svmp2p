@@ -238,38 +238,59 @@ const ProfileSettings = ({ settings, onSaveSettings }) => {
             <style jsx>{`
               .profile-theme-selector {
                 width: 100%;
-                background: var(--color-background);
-                border: 1px solid var(--color-border);
-                border-radius: 0;
+                background: var(--card-bg, var(--color-background));
+                border: 1px solid var(--border-color, var(--color-border));
+                border-radius: var(--border-radius, 0);
+                position: relative;
               }
               
-              .profile-theme-selector .app-header-control {
+              .profile-theme-selector .app-header-control,
+              .profile-theme-selector .app-dropdown-trigger {
                 width: 100%;
-                background: var(--color-background);
-                border: 1px solid var(--color-border);
-                color: var(--color-foreground);
+                background: var(--card-bg, var(--color-background));
+                border: 1px solid var(--border-color, var(--color-border));
+                color: var(--text-primary, var(--color-foreground));
                 padding: 8px 12px;
-                border-radius: 0;
-                font-family: inherit;
+                border-radius: var(--border-radius, 0);
+                font-family: var(--font-family, inherit);
                 font-size: 14px;
                 text-align: left;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
               }
               
-              .profile-theme-selector .app-dropdown-menu {
+              .profile-theme-selector .app-header-control:hover,
+              .profile-theme-selector .app-dropdown-trigger:hover {
+                background: var(--secondary-bg, var(--color-background-alt));
+                border-color: var(--accent-color, var(--color-primary));
+              }
+              
+              .profile-theme-selector .app-dropdown-menu,
+              .profile-theme-selector .theme-selector-menu {
                 width: 100%;
                 max-width: none;
                 left: 0 !important;
                 right: 0;
+                position: absolute;
+                top: 100%;
+                background: var(--card-bg, var(--color-background));
+                border: 1px solid var(--border-color, var(--color-border));
+                box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+                z-index: 1000;
+                max-height: 200px;
+                overflow-y: auto;
               }
               
               .app-form-info {
-                background: var(--secondary-bg);
-                border: 1px solid var(--border-color);
+                background: var(--secondary-bg, var(--color-background-alt));
+                border: 1px solid var(--border-color, var(--color-border));
                 border-radius: var(--border-radius, 0px);
                 padding: 12px;
                 margin-top: 16px;
                 font-size: var(--font-size-sm, 12px);
-                color: var(--text-muted);
+                color: var(--text-muted, var(--color-foreground-muted));
               }
               
               .app-form-info p {
