@@ -94,6 +94,16 @@ When offline, the app will:
 
 For detailed PWA implementation information, see [PWA Documentation](docs/pwa-implementation.md).
 
+## 📋 Project Plan
+
+**[📖 View Complete Project Plan](PLAN.md)** - Comprehensive roadmap, milestones, and strategic direction
+
+### Quick Links
+- **Vision & Goals**: Strategic objectives and project mission
+- **Development Timeline**: Detailed milestones and deliverables  
+- **Architecture Overview**: Technical architecture and system design
+- **Contribution Guidelines**: How to contribute effectively to the project
+
 ## 📚 Documentation
 
 ### API Documentation
