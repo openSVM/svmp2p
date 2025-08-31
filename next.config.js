@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const webpack = require('webpack');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const nextConfig = {
   reactStrictMode: true,
@@ -77,29 +80,46 @@ const nextConfig = {
             priority: -20,
             reuseExistingChunk: true,
           },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
+          // Core UI libraries
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            priority: 30,
+            chunks: 'all',
+          },
+          // Solana blockchain libraries
+          solana: {
+            test: /[\\/]node_modules[\\/](@solana|@coral-xyz|@project-serum)[\\/]/,
+            name: 'solana',
+            priority: 25,
+            chunks: 'all',
+          },
+          // Crypto and utility libraries
+          crypto: {
+            test: /[\\/]node_modules[\\/](@noble|crypto-browserify|buffer|stream)[\\/]/,
+            name: 'crypto',
+            priority: 20,
+            chunks: 'all',
+          },
+          // Chart.js and visualization
+          charts: {
+            test: /[\\/]node_modules[\\/](chart\.js|react-chartjs-2)[\\/]/,
+            name: 'charts',
+            priority: 15,
             chunks: 'all',
           },
           // PWA specific chunks
           pwa: {
             test: /[\\/](sw\.js|manifest\.json|pwa|offline)[\\/]/,
             name: 'pwa',
-            priority: 30,
+            priority: 35,
             chunks: 'all',
           },
-          solana: {
-            test: /[\\/]node_modules[\\/]@solana[\\/]/,
-            name: 'solana',
-            priority: 10,
-            chunks: 'all',
-          },
-          react: {
-            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-            name: 'react',
-            priority: 20,
+          // Other vendor libraries
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
             chunks: 'all',
           },
         },
@@ -140,4 +160,4 @@ const nextConfig = {
   distDir: 'build',
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(nextConfig);

@@ -3,20 +3,35 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import { PhantomWalletButton } from './PhantomWalletButton';
 import { usePhantomWallet } from '@/contexts/PhantomWalletProvider';
 import { createLogger } from '@/utils/logger';
+import { createLazyComponent } from '@/utils/lazyLoading';
 
 // Import context
 import { AppContext } from '@/contexts/AppContext';
 
-// Import components
+// Import critical components (needed for initial render)
 import { NetworkSelector } from '@/components/NetworkSelector';
 import LanguageSelector from '@/components/LanguageSelector';
-import OnboardingModal from '@/components/OnboardingModal';
-import PWAInstallButton from '@/components/PWAInstallButton';
 import OfflineIndicator from '@/components/OfflineIndicator';
-import ProfileDropdown from '@/components/ProfileDropdown';
+
+// Lazy load non-critical components
+const OnboardingModal = createLazyComponent(
+  () => import('@/components/OnboardingModal'),
+  { fallback: null, ssr: false }
+);
+
+const PWAInstallButton = createLazyComponent(
+  () => import('@/components/PWAInstallButton'),
+  { fallback: null, ssr: false }
+);
+
+const ProfileDropdown = createLazyComponent(
+  () => import('@/components/ProfileDropdown'),
+  { fallback: null, ssr: false }
+);
 
 const logger = createLogger('Layout');
 
