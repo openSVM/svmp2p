@@ -1,13 +1,44 @@
 import React, { useState, useEffect, useContext } from 'react';
+import dynamic from 'next/dynamic';
 import { AppContext } from '@/contexts/AppContext';
 import { usePhantomWallet } from '@/contexts/PhantomWalletProvider';
 import { useProgram } from '../hooks/useProgram';
 import { useProgramStatistics, useOffers, useUserHistory } from '../hooks/useOnChainData';
 import { useRealPriceData } from '../hooks/usePriceData';
-import OverviewPanel from '@/components/analytics/OverviewPanel';
-import RecentTrades from '@/components/analytics/RecentTrades';
-import VolumePerDayChart from '@/components/analytics/VolumePerDayChart';
-import TopTraders from '@/components/analytics/TopTraders';
+import { createLazyComponent } from '@/utils/lazyLoading';
+
+// Lazy load heavy analytics components
+const OverviewPanel = createLazyComponent(
+  () => import('@/components/analytics/OverviewPanel'),
+  { 
+    fallback: <div className="analytics-loading">Loading overview...</div>,
+    ssr: false 
+  }
+);
+
+const RecentTrades = createLazyComponent(
+  () => import('@/components/analytics/RecentTrades'),
+  { 
+    fallback: <div className="analytics-loading">Loading trades...</div>,
+    ssr: false 
+  }
+);
+
+const VolumePerDayChart = createLazyComponent(
+  () => import('@/components/analytics/VolumePerDayChart'),
+  { 
+    fallback: <div className="analytics-loading">Loading chart...</div>,
+    ssr: false 
+  }
+);
+
+const TopTraders = createLazyComponent(
+  () => import('@/components/analytics/TopTraders'),
+  { 
+    fallback: <div className="analytics-loading">Loading traders...</div>,
+    ssr: false 
+  }
+);
 
 export default function AnalyticsDashboard() {
   const { network, selectedNetwork, networks } = useContext(AppContext);

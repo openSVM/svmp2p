@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "description": "A peer-to-peer cryptocurrency exchange platform for trading across Solana Virtual Machine networks (Solana, Sonic, Eclipse, svmBNB, and s00n).",
   "private": true,
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "*.sass",
+    "src/styles/**/*",
+    "public/**/*"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,6 +24,7 @@
     "test:e2e:ci": "./run-e2e-tests.sh --env ci",
     "test:e2e:all": "./run-e2e-tests.sh --env local && ./run-e2e-tests.sh --env docker",
     "analyze-bundle": "./scripts/analyze-bundle.sh",
+    "analyze-bundle-visual": "ANALYZE=true npm run build",
     "performance": "npm run build && npm run analyze-bundle",
     "test:anchor": "anchor test --skip-local-validator",
     "test:security": "npx ts-mocha -p ./tsconfig.test.json -t 1000000 tests/security_audit_tests.ts --reporter spec",
@@ -83,6 +91,7 @@
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
     "@babel/runtime": "^7.27.6",
+    "@next/bundle-analyzer": "^15.5.2",
     "@tailwindcss/postcss": "^4.1.10",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/dom": "^10.4.0",
@@ -100,7 +109,8 @@
     "puppeteer": "^24.10.0",
     "tailwindcss": "^4.1.10",
     "tailwindcss-animate": "^1.0.7",
-    "webpack": "^5.99.9"
+    "webpack": "^5.99.9",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "eslintConfig": {
     "extends": "next/core-web-vitals"

@@ -1,8 +1,10 @@
-const CACHE_NAME = 'opensvm-p2p-v2';
-const STATIC_CACHE_NAME = 'opensvm-static-v2';
-const RUNTIME_CACHE_NAME = 'opensvm-runtime-v2';
+const CACHE_NAME = 'opensvm-p2p-v3';
+const STATIC_CACHE_NAME = 'opensvm-static-v3';
+const RUNTIME_CACHE_NAME = 'opensvm-runtime-v3';
+const JS_CACHE_NAME = 'opensvm-js-v3';
+const CSS_CACHE_NAME = 'opensvm-css-v3';
 
-// Critical assets to cache immediately
+// Critical assets to cache immediately for fast startup
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -13,6 +15,13 @@ const urlsToCache = [
   '/images/icon-512x512.png'
 ];
 
+// Critical JavaScript chunks to cache for faster startup
+const criticalJSChunks = [
+  '/build/_next/static/chunks/react',
+  '/build/_next/static/chunks/main',
+  '/build/_next/static/chunks/pages/_app'
+];
+
 // API endpoints to cache for offline functionality
 const apiEndpointsToCache = [
   '/api/networks',
@@ -20,8 +29,9 @@ const apiEndpointsToCache = [
   '/api/offers'
 ];
 
-// Maximum age for cached responses (24 hours)
-const MAX_CACHE_AGE = 24 * 60 * 60 * 1000;
+// Maximum age for cached responses
+const MAX_CACHE_AGE = 24 * 60 * 60 * 1000; // 24 hours
+const JS_CACHE_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days for JS chunks
 
 // Skip waiting to ensure the new service worker activates immediately
 self.addEventListener('install', (event) => {
@@ -263,28 +273,58 @@ async function handleApiRequest(request) {
   }
 }
 
-// Handle static assets
+// Handle static assets with optimized caching strategies
 async function handleStaticAsset(request) {
   try {
+    const url = new URL(request.url);
+    const isJSChunk = url.pathname.includes('/_next/static/chunks/');
+    const isCSSFile = url.pathname.endsWith('.css');
+    
+    // Use different cache strategies for different asset types
+    let cacheName = STATIC_CACHE_NAME;
+    if (isJSChunk) {
+      cacheName = JS_CACHE_NAME;
+    } else if (isCSSFile) {
+      cacheName = CSS_CACHE_NAME;
+    }
+    
     // Try cache first for static assets
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
-      return cachedResponse;
+      // Check if cached response is still fresh
+      const cacheDate = new Date(cachedResponse.headers.get('date') || 0);
+      const maxAge = isJSChunk ? JS_CACHE_AGE : MAX_CACHE_AGE;
+      
+      if (Date.now() - cacheDate.getTime() < maxAge) {
+        return cachedResponse;
+      }
     }
     
     // Fetch from network
     const networkResponse = await fetch(request);
     
     if (networkResponse.ok) {
-      // Cache the response
-      const cache = await caches.open(STATIC_CACHE_NAME);
+      // Cache the response with appropriate cache name
+      const cache = await caches.open(cacheName);
       cache.put(request, networkResponse.clone());
       return networkResponse;
+    }
+    
+    // If network fails and we have a cached version, use it even if stale
+    if (cachedResponse) {
+      return cachedResponse;
     }
     
     throw new Error(`Static asset response not ok: ${networkResponse.status}`);
   } catch (error) {
     console.error('[SW] Static asset failed:', error.message);
+    
+    // Last resort: try any cached version
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
     return new Response('Asset not available offline', {
       status: 503,
       statusText: 'Service Unavailable'

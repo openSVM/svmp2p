@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 // Import performance monitoring
 import { initWebVitals } from '@/utils/webVitals';
-import { analyzeBundleSize } from '@/utils/lazyLoading';
+import { analyzeBundleSize, useIdlePreloader } from '@/utils/lazyLoading';
 
 // Import error handling for external script conflicts
 import { setupGlobalErrorHandling } from '@/utils/errorHandling';
@@ -40,6 +40,16 @@ import Layout from '@/components/Layout';
 const ErrorBoundary = dynamic(() => import('@/components/EnhancedErrorBoundary'), { ssr: false });
 
 export default function App({ Component, pageProps }) {
+  
+  // Preload non-critical components during idle time
+  useIdlePreloader([
+    () => import('@/components/AnalyticsDashboard'),
+    () => import('@/components/DisputeResolution'),
+    () => import('@/components/RewardDashboard'),
+    () => import('@/components/UserProfile'),
+    () => import('@/components/analytics/VolumePerDayChart'),
+    () => import('@/components/analytics/TopTraders')
+  ]);
 
   // Initialize performance monitoring
   useEffect(() => {

@@ -261,7 +261,7 @@ export const useIdlePreloader = (preloadFunctions = []) => {
 };
 
 /**
- * Bundle size analyzer (development only)
+ * Enhanced bundle size analyzer with performance recommendations
  */
 export const analyzeBundleSize = () => {
   if (process.env.NODE_ENV !== 'development') return;
@@ -269,29 +269,89 @@ export const analyzeBundleSize = () => {
   const getResourceSizes = () => {
     const resources = performance.getEntriesByType('resource');
     const sizes = resources.reduce((acc, resource) => {
-      if (resource.name.includes('chunk') || resource.name.includes('.js')) {
-        acc.javascript += resource.transferSize || 0;
-      } else if (resource.name.includes('.css')) {
-        acc.css += resource.transferSize || 0;
-      } else if (resource.name.match(/\.(png|jpg|jpeg|gif|webp|svg)$/)) {
-        acc.images += resource.transferSize || 0;
+      const url = new URL(resource.name, window.location.origin);
+      const transferSize = resource.transferSize || 0;
+      
+      if (url.pathname.includes('chunk') || url.pathname.includes('.js')) {
+        acc.javascript += transferSize;
+        acc.jsChunks.push({
+          name: url.pathname.split('/').pop(),
+          size: transferSize,
+          loadTime: resource.responseEnd - resource.startTime
+        });
+      } else if (url.pathname.includes('.css')) {
+        acc.css += transferSize;
+      } else if (url.pathname.match(/\.(png|jpg|jpeg|gif|webp|svg)$/)) {
+        acc.images += transferSize;
       }
-      acc.total += resource.transferSize || 0;
+      acc.total += transferSize;
       return acc;
-    }, { javascript: 0, css: 0, images: 0, total: 0 });
+    }, { 
+      javascript: 0, 
+      css: 0, 
+      images: 0, 
+      total: 0,
+      jsChunks: []
+    });
 
     return sizes;
+  };
+
+  const getPerformanceMetrics = () => {
+    const navigation = performance.getEntriesByType('navigation')[0];
+    return {
+      domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+      loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
+      firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0
+    };
   };
 
   window.addEventListener('load', () => {
     setTimeout(() => {
       const sizes = getResourceSizes();
+      const metrics = getPerformanceMetrics();
+      
       console.log('📦 Bundle Size Analysis:', {
         JavaScript: `${(sizes.javascript / 1024).toFixed(2)} KB`,
         CSS: `${(sizes.css / 1024).toFixed(2)} KB`,
         Images: `${(sizes.images / 1024).toFixed(2)} KB`,
         Total: `${(sizes.total / 1024).toFixed(2)} KB`,
       });
+
+      console.log('⚡ Performance Metrics:', {
+        'DOM Content Loaded': `${metrics.domContentLoaded.toFixed(2)}ms`,
+        'Load Complete': `${metrics.loadComplete.toFixed(2)}ms`,
+        'First Contentful Paint': `${metrics.firstContentfulPaint.toFixed(2)}ms`
+      });
+
+      // Analyze largest chunks
+      const largestChunks = sizes.jsChunks
+        .sort((a, b) => b.size - a.size)
+        .slice(0, 5);
+      
+      console.log('🎯 Largest JS Chunks:', largestChunks.map(chunk => ({
+        name: chunk.name,
+        size: `${(chunk.size / 1024).toFixed(2)} KB`,
+        loadTime: `${chunk.loadTime.toFixed(2)}ms`
+      })));
+
+      // Performance recommendations
+      const recommendations = [];
+      if (sizes.javascript > 1500 * 1024) {
+        recommendations.push('Consider further code splitting - JS bundle is over 1.5MB');
+      }
+      if (metrics.firstContentfulPaint > 3000) {
+        recommendations.push('First Contentful Paint is slow - consider critical CSS inlining');
+      }
+      if (largestChunks[0]?.size > 500 * 1024) {
+        recommendations.push(`Largest chunk (${largestChunks[0].name}) is over 500KB - consider splitting`);
+      }
+
+      if (recommendations.length > 0) {
+        console.log('💡 Optimization Recommendations:', recommendations);
+      } else {
+        console.log('✅ Bundle size and performance look good!');
+      }
     }, 2000);
   });
 };
