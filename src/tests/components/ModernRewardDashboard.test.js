@@ -335,4 +335,5 @@ describe('Component Performance', () => {
   });
 });
 
-export default {};
+const testSuite = {};
+export default testSuite;
