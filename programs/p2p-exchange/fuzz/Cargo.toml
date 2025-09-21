@@ -1,0 +1,40 @@
+[package]
+name = "p2p-exchange-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary = { version = "1.4.0", features = ["derive"] }
+
+[dependencies.p2p-exchange]
+path = ".."
+
+[lib]
+name = "p2p_exchange_fuzz"
+path = "src/lib.rs"
+
+[[bin]]
+name = "fuzz_offer_creation"
+path = "fuzz_targets/fuzz_offer_creation.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_dispute_resolution"
+path = "fuzz_targets/fuzz_dispute_resolution.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_input_validation"
+path = "fuzz_targets/fuzz_input_validation.rs"
+test = false
+doc = false
+bench = false

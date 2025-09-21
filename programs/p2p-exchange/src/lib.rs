@@ -33,6 +33,9 @@ pub mod instructions;
 pub mod errors;
 pub mod utils;
 
+#[cfg(test)]
+pub mod tests;
+
 use instructions::*;
 
 declare_id!("ASU1Gjmx9XMwErZumic9DNTADYzKphtEd1Zy4BFwSpnk");

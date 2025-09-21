@@ -53,3 +53,29 @@ pub fn validate_and_process_string(input: &str, max_length: usize) -> Result<Str
     validate_string_length(&trimmed, max_length)?;
     Ok(trimmed)
 }
+
+/// Validates if a string is a valid currency code (3 uppercase letters)
+/// 
+/// # Arguments
+/// * `code` - The currency code to validate
+/// 
+/// # Returns
+/// * `bool` - True if valid currency code format
+pub fn is_valid_currency_code(code: &str) -> bool {
+    code.len() == 3 && 
+    code.chars().all(|c| c.is_ascii_uppercase()) &&
+    code.chars().all(|c| c.is_ascii_alphabetic())
+}
+
+/// Validates if a string contains valid UTF-8
+/// 
+/// # Arguments
+/// * `input` - The string to validate
+/// 
+/// # Returns
+/// * `bool` - True if valid UTF-8
+pub fn is_valid_utf8_string(input: &str) -> bool {
+    // Rust strings are UTF-8 by definition, but this function
+    // provides explicit validation for fuzzing and testing
+    input.is_ascii() || std::str::from_utf8(input.as_bytes()).is_ok()
+}

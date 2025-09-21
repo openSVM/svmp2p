@@ -131,6 +131,8 @@ All code contributions must include appropriate tests:
 - Integration tests for contract interactions
 - Edge case tests for error conditions
 - Gas optimization tests
+- **Property-based tests for new mathematical invariants** **🆕**
+- **Fuzz tests for new input validation logic** **🆕**
 
 ### Running Tests
 Before submitting a pull request, ensure all tests pass:
@@ -142,12 +144,66 @@ npm test
 # Smart contract tests
 cd programs/p2p-exchange
 cargo test-bpf
+
+# NEW: Property-based tests
+cargo test property_tests --lib
+
+# NEW: Fuzz testing (for security-critical changes)
+cargo +nightly fuzz build fuzz_offer_creation
+cargo +nightly fuzz run fuzz_offer_creation -- -max_total_time=60
 ```
 
 ### Test Coverage
 Aim for high test coverage, especially for critical functionality:
 - New features should have at least 80% test coverage
 - Bug fixes must include tests that reproduce the bug
+- **Security-critical functions must include property-based tests** **🆕**
+- **Input validation functions should have corresponding fuzz tests** **🆕**
+
+### Fuzz Testing Requirements **🆕**
+For changes involving input processing or validation:
+
+1. **Add fuzz targets for new input types:**
+```rust
+// Add to appropriate fuzz target or create new one
+#[derive(Arbitrary, Debug)]
+struct NewInputType {
+    // Define structure for fuzzing
+}
+
+fuzz_target!(|data: NewInputType| {
+    // Test the new input processing
+});
+```
+
+2. **Run fuzz tests locally:**
+```bash
+# Install nightly Rust if not available
+rustup toolchain install nightly
+
+# Run relevant fuzz tests
+cargo +nightly fuzz run fuzz_input_validation -- -max_total_time=300
+```
+
+### Property-Based Testing Requirements **🆕**
+For changes involving mathematical operations or state transitions:
+
+1. **Define properties that should hold:**
+```rust
+proptest! {
+    #[test]
+    fn prop_new_feature_invariant(input in strategy) {
+        // Test that the invariant holds for all inputs
+        prop_assert!(invariant_condition);
+    }
+}
+```
+
+2. **Common property categories:**
+- Arithmetic operations never overflow
+- State transitions follow valid rules
+- Input validation is consistent
+- Data integrity is maintained
 
 ## Pull Request Process
 
