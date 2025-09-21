@@ -12,3 +12,6 @@ export { default as TransactionAnalytics } from './TransactionAnalytics';
 export { default as RealTimeFeedback } from './RealTimeFeedback';
 export { default as Tooltip } from './Tooltip';
 export { default as ConfirmationDialog } from './ConfirmationDialog';
+
+// New modular components
+export { OAuthButtons, default as OAuthButtonsDefault } from './OAuthButtons';
