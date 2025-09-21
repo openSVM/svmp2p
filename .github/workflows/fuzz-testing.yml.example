@@ -1,0 +1,169 @@
+# GitHub Actions Workflow for Fuzz Testing and Property-Based Testing
+# Add this to your existing .github/workflows/test.yml or create a new workflow
+
+name: Advanced Contract Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'programs/**'
+      - 'Cargo.toml'
+      - 'Anchor.toml'
+
+jobs:
+  property-tests:
+    name: Property-Based Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            programs/p2p-exchange/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run Property-Based Tests
+        run: |
+          cd programs/p2p-exchange
+          cargo test property_tests --lib --verbose
+        env:
+          RUST_BACKTRACE: 1
+
+  fuzz-tests:
+    name: Fuzz Testing
+    runs-on: ubuntu-latest
+    # Only run on PRs that modify smart contract code
+    if: contains(github.event.pull_request.changed_files, 'programs/')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust Nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            programs/p2p-exchange/target/
+            programs/p2p-exchange/fuzz/target/
+          key: ${{ runner.os }}-fuzz-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build fuzz targets
+        run: |
+          cd programs/p2p-exchange
+          cargo +nightly fuzz build fuzz_offer_creation
+          cargo +nightly fuzz build fuzz_dispute_resolution
+          cargo +nightly fuzz build fuzz_input_validation
+
+      - name: Run fuzz tests (time-limited for CI)
+        run: |
+          cd programs/p2p-exchange
+          # Run each fuzzer for 60 seconds in CI
+          timeout 120 cargo +nightly fuzz run fuzz_offer_creation -- -max_total_time=60 || true
+          timeout 120 cargo +nightly fuzz run fuzz_dispute_resolution -- -max_total_time=60 || true
+          timeout 120 cargo +nightly fuzz run fuzz_input_validation -- -max_total_time=60 || true
+
+      - name: Check for crashes
+        run: |
+          cd programs/p2p-exchange
+          if [ -d "fuzz/artifacts" ] && [ "$(ls -A fuzz/artifacts)" ]; then
+            echo "🚨 Fuzz testing found crashes!"
+            find fuzz/artifacts -name "crash-*" -exec echo "Crash found: {}" \;
+            find fuzz/artifacts -name "crash-*" -exec ls -la {} \;
+            exit 1
+          else
+            echo "✅ No crashes found during fuzz testing"
+          fi
+
+      - name: Upload fuzz artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: fuzz-artifacts
+          path: programs/p2p-exchange/fuzz/artifacts/
+          retention-days: 30
+
+  # Optional: Long-running fuzz tests (scheduled or manual)
+  extended-fuzz:
+    name: Extended Fuzz Testing
+    runs-on: ubuntu-latest
+    # Only run on schedule or manual trigger
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust Nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz
+
+      - name: Extended fuzz testing
+        run: |
+          cd programs/p2p-exchange
+          # Run for 30 minutes each target
+          timeout 2100 cargo +nightly fuzz run fuzz_offer_creation -- -max_total_time=1800 || true
+          timeout 2100 cargo +nightly fuzz run fuzz_dispute_resolution -- -max_total_time=1800 || true
+          timeout 2100 cargo +nightly fuzz run fuzz_input_validation -- -max_total_time=1800 || true
+
+      - name: Generate coverage report
+        run: |
+          cd programs/p2p-exchange
+          cargo +nightly fuzz coverage fuzz_offer_creation || true
+
+      - name: Upload extended test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: extended-fuzz-results
+          path: |
+            programs/p2p-exchange/fuzz/artifacts/
+            programs/p2p-exchange/fuzz/coverage/
+          retention-days: 90
+
+# Schedule extended fuzzing weekly
+on:
+  schedule:
+    - cron: '0 2 * * 0'  # Run every Sunday at 2 AM
+
+# Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      fuzz_duration:
+        description: 'Fuzz test duration in seconds'
+        required: false
+        default: '1800'
+        type: string
