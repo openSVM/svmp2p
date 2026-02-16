@@ -1,298 +1,171 @@
 /**
- * Offer Row Component
+ * OfferRow - Individual offer display component
  * 
- * Extracted from the monolithic OfferList component for better modularity
- * Handles the display and actions for individual trading offers
+ * Displays a single trading offer in a list format with all relevant details
+ * Part of trading feature modular refactoring
  */
 
-import React, { useState, useMemo } from 'react';
-import { ButtonLoader } from '../../common';
-import { useActionDebounce } from '../../../hooks/useActionDebounce';
-import { useRealPriceData } from '../../../hooks/usePriceData';
+import React, { memo, useCallback } from 'react';
+import styles from './OfferRow.module.css';
 
-/**
- * Rate indicator component
- */
-const RateIndicator = ({ offer, type, rate }) => {
-  const { prices } = useRealPriceData();
-  
-  const isGoodRate = useMemo(() => {
-    if (!prices || !prices[offer.fiatCurrency]) {
-      return null; // No indicator if no real price data
-    }
-    
-    const marketRate = prices[offer.fiatCurrency];
-    const threshold = 0.05; // 5% threshold
-    const numericRate = parseFloat(rate);
-    
-    return type === 'buy' 
-      ? numericRate < marketRate * (1 + threshold) 
-      : numericRate > marketRate * (1 - threshold);
-  }, [rate, type, prices, offer.fiatCurrency]);
+const formatTimeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
 
-  if (isGoodRate === null) return null;
-
-  return (
-    <span 
-      className={`ml-2 px-2 py-1 text-xs rounded ${
-        isGoodRate ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-      }`}
-      title={isGoodRate ? 'Good rate compared to market' : 'Rate differs from market average'}
-    >
-      {isGoodRate ? '🔥 Good Rate' : '⚠️ Check Rate'}
-    </span>
-  );
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${diffDays}d ago`;
 };
 
-/**
- * Time since posted component
- */
-const TimeStamp = ({ createdAt }) => {
-  const timeSincePosted = useMemo(() => {
-    const now = Date.now();
-    const diffMs = now - createdAt;
-    const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 60) {
-      return `${diffMins}m ago`;
-    } else if (diffMins < 1440) {
-      return `${Math.floor(diffMins / 60)}h ago`;
-    } else {
-      return `${Math.floor(diffMins / 1440)}d ago`;
-    }
-  }, [createdAt]);
-
-  return (
-    <span className="text-xs text-gray-500">{timeSincePosted}</span>
-  );
+const formatCryptoAmount = (amount, symbol) => {
+  if (amount >= 1) {
+    return `${amount.toFixed(2)} ${symbol}`;
+  }
+  return `${amount.toFixed(4)} ${symbol}`;
 };
 
-/**
- * Action buttons component
- */
-const OfferActionButtons = ({ 
-  offer, 
-  type, 
-  isProcessing, 
-  currentAction, 
+const formatFiatAmount = (amount, currency) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency
+  }).format(amount);
+};
+
+const formatRate = (rate, currency) => {
+  return `${currency}${rate.toFixed(2)}`;
+};
+
+const getPaymentMethodLabel = (method) => {
+  const labels = {
+    'bank': '🏦 Bank Transfer',
+    'paypal': '💳 PayPal',
+    'cash': '💵 Cash',
+    'crypto': '₿ Crypto',
+    'westernunion': '🌎 Western Union',
+    'giftcard': '🎁 Gift Card',
+    'venmo': '📱 Venmo',
+    'zelle': '📲 Zelle'
+  };
+  return labels[method] || method;
+};
+
+const OfferRow = memo(({
+  offer,
+  onClick,
   onAction,
-  isWalletConnected,
-  onConnectWallet 
+  isSelected = false,
+  isOwn = false,
+  actionLabel = 'Trade'
 }) => {
-  // Debounced action handlers
-  const { debouncedCallback: debouncedAccept, isDisabled: isAcceptDisabled } = useActionDebounce(
-    () => {
-      if (!isWalletConnected) {
-        onConnectWallet?.();
-        return;
-      }
-      onAction(offer.id, 'accept');
-    },
-    1000
-  );
+  const handleClick = useCallback(() => {
+    if (onClick) {
+      onClick(offer);
+    }
+  }, [onClick, offer]);
 
-  const { debouncedCallback: debouncedCancel, isDisabled: isCancelDisabled } = useActionDebounce(
-    () => {
-      if (!isWalletConnected) {
-        onConnectWallet?.();
-        return;
-      }
-      onAction(offer.id, 'cancel');
-    },
-    1000
-  );
+  const handleActionClick = useCallback((e) => {
+    e.stopPropagation();
+    if (onAction) {
+      onAction(offer);
+    }
+  }, [onAction, offer]);
 
-  const { debouncedCallback: debouncedConfirm, isDisabled: isConfirmDisabled } = useActionDebounce(
-    () => {
-      if (!isWalletConnected) {
-        onConnectWallet?.();
-        return;
-      }
-      onAction(offer.id, 'confirm');
-    },
-    1000
-  );
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  }, [handleClick]);
 
-  // Buy offer actions
-  if (type === 'buy' && offer.status === 'Listed') {
-    return (
-      <ButtonLoader
-        onClick={debouncedAccept}
-        isLoading={isProcessing && currentAction === 'accept'}
-        disabled={isAcceptDisabled}
-        loadingText="..."
-        variant="primary"
-        size="small"
-        className="offer-action-button"
-      >
-        Buy
-      </ButtonLoader>
-    );
-  }
+  const {
+    id,
+    type,
+    cryptoAmount,
+    cryptoSymbol,
+    fiatAmount,
+    fiatCurrency,
+    rate,
+    paymentMethod,
+    userId,
+    userRating,
+    createdAt
+  } = offer;
 
-  // Sell offer actions
-  if (type === 'sell' && offer.status === 'Listed') {
-    return (
-      <ButtonLoader
-        onClick={debouncedAccept}
-        isLoading={isProcessing && currentAction === 'accept'}
-        disabled={isAcceptDisabled}
-        loadingText="..."
-        variant="primary"
-        size="small"
-        className="offer-action-button"
-      >
-        Sell
-      </ButtonLoader>
-    );
-  }
+  const rowClasses = [
+    styles.row,
+    isSelected && styles.selected,
+    isOwn && styles.own
+  ].filter(Boolean).join(' ');
 
-  // Owner actions for listed offers
-  if (offer.status === 'Listed' && offer.isOwner) {
-    return (
-      <ButtonLoader
-        onClick={debouncedCancel}
-        isLoading={isProcessing && currentAction === 'cancel'}
-        disabled={isCancelDisabled}
-        loadingText="..."
-        variant="secondary"
-        size="small"
-        className="offer-action-button"
-      >
-        Cancel
-      </ButtonLoader>
-    );
-  }
-
-  // Actions for accepted offers
-  if (offer.status === 'Accepted') {
-    return (
-      <div className="flex space-x-2">
-        <ButtonLoader
-          onClick={debouncedConfirm}
-          isLoading={isProcessing && currentAction === 'confirm'}
-          disabled={isConfirmDisabled}
-          loadingText="..."
-          variant="primary"
-          size="small"
-          className="offer-action-button"
+  return (
+    <div
+      className={rowClasses}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role="row"
+      tabIndex={0}
+      aria-selected={isSelected}
+      data-offer-id={id}
+    >
+      <div className={styles.typeIndicator}>
+        <span 
+          className={styles.typeBadge}
+          data-type={type}
         >
-          Confirm
-        </ButtonLoader>
-        <ButtonLoader
-          onClick={debouncedCancel}
-          isLoading={isProcessing && currentAction === 'cancel'}
-          disabled={isCancelDisabled}
-          loadingText="..."
-          variant="secondary"
-          size="small"
-          className="offer-action-button"
-        >
-          Cancel
-        </ButtonLoader>
+          {type.toUpperCase()}
+        </span>
       </div>
-    );
-  }
 
-  // Status display for other states
-  return (
-    <span className={`px-3 py-1 text-xs rounded-full ${
-      offer.status === 'Completed' ? 'bg-green-100 text-green-800' :
-      offer.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
-      'bg-gray-100 text-gray-800'
-    }`}>
-      {offer.status}
-    </span>
-  );
-};
+      <div className={styles.amountColumn}>
+        <span className={styles.cryptoAmount}>
+          {formatCryptoAmount(cryptoAmount, cryptoSymbol)}
+        </span>
+        <span className={styles.fiatAmount}>
+          {formatFiatAmount(fiatAmount, fiatCurrency)}
+        </span>
+      </div>
 
-/**
- * Main offer row component
- */
-export const OfferRow = React.memo(({ 
-  offer, 
-  type, 
-  processingAction, 
-  onOfferAction, 
-  network, 
-  isWalletConnected, 
-  onConnectWallet 
-}) => {
-  const isProcessing = processingAction.offerId === offer.id;
-  const currentAction = processingAction.action;
-  
-  // Calculate the rate (protected against division by zero)
-  const rate = offer.solAmount > 0 ? (offer.fiatAmount / offer.solAmount).toFixed(2) : '0.00';
+      <div className={styles.rateColumn}>
+        <span className={styles.rate}>
+          {formatRate(rate, fiatCurrency)}
+        </span>
+        <span className={styles.rateLabel}>per token</span>
+      </div>
 
-  return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-      <div className="flex items-center justify-between">
-        {/* Offer Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center space-x-3">
-            {/* Amount and Currency */}
-            <div>
-              <div className="text-lg font-semibold text-gray-900">
-                {offer.solAmount} SOL
-              </div>
-              <div className="text-sm text-gray-600">
-                {offer.fiatAmount} {offer.fiatCurrency}
-              </div>
-            </div>
+      <div className={styles.detailsColumn}>
+        <span className={styles.paymentBadge}>
+          {getPaymentMethodLabel(paymentMethod)}
+        </span>
+      </div>
 
-            {/* Rate */}
-            <div className="text-sm">
-              <div className="font-medium text-gray-900">
-                {rate} {offer.fiatCurrency}/SOL
-                <RateIndicator offer={offer} type={type} rate={rate} />
-              </div>
-            </div>
+      <div className={styles.userColumn}>
+        <span className={styles.userId}>
+          {userId.slice(0, 8)}...
+        </span>
+        {userRating && (
+          <span className={styles.userRating}>★ {userRating.toFixed(1)}</span>
+        )}
+      </div>
 
-            {/* Payment Method */}
-            <div className="hidden md:block text-sm text-gray-600">
-              <div className="font-medium">Payment</div>
-              <div className="truncate max-w-32" title={offer.paymentMethod}>
-                {offer.paymentMethod}
-              </div>
-            </div>
+      <div className={styles.timeColumn}>
+        <span className={styles.timeAgo}>
+          {formatTimeAgo(createdAt)}
+        </span>
+      </div>
 
-            {/* Network Badge */}
-            <div className="hidden lg:block">
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {network}
-              </span>
-            </div>
-
-            {/* Timestamp */}
-            <div className="hidden lg:block">
-              <TimeStamp createdAt={offer.createdAt} />
-            </div>
-          </div>
-
-          {/* Mobile-specific info */}
-          <div className="mt-2 md:hidden">
-            <div className="text-xs text-gray-600">
-              Payment: {offer.paymentMethod}
-            </div>
-            <div className="flex items-center justify-between mt-1">
-              <TimeStamp createdAt={offer.createdAt} />
-              <span className="text-xs text-blue-600">{network}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="ml-4 flex-shrink-0">
-          <OfferActionButtons
-            offer={offer}
-            type={type}
-            isProcessing={isProcessing}
-            currentAction={currentAction}
-            onAction={onOfferAction}
-            isWalletConnected={isWalletConnected}
-            onConnectWallet={onConnectWallet}
-          />
-        </div>
+      <div className={styles.actionColumn}>
+        <button
+          className={styles.actionButton}
+          onClick={handleActionClick}
+          aria-label={`${actionLabel} with ${userId}`}
+        >
+          {actionLabel}
+        </button>
       </div>
     </div>
   );

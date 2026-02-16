@@ -1,0 +1,472 @@
+# Directory snapshot before SpecKit execution
+# 1771276012535228725
+
+/tmp/claudev-pr-86533
+├── Anchor.toml
+├── assets
+│   ├── css
+│   │   ├── mobile-responsive.css
+│   │   └── styles.css
+│   ├── images
+│   │   ├── avatar1.svg
+│   │   ├── avatar2.svg
+│   │   ├── avatar3.svg
+│   │   ├── avatar4.svg
+│   │   ├── avatar5.svg
+│   │   ├── backpack-logo.svg
+│   │   ├── bnb-icon.svg
+│   │   ├── bonk-icon.svg
+│   │   ├── eclipse-logo.svg
+│   │   ├── eth-icon.svg
+│   │   ├── glow-logo.svg
+│   │   ├── jto-icon.svg
+│   │   ├── opensvm-logo.svg
+│   │   ├── phantom-logo.svg
+│   │   ├── solana-logo.svg
+│   │   ├── solflare-logo.svg
+│   │   ├── sol-icon.svg
+│   │   ├── sonic-icon.svg
+│   │   ├── sonic-logo.svg
+│   │   ├── soon-logo.svg
+│   │   ├── svmbnb-logo.svg
+│   │   ├── usdc-icon.svg
+│   │   └── usdt-icon.svg
+│   └── js
+│       ├── main.js
+│       └── mobile-interactions.js
+├── audit_report.pdf
+├── audit_report.typ
+├── audit_summary.md
+├── babel.config.js
+├── blockchain-integration-research.md
+├── CHANGELOG_SECURITY.md
+├── check-deployment-readiness.sh
+├── COMPREHENSIVE_TESTING_GUIDE.md
+├── config-overrides.js
+├── DEPLOYMENT_GUIDE.md
+├── DEPLOYMENT_STATUS.md
+├── deploy-solana-cli-only.sh
+├── deploy-to-devnet.sh
+├── DEVNET_DEPLOYMENT.md
+├── DEVNET_DEPLOYMENT_SUCCESS.md
+├── docker-compose.test.yml
+├── Dockerfile.test
+├── docs
+│   ├── advanced-ui-feedback.md
+│   ├── api
+│   │   ├── account-structures.md
+│   │   ├── CHANGELOG.md
+│   │   ├── error-codes.md
+│   │   ├── events.md
+│   │   ├── examples
+│   │   │   ├── basic-trading
+│   │   │   │   └── create-offer.ts
+│   │   │   └── README.md
+│   │   ├── README.md
+│   │   ├── smart-contracts.md
+│   │   ├── transaction-flows.md
+│   │   └── wallet-operations.md
+│   ├── contributing.md
+│   ├── E2E-TESTING.md
+│   ├── enhanced-reward-system.md
+│   ├── frontend-components.md
+│   ├── governance-framework.md
+│   ├── images
+│   │   └── architecture.dot
+│   ├── installation-guide.md
+│   ├── MODULAR_ARCHITECTURE.md
+│   ├── PERFORMANCE.md
+│   ├── pwa-implementation.md
+│   ├── README.md
+│   ├── reward-system-strategy.md
+│   ├── smart-contract-api.md
+│   └── tokenomics-design.md
+├── idl
+│   ├── p2p_exchange.json
+│   └── README.md
+├── index.html
+├── jest.config.js
+├── jest-e2e.config.js
+├── jest-puppeteer.config.js
+├── jsconfig.json
+├── MANUAL_DEPLOYMENT.md
+├── netlify.toml
+├── next.config.js
+├── next-i18next.config.js
+├── onboarding-dark-theme-working.png
+├── onboarding-light-theme-after-fix.png
+├── package.json
+├── package-lock.json
+├── PERFORMANCE_BENCHMARKS.md
+├── postcss.config.js
+├── program-keypair.json
+├── programs
+│   └── p2p-exchange
+│       ├── Cargo.toml
+│       ├── src
+│       │   ├── errors.rs
+│       │   ├── instructions
+│       │   │   ├── admin.rs
+│       │   │   ├── disputes.rs
+│       │   │   ├── mod.rs
+│       │   │   ├── offers.rs
+│       │   │   ├── reputation.rs
+│       │   │   └── rewards.rs
+│       │   ├── lib.rs
+│       │   ├── state.rs
+│       │   └── utils.rs
+│       └── tests_disabled
+│           └── offer_acceptance_flow.rs
+├── public
+│   ├── assets
+│   │   ├── css
+│   │   │   ├── mobile-responsive.css
+│   │   │   └── styles.css
+│   │   └── js
+│   │       ├── main.js
+│   │       └── mobile-interactions.js
+│   ├── css
+│   │   └── critical.css
+│   ├── favicon.ico
+│   ├── images
+│   │   ├── icon-192x192.png
+│   │   ├── icon-192x192.svg
+│   │   ├── icon-512x512.png
+│   │   ├── icon-512x512.svg
+│   │   ├── opensvm-logo.svg
+│   │   └── phantom-logo.svg
+│   ├── index.html
+│   ├── locales
+│   │   ├── en
+│   │   │   ├── common.json
+│   │   │   ├── navigation.json
+│   │   │   ├── onboarding.json
+│   │   │   ├── profile.json
+│   │   │   └── trading.json
+│   │   └── es
+│   │       └── common.json
+│   ├── manifest.json
+│   └── sw.js
+├── README.md
+├── run-e2e-tests.sh
+├── scripts
+│   ├── analyze-bundle.sh
+│   ├── coverage_analysis.ts
+│   ├── mock_test_runner.js
+│   ├── mock_test_runner.ts
+│   └── run_comprehensive_tests.sh
+├── SECURITY_AUDIT_IMPROVEMENTS.md
+├── smart-contract-architecture.md
+├── src
+│   ├── App.js
+│   ├── components
+│   │   ├── analytics
+│   │   │   ├── NetworkMetrics.js
+│   │   │   ├── OverviewPanel.js
+│   │   │   ├── RecentTrades.js
+│   │   │   ├── TopTraders.js
+│   │   │   └── VolumePerDayChart.js
+│   │   ├── AnalyticsDashboard.js
+│   │   ├── common
+│   │   │   ├── ASCIIForm.js
+│   │   │   ├── ButtonLoader.js
+│   │   │   ├── ConfirmationDialog.js
+│   │   │   ├── index.js
+│   │   │   ├── LoadingSpinner.js
+│   │   │   ├── OAuthButtons.js
+│   │   │   ├── PropertyValueTable.js
+│   │   │   ├── RealTimeFeedback.js
+│   │   │   ├── Tooltip.js
+│   │   │   ├── TransactionAnalytics.js
+│   │   │   ├── TransactionConfirmation.js
+│   │   │   ├── TransactionProgressIndicator.js
+│   │   │   └── TransactionStatus.js
+│   │   ├── ConnectWalletPrompt.js
+│   │   ├── DealPage.js
+│   │   ├── DemoIndicator.js
+│   │   ├── demos
+│   │   │   └── AdvancedFeedbackDemo.js
+│   │   ├── DisputeResolution.js
+│   │   ├── dropdown
+│   │   │   └── SVMSelectorDropdown.jsx
+│   │   ├── EnhancedErrorBoundary.js
+│   │   ├── ErrorBoundary.js
+│   │   ├── features
+│   │   │   ├── rewards
+│   │   │   │   ├── RewardsActions.js
+│   │   │   │   └── RewardsDisplay.js
+│   │   │   └── trading
+│   │   │       ├── OfferFilters.js
+│   │   │       └── OfferRow.js
+│   │   ├── guided-workflow
+│   │   │   ├── BuyWorkflowComplete.js
+│   │   │   ├── BuyWorkflowPayment.js
+│   │   │   ├── BuyWorkflowReviewOffer.js
+│   │   │   ├── BuyWorkflowSelectOffer.js
+│   │   │   ├── GuidedWorkflow.js
+│   │   │   ├── GuidedWorkflowStep.js
+│   │   │   ├── SellWorkflowComplete.js
+│   │   │   ├── SellWorkflowCreateOffer.js
+│   │   │   ├── SellWorkflowReviewEscrow.js
+│   │   │   ├── TradingGuidedWorkflow.js
+│   │   │   ├── TradingGuidedWorkflowLazy.js
+│   │   │   └── TradingWorkflowIntro.js
+│   │   ├── LanguageSelector.js
+│   │   ├── Layout.js
+│   │   ├── ModernOfferList.js
+│   │   ├── ModernRewardDashboard.js
+│   │   ├── NetworkSelector.js
+│   │   ├── notifications
+│   │   │   ├── EnhancedNotification.js
+│   │   │   ├── NotificationCenter.js
+│   │   │   ├── NotificationContext.js
+│   │   │   ├── NotificationItem.js
+│   │   │   ├── NotificationList.js
+│   │   │   ├── NotificationManager.js
+│   │   │   ├── ToastContainer.js
+│   │   │   └── ToastNotification.js
+│   │   ├── OfferCreation.js
+│   │   ├── OfferList.js
+│   │   ├── OfflineIndicator.js
+│   │   ├── OnboardingModal.js
+│   │   ├── PhantomWalletButton.js
+│   │   ├── profile
+│   │   │   ├── ActivityFeed.js
+│   │   │   ├── ProfileHeader.js
+│   │   │   ├── ProfileSettings.js
+│   │   │   ├── ReputationCard.js
+│   │   │   ├── TradingStats.js
+│   │   │   └── TransactionHistory.js
+│   │   ├── ProfileDropdown.js
+│   │   ├── ProgramDebugInfo.js
+│   │   ├── PWAInstallButton.js
+│   │   ├── ReconnectionModal.js
+│   │   ├── RewardDashboard.js
+│   │   ├── RewardDashboard.js.backup
+│   │   ├── RewardWidget.js
+│   │   ├── ThemeSelector.js
+│   │   ├── ThemeToggle.js
+│   │   ├── Toast.js
+│   │   ├── UserProfile.js
+│   │   ├── UserStatistics.js
+│   │   ├── wallet
+│   │   │   └── SwigWalletButton.js
+│   │   ├── WalletConnectionGuide.js
+│   │   └── WalletNotConnected.js
+│   ├── config
+│   │   └── networks.js
+│   ├── constants
+│   │   ├── rewardConstants.js
+│   │   └── tradingConstants.js
+│   ├── contexts
+│   │   ├── AppContext.js
+│   │   ├── PhantomWalletProvider.js
+│   │   ├── SwigWalletProvider.js
+│   │   └── WalletContextProvider.js
+│   ├── hooks
+│   │   ├── features
+│   │   │   ├── useRewards.js
+│   │   │   └── useTradingOffers.js
+│   │   ├── useActionDebounce.js
+│   │   ├── useAutoClaimManager.js
+│   │   ├── useOfflineState.js
+│   │   ├── useOnChainData.js
+│   │   ├── usePriceData.js
+│   │   ├── useProgram.js
+│   │   ├── usePWAInstall.js
+│   │   ├── useRewardData.js
+│   │   └── useToast.js
+│   ├── idl
+│   │   └── p2p_exchange.json
+│   ├── index.css
+│   ├── index.js
+│   ├── pages
+│   │   ├── 404.js
+│   │   ├── analytics.js
+│   │   ├── _app.js
+│   │   ├── buy.js
+│   │   ├── deal
+│   │   │   └── [id].js
+│   │   ├── disputes.js
+│   │   ├── _document.js
+│   │   ├── help.js
+│   │   ├── index.js
+│   │   ├── myoffers.js
+│   │   ├── profile.js
+│   │   ├── rewards.js
+│   │   └── sell.js
+│   ├── styles
+│   │   ├── accessibility.css
+│   │   ├── AnalyticsDashboard.css
+│   │   ├── AnalyticsDashboard.css.backup
+│   │   ├── ascii-theme.css
+│   │   ├── components
+│   │   │   └── features
+│   │   │       └── rewards
+│   │   │           └── RewardsDisplay.module.css
+│   │   ├── components.css
+│   │   ├── comprehensive-ui-fixes.css
+│   │   ├── confirmation-dialog.css
+│   │   ├── demo-mode.css
+│   │   ├── EnhancedNotification.css
+│   │   ├── fixes.css
+│   │   ├── footer-improvements.css
+│   │   ├── glass-effects.css
+│   │   ├── globals.css
+│   │   ├── guided-workflow.css
+│   │   ├── header-controls.css
+│   │   ├── header-dropdown-fixes.css
+│   │   ├── header-fixes.css
+│   │   ├── performance.css
+│   │   ├── pwa.css
+│   │   ├── responsive
+│   │   │   ├── component-mobile.css
+│   │   │   ├── enhanced-mobile.css
+│   │   │   ├── responsive-utilities.css
+│   │   │   └── tablet-enhancements.css
+│   │   ├── responsive.css
+│   │   ├── responsive-grid.css
+│   │   ├── responsive-navigation.css
+│   │   ├── routing.css
+│   │   ├── theme
+│   │   │   ├── animations.css
+│   │   │   ├── buttons.css
+│   │   │   ├── cards.css
+│   │   │   ├── forms.css
+│   │   │   ├── index.css
+│   │   │   ├── layout.css
+│   │   │   ├── tables.css
+│   │   │   └── typography.css
+│   │   ├── theme-aware-components.css
+│   │   ├── themes
+│   │   │   ├── blueprint.css
+│   │   │   ├── corporate.css
+│   │   │   ├── cyberpunk.css
+│   │   │   ├── grayscale.css
+│   │   │   ├── high-contrast.css
+│   │   │   ├── index.css
+│   │   │   ├── minimal.css
+│   │   │   ├── organic.css
+│   │   │   ├── pastel.css
+│   │   │   ├── retro.css
+│   │   │   └── terminal.css
+│   │   ├── theme-variables.css
+│   │   ├── toast.css
+│   │   ├── tooltip.css
+│   │   ├── TransactionAnalytics.css
+│   │   ├── TransactionProgressIndicator.css
+│   │   ├── typography.css
+│   │   ├── vscode-dark-theme.css
+│   │   ├── wallet-connection-guide.css
+│   │   └── wallet-status.css
+│   ├── tests
+│   │   ├── AnalyticsDashboardSimple.test.js
+│   │   ├── AnalyticsDashboard.test.js
+│   │   ├── common-components.test.js
+│   │   ├── components
+│   │   │   ├── ConfirmationDialog.test.js
+│   │   │   ├── DisputeResolution.test.js
+│   │   │   ├── ModernRewardDashboard.test.js
+│   │   │   ├── NotificationCenter.test.js
+│   │   │   ├── OfferCreation.test.js
+│   │   │   ├── OfferList.test.js
+│   │   │   ├── ToastNotification.test.js
+│   │   │   ├── TradingGuidedWorkflow.test.js
+│   │   │   └── UserProfile.test.js
+│   │   ├── component-styling.test.js
+│   │   ├── core-user-flows.test.js
+│   │   ├── e2e
+│   │   │   ├── comprehensive-user-flows.test.js
+│   │   │   ├── offer-listing.test.js
+│   │   │   ├── setup
+│   │   │   │   └── e2e.setup.js
+│   │   │   ├── ui-navigation.test.js
+│   │   │   ├── user-profile.test.js
+│   │   │   ├── utils
+│   │   │   │   ├── pageHelpers.js
+│   │   │   │   └── walletMock.js
+│   │   │   └── wallet-connection.test.js
+│   │   ├── EnhancedNotification.test.js
+│   │   ├── enhancedRewardSystem.test.js
+│   │   ├── guided-workflow-component.test.js
+│   │   ├── guided-workflow-lazy-loading.test.js
+│   │   ├── guided-workflow.test.js
+│   │   ├── hooks
+│   │   │   └── useActionDebounce.test.js
+│   │   ├── integration
+│   │   │   ├── application-flow.test.js
+│   │   │   └── guided-workflow-integration.test.js
+│   │   ├── keyboard-accessibility.test.js
+│   │   ├── mobile-responsiveness.test.js
+│   │   ├── notification-system.test.js
+│   │   ├── OfferList.comprehensive.test.js
+│   │   ├── OfflineIndicator.test.js
+│   │   ├── onboarding-dark-theme.test.js
+│   │   ├── OverviewPanel.test.js
+│   │   ├── performance.test.js
+│   │   ├── ProfileHeader.test.js
+│   │   ├── pwa.test.js
+│   │   ├── read-only-mode.test.js
+│   │   ├── RecentTrades.test.js
+│   │   ├── reward-dashboard.test.js
+│   │   ├── reward-widget.test.js
+│   │   ├── setup
+│   │   │   ├── fileMock.js
+│   │   │   └── jest.setup.js
+│   │   ├── swig-wallet-integration.test.js
+│   │   ├── theme-integration.test.js
+│   │   ├── toast-notifications.test.js
+│   │   ├── TopTraders.test.js
+│   │   ├── TransactionAnalytics.test.js
+│   │   ├── TransactionHistory.test.js
+│   │   ├── TransactionProgressIndicator.test.js
+│   │   ├── UserProfile.comprehensive.test.js
+│   │   ├── UserProfile.test.js
+│   │   ├── utils
+│   │   │   ├── test-utils.js
+│   │   │   └── validation.test.js
+│   │   ├── visual-design-system.test.js
+│   │   ├── wallet-connection-guide.test.js
+│   │   ├── wallet-reconnect-edge-cases.test.js
+│   │   └── workflow-components.test.js
+│   └── utils
+│       ├── animations.js
+│       ├── autoClaimManager.js
+│       ├── claimRateLimit.js
+│       ├── decentralizedStorage.js
+│       ├── errorHandling.js
+│       ├── i18n.js
+│       ├── lazyLoading.js
+│       ├── logger.js
+│       ├── multiSigGovernance.js
+│       ├── optimisticUpdates.js
+│       ├── performance.js
+│       ├── rewardDataCache.js
+│       ├── rewardQueries.js
+│       ├── rewardTransactions.js
+│       ├── rpcConnection.js
+│       ├── transactionCPI.js
+│       ├── validation.js
+│       ├── walletConflictPrevention.js
+│       ├── walletDetection.js
+│       └── webVitals.js
+├── SWIG_WALLET_INTEGRATION.md
+├── SWIG_WALLET_MIGRATION.md
+├── tailwind.config.js
+├── test-onboarding.html
+├── tests
+│   ├── comprehensive_test.ts
+│   ├── integration_tests.ts
+│   ├── p2p_exchange.ts
+│   ├── security_audit_tests.ts
+│   └── unit_tests.ts
+├── todo.md
+├── tsconfig.test.json
+├── types
+│   ├── p2p_exchange.ts
+│   └── README.md
+├── updated-smart-contract-architecture.md
+├── validate-devnet-config.sh
+└── validate-wallet-fixes.sh
+
+66 directories, 401 files

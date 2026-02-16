@@ -1,177 +1,123 @@
 /**
- * Rewards Display Component
+ * RewardsDisplay - Component for metrics visualization
  * 
- * Extracted from the monolithic RewardDashboard for better modularity
- * Handles the display of reward information with improved accessibility
+ * Focused component for displaying reward metrics with responsive design
+ * Part of RewardDashboard modular refactoring
  */
 
-import React from 'react';
-import { CONVERSION_HELPERS } from '../../../constants/rewardConstants';
+import React, { memo } from 'react';
+import styles from './RewardsDisplay.module.css';
 
-/**
- * Individual reward metric card component
- */
-const RewardMetricCard = ({ title, value, subtitle, icon, colorClass = 'bg-blue-50 border-blue-200' }) => (
-  <div className={`p-4 rounded-lg border ${colorClass}`}>
-    <div className="flex items-center justify-between">
-      <div>
-        <h3 className="text-sm font-medium text-gray-700">{title}</h3>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
-        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
-      </div>
-      {icon && (
-        <div className="text-3xl opacity-60" role="img" aria-hidden="true">
-          {icon}
-        </div>
-      )}
+const MetricCard = memo(({ label, value, subValue, icon, trend }) => (
+  <div className={styles.metricCard}>
+    <div className={styles.metricHeader}>
+      {icon && <span className={styles.metricIcon}>{icon}</span>}
+      <span className={styles.metricLabel}>{label}</span>
     </div>
+    <div className={styles.metricValue}>{value}</div>
+    {subValue && (
+      <div className={styles.metricSubValue}>
+        {subValue}
+        {trend && (
+          <span className={`${styles.trend} ${trend > 0 ? styles.positive : styles.negative}`}>
+            {trend > 0 ? '+' : ''}{trend}%
+          </span>
+        )}
+      </div>
+    )}
   </div>
-);
+));
 
-/**
- * Cooldown status indicator component
- */
-const CooldownIndicator = ({ cooldownRemaining, failedClaimCooldownRemaining }) => {
-  if (cooldownRemaining <= 0 && failedClaimCooldownRemaining <= 0) {
-    return null;
+MetricCard.displayName = 'MetricCard';
+
+const RewardsDisplay = ({ 
+  rewards = {},
+  loading = false,
+  error = null,
+  compact = false
+}) => {
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <span className={styles.errorIcon}>⚠️</span>
+        <span>{error}</span>
+      </div>
+    );
   }
 
-  const formatTime = (ms) => {
-    const seconds = Math.ceil(ms / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
-  };
+  const {
+    totalEarnedFormatted = '$0.00',
+    availableFormatted = '$0.00',
+    pendingFormatted = '$0.00',
+    history = []
+  } = rewards;
 
-  const isFailedCooldown = failedClaimCooldownRemaining > 0;
-  const timeRemaining = isFailedCooldown ? failedClaimCooldownRemaining : cooldownRemaining;
-  const message = isFailedCooldown 
-    ? 'Too many failed attempts. Please wait before trying again.'
-    : 'Claim cooldown active. Please wait before claiming again.';
-
-  return (
-    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-      <div className="flex items-center">
-        <div className="text-yellow-600 mr-2">⏱️</div>
-        <div>
-          <p className="text-sm text-yellow-800 font-medium">{message}</p>
-          <p className="text-xs text-yellow-600">Time remaining: {formatTime(timeRemaining)}</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/**
- * Main rewards display component
- */
-export const RewardsDisplay = ({ 
-  rewards, 
-  rewardToken, 
-  loading, 
-  cooldownRemaining, 
-  failedClaimCooldownRemaining 
-}) => {
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="animate-pulse">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
-            ))}
-          </div>
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+        <span>Loading rewards...</span>
+      </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <div className={styles.compactContainer}>
+        <div className={styles.compactMetric}>
+          <span className={styles.compactLabel}>Available</span>
+          <span className={styles.compactValue}>{availableFormatted}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Cooldown Indicator */}
-      <CooldownIndicator 
-        cooldownRemaining={cooldownRemaining}
-        failedClaimCooldownRemaining={failedClaimCooldownRemaining}
-      />
-
-      {/* Reward Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <RewardMetricCard
-          title="Unclaimed Balance"
-          value={CONVERSION_HELPERS.formatTokenAmount(rewards.unclaimedBalance)}
-          subtitle="Available to claim"
+    <div className={styles.container}>
+      <div className={styles.metricsGrid}>
+        <MetricCard
+          label="Total Earned"
+          value={totalEarnedFormatted}
+          subValue="All time"
           icon="💰"
-          colorClass="bg-green-50 border-green-200"
+          trend={5.2}
         />
-        
-        <RewardMetricCard
-          title="Total Earned"
-          value={CONVERSION_HELPERS.formatTokenAmount(rewards.totalEarned)}
-          subtitle="All-time earnings"
-          icon="🏆"
-          colorClass="bg-blue-50 border-blue-200"
-        />
-        
-        <RewardMetricCard
-          title="Total Claimed"
-          value={CONVERSION_HELPERS.formatTokenAmount(rewards.totalClaimed)}
-          subtitle="Successfully claimed"
+        <MetricCard
+          label="Available"
+          value={availableFormatted}
+          subValue="Ready to claim"
           icon="✅"
-          colorClass="bg-purple-50 border-purple-200"
         />
-        
-        <RewardMetricCard
-          title="Trading Volume"
-          value={CONVERSION_HELPERS.formatSolAmount(rewards.tradingVolume)}
-          subtitle="SOL traded"
-          icon="📈"
-          colorClass="bg-yellow-50 border-yellow-200"
-        />
-        
-        <RewardMetricCard
-          title="Governance Votes"
-          value={rewards.governanceVotes.toString()}
-          subtitle="Proposals voted on"
-          icon="🗳️"
-          colorClass="bg-indigo-50 border-indigo-200"
-        />
-        
-        <RewardMetricCard
-          title="Last Trade Reward"
-          value={CONVERSION_HELPERS.formatTokenAmount(rewards.lastTradeReward)}
-          subtitle="Most recent"
-          icon="💎"
-          colorClass="bg-pink-50 border-pink-200"
+        <MetricCard
+          label="Pending"
+          value={pendingFormatted}
+          subValue="Processing"
+          icon="⏳"
         />
       </div>
 
-      {/* Reward Rates Section */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Reward Rates</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Per Trade:</span>
-            <span className="font-semibold text-gray-900">
-              {CONVERSION_HELPERS.formatTokenAmount(rewardToken.rewardRatePerTrade)} tokens
-            </span>
-          </div>
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Per Vote:</span>
-            <span className="font-semibold text-gray-900">
-              {CONVERSION_HELPERS.formatTokenAmount(rewardToken.rewardRatePerVote)} tokens
-            </span>
-          </div>
-          <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Min Trade Volume:</span>
-            <span className="font-semibold text-gray-900">
-              {CONVERSION_HELPERS.formatSolAmount(rewardToken.minTradeVolume)} SOL
-            </span>
+      {history.length > 0 && (
+        <div className={styles.historySection}>
+          <h3 className={styles.sectionTitle}>Recent Activity</h3>
+          <div className={styles.historyList}>
+            {history.slice(0, 5).map(item => (
+              <div key={item.id} className={styles.historyItem}>
+                <div className={styles.historyInfo}>
+                  <span className={styles.historyAmount}>
+                    ${item.amount.toFixed(2)}
+                  </span>
+                  <span className={styles.historyDate}>{item.date}</span>
+                </div>
+                <span className={`${styles.historyStatus} ${styles[item.status]}`}>
+                  {item.status}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-export default RewardsDisplay;
+export default memo(RewardsDisplay);
