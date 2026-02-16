@@ -1,0 +1,180 @@
+.row {
+  display: grid;
+  grid-template-columns: 60px 1fr 100px 140px 100px 80px 80px;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: var(--card-background, #fff);
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.row:hover {
+  background: #fafafa;
+}
+
+.row.selected {
+  background: #f0f7ff;
+  border-left: 3px solid #9945FF;
+}
+
+.row.own {
+  background: #f9f9f9;
+  opacity: 0.7;
+}
+
+.typeIndicator {
+  display: flex;
+  justify-content: center;
+}
+
+.typeBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.typeBadge[data-type="sell"] {
+  background: #d4edda;
+  color: #155724;
+}
+
+.typeBadge[data-type="buy"] {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.amountColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cryptoAmount {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+}
+
+.fiatAmount {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.rateColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.rate {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.rateLabel {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.detailsColumn {
+  display: flex;
+  justify-content: center;
+}
+
+.paymentBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: #f5f5f5;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.userColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.userId {
+  font-size: 0.8rem;
+  color: #666;
+  font-family: monospace;
+}
+
+.userRating {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.timeColumn {
+  display: flex;
+  justify-content: center;
+}
+
+.timeAgo {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.actionColumn {
+  display: flex;
+  justify-content: center;
+}
+
+.actionButton {
+  padding: 0.5rem 1rem;
+  background: #9945FF;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.actionButton:hover {
+  background: #8a3de8;
+  transform: translateY(-1px);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+  .row {
+    grid-template-columns: 50px 1fr 80px 120px 70px;
+  }
+
+  .userColumn,
+  .timeColumn {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .row {
+    grid-template-columns: 1fr 80px;
+    gap: 0.75rem;
+  }
+
+  .typeIndicator,
+  .detailsColumn,
+  .actionColumn {
+    display: none;
+  }
+
+  .amountColumn {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+}

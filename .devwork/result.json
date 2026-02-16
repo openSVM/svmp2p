@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "tasks_total": 16,
+  "tasks_completed": 15,
+  "tasks_failed": 0,
+  "planning_ms": 26020,
+  "execution_ms": 138645,
+  "total_ms": 509518,
+  "error": ""
+}

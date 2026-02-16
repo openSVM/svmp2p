@@ -1,0 +1,138 @@
+/**
+ * CSS Module for RewardsDisplay Component
+ * 
+ * Provides encapsulated styling for the rewards display component
+ * Prevents global CSS pollution and improves maintainability
+ */
+
+.container {
+  @apply space-y-6;
+}
+
+.metricsGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.metricCard {
+  @apply p-4 rounded-lg border;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.metricCard:hover {
+  @apply transform scale-105 shadow-lg;
+}
+
+.metricCardBlue {
+  @apply bg-blue-50 border-blue-200;
+}
+
+.metricCardGreen {
+  @apply bg-green-50 border-green-200;
+}
+
+.metricCardPurple {
+  @apply bg-purple-50 border-purple-200;
+}
+
+.metricCardYellow {
+  @apply bg-yellow-50 border-yellow-200;
+}
+
+.metricCardIndigo {
+  @apply bg-indigo-50 border-indigo-200;
+}
+
+.metricCardPink {
+  @apply bg-pink-50 border-pink-200;
+}
+
+.metricContent {
+  @apply flex items-center justify-between;
+}
+
+.metricInfo h3 {
+  @apply text-sm font-medium text-gray-700;
+}
+
+.metricValue {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.metricSubtitle {
+  @apply text-sm text-gray-500;
+}
+
+.metricIcon {
+  @apply text-3xl opacity-60;
+}
+
+.cooldownIndicator {
+  @apply mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg;
+}
+
+.cooldownContent {
+  @apply flex items-center;
+}
+
+.cooldownIcon {
+  @apply text-yellow-600 mr-2;
+}
+
+.cooldownMessage {
+  @apply text-sm text-yellow-800 font-medium;
+}
+
+.cooldownTime {
+  @apply text-xs text-yellow-600;
+}
+
+.ratesSection {
+  @apply bg-gray-50 rounded-lg p-6;
+}
+
+.ratesTitle {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.ratesGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.rateItem {
+  @apply flex justify-between items-center py-2;
+}
+
+.rateLabel {
+  @apply text-gray-700;
+}
+
+.rateValue {
+  @apply font-semibold text-gray-900;
+}
+
+.loadingSkeleton {
+  @apply animate-pulse;
+}
+
+.loadingCard {
+  @apply h-24 bg-gray-200 rounded-lg;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+  .metricsGrid {
+    @apply grid-cols-1 gap-3;
+  }
+  
+  .metricCard {
+    @apply p-3;
+  }
+  
+  .metricValue {
+    @apply text-xl;
+  }
+  
+  .ratesGrid {
+    @apply grid-cols-1;
+  }
+}
